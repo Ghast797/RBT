@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #070b0e;
+    --hacker-green: #00ff66;
+    --hacker-green-dim: rgba(0, 255, 102, 0.25);
+    --hacker-cyan: #00f0ff;
+    --hacker-red: #ff3366;
+    --hacker-amber: #ffaa00;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: #d1fae5;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* CRT Scanlines Overlay */
+.crt-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Neon glow helper classes */
+.glow-green {
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.35);
+}
+
+.glow-green-lg {
+  box-shadow: 0 0 25px rgba(0, 255, 102, 0.6);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 8px rgba(0, 255, 102, 0.7);
+}
+
+.glow-red {
+  box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+}
+
+/* Custom hacker scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #090e13;
+}
+::-webkit-scrollbar-thumb {
+  background: #00ff6644;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff6688;
+}

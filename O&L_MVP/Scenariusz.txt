@@ -1,0 +1,252 @@
+SPECYFIKACJA SCENARIUSZA: MISJA 3 – O&L COMPANY (Infiltracja socjotechniczna)
+Cel szkoleniowy: Zrozumienie mechanizmów targetowanego ataku socjotechnicznego (spear phishing / baiting), manipulacji plikami archiwów (.zip) oraz zagrożeń płynących z podłączania nieznanych nośników USB (BadUSB / dropper).
+
+System operacyjny hakera: //HACKERS.OS (ciemny motyw, zieleń #00ff66, czcionka monospace, zakrzywione okna/karty terminala).
+
+KROK 1: Wybór i konfiguracja malware (Aplikacja: //BAZA_WIRUSÓW)
+1.1. Ekran wyboru wirusa
+Gracz wchodzi w aplikację i widzi 3 karty z opisami:
+
+Karta A: RAT (Remote Access Trojan) – „Pozwoli przejąć pełną kontrolę nad pulpitem ofiary i jej stacją roboczą.” [WYBÓR POPRAWNY]
+
+Karta B: Ransomware – „Zaszyfruje pliki ofiary oraz całą sieć firmową dla okupu.” [Opcja odrzucona – zaalarmuje firmę natychmiast, a celem jest cicha kradzież danych].
+
+Karta C: Keylogger – „Rejestruje uderzenia klawiszy ofiary.” [Opcja częściowa – nie daje dostępu do pulpitu].
+
+1.2. Mini-gra: Builder ładunku RAT (Zastępuje rysowanie w VR)
+Po kliknięciu RAT pojawia się terminalowy kompilator z parametrami do zaznaczenia:
+
+Moduł działania (Wybór pojedynczy):
+
+[✓] Reverse TCP Shell & Remote Desktop View (Poprawne)
+
+[ ] Port Scanning & Network Flooder (Wykrywalne przez IDS)
+
+Metoda maskowania procesu (Wybór pojedynczy):
+
+[✓] Ukryty proces w tle (Background Service + Auto-start) (Poprawne)
+
+[ ] Wymuszenie okna UAC z uprawnieniami Administratora (Podejrzane)
+
+Pakiet wyjściowy (Wybór pojedynczy):
+
+[✓] Nieskompilowany moduł binarny .dll podpięty pod archiwum (Poprawne)
+
+[ ] Surowy plik .bat z komendami PowerShell (Natychmiast blokowany przez podstawowy Defender)
+
+Po kliknięciu [KOMPILUJ ŁADUNEK]:
+
+Animacja paska postępu: Generowanie stuba... Szyfrowanie payloadu... Gotowe.
+
+Komunikat sukcesu: WIRUS GOTOWY! Aktywuje się, gdy ofiara go otworzy.
+
+Stan systemu: Odblokowuje się powiadomienie z aplikacji //CHAT: BYTE_MASTER.
+
+KROK 2: Komunikacja z NPC i OSINT (Aplikacja: //CHAT oraz //TOR: PRZEGLĄDARKA)
+2.1. Chat – Faza rozpoznania
+Byte_Master: „Gotowe. Masz już payload. Jak zamierzasz uderzyć w O&L Company?”
+
+Wybór gracza (Drzewo dialogowe):
+
+Opcja 1 (Poprawna): „Zajrzyjmy najpierw na ich stronę internetową, poszukajmy słabego ogniwa.”
+
+Opcja 2 (Błędna): „Wyślijmy losowy spam na adres ogólny biura.” [Byte_Master odpisze: „Zatrzyma to pierwszy lepszy filtr antyspamowy. Sprawdź ich stronę www.”]
+
+2.2. Aplikacja: //TOR: PRZEGLĄDARKA (Adres: [https://olcompany.cloud](https://olcompany.cloud))
+Gracz otwiera przeglądarkę. Dostępne są dwie podstrony:
+
+Podstrona 1: O nas / Nasi eksperci:
+Lista pracowników ze zdjęciami i stanowiskami:
+
+Jan Łukasiewicz – CEO (Zbyt czujny, zaawansowane procedury).
+
+Sławomir Białek – Szef Działu Cyberbezpieczeństwa (Błąd krytyczny – natychmiast wykryje próbę ataku).
+
+Wiktoria Gałecka – Specjalistka ds. Logistyki.
+
+Agnieszka Leman – Szefowa Działu Sprzedaży.
+
+Mateusz Klimowicz – Junior Specjalista ds. Wsparcia Klienta [CEL POPRAWNY].
+
+Podstrona 2: Wydarzenia / Aktualności:
+Artykuł ze zdjęciami: „Impreza integracyjna!” (17 września)
+
+„15 września odbyła się impreza integracyjna działu sprzedaży i wsparcia. Powitaliśmy na pokładzie nowych pracowników i świętowaliśmy sukcesy! #OL #BestCompany #CompanyUnhacked. Zapraszamy do obejrzenia galerii zdjęć.”
+
+2.3. Chat – Wybór wektora i ofiary
+Byte_Master: „Którą osobę zamierzasz zhakować?”
+
+Wybór gracza:
+
+Opcja A: „Sławomir Białek – szef bezpieczeństwa, ma największe uprawnienia.” [Błąd – za duże ryzyko].
+
+Opcja B (Poprawna): „Widzę, że mają nowego juniora na pokładzie. Zhakuję Mateusza, licząc na jego brak doświadczenia albo przynajmniej brak znajomości procedur.”
+
+Byte_Master: „Dobry wybór. Ale jak chcesz go podejść?”
+
+Wybór gracza:
+
+Opcja A (Poprawna): „Mam zdjęcia i informacje o ostatniej imprezie. Podrzucę mu pendrive z rzekomymi kompromitującymi zdjęciami. Wirusa ukryję w archiwum ZIP.”
+
+Opcja B: „Napiszę maila podszywając się pod prezesa z prośbą o przelew.” [Błąd socjotechniczny – junior z obsługi nie ma uprawnień do przelewów].
+
+Byte_Master: „Dzięki archiwum antywirus może nie zgłosić zagrożenia od razu. Dobrze. Wyślę ci przykładowe pliki, których możesz użyć. Teraz przygotuj pendrive.”
+
+KROK 3: Przygotowanie nośnika przynęty (Aplikacja: //DYSK E: PENDRIVE)
+Gracz klika w powiadomienie [POBIERZ ZAŁĄCZNIKI]. Otwiera się aplikacja pendrive'a.
+
+3.1. Wybór plików na pendrive
+Gracz widzi 3 paczki do wyboru:
+
+HR_DOKUMENTY_UMOWY.DOCX – [Błędny kontekst].
+
+WYPOWIEDZENIE_UMOWY_O_PRACE.PDF – [Wzbudza panikę, ale ofiara może pójść od razu do przełożonego].
+
+IMG_00034521.JPG X3 + ARCHIWUM FOTKI_AFTERPARTY.ZIP [WYBÓR POPRAWNY].
+
+3.2. Etykieta / Nazwa nośnika USB (System plików)
+Wybór etykiety woluminu widocznej w systemie po włożeniu pendrive'a:
+
+[ ] KEYLOGGER (Błąd krytyczny).
+
+[✓] IMPREZA lub ZDJĘCIA O&L COMPANY (Poprawne).
+
+[ ] NOWY DYSK (Podejrzane/losowe).
+
+3.3. Podpis na fizycznej kopercie (Baiting)
+Wybór etykiety naklejanej na kopertę, w której znajdzie się pendrive:
+
+[✓] ZDJĘCIA Z AFTERPARTY O&L COMPANY! (Poprawne – wzbudza ciekawość i odwołuje się do prawdziwego wydarzenia).
+
+[ ] PENDRIVE ZE ZDJĘCIAMI BBO COMPANY (Błąd – zła nazwa firmy).
+
+[ ] ZGUBIONE DOKUMENTY (Niespójne z zawartością).
+
+Komunikat systemu: PENDRIVE PRZYGOTOWANY. ŁADUNEK ZAPAKOWANY DO KOPERTY.
+
+KROK 4: Dostarczenie ładunku i recon (Aplikacje: //CHAT oraz //DRON: CONDOR MIT63)
+4.1. Chat – Dane lokalizacyjne
+Gracz: „Gotowe. Zdjęcia podrzucę przy pomocy drona i zostawię podpisaną kopertę na samochodzie ofiary. Zminimalizuje to ryzyko wpadki.”
+
+Byte_Master: „Jest OK. Wysyłam ci adres ofiary: ul. Ołtaszyńska 92C/6, 53-234 Wrocław.”
+
+Byte_Master: „Drona wyślij z samego rana, żeby ofiara znalazła kopertę przed wyjazdem do biura. Gość jeździ białym samochodem z czerwonym dachem. Przesyłam ci zdjęcie [PODGLĄD_AUTA.JPG].”
+
+4.2. Mini-gra Dron: Część A – Wybór koordynatów
+Gracz otwiera aplikację //DRON: CONDOR MIT63 i klika [AKTYWUJ].
+Widzi wektorową mapę Wrocławia z 4 punktami węzłowymi:
+
+[1] Ołbińska 51B, Nadodrze
+
+[2] Drzymały 38D, Pilczyce
+
+[3] Wystawowa 23A, Zalesie
+
+[4] Ołtaszyńska 92C, Partynice [WYBÓR POPRAWNY]
+
+Akcja: Kliknięcie w punkt [4] -> Kliknięcie [ZATWIERDŹ].
+Status: DRON W LOCIE... CEL OSIĄGNIĘTY. PRZEŁĄCZANIE NA KAMERĘ TELEMETRYCZNĄ.
+
+4.3. Mini-gra Dron: Część B – Kamera i zrzut ładunku (Wektorowy schemat SVG)
+Ekran drona symuluje widok z góry na siatkę parkingu (zielona siatka HUD, współrzędne X/Y, stan baterii 48%, zegar).
+
+Schemat miejsc parkingowych (widok wektorowy z góry):
+Miejsce 1: Granatowy Sedan (prostokąt SVG z granatowym wypełnieniem).
+
+Miejsce 2: Szary SUV.
+
+Miejsce 3: Czerwony Hatchback z czarnym dachem.
+
+Miejsce 4 (CEL): Biały Hatchback z wyraźnie czerwonym dachem (biały obrys, czerwony prostokąt wewnątrz symulujący dach).
+
+Miejsce 5: Zielony Kombi.
+
+Miejsce 6: Całkowicie biały Sedan (z białym dachem – fałszywy cel).
+
+Interakcja gracza:
+Gracz klika myszką na pojazdy na parkingu lub steruje celownikiem HUD (klawisze WASD / myszka).
+
+Po najechaniu/kliknięciu na auto wyświetla się ramka analizy telemetrycznej:
+
+Najechanie na Miejsce 6: ANALIZA: Nadwozie: Białe | Dach: Biały -> NIEZGODNOŚĆ ZE ZDJĘCIEM.
+
+Najechanie na Miejsce 4: ANALIZA: Nadwozie: Białe | Dach: Czerwony metalik -> ZGODNOŚĆ 100%.
+
+Gracz klika przycisk [ZRZUĆ ŁADUNEK].
+
+Animacja opadającego celownika i komunikat:
+POMYŚLNIE POZOSTAWIONO KOPERTĘ Z PENDRIVE'EM NA DACHU POJAZDU. DRON POWRACA DO BAZY.
+
+KROK 5: Infekcja i przejęcie pulpitu (Aplikacja: //MALWARE: RAT)
+Płynne przejście czasu (napis w terminalu: 08:12 AM - OCZEKIWANIE NA PODŁĄCZENIE NOŚNIKA...).
+
+Dźwięk alarmu i duży banner w systemie:
+MALWARE ZOSTAŁ AKTYWOWANY!
+
+Nazwa komputera: MATEUSZ_BIURO_O&L
+
+IP ofiary: 161.185.160.93
+
+Przycisk: [PRZEJMIJ PULPIT OFIARY].
+
+Wyświetla się okno z symulacją pulpitu Windows ofiary:
+
+Otwarty folder pendrive'a z plikiem FOTKI_AFTERPARTY.ZIP.
+
+Ikona FREEVOLT i inne aplikacje firmowe.
+
+Krótki dialog na chacie z Byte_Master:
+
+Gracz: „Mam dostęp do komputera Mateusza. Zadanie wykonane.”
+
+Byte_Master: „Dobra robota. Przelew w Bitcoinach poszedł. Jesteśmy w sieci korporacji.”
+
+KROK 6: Podsumowanie wyników i edukacja (Scoring & Feedback)
+6.1. Ekran sukcesu (Dashboard wyników)
+Status: SUKCES – UKOŃCZONO ZADANIE 3: O&L COMPANY
+
+Wynik: 100% MAKSYMALNEGO WYNIKU
+
+Statystyki wyborów:
+
+[8/8] Idealne wybory (zielony ptaszek)
+
+[0] Dobre, ale nieidealne
+
+[0] Błędów krytycznych
+
+Nagroda: +4.02 BTC (dodane do portfela w darknecie)
+
+Odznaka: Puchar za 100% ukończenia.
+
+6.2. Lista weryfikacji decyzji (Przegląd kroków):
+Wybór wirusa: RAT (Zgodny z celem cichego przejęcia).
+
+Wybór ofiary: Mateusz Klimowicz (Nowy pracownik, najmniejsza czujność).
+
+Wektor ataku: Zdjęcia z imprezy (Nawiązanie do realnego eventu z www).
+
+Format pliku: Archiwum ZIP (Obejście filtrów).
+
+Nazwa pendrive'a: IMPREZA.
+
+Podpis koperty: Zdjęcia z afterparty O&L Company!
+
+Adres ofiary: Ołtaszyńska 92C.
+
+Samochód: Biały z czerwonym dachem.
+
+6.3. Slajdy edukacyjne: „CO POWINIENEŚ ZAPAMIĘTAĆ?”
+Gracz przechodzi przez 3 slajdy wiedzy dla pracowników:
+
+Slajd 1 – Uważaj na podejrzane pliki:
+
+Wirusy mogą być zawarte w dowolnym pliku, a przestępcy szczególnie chętnie ukrywają je w archiwach .zip i .rar, aby ominąć skanery pocztowe.
+
+Slajd 2 – Podejrzane pendrive'y (Baiting):
+
+Nigdy nie wkładaj znalezionych lub podrzuconych nośników USB do komputera służbowego. Każdy obcy nośnik to ryzyko natychmiastowej infekcji.
+
+Slajd 3 – Informacje w socjotechnice (OSINT):
+
+Wszystkie informacje publikowane w sieci (social media firmy, zdjęcia z imprez, lista nowych pracowników) są wykorzystywane przez cyberprzestępców do uwiarygodnienia ataku.

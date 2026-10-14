@@ -1,0 +1,17 @@
+{
+  "name": "rbt-scorm-scenario-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HACKER.OS - Platforma symulacji cyberbezpieczeństwa SCORM 2004 i xAPI dla Moodle",
+  "workspaces": [
+    "O&L_MVP"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=cybersec-scorm-scenario-engine",
+    "build": "npm run build --workspace=cybersec-scorm-scenario-engine",
+    "test": "npm run test --workspace=cybersec-scorm-scenario-engine",
+    "build:scorm:m3": "npm run build:scorm:m3 --workspace=cybersec-scorm-scenario-engine",
+    "build:scorm:m4": "npm run build:scorm:m4 --workspace=cybersec-scorm-scenario-engine",
+    "build:scorm:all": "npm run build:scorm:all --workspace=cybersec-scorm-scenario-engine"
+  }
+}

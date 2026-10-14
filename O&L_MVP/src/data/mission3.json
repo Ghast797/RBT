@@ -1,0 +1,442 @@
+{
+  "mission": {
+    "id": "mission-3-ol-company",
+    "title": "MISJA 3 – O&L COMPANY",
+    "subTitle": "Infiltracja socjotechniczna",
+    "systemOs": "//HACKERS.OS",
+    "date": "19.05.2026",
+    "accentColor": "#00ff66",
+    "rewardBtc": 4.02,
+    "maxScore": 100,
+    "targetCompany": "O&L Company"
+  },
+  "intro": {
+    "callerName": "BYTE_MASTER",
+    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE",
+    "dialogue": [
+      {
+        "id": "intro_1",
+        "sender": "BYTE_MASTER",
+        "text": "Witaj, hakerze! Przed tobą kolejne zadanie.",
+        "playerResponse": "Jasne, chociaż miło by było wiedzieć na czym stoję i ile jeszcze zadań przede mną, zanim przyjmiecie mnie do DARKSUN."
+      },
+      {
+        "id": "intro_2",
+        "sender": "BYTE_MASTER",
+        "text": "Cierpliwości. Jesteś na dobrej drodze. Póki co bardzo nam pomagasz w walce z koncernami.",
+        "playerResponse": "Ok, niech będzie. A więc?"
+      },
+      {
+        "id": "intro_3",
+        "sender": "BYTE_MASTER",
+        "text": "O&L Company to jedna z większych spółek paliwowych. Z moich źródeł wynika, że mają brakującą część dokumentacji na temat FREEVOLT, w tym opis całej infrastruktury, więc to bardzo cenne dane. Zdobycie ich będzie wymagało od ciebie kreatywności!",
+        "playerResponse": "Czy wirus, który przejmie pulpit pracownika jest wystarczająco kreatywny?"
+      },
+      {
+        "id": "intro_4",
+        "sender": "BYTE_MASTER",
+        "text": "To zależy jak go dostarczysz.",
+        "playerResponse": "Daj mi chwilę."
+      }
+    ],
+    "biosLines": [
+      "HACKERSBIOS 2.0 RELEASE 6.1",
+      "COPYRIGHT 1985-2022 HACKERS COLLECTIVE TECHNOLOGIES",
+      "ALL RIGHTS RESERVED",
+      "",
+      "BIOS VERSION 2.0 R 6.1",
+      "GATEWAY AS54",
+      "SYSTEM ID # 00528156",
+      "",
+      "BUILD TIME: 03/09/2022 10:26:54",
+      "CPU : UNKNOWN",
+      "1061 KB SYSTEM RAM PASSED",
+      "510M EXTENDED RAM PASSED",
+      "512K CACHE SRAM PASSED",
+      "SYSTEM BIOS SHADOWED",
+      "VIDEO BIOS SHADOWED",
+      "SEGMENT ADDRESS E447",
+      "",
+      "WELCOME... HACKER"
+    ]
+  },
+  "desktopApps": [
+    {
+      "id": "virus_database",
+      "label": "//BAZA_WIRUSÓW",
+      "color": "#ec4899",
+      "icon": "Terminal",
+      "componentId": "virus_database"
+    },
+    {
+      "id": "chat_shortcut",
+      "label": "//CHAT: BYTE_MASTER",
+      "color": "#00ff66",
+      "icon": "MessageSquareCode",
+      "componentId": "chat",
+      "isChatFocus": true
+    },
+    {
+      "id": "rat_virus",
+      "label": "//WIRUS: RAT",
+      "color": "#00f0ff",
+      "icon": "Radio",
+      "componentId": "rat_virus",
+      "unlockedOnly": true,
+      "requiredUnlockId": "rat_virus"
+    },
+    {
+      "id": "pendrive_app",
+      "label": "//DYSK E: PENDRIVE",
+      "color": "#f59e0b",
+      "icon": "HardDrive",
+      "componentId": "pendrive_app"
+    },
+    {
+      "id": "drone_app",
+      "label": "//DRON: CONDOR MIT63",
+      "color": "#ef4444",
+      "icon": "Crosshair",
+      "componentId": "drone_app"
+    },
+    {
+      "id": "mail",
+      "label": "//MAIL",
+      "color": "#38bdf8",
+      "icon": "Mail",
+      "componentId": "mail"
+    },
+    {
+      "id": "browser",
+      "label": "//TOR: PRZEGLĄDARKA",
+      "color": "#3b82f6",
+      "icon": "Globe",
+      "componentId": "browser"
+    }
+  ],
+  "step1": {
+    "title": "BAZA WIRUSÓW",
+    "prompt": "WYBIERZ ODPOWIEDNIEGO WIRUSA:",
+    "viruses": [
+      {
+        "id": "rat",
+        "name": "RAT: REMOTE ACCESS TROJAN",
+        "description": "POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY",
+        "badgeColor": "#00f0ff",
+        "isCorrect": true
+      },
+      {
+        "id": "ransomware",
+        "name": "RANSOMWARE",
+        "description": "MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ",
+        "badgeColor": "#c084fc",
+        "isCorrect": false,
+        "feedback": "Zaalarmuje firmę natychmiast, a celem jest cicha kradzież danych."
+      },
+      {
+        "id": "keylogger",
+        "name": "KEYLOGGER",
+        "description": "POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE",
+        "badgeColor": "#facc15",
+        "isCorrect": false,
+        "feedback": "Opcja częściowa – rejestruje klawisze, ale nie daje dostępu do pulpitu."
+      }
+    ],
+    "ratBuilder": {
+      "title": "TERMINALOWY BUILDER ŁADUNKU RAT",
+      "subtitle": "Parametry kompilacji modułu infiltracyjnego (x64/Windows 11):",
+      "modules": {
+        "title": "Moduł działania (Wybór pojedynczy):",
+        "options": [
+          {
+            "id": "reverse_tcp",
+            "label": "Reverse TCP Shell & Remote Desktop View",
+            "desc": "Kanał zwrotny TCP łączący stację roboczą ofiary z portem nasłuchującym hakera.",
+            "isCorrect": true,
+            "feedback": "Optymalny kanał zwrotny omijający restrykcje zapory sieciowej."
+          },
+          {
+            "id": "port_scan",
+            "label": "Port Scanning & Network Flooder",
+            "desc": "Moduł skanowania portów sieciowych i generowania masowych pakietów SYN-flood.",
+            "isCorrect": false,
+            "feedback": "Agresywny ruch skanera portów zostanie natychmiast wykryty przez system IDS/IPS!"
+          }
+        ]
+      },
+      "masking": {
+        "title": "Metoda maskowania procesu:",
+        "options": [
+          {
+            "id": "bg_service",
+            "label": "Ukryty proces w tle (Background Service + Auto-start)",
+            "desc": "Ukryty proces usługi systemowej startujący w tle automatycznie przy logowaniu.",
+            "isCorrect": true,
+            "feedback": "Cichy serwis nie budzi podejrzeń użytkownika ani antywirusa."
+          },
+          {
+            "id": "uac_force",
+            "label": "Wymuszenie okna UAC z uprawnieniami Administratora",
+            "desc": "Wymuszenie systemowego okna UAC z żądaniem podwyższonych uprawnień Administratora.",
+            "isCorrect": false,
+            "feedback": "Monit UAC wywoła natychmiastowy alarm pracownika i reakcję administratora!"
+          }
+        ]
+      },
+      "package": {
+        "title": "Pakiet wyjściowy:",
+        "options": [
+          {
+            "id": "dll_archive",
+            "label": "Nieskompilowany moduł binarny .dll podpięty pod archiwum",
+            "desc": "Moduł biblioteki dynamicznej .dll spakowany w archiwum z plikami przynęty.",
+            "isCorrect": true,
+            "feedback": "Biblioteka DLL spakowana w archiwum ZIP omija proste skanery antywirusowe."
+          },
+          {
+            "id": "raw_bat",
+            "label": "Surowy plik .bat z komendami PowerShell",
+            "desc": "Skrypt wsadowy .bat uruchamiający polecenia PowerShell ze statycznym payloadem.",
+            "isCorrect": false,
+            "feedback": "Skrypt .bat zostanie natychmiast zablokowany przez mechanizmy Windows Defender AMSI!"
+          }
+        ]
+      },
+      "successMessage": "WIRUS GOTOWY! PAKIET RAT SKOMPILOWANY POMYŚLNIE"
+    }
+  },
+  "step2": {
+    "browser": {
+      "url": "https://olcompany.cloud",
+      "title": "O&L COMPANY",
+      "heroHeadline": "JESTEŚMY JEDNYM Z NAJWIĘKSZYCH DYSTRYBUTORÓW PALIW",
+      "heroSubheadline": "OBSŁUGUJEMY MIĘDZYNARODOWĄ SIEĆ STACJI PALIWOWYCH ORAZ ZAOPATRUJEMY NAJWIĘKSZE KORPORACJE",
+      "contact": {
+        "phone": "+48 871 787-83-76",
+        "email": "sales@olcompany.cloud"
+      },
+      "employees": [
+        {
+          "id": "jan_lukasiewicz",
+          "name": "JAN ŁUKASIEWICZ",
+          "role": "CEO",
+          "avatarBg": "#3b82f6",
+          "isTarget": false,
+          "bio": "Założyciel i prezes O&L Company. Nadzoruje kluczowe kontrakty paliwowe oraz rygorystyczne procedury bezpieczeństwa korporacji."
+        },
+        {
+          "id": "slawomir_bialek",
+          "name": "SŁAWOMIR BIAŁEK",
+          "role": "SZEF DZIAŁU CYBERBEZPIECZEŃSTWA",
+          "avatarBg": "#ef4444",
+          "isTarget": false,
+          "bio": "CISO z 15-letnim stażem. Certyfikowany audytor ISO 27001 i architekt SOC. Natychmiast wykrywa i neutralizuje wszelkie anomalie sieciowe."
+        },
+        {
+          "id": "wiktoria_galecka",
+          "name": "WIKTORIA GAŁECKA",
+          "role": "SPECJALISTKA DS. LOGISTYKI",
+          "avatarBg": "#0284c7",
+          "isTarget": false,
+          "bio": "Koordynuje transport cystern kolejowych i rurociągów. Korzysta wyłącznie z dedykowanego, odizolowanego systemu ERP."
+        },
+        {
+          "id": "agnieszka_leman",
+          "name": "AGNIESZKA LEMAN",
+          "role": "SZEFOWA DZIAŁU SPRZEDAŻY",
+          "avatarBg": "#8b5cf6",
+          "isTarget": false,
+          "bio": "Liderka działu handlowego. Skupiona na relacjach B2B, ostrożna wobec niezweryfikowanych kontaktów zewnętrznych."
+        },
+        {
+          "id": "mateusz_klimowicz",
+          "name": "MATEUSZ KLIMOWICZ",
+          "role": "JUNIOR SPECJALISTA DS. WSPARCIA KLIENTA",
+          "avatarBg": "#f59e0b",
+          "isTarget": true,
+          "bio": "Zatrudniony 2 tygodnie temu po udanym procesie rekrutacji. Nowy w branży, nie przeszedł jeszcze pełnego szkolenia z procedur anty-phishingowych."
+        }
+      ],
+      "news": [
+        {
+          "id": "party_sales",
+          "title": "IMPREZA INTEGRACYJNA!",
+          "date": "17 WRZEŚNIA 2022",
+          "boxText": "15 WRZEŚNIA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU SPRZEDAŻY!",
+          "content": "POWITALIŚMY NA POKŁADZIE NOWYCH PRACOWNIKÓW ORAZ ŚWIĘTOWALIŚMY OSTATNIE SUKCESY!",
+          "hashtags": "#OL #BESTCOMPANY #COMPANYUNHACKED",
+          "galleryText": "ZAPRASZAMY DO OGLĄDANIA PONIŻSZEJ GALERII ZDJĘĆ!"
+        },
+        {
+          "id": "meeting_logistics",
+          "title": "SPOTKANIE!",
+          "date": "5 LISTOPADA 2020",
+          "boxText": "4 LISTOPADA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU LOGISTYKI",
+          "content": "PRACOWNICY MIELI OKAZJĘ SPRÓBOWAĆ SWOICH SIŁ W CODZIENNYCH ZADANIACH NASZEGO NAJLEPSZEGO DZIAŁU LOGISTYKI!",
+          "hashtags": "#OL #BESTCOMPANY #COMPANYUNHACKED",
+          "galleryText": "FOTORELACJA Z WYDARZENIA FIRMOWEGO"
+        }
+      ]
+    },
+    "targetOptions": [
+      {
+        "id": "choose_ceo",
+        "name": "JAN ŁUKASIEWICZ (CEO)",
+        "label": "ZAATAKUJĘ PREZESA JANA ŁUKASIEWICZA (CEO) SPEAR-PHISHINGIEM – PRZEJĘCIE JEGO KONTA ZAPEWNI NATYCHMIASTOWY DOSTĘP DO DOKUMENTÓW ZARZĄDU I PROJEKTU FREEVOLT BEZ ZBĘDNEJ ESKALACJI UPRAWNIEŃ",
+        "isCorrect": false,
+        "penalty": -10,
+        "details": "CEO posiada asystentów filtrujących pocztę i zaawansowane procedury – bezpośredni atak został natychmiast wykryty.",
+        "feedback": "Zwariowałeś? Jan Łukasiewicz to CEO firmy – jego poczta przechodzi przez asystentów i restrykcyjne filtry. Taki atak zostanie spalony w 5 minut. Poszukaj łatwiejszego celu."
+      },
+      {
+        "id": "choose_logistics",
+        "name": "WIKTORIA GAŁECKA (LOGISTYKA)",
+        "label": "SKIERUJĘ ATAK NA WIKTORIĘ GAŁECKĄ (LOGISTYKA) – PRACOWNICY TRANSPORTU BEZ PRZERWY OTWIERAJĄ ZAŁĄCZNIKI I DOKUMENTY PRZEWOZOWE, WIĘC BARDZO ŁATWO BĘDZIE PODRZUCIĆ JEJ ZAINFEKOWANY PLIK",
+        "isCorrect": false,
+        "penalty": -10,
+        "details": "Dział logistyki pracuje w odizolowanym środowisku ERP i nie ma dostępu do dokumentacji sieciowej FREEVOLT.",
+        "feedback": "Wiktoria Gałecka korzysta wyłącznie z odizolowanego systemu ERP do cystern. Nie ma tam brakującej dokumentacji infrastruktury FREEVOLT. Szukaj dalej!"
+      },
+      {
+        "id": "choose_mateusz",
+        "name": "MATEUSZ KLIMOWICZ",
+        "label": "WYBIERAM MATEUSZA KLIMOWICZA (JUNIORA) – ZOSTAŁ ZATRUDNIONY 2 TYGODNIE TEMU, JEGO CZUJNOŚĆ JEST NAJNIŻSZA I NAJPRAWDOPODOBNIEJ NIE PRZESZEDŁ JESZCZE PROCEDUR ANTY-PHISHINGOWYCH",
+        "isCorrect": true,
+        "details": "Junior nie przeszedł jeszcze pełnego szkolenia anty-phishingowego – to idealny wektor wejścia.",
+        "feedback": "DOBRY WYBÓR. ALE JAK CHCESZ GO ZHAKOWAĆ?"
+      },
+      {
+        "id": "choose_ciso",
+        "name": "SŁAWOMIR BIAŁEK (CISO)",
+        "label": "ZINFILTRUJĘ SŁAWOMIRA BIAŁKA (SZEFA CYBERBEZPIECZEŃSTWA) – JEGO STACJA ROBOCZA POSIADA UPRAWNIENIA ADMINISTRATORA SIECI ORAZ BEZPOŚREDNI DOSTĘP DO KLUCZOWYCH LOGÓW SYSTEMOWYCH",
+        "isCorrect": false,
+        "penalty": -10,
+        "details": "CISO z 15-letnim stażem natychmiast zidentyfikował próbę infiltracji i zablokował adres IP.",
+        "feedback": "Chcesz zaatakować szefa SOC z 15-letnim stażem? Sławomir Białek natychmiast zauważy anomalię, odetnie sieć i zabezpieczy logi. Wybierz słabe ogniwo ludzkie!"
+      }
+    ],
+    "vectorOptions": [
+      {
+        "id": "vector_party_zip",
+        "label": "MAM ZDJĘCIA I INFORMACJE O OSTATNIEJ IMPREZIE DZIAŁU SPRZEDAŻY. PODRZUCĘ MU PENDRIVE Z KILKOMA KOMPROMITUJĄCYMI ZDJĘCIAMI. WIRUSA UKRYJĘ W ARCHIWUM ZIP",
+        "isCorrect": true,
+        "details": "Kontekst imprezy integracyjnej wzbudza ciekawość pracownika, a archiwum ZIP omija proste filtry antywirusowe.",
+        "feedback": "DZIĘKI ARCHIWUM ANTYWIRUS NIE ZNAJDZIE ZAGROŻENIA. DOBRZE. TERAZ PRZYGOTUJ PENDRIVE."
+      },
+      {
+        "id": "vector_fake_invoice",
+        "label": "WYŚLĘ MU FAŁSZYWĄ FAKTURĘ VAT W PLIKU WYKONYWALNYM .EXE",
+        "isCorrect": false,
+        "penalty": -10,
+        "details": "Plik .exe został natychmiast zablokowany przez bramkę pocztową i reguły antywirusowe.",
+        "feedback": "Plik wykonywalny .exe zostanie natychmiast zablokowany przez Windows Defendera i bramkę pocztową. Użyj sprytnej socjotechniki i nośnika fizycznego lub archiwum ZIP!"
+      }
+    ]
+  },
+  "step3": {
+    "attachments": [
+      {
+        "id": "party_photos",
+        "name": "IMG_00034521.JPG X3",
+        "isCorrect": true,
+        "type": "image_bundle"
+      },
+      {
+        "id": "hr_docs",
+        "name": "DOKUMENTY_HR.DOCX",
+        "isCorrect": false,
+        "type": "doc"
+      },
+      {
+        "id": "termination",
+        "name": "WYPOWIEDZENIE_UMOWY_O_PRACE.PDF",
+        "isCorrect": false,
+        "type": "pdf"
+      }
+    ],
+    "volumeNamePrompt": "WYBIERZ NAZWĘ PENDRIVE'A:",
+    "volumeOptions": [
+      { "id": "vol_keylogger", "label": "KEYLOGGER", "isCorrect": false },
+      { "id": "vol_bbd", "label": "ZDJĘCIA B&D COMPANY", "isCorrect": false, "penalty": -0.89 },
+      { "id": "vol_impreza", "label": "IMPREZA", "isCorrect": true },
+      { "id": "vol_new_disk", "label": "NOWY DYSK", "isCorrect": false }
+    ],
+    "envelopePrompt": "WYBIERZ PODPIS NA KOPERCIE:",
+    "envelopeOptions": [
+      { "id": "env_afterparty", "label": "ZDJĘCIA Z AFTERPARTY O&L COMPANY!", "isCorrect": true },
+      { "id": "env_bbd", "label": "PENDRIVE ZE ZDJĘCIAMI B&D COMPANY", "isCorrect": false },
+      { "id": "env_lost_docs", "label": "ZGUBIONE DOKUMENTY", "isCorrect": false },
+      { "id": "env_termination", "label": "WYPOWIEDZENIE UMOWY", "isCorrect": false }
+    ]
+  },
+  "step4": {
+    "droneStats": {
+      "model": "//DRON: CONDOR MIT63",
+      "video": "STAŁE PRZEKAZYWANIE WIDEO",
+      "speed": "MAKSYMALNA PRĘDKOŚĆ 25 KM/H",
+      "connection": "POŁĄCZONY Z ODBIORNIKIEM HAKERA"
+    },
+    "mapLocations": [
+      { "id": "loc_1", "number": 1, "address": "OŁBIŃSKA 51B", "district": "NADODRZE", "isCorrect": false, "x": 60, "y": 16 },
+      { "id": "loc_2", "number": 2, "address": "DRZYMAŁY 38D", "district": "PILCZYCE", "isCorrect": false, "x": 18, "y": 24 },
+      { "id": "loc_3", "number": 3, "address": "WYSTAWOWA 23A", "district": "ZALESIE", "isCorrect": false, "x": 82, "y": 55 },
+      { "id": "loc_4", "number": 4, "address": "OŁTASZYŃSKA 92C", "district": "PARTYNICE", "isCorrect": true, "x": 28, "y": 78 }
+    ],
+    "parkingCars": [
+      { "id": 1, "body": "#1e3a8a", "roof": "#1e3a8a", "desc": "Granatowy Sedan", "isTarget": false },
+      { "id": 2, "body": "#475569", "roof": "#475569", "desc": "Szary SUV", "isTarget": false },
+      { "id": 3, "body": "#15803d", "roof": "#15803d", "desc": "Zielony Kombi", "isTarget": false },
+      { "id": 4, "body": "#f8fafc", "roof": "#dc2626", "desc": "BIAŁY SAMOCHÓD Z CZERWONYM DACHEM (CEL OFIARY)", "isTarget": true },
+      { "id": 5, "body": "#dc2626", "roof": "#0f172a", "desc": "Czerwony Hatchback z czarnym dachem", "isTarget": false },
+      { "id": 6, "body": "#f8fafc", "roof": "#f8fafc", "desc": "Biały Sedan z białym dachem", "isTarget": false }
+    ],
+    "successDrop": "POMYŚLNIE POZOSTAWIONO KOPERTĘ Z PENDRIVE'EM. DRON WRACA DO POKOJU HAKERA."
+  },
+  "step5": {
+    "host": {
+      "name": "MATEUSZ_BIURO_O&L",
+      "ip": "161.185.160.93"
+    },
+    "desktopIcons": [
+      { "id": "trash", "label": "KOSZ", "color": "#64748b" },
+      { "id": "computer", "label": "TEN KOMPUTER", "color": "#38bdf8" },
+      { "id": "freevolt", "label": "FREEVOLT", "color": "#f97316", "isTargetApp": true }
+    ]
+  },
+  "step6": {
+    "summary": {
+      "title": "SUKCES",
+      "subtitle": "UKOŃCZONO ZADANIE 3",
+      "company": "O&L Company",
+      "scorePercent": 100,
+      "perfectChoices": 8,
+      "goodChoices": 0,
+      "criticalErrors": 0,
+      "btcReward": 4.02
+    },
+    "choices": [
+      { "num": 1, "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA:", "answer": "RAT", "correct": true, "details": "RAT umożliwia pełne, ciche przejęcie kontroli nad pulpitem ofiary bez alarmowania działu IT." },
+      { "num": 2, "question": "KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?", "answer": "MATEUSZ KLIMOWICZ", "correct": true, "details": "Nowy pracownik junior posiada najmniejsze doświadczenie i jest statystycznie najsłabszym ogniwem." },
+      { "num": 3, "question": "JAK GO OSZUKASZ (WEKTOR SOCJOTECHNICZNY)?", "answer": "NAWIĄŻĘ DO IMPREZY DZIAŁU SPRZEDAŻY", "correct": true, "details": "Kontekst realnego wydarzenia firmowego wzbudza ciekawość i uśypia czujność ofiary." },
+      { "num": 4, "question": "JAKI PLIK WGRASZ NA PENDRIVE'A?", "answer": "IMG_00034521.JPG X3 + ARCHIWUM ZIP", "correct": true, "details": "Archiwum ZIP pozwala na skuteczne zamaskowanie payloadu wirusa DLL." },
+      { "num": 5, "question": "WYBIERZ NAZWĘ PENDRIVE'A:", "answer": "IMPREZA", "correct": true, "details": "Naturalna, wiarygodna etykieta woluminu spójna z przygotowaną przynętą." },
+      { "num": 6, "question": "WYBIERZ PODPIS NA KOPERCIE:", "answer": "ZDJĘCIA Z AFTERPARTY O&L COMPANY!", "correct": true, "details": "Dedykowana etykieta fizyczna maksymalizuje szansę podłączenia nośnika przez pracownika." },
+      { "num": 7, "question": "WSKAŻ DRONOWI ADRES DOMU OFIARY:", "answer": "OŁTASZYŃSKA 92C", "correct": true, "details": "Właściwa lokalizacja uzyskana podczas fazy rekonesansu adresu Mateusza." },
+      { "num": 8, "question": "WYBIERZ MIEJSCE NA PARKINGU (POJAZD OFIARY):", "answer": "BIAŁY SAMOCHÓD Z CZERWONYM DACHEM", "correct": true, "details": "Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera." }
+    ],
+    "educationalSlides": [
+      {
+        "title": "UWAŻAJ NA PODEJRZANE PLIKI",
+        "desc": "Wirusy mogą być zawarte w dowolnym pliku, a przestępcy szczególnie chętnie ukrywają je w archiwach .zip i .rar, aby ominąć skanery pocztowe."
+      },
+      {
+        "title": "PODEJRZANE PENDRIVE'Y (BAITING)",
+        "desc": "Nigdy nie wkładaj znalezionych lub podrzuconych nośników USB do komputera służbowego. Każdy obcy nośnik to ryzyko natychmiastowej infekcji."
+      },
+      {
+        "title": "INFORMACJE W SOCJOTECHNICE (OSINT)",
+        "desc": "Wszystkie informacje publikowane w sieci (social media firmy, zdjęcia z imprez, lista nowych pracowników) są wykorzystywane do uwiarygodnienia ataku."
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "cybersec-scorm-scenario-engine",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node node_modules/vite/bin/vite.js",
+    "build": "node node_modules/typescript/bin/tsc && node node_modules/vite/bin/vite.js build",
+    "build:scorm": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js",
+    "build:scorm:m3": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=3",
+    "build:scorm:m4": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=4",
+    "build:scorm:all": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --all",
+    "test": "node node_modules/vitest/vitest.mjs run",
+    "preview": "node node_modules/vite/bin/vite.js preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "lucide-react": "^1.48.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwindcss": "^4.3.3",
+    "vitest": "^5.0.2",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0"
+  }
+}
