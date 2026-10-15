@@ -2,7 +2,7 @@
 
 ## 🚨 KRYTYCZNE WYTYCZNE ARCHITEKTURY (BEZWZGLĘDNIE PRZESTRZEGAĆ)
 
-> **MODEL DOCELOWY:** `RedBlueTeam/docs/scenario-engine.md` (kontrakt, konwencje, katalog klocków), `scenario-format.md` (format `scenario.md`), `vr-to-scenario-skill.md` (skill). Trwa migracja z modelu `transitions`/widgety na model etapów/klocków — poniższe zasady opisują stan docelowy.
+> **MODEL DOCELOWY:** `RedBlueTeam/docs/scenario-engine.md` (kontrakt, konwencje, katalog klocków), `scenario-format.md` (format `scenario.md`), `player-guidance.md` (prowadzenie gracza — jak ze scenariusza ustawić, by gracz wiedział, co robić), `vr-to-scenario-skill.md` (skill). Trwa migracja z modelu `transitions`/widgety na model etapów/klocków — poniższe zasady opisują stan docelowy.
 
 ### 1. PODZIAŁ SILNIK / SCENARIUSZE, BEZ DUPLIKATÓW
 - **ZAKAZ**: NIE twórz folderów komponentów/store/typów poza `src/engine/` i `src/scenarios/`.
@@ -51,8 +51,9 @@
 ## 🎬 TWORZENIE NOWEGO SCENARIUSZA
 
 1. **Scenariusz** (`scenario.md`) powstaje ze skilla VR→scenariusz. Format: `RedBlueTeam/docs/scenario-format.md`.
-2. **Implementacja** wg `RedBlueTeam/docs/scenario-engine.md`:
+2. **Implementacja** wg `RedBlueTeam/docs/scenario-engine.md` i reguł prowadzenia gracza z `docs/player-guidance.md`:
    - dla każdej decyzji dobierz klocek z `src/engine/blocks/` albo napisz minigrę w `minigames/` misji (kontrakt silnika);
+   - ustaw etapy tak, by w każdej chwili był jeden jasny następny krok (`player-guidance.md`);
    - złóż definicję misji (`desktopApps`, `stages`, `blocks`, intro, debrief) i zarejestruj w `missionRegistry.ts` i `scripts/package-scorm.js`.
 3. **Weryfikacja**: `npm test` oraz `node scripts/package-scorm.js --mission=X`.
 
