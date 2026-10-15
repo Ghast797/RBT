@@ -171,7 +171,7 @@ export const Desktop: React.FC = () => {
                           if (tile.isChatFocus) {
                             triggerChatAttention();
                           } else {
-                            openApp(tile.componentId as WindowId);
+                            openApp(tile.id as WindowId);
                           }
                         }}
                         className={`group flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 relative ${

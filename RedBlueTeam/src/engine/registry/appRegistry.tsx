@@ -36,11 +36,17 @@ import {
   WorkstationExfiltrationApp,
   NegotiationChatApp
 } from '../widgets';
+import { ChoiceCards, DialogueTree } from '../blocks';
 
 // Base Application Registry for Generic / Shared Apps
 export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
   chat: ChatApp,
   debrief_app: DebriefApp,
+
+  // Katalog klocków (docs/scenario-engine.md, sekcja 6)
+  choice_cards: ChoiceCards,
+  dialogue_tree: DialogueTree,
+
   virus_database: VirusDatabaseApp,
   ransomware_virus_scanner: RansomwareVirusApp,
   ransomware_builder: RansomwareBuilderApp,
@@ -62,17 +68,32 @@ export function registerApp(componentId: string, component: React.ComponentType<
 }
 
 /**
- * Render application by component ID and active mission context
+ * Renderuje aplikację otwartą na pulpicie i dostarcza jej kontrakt klocka.
+ *
+ * `appKey` to identyfikator kafelka z `desktopApps` (ze zgodnością wstecz dla
+ * samego `componentId`). Każdy komponent dostaje `config`, `onDecision` i
+ * `onComplete` — starsze widgety te propsy ignorują.
+ * Zob. docs/scenario-engine.md, sekcja 5.
  */
-export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }> = ({ componentId }) => {
+export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }> = ({ componentId: appKey }) => {
   const activeMission = useMissionStore(s => s.activeMission);
-  const missionId = activeMission?.mission?.id || '';
+  const reportDecision = useMissionStore(s => s.reportDecision);
+  const completeStage = useMissionStore(s => s.completeStage);
 
-  // Determine component from registry with alias fallback
-  let Component = appComponentRegistry[componentId];
-  if (componentId === 'virus_database' && (missionId.includes('4') || missionId.includes('energy-rock'))) {
-    Component = RansomwareVirusApp;
-  }
+  const tiles = activeMission?.desktopApps || [];
+  const tile = tiles.find(t => t.id === appKey) || tiles.find(t => t.componentId === appKey);
+
+  const componentId = tile?.componentId || appKey;
+  const tileId = tile?.id || appKey;
+
+  const Component = appComponentRegistry[componentId];
+
+  const config = (activeMission?.blocks as Record<string, unknown> | undefined)?.[tileId];
+  const stage = (activeMission?.stages || []).find(s => s.appId === tileId);
+
+  const handleComplete = React.useCallback(() => {
+    if (stage) completeStage(stage.id);
+  }, [stage, completeStage]);
 
   if (!Component) {
     return (
@@ -84,13 +105,14 @@ export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }
           //BRAK MODUŁU: {componentId.toUpperCase()}
         </h3>
         <p className="text-xs text-gray-400 max-w-sm">
-          Aplikacja nie została zarejestrowana w appRegistry dla scenariusza {activeMission?.mission?.title || missionId}.
+          Aplikacja nie została zarejestrowana w appRegistry dla scenariusza{' '}
+          {activeMission?.mission?.title || activeMission?.mission?.id}.
         </p>
       </div>
     );
   }
 
-  return <Component />;
+  return <Component config={config} onDecision={reportDecision} onComplete={handleComplete} />;
 };
 
 /**

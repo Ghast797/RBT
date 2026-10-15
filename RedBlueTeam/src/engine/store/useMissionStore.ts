@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { MissionDefinition, PlayerChoiceRecord } from '../types/mission';
+import type { MissionDefinition, PlayerChoiceRecord, DecisionReport } from '../types/mission';
+import { penaltyForTier, btcForScore, resolveDecisionCount } from '../core/scoring';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
 import { createMissionCompletionStatement, MockLRS } from '../scorm/xapi';
@@ -141,6 +142,13 @@ export interface MissionState {
   isKnowledgeBaseOpen: boolean;
   playerChoices: PlayerChoiceRecord[];
   recordChoice: (choice: PlayerChoiceRecord, penalty?: number) => void;
+  /**
+   * Kontrakt klocka/minigry: zgłoszenie ocenianej decyzji.
+   * Silnik liczy punkty i karę BTC z `tier` oraz odpala wykrycie przy 'critical'.
+   */
+  reportDecision: (report: DecisionReport) => void;
+  /** Kontrakt klocka/minigry: ukończenie etapu (odblokowania, badge, wiadomość mentora). */
+  completeStage: (stageId: string) => void;
 
   // Detection & Retry Modals
   isDetectedModalOpen: boolean;
@@ -444,6 +452,98 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         btcReward: btcLoss > 0 ? +(Math.max(0, s.btcReward - btcLoss)).toFixed(2) : s.btcReward
       }));
     }
+  },
+
+  // ----------------- KONTRAKT KLOCKA: DECYZJA -----------------
+  reportDecision: (report: DecisionReport) => {
+    const { activeMission } = get();
+    const maxScore = activeMission.mission?.maxScore ?? 100;
+    const rewardBtc = activeMission.mission?.rewardBtc ?? 0;
+    const decisionCount = resolveDecisionCount(activeMission);
+
+    const penalty = penaltyForTier(report.tier, maxScore, decisionCount);
+
+    get().recordChoice(
+      {
+        num: report.num,
+        question: report.question,
+        answer: report.answer,
+        details: report.feedback,
+        isCorrect: report.tier === 'ideal',
+        outcome: report.tier
+      },
+      penalty
+    );
+
+    // Nagroda BTC wynika liniowo z wyniku — nie z osobnych kar w widgetach.
+    set((s) => ({ btcReward: btcForScore(s.score, rewardBtc) }));
+
+    // Błąd krytyczny przerywa operację. recordChoice policzył już licznik wpadek,
+    // więc otwieramy modal bez ponownego inkrementowania.
+    if (report.tier === 'critical') {
+      sounds.playAlarm();
+      set({
+        isDetectedModalOpen: true,
+        detectionReason: {
+          title: 'ZOSTAŁEŚ WYKRYTY!',
+          details: report.feedback,
+          choiceNum: report.num
+        }
+      });
+    }
+  },
+
+  // ----------------- KONTRAKT KLOCKA: UKOŃCZENIE ETAPU -----------------
+  completeStage: (stageId: string) => {
+    const { activeMission } = get();
+    const stage = (activeMission.stages || []).find((s) => s.id === stageId);
+    if (!stage) {
+      console.warn(`[MissionStore] Nie znaleziono etapu "${stageId}" w definicji misji.`);
+      return;
+    }
+
+    const { completion } = stage;
+
+    set((s) => {
+      const unlocked = [...s.unlockedIcons];
+      (completion.unlockIcons || []).forEach((icon) => {
+        if (!unlocked.includes(icon)) unlocked.push(icon);
+      });
+
+      return {
+        activeApp: completion.closeActiveApp === false ? s.activeApp : null,
+        unlockedIcons: unlocked,
+        notificationBadges: { ...s.notificationBadges, ...(completion.badges || {}) },
+        isByteMasterTyping: !!completion.byteMasterMessage,
+        chatAvailableChoices: []
+      };
+    });
+
+    if (!completion.byteMasterMessage) {
+      if (completion.nextChoice) {
+        set({ chatAvailableChoices: [completion.nextChoice] });
+      }
+      return;
+    }
+
+    setTimeout(() => {
+      if (completion.sound === 'alarm') sounds.playAlarm();
+      else if (completion.sound === 'success') sounds.playSuccess();
+      else sounds.playNotification();
+
+      set((s) => ({
+        isByteMasterTyping: false,
+        chatMessages: [
+          ...s.chatMessages,
+          {
+            id: `msg_${Date.now()}`,
+            sender: 'BYTE_MASTER' as const,
+            text: completion.byteMasterMessage!
+          }
+        ],
+        chatAvailableChoices: completion.nextChoice ? [completion.nextChoice] : []
+      }));
+    }, 1000);
   },
 
   unlockIcon: (id: string) => {

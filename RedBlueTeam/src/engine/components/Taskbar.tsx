@@ -43,7 +43,7 @@ export const Taskbar: React.FC = () => {
         {/* Running / Available Apps */}
         <div className="flex items-center space-x-1 ml-2">
           {apps.map((app) => {
-            const isActive = activeApp === app.componentId;
+            const isActive = activeApp === app.id;
             const notif = notificationBadges[app.id] || 0;
 
             return (
@@ -53,7 +53,7 @@ export const Taskbar: React.FC = () => {
                   if (isActive) {
                     closeApp();
                   } else {
-                    openApp(app.componentId as WindowId);
+                    openApp(app.id as WindowId);
                   }
                 }}
                 className={`relative flex items-center space-x-1.5 px-2.5 py-1 rounded border transition-all ${
