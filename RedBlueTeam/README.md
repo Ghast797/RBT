@@ -20,7 +20,7 @@ c:\RBT_web\
 ├── Assets/                                   <-- Oryginalne materiały i specyfikacje
 │   └── Misja_04_Energy_Rock/
 │
-└── O&L_MVP/
+└── RedBlueTeam/
     ├── src/
     │   ├── engine/                           <-- SILNIK DO TWORZENIA GRY (Game Engine)
     │   │   ├── components/                   <-- BootSequence, CyberWindow, Desktop, Taskbar

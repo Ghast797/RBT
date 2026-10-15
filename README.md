@@ -11,7 +11,7 @@ c:\RBT_web\
 │       ├── mission4.json                   <-- Definicja scenariusza 4
 │       └── Scenariusz Misja 4 - Energy Rock v2.pdf <-- Pełna specyfikacja techniczna
 │
-├── O&L_MVP/                                <-- KOD ŹRÓDŁOWY APLIKACJI I SILNIKA
+├── RedBlueTeam/                                <-- KOD ŹRÓDŁOWY APLIKACJI I SILNIKA
 │   ├── src/
 │   │   ├── engine/                         <-- SILNIK DO TWORZENIA GRY (Game Engine)
 │   │   │   ├── apps/                       <-- Uniwersalne aplikacje (Chat, Debriefing)
@@ -47,8 +47,8 @@ c:\RBT_web\
   - Misja 3 (O&L Company): `npm run build:scorm:m3`
   - Wszystkie misje naraz: `npm run build:scorm:all`
 
-### Lub bezpośrednio w podkatalogu aplikacji (`c:\RBT_web\O&L_MVP\`):
-- `cd O&L_MVP`
+### Lub bezpośrednio w podkatalogu aplikacji (`c:\RBT_web\RedBlueTeam\`):
+- `cd RedBlueTeam`
 - `npm install`
 - `npm run dev`
 - `npm test`
@@ -58,5 +58,5 @@ c:\RBT_web\
 
 ## 🚨 Główne zasady architektury:
 1. **Każdy scenariusz to niezależna paczka SCORM 2004** – brak przełącznika misji w interfejsie studenta.
-2. **Ścisły podział**: silnik gry (`O&L_MVP/src/engine/`) a logika konkretnych scenariuszy (`O&L_MVP/src/scenarios/`).
+2. **Ścisły podział**: silnik gry (`RedBlueTeam/src/engine/`) a logika konkretnych scenariuszy (`RedBlueTeam/src/scenarios/`).
 3. **Parametr URL w DEV**: Przełączanie misji lokalnie odbywa się przez `?mission=3` lub `?mission=4`.

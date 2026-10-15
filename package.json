@@ -4,7 +4,7 @@
   "private": true,
   "description": "HACKER.OS - Platforma symulacji cyberbezpieczeństwa SCORM 2004 i xAPI dla Moodle",
   "workspaces": [
-    "O&L_MVP"
+    "RedBlueTeam"
   ],
   "scripts": {
     "dev": "npm run dev --workspace=cybersec-scorm-scenario-engine",

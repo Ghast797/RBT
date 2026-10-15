@@ -14,7 +14,7 @@
 - Każda paczka SCORM musi bezpośrednio i autonomicznie ładować przypisany do niej scenariusz.
 
 ### 3. ŚCISŁY PODZIAŁ NA SILNIK I SCENARIUSZE
-- **Silnik do tworzenia gry (`O&L_MVP/src/engine/`)**:
+- **Silnik do tworzenia gry (`RedBlueTeam/src/engine/`)**:
   - Współdzielona platforma techniczna dla wszystkich scenariuszy:
     - Obsługa okien i pulpitu (`CyberWindow`, `Desktop`, `Taskbar`)
     - Sekwencja BIOS i intro (`BootSequence`)
@@ -24,7 +24,7 @@
     - Uniwersalne aplikacje silnika: Czat z Byte_Masterem (`ChatApp`), Raport pooperacyjny (`DebriefApp`)
     - Typy i schematy danych (`types/mission.ts`)
     - Katalog 11 reużywalnych widgetów minigier (`src/engine/widgets/`)
-- **Scenariusze (`O&L_MVP/src/scenarios/`)**:
+- **Scenariusze (`RedBlueTeam/src/scenarios/`)**:
   - Każdy scenariusz w osobnym, dedykowanym katalogu:
     - `src/scenarios/mission_03_ol_company/`
     - `src/scenarios/mission_04_energy_rock/`

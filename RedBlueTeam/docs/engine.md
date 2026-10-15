@@ -20,7 +20,7 @@ Kompleksowy przewodnik architektoniczny i podręcznik twórcy scenariuszy cyberb
 ## 2. ARCHITEKTURA PROJEKTU
 
 ```
-O&L_MVP/
+RedBlueTeam/
 ├── src/
 │   ├── engine/                     # RDZEŃ SILNIKA (Współdzielony)
 │   │   ├── apps/                   # Uniwersalne aplikacje systemowe (ChatApp, DebriefApp)
