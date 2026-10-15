@@ -54,6 +54,18 @@ Oddzielaj fakt z nagrania od wniosku. Fakt zapisuj wprost; wniosek (poziom opcji
 
 **Etap 2 — scenariusz.** Dla zatwierdzonych scen wypełnij format [`scenario-format.md`](scenario-format.md). Czas pomijasz (jest tylko w spisie).
 
+## Zapis wyniku (Google Docs)
+
+Wynik każdego etapu zapisz jako osobny **dokument Google** w folderze **„HackerOS – Scenariusze SCORM"** na Dysku użytkownika. Użytkownik sam konwertuje go do Markdown, więc dokument ma przetrwać konwersję Docs → MD bez poprawek.
+
+- Jeśli masz narzędzie tworzące dokumenty Google — utwórz dokument wprost w tym folderze. Gdy folder nie istnieje albo nie możesz go wskazać, utwórz dokument gdziekolwiek i napisz, że trzeba go przenieść.
+- Jeśli nie możesz tworzyć dokumentów — przygotuj wynik tak, by dał się jednym kliknięciem wyeksportować do Dokumentów Google, i przypomnij o eksporcie oraz o docelowym folderze.
+- Nigdy nie udawaj, że zapisałeś dokument, jeśli tego nie zrobiłeś. Napisz wprost, co się udało, a co użytkownik musi zrobić sam.
+
+**Formatowanie pod konwersję:** używaj wyłącznie nagłówków (Nagłówek 1 = nazwa, Nagłówek 2 = sekcje, Nagłówek 3 = etapy/decyzje), zwykłych akapitów, list punktowanych i pogrubionych etykiet pól. Tabelę stosuj **tylko** w spisie scen (Etap 1). Linie opcji (`opcja | poziom | feedback`) zapisuj jako zwykły akapit z pionowymi kreskami — nie jako tabelę. Nie używaj kolorów, podkreśleń, kolumn ani zagnieżdżonych tabel; giną przy konwersji.
+
+**W czacie** po zapisaniu podaj tylko: nazwę i link do dokumentu, zbiorczą listę znaczników `[DO DECYZJI]` / `[DO ZAPROJEKTOWANIA]` / `[NIEPEWNE]` oraz pytanie o następny krok. Nie powtarzaj w czacie całej treści scenariusza.
+
 ## Kontrola przed oddaniem
 
 - Każda decyzja: pytanie + wszystkie opcje dosłownie + poziom każdej + feedback.
