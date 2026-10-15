@@ -2,11 +2,13 @@
 
 ## 🚨 KRYTYCZNE WYTYCZNE ARCHITEKTURY (BEZWZGLĘDNIE PRZESTRZEGAĆ)
 
-### 1. ZAKAZ DUPLIKATÓW I ZAKAZ MODYFIKACJI RDZENIA
-- **ZAKAZ**: NIE twórz żadnych folderów komponentów/store/typów poza `src/engine/` i `src/scenarios/`. Stare foldery `src/components/`, `src/data/`, `src/store/` zostały trwale usunięte.
-- **ZAKAZ MODYFIKACJI SILNIKA**: Przy dodawaniu lub edycji scenariuszy (Misja 3, 4, 5...) **NIE MODYFIKUJ** plików w `src/engine/store/useMissionStore.ts` ani komponentów powłoki!
-- Nowe scenariusze tworzy się **w 100% deklaratywnie** w `src/scenarios/mission_XX/data/missionX.json` za pomocą mechanizmu `transitions`.
-- Jedyny wyjątek: Gdy tworzysz zupełnie nowy, unikalny widget minigry – utwórz go w `src/engine/widgets/` i zarejestruj w `appComponentRegistry` w `src/engine/registry/appRegistry.tsx`.
+> **MODEL DOCELOWY:** `RedBlueTeam/docs/scenario-engine.md` (kontrakt, konwencje, katalog klocków), `scenario-format.md` (format `scenario.md`), `vr-to-scenario-skill.md` (skill). Trwa migracja z modelu `transitions`/widgety na model etapów/klocków — poniższe zasady opisują stan docelowy.
+
+### 1. PODZIAŁ SILNIK / SCENARIUSZE, BEZ DUPLIKATÓW
+- **ZAKAZ**: NIE twórz folderów komponentów/store/typów poza `src/engine/` i `src/scenarios/`.
+- **Silnik rozwija się przez wspólne mechanizmy, nie przez gałęzie per misja.** Kontrakt klocka (`reportDecision`, `completeStage`) i punktacja z poziomów są w silniku raz. Dodając misję, nie rozgałęziaj `useMissionStore.ts` jej identyfikatorem.
+- **Nowa misja = jej własny folder:** etapy i dane klocków (`stages`, `blocks`) plus minigry unikalne dla misji w `src/scenarios/mission_XX/minigames/`.
+- **Klocek wielokrotnego użytku** mieszka w `src/engine/blocks/`. Minigra trafia tam dopiero, gdy użyje jej druga misja (reguła dwóch).
 
 ### 2. SCENARIUSZE TO ODDZIELNE PACZKI SCORM DLA MOODLE
 - Każdy scenariusz (np. Misja 3 – O&L Company, Misja 4 – Energy Rock) to **niezależna paczka SCORM 2004 (.zip)** do osadzenia w Moodle (`mod_scorm`).
@@ -20,18 +22,18 @@
     - Sekwencja BIOS i intro (`BootSequence`)
     - Integracja SCORM 2004 4th Edition (`scorm2004.ts`) oraz xAPI (`xapi.ts`)
     - Synteza audio i efekty dźwiękowe (`soundEffects.ts`)
-    - Zarządzanie stanem i punktacją w Zustand (`useMissionStore.ts`)
+    - Stan i punktacja w Zustand (`useMissionStore.ts`), punktacja z poziomów (`core/scoring.ts`)
+    - Kontrakt klocka/minigry: `reportDecision`, `completeStage` (zob. `docs/scenario-engine.md`, sekcja 5)
     - Uniwersalne aplikacje silnika: Czat z Byte_Masterem (`ChatApp`), Raport pooperacyjny (`DebriefApp`)
     - Typy i schematy danych (`types/mission.ts`)
-    - Katalog 11 reużywalnych widgetów minigier (`src/engine/widgets/`)
+    - Katalog reużywalnych klocków (`src/engine/blocks/`: `ChoiceCards`, `DialogueTree`, …)
 - **Scenariusze (`RedBlueTeam/src/scenarios/`)**:
-  - Każdy scenariusz w osobnym, dedykowanym katalogu:
-    - `src/scenarios/mission_03_ol_company/`
-    - `src/scenarios/mission_04_energy_rock/`
-  - Scenariusz zawiera **WYŁĄCZNIE**:
-    - Specyfikację danych JSON (`data/missionX.json`)
-    - Dokumentację i materiały źródłowe (`docs/`)
-    - Plik rejestracyjny (`index.ts`)
+  - Każdy scenariusz w osobnym katalogu, np. `src/scenarios/mission_04_energy_rock/`, zawiera:
+    - `scenario.md` — źródło prawdy (format: `docs/scenario-format.md`)
+    - definicję misji: meta, intro, `desktopApps`, `stages`, `blocks`, debrief (`data/*.json` + `stages.ts`)
+    - `minigames/` — minigry unikalne dla misji (kontrakt silnika)
+    - `docs/` — materiały źródłowe (PDF, notatki z nagrania VR)
+    - `index.ts` — składa i rejestruje definicję
 
 ### 4. NIEZALEŻNE BUDOWANIE PACZEK SCORM DLA KAŻDEGO SCENARIUSZA
 - Budowanie paczek SCORM musi umożliwiać wygenerowanie oddzielnego archiwum ZIP dla każdej misji z osobna:
@@ -46,13 +48,12 @@
 
 ---
 
-## 🎬 PROCEDURA TWORZENIA NOWEGO SCENARIUSZA Z NAGRANIA WIDEO VR
+## 🎬 TWORZENIE NOWEGO SCENARIUSZA
 
-1. Wypisz chronologicznie wszystkie wybory gracza (1, 2, 3...) i przypisz im 3 poziomy:
-   - `ideal` (pełne punkty i nagroda BTC),
-   - `suboptimal` (błąd niekrytyczny – kara punktowa i ułamka BTC, ale gracz kontynuuje),
-   - `critical` (błąd krytyczny – wykrycie przez SOC, alarm dźwiękowy, ekran `ZOSTAŁEŚ WYKRYTY!` i modal powtórki).
-2. Dobierz istniejące widgety (`componentId`) z `src/engine/widgets/` i skonfiguruj kafelki w `desktopApps`.
-3. Skonfiguruj `data/missionX.json` z obiektem `transitions` (przejścia fabularne, odblokowania ikon, powiadomienia, wiadomości Byte_Mastera).
-4. Zarejestruj misję w `src/engine/registry/missionRegistry.ts` oraz w `scripts/package-scorm.js`.
-5. Uruchom `npm test` oraz zbuduj paczkę SCORM: `node scripts/package-scorm.js --mission=X`.
+1. **Scenariusz** (`scenario.md`) powstaje ze skilla VR→scenariusz. Format: `RedBlueTeam/docs/scenario-format.md`.
+2. **Implementacja** wg `RedBlueTeam/docs/scenario-engine.md`:
+   - dla każdej decyzji dobierz klocek z `src/engine/blocks/` albo napisz minigrę w `minigames/` misji (kontrakt silnika);
+   - złóż definicję misji (`desktopApps`, `stages`, `blocks`, intro, debrief) i zarejestruj w `missionRegistry.ts` i `scripts/package-scorm.js`.
+3. **Weryfikacja**: `npm test` oraz `node scripts/package-scorm.js --mission=X`.
+
+Poziomy decyzji: `ideal` (pełne punkty + BTC), `suboptimal` (część punktów, gra trwa), `critical` (0 pkt, ekran `ZOSTAŁEŚ WYKRYTY!` i powtórka). Punkty liczy silnik z poziomu — nie w widgecie.

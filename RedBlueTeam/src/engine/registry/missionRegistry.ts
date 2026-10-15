@@ -1,16 +1,18 @@
 import type { MissionDefinition } from '../types/mission';
 import mission3Data from '../../scenarios/mission_03_ol_company/data/mission3.json';
-import mission4Data from '../../scenarios/mission_04_energy_rock/data/mission4.json';
+import { mission4Definition } from '../../scenarios/mission_04_energy_rock';
+
+const mission3 = mission3Data as unknown as MissionDefinition;
 
 // Global Missions Map
 export const missions: Record<string, MissionDefinition> = {
-  'mission-3-ol-company': mission3Data as unknown as MissionDefinition,
-  'mission3': mission3Data as unknown as MissionDefinition,
-  '3': mission3Data as unknown as MissionDefinition,
-  'mission-4-energy-rock': mission4Data as unknown as MissionDefinition,
-  'mission4': mission4Data as unknown as MissionDefinition,
-  '4': mission4Data as unknown as MissionDefinition,
-  'energy-rock': mission4Data as unknown as MissionDefinition,
+  'mission-3-ol-company': mission3,
+  'mission3': mission3,
+  '3': mission3,
+  'mission-4-energy-rock': mission4Definition,
+  'mission4': mission4Definition,
+  '4': mission4Definition,
+  'energy-rock': mission4Definition,
 };
 
 /**
@@ -74,5 +76,5 @@ export function resolveInitialMission(): MissionDefinition {
   }
 
   // 3. Fallback to mission 3 (guarantees test suite compatibility)
-  return mission3Data as unknown as MissionDefinition;
+  return mission3;
 }

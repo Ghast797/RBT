@@ -1,5 +1,6 @@
 import mission4Data from './data/mission4.json';
 import type { MissionDefinition } from '../../engine/types/mission';
+import { mission4Stages, mission4Blocks } from './stages';
 import {
   RansomwareVirusApp,
   RansomwareBuilderApp,
@@ -9,7 +10,24 @@ import {
   NegotiationChatApp
 } from '../../engine/widgets';
 
-export const mission4Definition = mission4Data as unknown as MissionDefinition;
+const base = mission4Data as unknown as MissionDefinition;
+
+// Kafelki przepięte na klocki z katalogu (componentId wskazuje klocek, nie widget misji).
+const CATALOG_COMPONENT: Record<string, string> = {
+  negotiation: 'dialogue_tree'
+};
+
+const desktopApps = base.desktopApps.map((tile) =>
+  CATALOG_COMPONENT[tile.id] ? { ...tile, componentId: CATALOG_COMPONENT[tile.id] } : tile
+);
+
+// Definicja misji wzbogacona o etapy i dane klocków nowego modelu.
+export const mission4Definition: MissionDefinition = {
+  ...base,
+  desktopApps,
+  stages: mission4Stages,
+  blocks: mission4Blocks
+};
 
 export const mission4Apps: Record<string, React.ComponentType<any>> = {
   virus_database: RansomwareVirusApp,

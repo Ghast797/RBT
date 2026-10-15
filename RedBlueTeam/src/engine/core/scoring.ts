@@ -55,17 +55,23 @@ export function scormStatus(scorePercent: number, passingScore: number): 'passed
   return scorePercent >= passingScore ? 'passed' : 'failed';
 }
 
-/** Liczba decyzji w misji: jawna wartość, liczba etapowych decyzji albo liczba pozycji debriefu. */
+/**
+ * Liczba ocenianych decyzji w misji — podstawa podziału punktów.
+ *
+ * Kolejność: jawne `decisionCount`, potem liczba pozycji debriefu (autorytatywna
+ * suma dla całej misji), a liczba decyzji w etapach dopiero na końcu — w trakcie
+ * częściowej migracji etapy pokrywają tylko część decyzji.
+ */
 export function resolveDecisionCount(mission: any): number {
   const explicit = mission?.mission?.decisionCount;
   if (typeof explicit === 'number' && explicit > 0) return explicit;
+
+  const fromDebrief = mission?.step6?.choices?.length;
+  if (typeof fromDebrief === 'number' && fromDebrief > 0) return fromDebrief;
 
   const fromStages = (mission?.stages || []).reduce(
     (sum: number, stage: any) => sum + (stage?.decisions?.length || 0),
     0
   );
-  if (fromStages > 0) return fromStages;
-
-  const fromDebrief = mission?.step6?.choices?.length;
-  return typeof fromDebrief === 'number' && fromDebrief > 0 ? fromDebrief : 1;
+  return fromStages > 0 ? fromStages : 1;
 }

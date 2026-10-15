@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MessageSquareCode, Send } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
 import { sounds } from '../audio/soundEffects';
-import type { BlockProps, DialogueTreeConfig, DialogueNode } from '../types/mission';
+import type { BlockProps, DialogueTreeConfig, DialogueNode, ChoiceOutcome } from '../types/mission';
 
 interface Line {
   sender: string;
@@ -10,11 +10,20 @@ interface Line {
   isPlayer: boolean;
 }
 
+const TIER_RANK: Record<ChoiceOutcome, number> = { ideal: 0, suboptimal: 1, critical: 2 };
+
+/** Gorszy z dwóch poziomów (critical > suboptimal > ideal). */
+function worstTier(a: ChoiceOutcome, b: ChoiceOutcome): ChoiceOutcome {
+  return TIER_RANK[a] >= TIER_RANK[b] ? a : b;
+}
+
 /**
  * Klocek: rozmowa z rozmówcą innym niż BYTE_MASTER.
  *
- * Węzeł z `decisionNum` jest oceniany i zgłaszany przez `onDecision`.
- * Rozmowa kończy się, gdy opcja nie wskazuje kolejnego węzła.
+ * Dwa tryby oceny (docs/scenario-engine.md, sekcja 6):
+ * - agregujący (`config.decisionNum`): cała rozmowa to jedna decyzja; poziom to
+ *   najgorszy wybór na ścieżce, a błąd krytyczny przerywa rozmowę natychmiast.
+ * - per-węzeł (`node.decisionNum`): każdy węzeł oceniany osobno.
  */
 export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
   config,
@@ -22,15 +31,45 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
   onComplete
 }) => {
   const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#00ff66';
+  const aggregate = typeof config.decisionNum === 'number';
 
   const firstNode = config.nodes[0];
   const [currentNodeId, setCurrentNodeId] = useState<string | null>(firstNode?.id ?? null);
   const [isFinished, setIsFinished] = useState(false);
+  const [pathTier, setPathTier] = useState<ChoiceOutcome>('ideal');
+  const [lastFeedback, setLastFeedback] = useState<string>('');
   const [lines, setLines] = useState<Line[]>(
     firstNode ? [{ sender: config.respondent, text: firstNode.incoming, isPlayer: false }] : []
   );
 
   const currentNode: DialogueNode | undefined = config.nodes.find((n) => n.id === currentNodeId);
+
+  const finish = (
+    closing: boolean,
+    tier: ChoiceOutcome,
+    feedback: string,
+    question: string,
+    answer: string
+  ) => {
+    setIsFinished(true);
+    setCurrentNodeId(null);
+    setTimeout(() => {
+      if (closing && config.closingMessage) {
+        sounds.playNotification();
+        setLines((prev) => [
+          ...prev,
+          { sender: config.respondent, text: config.closingMessage!, isPlayer: false }
+        ]);
+      }
+      if (aggregate) {
+        onDecision({ num: config.decisionNum!, question, answer, tier, feedback });
+      }
+      if (tier !== 'critical') {
+        sounds.playSuccess();
+        onComplete();
+      }
+    }, 900);
+  };
 
   const handleChoose = (optionId: string) => {
     if (!currentNode || isFinished) return;
@@ -40,7 +79,12 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
     sounds.playClick();
     setLines((prev) => [...prev, { sender: 'TY', text: option.label, isPlayer: true }]);
 
-    if (currentNode.decisionNum !== undefined) {
+    const combinedTier = worstTier(pathTier, option.tier);
+    setPathTier(combinedTier);
+    setLastFeedback(option.feedback);
+
+    // Per-węzeł: ocena od razu dla węzła z własnym numerem.
+    if (!aggregate && currentNode.decisionNum !== undefined) {
       onDecision({
         num: currentNode.decisionNum,
         question: currentNode.question || currentNode.incoming,
@@ -50,9 +94,14 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
       });
     }
 
+    // Błąd krytyczny kończy rozmowę natychmiast.
     if (option.tier === 'critical') {
-      setIsFinished(true);
-      setCurrentNodeId(null);
+      if (aggregate) {
+        finish(false, combinedTier, option.feedback, config.question || firstNode.incoming, option.label);
+      } else {
+        setIsFinished(true);
+        setCurrentNodeId(null);
+      }
       return;
     }
 
@@ -72,19 +121,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
     }
 
     // Brak kolejnego węzła = koniec rozmowy.
-    setCurrentNodeId(null);
-    setIsFinished(true);
-    setTimeout(() => {
-      if (config.closingMessage) {
-        sounds.playNotification();
-        setLines((prev) => [
-          ...prev,
-          { sender: config.respondent, text: config.closingMessage!, isPlayer: false }
-        ]);
-      }
-      sounds.playSuccess();
-      onComplete();
-    }, 900);
+    finish(true, combinedTier, option.feedback, config.question || firstNode.incoming, option.label);
   };
 
   return (
@@ -117,9 +154,12 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
             </div>
           </div>
         ))}
+        {isFinished && lastFeedback && pathTier === 'critical' && (
+          <div className="text-[10px] text-red-400 italic px-1">{lastFeedback}</div>
+        )}
       </div>
 
-      {currentNode && currentNode.options.length > 0 && (
+      {currentNode && currentNode.options.length > 0 && !isFinished && (
         <div className="pt-3 mt-3 border-t border-gray-800 space-y-2">
           {currentNode.options.map((option) => (
             <button

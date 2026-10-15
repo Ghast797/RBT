@@ -2,11 +2,13 @@
 
 ## 🚨 RYGORY ARCHITEKTURY (BEZWZGLĘDNIE PRZESTRZEGAĆ)
 
-### 1. ZAKAZ DUPLIKATÓW I ZAKAZ MODYFIKACJI RDZENIA
-- **ZAKAZ**: NIE twórz żadnych folderów komponentów/store/typów poza `src/engine/` i `src/scenarios/`. Stare foldery `src/components/`, `src/data/`, `src/store/` zostały trwale usunięte.
-- **ZAKAZ MODYFIKACJI SILNIKA**: Przy dodawaniu lub edycji scenariuszy (Misja 3, 4, 5...) **NIE MODYFIKUJ** plików w `src/engine/store/useMissionStore.ts` ani komponentów powłoki!
-- Nowe scenariusze tworzy się **w 100% deklaratywnie** w `src/scenarios/mission_XX/data/missionX.json` za pomocą mechanizmu `transitions`.
-- Jedyny wyjątek: Gdy tworzysz zupełnie nowy, unikalny widget minigry – utwórz go w `src/engine/widgets/` i zarejestruj w `appComponentRegistry` w `src/engine/registry/appRegistry.tsx`.
+> **MODEL DOCELOWY (źródło prawdy):** `docs/scenario-engine.md`, `docs/scenario-format.md`, `docs/vr-to-scenario-skill.md`. Trwa migracja z `transitions`/widgety na etapy/klocki.
+
+### 1. PODZIAŁ SILNIK / SCENARIUSZE, BEZ DUPLIKATÓW
+- **ZAKAZ**: NIE twórz folderów komponentów/store/typów poza `src/engine/` i `src/scenarios/`.
+- Silnik rozwija się przez wspólne mechanizmy (kontrakt klocka `reportDecision`/`completeStage`, punktacja z poziomów), nie przez gałęzie `useMissionStore.ts` per misja.
+- Nowa misja = jej folder: `stages` + `blocks` + minigry w `scenarios/mission_XX/minigames/`.
+- Klocek wielokrotnego użytku w `src/engine/blocks/`; minigra trafia tam dopiero przy drugim użyciu (reguła dwóch).
 
 ### 2. SCENARIUSZE TO NIEZALEŻNE PACZKI SCORM DLA MOODLE
 - Każda misja to osobna, autonomiczna paczka SCORM 2004 (`dist/scorm-mission-X.zip`).

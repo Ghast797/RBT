@@ -239,6 +239,15 @@ export interface DialogueTreeConfig {
   nodes: DialogueNode[];
   /** Wiadomość zamykająca rozmowę po ostatnim węźle. */
   closingMessage?: string;
+  /**
+   * Tryb agregujący: cała rozmowa to JEDNA oceniana decyzja o tym numerze.
+   * Poziom = najgorszy wybór na ścieżce (critical > suboptimal > ideal).
+   * Błąd krytyczny w dowolnej turze przerywa rozmowę natychmiast.
+   * Gdy pominięty, każdy węzeł z własnym `decisionNum` jest oceniany osobno.
+   */
+  decisionNum?: number;
+  /** Pytanie do debriefu w trybie agregującym. */
+  question?: string;
 }
 
 // ---------------------------------------------------------------------------
