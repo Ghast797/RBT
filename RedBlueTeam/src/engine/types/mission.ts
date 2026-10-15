@@ -288,11 +288,13 @@ export interface MissionDefinition {
   mission: MissionMeta;
   intro: MissionIntro;
   desktopApps: DesktopAppConfig[];
-  /** Przebieg misji jako lista etapów (zastępuje zaszytą w kodzie fabułę). */
+  /** Przebieg misji jako lista etapów (wzorzec B — standard). */
   stages?: StageDefinition[];
-  /** Dane klocków i minigier, kluczowane identyfikatorem kafelka. */
+  /** Dane klocków i minigier, kluczowane identyfikatorem kafelka (wzorzec B). */
   blocks?: Record<string, unknown>;
+  /** @deprecated LEGACY (wzorzec A). Nowe misje używają `stages`. */
   transitions?: Record<string, ScenarioTransition>;
+  /** @deprecated LEGACY — martwe pole, nieczytane przez kod. */
   steps?: MissionStep[];
   step1?: any;
   step2?: any;

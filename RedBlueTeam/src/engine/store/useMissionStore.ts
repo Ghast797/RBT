@@ -1796,6 +1796,9 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   },
 
   // ----------------- MISSION 4 STORY PROGRESSION -----------------
+  // LEGACY (wzorzec A): przebieg fabuły zaszyty w store, gałęzie per misja.
+  // Nowy kod używa stages[] + completeStage (wzorzec B, docs/scenario-engine.md).
+  // Do usunięcia po konwersji pozostałych etapów M4.
   advanceMission4Story: (stage) => {
     const s = get();
     if (stage === 'virus_done') {
@@ -1969,6 +1972,8 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   },
 
   // ----------------- GENERIC SCENARIO TRANSITIONS -----------------
+  // LEGACY (wzorzec A): przejścia fabularne z obiektu `transitions` w JSON.
+  // Zastępuje je stages[].completion + completeStage (wzorzec B). Nie używać w nowych misjach.
   runScenarioTransition: (transitionId) => {
     const { activeMission } = get();
     const transition = activeMission.transitions?.[transitionId];

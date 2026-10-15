@@ -1,8 +1,6 @@
 # Format scenariusza (`scenario.md`)
 
-> Status: **PROJEKT do akceptacji.**
-
-Źródło prawdy misji. Agent kodujący czyta ten plik i buduje `mission.ts` oraz minigry. Kontekst techniczny: [`scenario-engine.md`](scenario-engine.md).
+> **Wiążący format.** Źródło prawdy misji. Agent kodujący czyta ten plik i buduje definicję misji oraz minigry. Kontekst techniczny i procedura: [`scenario-engine.md`](scenario-engine.md). Prowadzenie gracza: [`player-guidance.md`](player-guidance.md).
 
 Zasada nadrzędna: scenariusz opisuje **tylko to, co unikalne dla misji**. Konwencji silnika (czat, badge, blokady, podpowiedzi, dźwięki, ekran wykrycia — sekcja 3 i 4 `scenario-engine.md`) **nie powtarza**. Nie ma kroków „kliknij KONTYNUUJ" ani „kliknij ikonę z badge".
 

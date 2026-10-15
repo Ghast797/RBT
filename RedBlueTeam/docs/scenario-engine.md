@@ -1,8 +1,21 @@
 # Silnik scenariuszy RedBlueTeam — kontrakt i konwencje
 
-> Status: **PROJEKT do akceptacji.** Opisuje model docelowy. Kod jeszcze go nie realizuje w pełni — zob. sekcję 8 „Stan obecny vs docelowy”.
+> **Wiążący standard budowy misji (wzorzec B).** Tak buduje się każdą misję w tym projekcie. Stary wzorzec (A: fabuła i dane zaszyte w kodzie) jest wygaszany — zob. sekcję 8. Nie kopiuj kodu starych misji; kopiuj negocjacje M4 jako wzorzec.
 
-Dokument dla agentów implementujących misje szkoleniowe (SCORM 2004 dla Moodle). Format wejściowy scenariusza opisuje [`scenario-format.md`](scenario-format.md).
+Dokument dla agentów implementujących misje szkoleniowe (SCORM 2004 dla Moodle). Prowadzenie gracza: [`player-guidance.md`](player-guidance.md). Format wejściowy scenariusza: [`scenario-format.md`](scenario-format.md).
+
+## 0. Jak zbudować misję (krok po kroku)
+
+1. Przeczytaj scenariusz (`scenario.md`) i rozbij go na **etapy** — jeden etap = jedna aplikacja pulpitu.
+2. Dla każdego etapu wybierz element: **klocek** z katalogu (sekcja 6) albo **minigra** misji w `scenarios/mission_XX/minigames/` wg kontraktu (sekcja 5).
+3. Wypisz dane do `blocks{}` (opcje, poziomy, feedback) i etapy do `stages[]` (odblokowania, badge, wiadomość mentora, następny krok).
+4. Ustaw prowadzenie wg [`player-guidance.md`](player-guidance.md): w każdej chwili jeden jasny następny krok.
+5. Złóż definicję w `index.ts`, zarejestruj w `missionRegistry.ts` i `scripts/package-scorm.js`.
+6. `npm test` + `node scripts/package-scorm.js --mission=X`.
+
+Czego **nie** robisz: nie dodajesz gałęzi per misja do `useMissionStore.ts`, nie liczysz punktów w komponencie, nie opisujesz prowadzenia/dźwięków w danych. To należy do silnika.
+
+Wzorcowy, działający przykład w kodzie: negocjacje M4 — `scenarios/mission_04_energy_rock/stages.ts` + klocek `engine/blocks/DialogueTree.tsx`.
 
 ## 1. Model w jednym zdaniu
 
@@ -96,17 +109,17 @@ Dla każdej interakcji nowego scenariusza:
 
 Minigra zostaje w folderze misji, dopóki służy jednej misji. Nie uogólniamy „na zapas".
 
-## 8. Stan obecny vs docelowy
+## 8. Wzorzec B vs legacy (A) — co wygaszamy
 
-Do czego odnosi się refaktor M4:
+Wzorzec **A jest legacy** — nie kopiuj go do nowych misji. Przepisujemy na **B** (ten dokument). Co się zmienia:
 
-| Element | Dziś | Docelowo |
+| Element | A (legacy, do wygaszenia) | B (standard) |
 |---|---|---|
-| Dane decyzji (opcje, punkty) | wpisane w widgetach (`VIRUSES`, `SUBJECT_OPTIONS`…) | w `config` z `mission.ts` |
-| Punktacja | każdy widget liczy kary sam (`isCritical ? 11.11 : 7.11`) | silnik liczy z poziomu + `N` + `rewardBtc` |
-| Przebieg fabuły | `advanceMission4Story` zaszyte w store | lista etapów + wiadomości w `mission.ts` |
-| Wybór 1 z N | 3 osobne widgety o tej samej logice | jeden `ChoiceCards` |
-| Minigry (skaner, VPN, stacja) | w `engine/widgets/` z resztą | w `scenarios/mission_04/minigames/`, kontrakt z sekcji 5 |
-| `steps` w JSON | nieczytane przez kod | usunięte albo zasilają `config` |
+| Dane decyzji (opcje, punkty) | wpisane w widgetach (`VIRUSES`, `SUBJECT_OPTIONS`…) | w `blocks{}` definicji misji |
+| Punktacja | każdy widget liczy kary sam (`isCritical ? 11.11 : 7.11`) | silnik z poziomu + `N` + `rewardBtc` (`reportDecision`) |
+| Przebieg fabuły | `advanceMission4Story` / `transitions` zaszyte w store | `stages[]` + `completeStage` |
+| Wybór 1 z N | osobne widgety o tej samej logice | jeden klocek `ChoiceCards` |
+| Minigry (skaner, VPN, stacja) | w `engine/widgets/` z resztą | w `scenarios/mission_XX/minigames/`, kontrakt z sekcji 5 |
+| `steps` w JSON | martwe (żaden komponent nie czyta) | nie używać — dane idą do `blocks` |
 
-Sekcja `steps` w obecnym `mission4.json` jest martwa (żaden komponent jej nie czyta) — w refaktorze znika.
+**Stan migracji:** negocjacje M4 są już na B (wzorzec do kopiowania). Reszta M4 i całe M3 czekają na konwersję — do tego czasu w kodzie są oba wzorce, ale **nowy kod piszemy wyłącznie w B**.
