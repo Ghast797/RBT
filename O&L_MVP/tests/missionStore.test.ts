@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useMissionStore } from '../src/store/useMissionStore';
-import { MockLRS } from '../src/utils/xapi';
+import { useMissionStore } from '../src/engine/store/useMissionStore';
+import { MockLRS } from '../src/engine/scorm/xapi';
 
 describe('Mission 3: O&L Company VR State Machine & xAPI', () => {
   beforeEach(() => {
@@ -115,7 +115,8 @@ describe('Mission 3: O&L Company VR State Machine & xAPI', () => {
     await new Promise((r) => setTimeout(r, 2100));
     expect(useMissionStore.getState().isByteMasterTyping).toBe(false);
     expect(useMissionStore.getState().score).toBe(90);
-    expect(useMissionStore.getState().criticalErrorsCount).toBe(1);
+    expect(useMissionStore.getState().goodChoicesCount).toBe(1);
+    expect(useMissionStore.getState().playerChoices[1].outcome).toBe('suboptimal');
 
     // Now player picks Mateusz
     store.chooseChatOption('choose_mateusz');

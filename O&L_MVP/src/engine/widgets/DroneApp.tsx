@@ -1,6 +1,6 @@
 import React from 'react';
 import { Crosshair, Navigation, Radio, Camera, CheckCircle2, X } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { useMissionStore } from '../store/useMissionStore';
 
 export const DroneApp: React.FC = () => {
   const {
@@ -54,7 +54,6 @@ export const DroneApp: React.FC = () => {
         droneFlightState === 'waiting_payload' ? (
           /* Step 4.1: Attach USB Payload to Drone */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0 overflow-y-auto pr-1">
-            {/* Left: Drone 3D/Vector graphic & Telemetry tiles */}
             <div className="p-4 bg-[#081219] border-2 border-[#00ff66]/40 rounded-xl flex flex-col justify-between space-y-3">
               <div>
                 <div className="text-center py-2">
@@ -90,7 +89,6 @@ export const DroneApp: React.FC = () => {
               </button>
             </div>
 
-            {/* Right: Drone Status */}
             <div className="p-4 bg-[#081219] border-2 border-[#00ff66]/40 rounded-xl flex flex-col justify-between items-center text-center space-y-4">
               <div className="w-full flex items-center justify-between border-b border-[#00ff66]/30 pb-2">
                 <span className="font-bold text-xs text-[#00ff66]">STATUS DRONA</span>
@@ -106,9 +104,8 @@ export const DroneApp: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Step 4.2: Large Full-Width Satellite Map with Readable High-Contrast Callouts */
+          /* Step 4.2: Large Full-Width Satellite Map */
           <div className="flex-1 min-h-0 flex flex-col justify-between space-y-2.5 overflow-y-auto pr-1">
-            {/* Compact Telemetry & Status Bar */}
             <div className="p-2.5 bg-[#081219] border border-[#00ff66]/40 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
               <div className="flex items-center space-x-2">
                 <span className="font-black text-[#00ff66]">{droneStats.model}</span>
@@ -129,7 +126,6 @@ export const DroneApp: React.FC = () => {
               </div>
             </div>
 
-            {/* Large High-Contrast SVG Map */}
             <div className="relative w-full h-80 sm:h-96 md:h-[440px] bg-[#04090e] rounded-xl border-2 border-[#00ff66]/50 overflow-hidden flex items-center justify-center shadow-inner">
               <svg viewBox="0 0 800 400" className="w-full h-full">
                 <defs>
@@ -139,22 +135,18 @@ export const DroneApp: React.FC = () => {
                 </defs>
                 <rect width="800" height="400" fill="url(#largeGrid)" />
 
-                {/* River curve */}
                 <path d="M 0 140 Q 240 180 440 120 T 800 160" fill="none" stroke="#00f0ff" strokeWidth="3.5" strokeOpacity="0.35" />
                 <text x="440" y="105" fill="#00f0ff" fillOpacity="0.45" fontSize="11" textAnchor="middle" letterSpacing="4">
                   RZEKA ODRA // SEKTOR POŁUDNIOWY
                 </text>
 
-                {/* Major roads */}
                 <line x1="160" y1="0" x2="190" y2="400" stroke="#334155" strokeWidth="2.5" strokeDasharray="6,4" strokeOpacity="0.5" />
                 <line x1="600" y1="0" x2="570" y2="400" stroke="#334155" strokeWidth="2.5" strokeDasharray="6,4" strokeOpacity="0.5" />
                 <line x1="0" y1="240" x2="800" y2="240" stroke="#334155" strokeWidth="2.5" strokeDasharray="6,4" strokeOpacity="0.5" />
 
-                {/* Radar Circles */}
                 <circle cx="400" cy="200" r="160" fill="none" stroke="#00ff66" strokeWidth="0.8" strokeOpacity="0.15" strokeDasharray="4,4" />
                 <circle cx="400" cy="200" r="280" fill="none" stroke="#00ff66" strokeWidth="0.8" strokeOpacity="0.1" />
 
-                {/* Waypoints */}
                 {mapLocations.map((loc) => {
                   const isSelected = selectedCoordId === loc.id;
                   const cx = (loc.x / 100) * 620 + 80;
@@ -169,12 +161,10 @@ export const DroneApp: React.FC = () => {
                       onClick={() => droneFlightState === 'waiting_coords' && selectDroneCoord(loc.id)}
                       className="cursor-pointer"
                     >
-                      {/* Ping Ring */}
                       {isSelected && (
                         <circle cx={cx} cy={cy} r="25" fill="none" stroke="#00ff66" strokeWidth="2" className="animate-ping" />
                       )}
 
-                      {/* Waypoint Marker Circle */}
                       <circle
                         cx={cx}
                         cy={cy}
@@ -194,7 +184,6 @@ export const DroneApp: React.FC = () => {
                         {loc.number}
                       </text>
 
-                      {/* High-Contrast Waypoint Card with large text */}
                       <rect
                         x={badgeX}
                         y={badgeY}
@@ -230,11 +219,9 @@ export const DroneApp: React.FC = () => {
               </svg>
             </div>
 
-            {/* Bottom Map Controls */}
             <div className="space-y-2">
               {droneFlightState === 'waiting_coords' && (
                 <>
-                  {/* 4 Interactive Location Selection Tiles */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
                     {mapLocations.map((loc) => {
                       const isSelected = selectedCoordId === loc.id;
@@ -289,9 +276,8 @@ export const DroneApp: React.FC = () => {
           </div>
         )
       ) : (
-        /* Top-Down Parking Lot Camera View (matching video 3.mp4) */
+        /* Top-Down Parking Lot Camera View */
         <div className="flex-1 min-h-0 flex flex-col justify-between space-y-3 overflow-y-auto pr-1">
-          {/* Top Camera HUD Overlay */}
           <div className="p-2.5 bg-[#081219] border border-[#00ff66]/40 rounded-lg flex items-center justify-between text-xs text-[#00ff66]">
             <div className="flex items-center space-x-2">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
@@ -302,18 +288,13 @@ export const DroneApp: React.FC = () => {
             </div>
           </div>
 
-          {/* Parking Lot Canvas (Pure Vector SVG) */}
           <div className="relative w-full aspect-[360/220] max-h-[36vh] min-h-[170px] bg-[#0a1218] border-2 border-[#00ff66]/50 rounded-xl overflow-hidden flex items-center justify-center">
             <div className="absolute inset-0 crt-scanlines pointer-events-none opacity-30" />
 
             <svg viewBox="0 0 360 220" className="w-full h-full max-h-60">
-              {/* Asphalt Ground */}
               <rect width="360" height="220" fill="#0d141b" />
-
-              {/* Road Markings */}
               <line x1="20" y1="110" x2="340" y2="110" stroke="#334155" strokeWidth="1.5" strokeDasharray="6,6" />
 
-              {/* 6 Parking Slots (3 Top row, 3 Bottom row) */}
               {parkingCars.map((car, idx) => {
                 const isTopRow = idx < 3;
                 const colIdx = idx % 3;
@@ -336,7 +317,6 @@ export const DroneApp: React.FC = () => {
                     }}
                     className="cursor-pointer focus:outline-none"
                   >
-                    {/* Parking Box */}
                     <rect
                       x={x}
                       y={y}
@@ -348,7 +328,6 @@ export const DroneApp: React.FC = () => {
                       rx="3"
                     />
 
-                    {/* Top-down Car Chassis */}
                     <rect
                       x={x + 22}
                       y={y + 12}
@@ -360,11 +339,9 @@ export const DroneApp: React.FC = () => {
                       strokeWidth="1.5"
                     />
 
-                    {/* Windows */}
                     <polygon points={`${x+28},${y+22} ${x+62},${y+22} ${x+59},${y+27} ${x+31},${y+27}`} fill="#0f172a" />
                     <polygon points={`${x+28},${y+48} ${x+62},${y+48} ${x+59},${y+43} ${x+31},${y+43}`} fill="#0f172a" />
 
-                    {/* Car Roof (Key target discriminator) */}
                     <rect
                       x={x + 30}
                       y={y + 26}
@@ -376,7 +353,6 @@ export const DroneApp: React.FC = () => {
                       strokeWidth="1"
                     />
 
-                    {/* If dropped on target, show dropped envelope */}
                     {droneDropSuccess && car.isTarget && (
                       <g>
                         <rect x={x + 37} y={y + 31} width="16" height="10" rx="1" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
@@ -385,7 +361,6 @@ export const DroneApp: React.FC = () => {
                       </g>
                     )}
 
-                    {/* Targeting reticle if selected */}
                     {isSelected && (
                       <g>
                         <circle
@@ -411,7 +386,6 @@ export const DroneApp: React.FC = () => {
             </svg>
           </div>
 
-          {/* Drop Action & Result */}
           <div className="space-y-2">
             {!droneDropSuccess ? (
               <>

@@ -29,10 +29,23 @@ export interface ChatMessage {
 
 export type { PlayerChoiceRecord };
 
+import type { ChoiceOutcome } from '../types/mission';
+
 export interface ChatChoiceOption {
   id: string;
   label: string;
   isCorrect?: boolean;
+  openAppId?: string;
+  nextTransitionId?: string;
+  outcome?: ChoiceOutcome;
+  choiceRecord?: {
+    num: number;
+    question: string;
+    answer: string;
+    details: string;
+    btcPenalty?: number;
+    scorePenalty?: number;
+  };
 }
 
 export type BootStage = 'incoming_call' | 'intro_chat' | 'bios_boot' | 'desktop';
@@ -129,6 +142,16 @@ export interface MissionState {
   playerChoices: PlayerChoiceRecord[];
   recordChoice: (choice: PlayerChoiceRecord, penalty?: number) => void;
 
+  // Detection & Retry Modals
+  isDetectedModalOpen: boolean;
+  detectionReason: { title: string; details: string; choiceNum?: number } | null;
+  isRetryModalOpen: boolean;
+  triggerDetection: (title: string, details: string, choiceNum?: number) => void;
+  openRetryModal: () => void;
+  closeRetryModal: () => void;
+  retryFromScratch: () => void;
+  retryFromChoices: () => void;
+
   // SCORM 2004 Integration
   isScormSubmitted: boolean;
   scormSubmitMessage: string | null;
@@ -186,6 +209,9 @@ export interface MissionState {
   toggleChoiceDetails: (index: number) => void;
   toggleKnowledgeBase: () => void;
   resetGame: () => void;
+
+  // Generic Scenario Transitions
+  runScenarioTransition: (transitionId: string) => void;
 
   // SCORM Actions
   submitScormAndExit: () => { success: boolean; message: string };
@@ -269,6 +295,11 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     isKnowledgeBaseOpen: false,
     playerChoices: choices,
 
+    // Detection & Retry Modals
+    isDetectedModalOpen: false,
+    detectionReason: null as { title: string; details: string; choiceNum?: number } | null,
+    isRetryModalOpen: false,
+
     // SCORM 2004 Integration State
     isScormSubmitted: false,
     scormSubmitMessage: null as string | null,
@@ -305,21 +336,114 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     set((s) => ({ customState: { ...s.customState, ...partial } }));
   },
 
+  triggerDetection: (title: string, details: string, choiceNum?: number) => {
+    sounds.playAlarm();
+    set((s) => ({
+      criticalErrorsCount: s.criticalErrorsCount + 1,
+      isDetectedModalOpen: true,
+      detectionReason: { title, details, choiceNum }
+    }));
+  },
+
+  openRetryModal: () => {
+    sounds.playClick();
+    set({ isRetryModalOpen: true });
+  },
+
+  closeRetryModal: () => {
+    sounds.playClick();
+    set({ isRetryModalOpen: false });
+  },
+
+  retryFromScratch: () => {
+    sounds.playClick();
+    const currentMission = get().activeMission;
+    set({
+      ...getInitialMissionState(currentMission),
+      bootStage: 'incoming_call',
+      isDetectedModalOpen: false,
+      detectionReason: null,
+      isRetryModalOpen: false
+    });
+  },
+
+  retryFromChoices: () => {
+    sounds.playSuccess();
+    const currentMission = get().activeMission;
+    const isM4 = currentMission?.mission?.id?.includes('4') || currentMission?.mission?.id?.includes('energy-rock');
+    const baseInitial = getInitialMissionState(currentMission);
+
+    set({
+      ...baseInitial,
+      bootStage: 'desktop',
+      activeApp: 'virus_database',
+      isDetectedModalOpen: false,
+      detectionReason: null,
+      isRetryModalOpen: false,
+      notificationBadges: { virus_database: 1, chat: 1 },
+      chatMessages: [
+        {
+          id: isM4 ? 'chat_init_m4' : 'chat_init_1',
+          sender: 'BYTE_MASTER',
+          text: isM4
+            ? 'Połączenie HACKER.OS aktywne. Cel: Energy Rock. Otwórz Bazę Wirusów i skonfiguruj odpowiedni ładunek!'
+            : 'Połączenie TOR P2P aktywne. Czekam na stworzenie wirusa.',
+        }
+      ],
+      chatAvailableChoices: [
+        { 
+          id: isM4 ? 'start_virus_m4' : 'start_virus', 
+          label: isM4 ? 'OTWIERAM BAZĘ WIRUSÓW' : 'NAJPIERW STWORZĘ WIRUSA' 
+        }
+      ]
+    });
+  },
+
   recordChoice: (choice, penalty = 0) => {
     const choices = [...get().playerChoices];
     const existingIndex = choices.findIndex((c) => c.num === choice.num);
+    
+    // Determine outcome if not explicitly set
+    let outcome = choice.outcome;
+    if (!outcome) {
+      outcome = choice.isCorrect ? 'ideal' : 'critical';
+    }
+    const finalChoice: PlayerChoiceRecord = {
+      ...choice,
+      outcome
+    };
+
     if (existingIndex >= 0) {
-      choices[existingIndex] = choice;
+      choices[existingIndex] = finalChoice;
     } else {
-      choices.push(choice);
+      choices.push(finalChoice);
     }
 
-    set((s) => ({
-      playerChoices: choices,
-      score: penalty > 0 ? Math.max(0, s.score - penalty) : s.score,
-      criticalErrorsCount: !choice.isCorrect ? s.criticalErrorsCount + 1 : s.criticalErrorsCount,
-      perfectChoicesCount: !choice.isCorrect ? Math.max(0, s.perfectChoicesCount - 1) : s.perfectChoicesCount
-    }));
+    const btcLoss = choice.btcPenalty ? Math.abs(choice.btcPenalty) : 0;
+
+    if (outcome === 'ideal') {
+      set((s) => ({
+        playerChoices: choices,
+        score: penalty > 0 ? Math.max(0, s.score - penalty) : s.score,
+      }));
+    } else if (outcome === 'suboptimal') {
+      set((s) => ({
+        playerChoices: choices,
+        score: penalty > 0 ? Math.max(0, s.score - penalty) : s.score,
+        goodChoicesCount: s.goodChoicesCount + 1,
+        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+        btcReward: btcLoss > 0 ? +(Math.max(0, s.btcReward - btcLoss)).toFixed(2) : s.btcReward
+      }));
+    } else {
+      // outcome === 'critical'
+      set((s) => ({
+        playerChoices: choices,
+        score: penalty > 0 ? Math.max(0, s.score - penalty) : s.score,
+        criticalErrorsCount: s.criticalErrorsCount + 1,
+        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+        btcReward: btcLoss > 0 ? +(Math.max(0, s.btcReward - btcLoss)).toFixed(2) : s.btcReward
+      }));
+    }
   },
 
   unlockIcon: (id: string) => {
@@ -433,10 +557,39 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         question: "WYBÓR OPROGRAMOWANIA MALWARE:",
         answer: "RAT (REMOTE ACCESS TROJAN)",
         isCorrect: true,
+        outcome: 'ideal',
         details: "Pozwala na pełny, cichy dostęp do stacji roboczej pracownika i zdalny podgląd pulpitu."
       };
       set({ selectedVirus: id, playerChoices: updatedChoices });
+    } else if (id === 'ransomware') {
+      sounds.playAlarm();
+      const isNewError = prevVirus !== id;
+      const v = viruses.find((item: any) => item.id === id);
+      const updatedChoices = [...get().playerChoices];
+      updatedChoices[0] = {
+        num: 1,
+        question: "WYBÓR OPROGRAMOWANIA MALWARE:",
+        answer: v?.name || "RANSOMWARE",
+        isCorrect: false,
+        outcome: 'critical',
+        btcPenalty: -0.89,
+        details: v?.feedback || "Zaalarmuje firmę natychmiast, a celem jest cicha kradzież danych."
+      };
+      set((s) => ({
+        selectedVirus: id,
+        playerChoices: updatedChoices,
+        score: isNewError ? Math.max(70, s.score - 15) : s.score,
+        criticalErrorsCount: isNewError ? s.criticalErrorsCount + 1 : s.criticalErrorsCount,
+        perfectChoicesCount: isNewError ? Math.max(0, s.perfectChoicesCount - 1) : s.perfectChoicesCount,
+        btcReward: isNewError ? +(Math.max(0, s.btcReward - 0.89)).toFixed(2) : s.btcReward
+      }));
+      get().triggerDetection(
+        "BŁĘDNY TYP SZKODLIWEGO OPROGRAMOWANIA – ALARM SOC!",
+        "Ransomware natychmiast zaalarmuje SOC i zablokuje cichy dostęp do sieci O&L Company!",
+        1
+      );
     } else {
+      // e.g. keylogger: suboptimal
       sounds.playError();
       const isNewError = prevVirus !== id;
       const v = viruses.find((item: any) => item.id === id);
@@ -446,14 +599,17 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         question: "WYBÓR OPROGRAMOWANIA MALWARE:",
         answer: v?.name || id.toUpperCase(),
         isCorrect: false,
-        details: v?.feedback || "Niewłaściwy wybór dla tego zadania."
+        outcome: 'suboptimal',
+        btcPenalty: -0.50,
+        details: v?.feedback || "Opcja częściowa – rejestruje klawisze, ale nie daje dostępu do pulpitu."
       };
       set((s) => ({
         selectedVirus: id,
         playerChoices: updatedChoices,
         score: isNewError ? Math.max(70, s.score - 10) : s.score,
-        criticalErrorsCount: isNewError ? s.criticalErrorsCount + 1 : s.criticalErrorsCount,
-        perfectChoicesCount: isNewError ? Math.max(0, s.perfectChoicesCount - 1) : s.perfectChoicesCount
+        goodChoicesCount: isNewError ? s.goodChoicesCount + 1 : s.goodChoicesCount,
+        perfectChoicesCount: isNewError ? Math.max(0, s.perfectChoicesCount - 1) : s.perfectChoicesCount,
+        btcReward: isNewError ? +(Math.max(0, s.btcReward - 0.50)).toFixed(2) : s.btcReward
       }));
     }
   },
@@ -486,7 +642,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const isPackageCorrect = builderPackage === 'dll_archive';
 
     if (!isModuleCorrect || !isMaskingCorrect || !isPackageCorrect) {
-      sounds.playError();
+      sounds.playAlarm();
       let errMsg = "BŁĄD KOMPILACJI ŁADUNKU: ";
       if (!isModuleCorrect) {
         errMsg += "Moduł Port Scan zostanie natychmiast wykryty przez firmowy IDS/IPS! Wybierz cichy kanał zwrotny Reverse TCP.";
@@ -502,6 +658,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         criticalErrorsCount: s.criticalErrorsCount + 1,
         perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1)
       }));
+      get().triggerDetection("WYKRYTO PRZEZ SYSTEMY OBRONNE (EDR / IDS)", errMsg);
       return;
     }
 
@@ -533,6 +690,44 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     sounds.playClick();
     const state = get();
     const { activeMission } = state;
+
+    // Generic scenario transition and action handling from chatAvailableChoices
+    const genericChoice = state.chatAvailableChoices.find((c) => c.id === optionId);
+    if (genericChoice && (genericChoice.openAppId || genericChoice.nextTransitionId || genericChoice.choiceRecord)) {
+      set({
+        chatMessages: [
+          ...state.chatMessages,
+          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: genericChoice.label }
+        ],
+        chatAvailableChoices: []
+      });
+
+      if (genericChoice.choiceRecord) {
+        const cr = genericChoice.choiceRecord;
+        get().recordChoice(
+          {
+            num: cr.num,
+            question: cr.question,
+            answer: cr.answer,
+            details: cr.details,
+            isCorrect: genericChoice.outcome === 'ideal',
+            outcome: genericChoice.outcome,
+            btcPenalty: cr.btcPenalty
+          },
+          cr.scorePenalty || 0
+        );
+      }
+
+      if (genericChoice.openAppId) {
+        get().openApp(genericChoice.openAppId);
+      }
+
+      if (genericChoice.nextTransitionId) {
+        get().runScenarioTransition(genericChoice.nextTransitionId);
+      }
+
+      return;
+    }
 
     if (optionId === 'start_virus' || optionId === 'start_virus_m4') {
       const isM4 = optionId === 'start_virus_m4';
@@ -659,12 +854,18 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const wrongTarget = targetOptions.find((t: any) => t.id === optionId && !t.isCorrect);
     if (wrongTarget) {
       sounds.playClick();
+      const isCritical = optionId === 'choose_slawomir' || optionId === 'choose_ciso' || wrongTarget.id === 'choose_ciso' || wrongTarget.id === 'choose_slawomir';
+      const outcome: ChoiceOutcome = isCritical ? 'critical' : 'suboptimal';
+      const btcLoss = isCritical ? 0.89 : 0.50;
+
       const updatedChoices = [...get().playerChoices];
       updatedChoices[1] = {
         num: 2,
         question: "KOGO WYBIERASZ ZA CEL?",
         answer: wrongTarget.name,
         isCorrect: false,
+        outcome,
+        btcPenalty: -btcLoss,
         details: wrongTarget.details
       };
 
@@ -679,22 +880,43 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       });
 
       setTimeout(() => {
-        sounds.playError();
-        set((s) => ({
-          chatMessages: [
-            ...s.chatMessages,
-            { id: `msg_${Date.now()}`, sender: 'BYTE_MASTER', text: wrongTarget.feedback }
-          ],
-          isByteMasterTyping: false,
-          score: Math.max(70, s.score - 10),
-          criticalErrorsCount: s.criticalErrorsCount + 1,
-          perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
-          chatAvailableChoices: targetOptions.map((t: any) => ({
-            id: t.id,
-            label: t.label,
-            isCorrect: t.isCorrect
-          }))
-        }));
+        if (isCritical) {
+          sounds.playAlarm();
+          set((s) => ({
+            chatMessages: [
+              ...s.chatMessages,
+              { id: `msg_${Date.now()}`, sender: 'BYTE_MASTER', text: wrongTarget.feedback }
+            ],
+            isByteMasterTyping: false,
+            score: Math.max(70, s.score - 15),
+            criticalErrorsCount: s.criticalErrorsCount + 1,
+            perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+            btcReward: +(Math.max(0, s.btcReward - btcLoss)).toFixed(2)
+          }));
+          get().triggerDetection(
+            "WYKRYTO: PREZES/SOC ZGŁOSIŁ INCYDENT!",
+            "Sławomir Białek (CISO) natychmiast zidentyfikował próbę ataku i zgłosił incydent do ABW/SOC!",
+            2
+          );
+        } else {
+          sounds.playError();
+          set((s) => ({
+            chatMessages: [
+              ...s.chatMessages,
+              { id: `msg_${Date.now()}`, sender: 'BYTE_MASTER', text: wrongTarget.feedback }
+            ],
+            isByteMasterTyping: false,
+            score: Math.max(70, s.score - 10),
+            goodChoicesCount: s.goodChoicesCount + 1,
+            perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+            btcReward: +(Math.max(0, s.btcReward - btcLoss)).toFixed(2),
+            chatAvailableChoices: targetOptions.map((t: any) => ({
+              id: t.id,
+              label: t.label,
+              isCorrect: t.isCorrect
+            }))
+          }));
+        }
       }, 2000);
       return;
     }
@@ -708,6 +930,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         question: "KOGO WYBIERASZ ZA CEL?",
         answer: mateuszOpt.name,
         isCorrect: true,
+        outcome: 'ideal',
         details: mateuszOpt.details
       };
 
@@ -762,6 +985,8 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         question: "JAK CHCESZ GO ZHAKOWAĆ (WEKTOR ATAKU)?",
         answer: "FAŁSZYWA FAKTURA VAT W .EXE",
         isCorrect: false,
+        outcome: 'critical',
+        btcPenalty: -0.89,
         details: invoiceOpt.details
       };
 
@@ -776,7 +1001,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       });
 
       setTimeout(() => {
-        sounds.playError();
+        sounds.playAlarm();
         set((s) => ({
           chatMessages: [
             ...s.chatMessages,
@@ -786,6 +1011,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
           score: Math.max(70, s.score - 10),
           criticalErrorsCount: s.criticalErrorsCount + 1,
           perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+          btcReward: +(Math.max(0, s.btcReward - 0.89)).toFixed(2),
           chatAvailableChoices: [
             {
               id: 'vector_party_zip',
@@ -794,6 +1020,11 @@ export const useMissionStore = create<MissionState>((set, get) => ({
             }
           ]
         }));
+        get().triggerDetection(
+          "WYKRYTO: DZIAŁ FINANSOWY ZABLOKOWAŁ OPERACJĘ!",
+          "Dział księgowości i SOC natychmiast zidentyfikowały fałszywą fakturę .exe i wszczęły procedurę alarmową!",
+          3
+        );
       }, 2000);
       return;
     }
@@ -807,6 +1038,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         question: "JAK CHCESZ GO ZHAKOWAĆ (WEKTOR ATAKU)?",
         answer: "ZDJĘCIA Z IMPREZY (ARCHIWUM ZIP)",
         isCorrect: true,
+        outcome: 'ideal',
         details: partyOpt.details
       };
 
@@ -1092,7 +1324,69 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     sounds.playClick();
     const current = [...get().usbFiles];
     if (!current.includes(id)) current.push(id);
-    set({ usbFiles: current });
+
+    const { activeMission } = get();
+    const attachments = activeMission.step3?.attachments || [];
+    const att = attachments.find((a: any) => a.id === id);
+    const updatedChoices = [...get().playerChoices];
+
+    if (id === 'party_photos') {
+      sounds.playSuccess();
+      updatedChoices[3] = {
+        num: 4,
+        question: "WYBÓR ZAŁĄCZNIKÓW DO ZAINFEKOWANIA:",
+        answer: att?.name || "IMG_00034521.JPG X3 (ZDJĘCIA Z IMPREZY)",
+        isCorrect: true,
+        outcome: 'ideal',
+        details: "Paczka zdjęć z imprezy doskonale pasuje do profilu ofiary i usypia jej czujność."
+      };
+      set({ usbFiles: current, playerChoices: updatedChoices });
+    } else if (id === 'hr_docs') {
+      sounds.playError();
+      updatedChoices[3] = {
+        num: 4,
+        question: "WYBÓR ZAŁĄCZNIKÓW DO ZAINFEKOWANIA:",
+        answer: att?.name || "DOKUMENTY_HR.DOCX",
+        isCorrect: false,
+        outcome: 'suboptimal',
+        btcPenalty: -0.89,
+        details: "Dokumenty kadrowe wzbudzają pewne podejrzenia, lecz pracownik może je otworzyć."
+      };
+      set((s) => ({
+        usbFiles: current,
+        playerChoices: updatedChoices,
+        score: Math.max(70, s.score - 10),
+        goodChoicesCount: s.goodChoicesCount + 1,
+        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+        btcReward: +(Math.max(0, s.btcReward - 0.89)).toFixed(2)
+      }));
+    } else if (id === 'termination') {
+      sounds.playAlarm();
+      updatedChoices[3] = {
+        num: 4,
+        question: "WYBÓR ZAŁĄCZNIKÓW DO ZAINFEKOWANIA:",
+        answer: att?.name || "WYPOWIEDZENIE_UMOWY_O_PRACE.PDF",
+        isCorrect: false,
+        outcome: 'critical',
+        btcPenalty: -0.89,
+        details: "Pismo o zwolnieniu wywołuje natychmiastową panikę i telefon do kadr/przełożonego!"
+      };
+      set((s) => ({
+        usbFiles: current,
+        playerChoices: updatedChoices,
+        score: Math.max(60, s.score - 15),
+        criticalErrorsCount: s.criticalErrorsCount + 1,
+        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+        btcReward: +(Math.max(0, s.btcReward - 0.89)).toFixed(2)
+      }));
+      get().triggerDetection(
+        "WYKRYTO: DOKUMENT WYWOŁAŁ PANIKĘ I REAKCJĘ DZIAŁU HR!",
+        "Pracownik po znalezieniu pliku 'WYPOWIEDZENIE UMOWY' natychmiast zadzwonił do działu kadr i zgłosił incydent bezpieczeństwa!",
+        4
+      );
+    } else {
+      set({ usbFiles: current });
+    }
   },
 
   bindRatToArchive: () => {
@@ -1106,25 +1400,49 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const volumeOptions = activeMission.step3?.volumeOptions || [];
     const opt = volumeOptions.find((o: any) => o.id === id);
     const updatedChoices = [...get().playerChoices];
+    const isCorrect = !!opt?.isCorrect;
+    const isCritical = id === 'vol_keylogger';
+    const outcome: ChoiceOutcome = isCorrect ? 'ideal' : isCritical ? 'critical' : 'suboptimal';
+    const btcLoss = 0.89;
+
     updatedChoices[4] = {
       num: 5,
       question: "WYBIERZ NAZWĘ PENDRIVE'A:",
       answer: opt?.label || id,
-      isCorrect: !!opt?.isCorrect,
-      details: opt?.isCorrect
+      isCorrect,
+      outcome,
+      btcPenalty: isCorrect ? undefined : -btcLoss,
+      details: isCorrect
         ? "Naturalna, wiarygodna etykieta woluminu spójna z przygotowaną przynętą."
+        : isCritical
+        ? "Nazwa 'KEYLOGGER' to natychmiastowa kompromitacja nośnika."
         : "Podejrzana nazwa pendrive'a może zaalarmować użytkownika lub analityka."
     };
 
-    if (opt && !opt.isCorrect) {
+    if (isCritical) {
+      sounds.playAlarm();
+      set((s) => ({
+        selectedVolumeName: id,
+        playerChoices: updatedChoices,
+        score: Math.max(60, s.score - 15),
+        criticalErrorsCount: s.criticalErrorsCount + 1,
+        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+        btcReward: +(Math.max(0, s.btcReward - btcLoss)).toFixed(2)
+      }));
+      get().triggerDetection(
+        "WYKRYTO: PODEJRZANA NAZWA WOLUMINU!",
+        "Nazwa woluminu 'KEYLOGGER' została natychmiast zablokowana przez reguły Defender/EDR!",
+        5
+      );
+    } else if (!isCorrect) {
       sounds.playError();
       set((s) => ({
         selectedVolumeName: id,
         playerChoices: updatedChoices,
         score: Math.max(70, s.score - 10),
-        criticalErrorsCount: s.criticalErrorsCount + 1,
+        goodChoicesCount: s.goodChoicesCount + 1,
         perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
-        btcReward: opt.penalty ? +(s.btcReward + opt.penalty).toFixed(2) : s.btcReward
+        btcReward: +(Math.max(0, s.btcReward - btcLoss)).toFixed(2)
       }));
     } else {
       sounds.playSuccess();
@@ -1138,24 +1456,49 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const envelopeOptions = activeMission.step3?.envelopeOptions || [];
     const opt = envelopeOptions.find((o: any) => o.id === id);
     const updatedChoices = [...get().playerChoices];
+    const isCorrect = !!opt?.isCorrect;
+    const isCritical = id === 'env_termination';
+    const outcome: ChoiceOutcome = isCorrect ? 'ideal' : isCritical ? 'critical' : 'suboptimal';
+    const btcLoss = 0.89;
+
     updatedChoices[5] = {
       num: 6,
       question: "WYBIERZ PODPIS NA KOPERCIE:",
       answer: opt?.label || id,
-      isCorrect: !!opt?.isCorrect,
-      details: opt?.isCorrect
+      isCorrect,
+      outcome,
+      btcPenalty: isCorrect ? undefined : -btcLoss,
+      details: isCorrect
         ? "Dedykowana etykieta fizyczna maksymalizuje szansę podłączenia nośnika przez pracownika."
+        : isCritical
+        ? "Napis o zwolnieniu z pracy wzbudził czujność ochrony i personelu."
         : "Zbyt oczywisty lub agresywny podpis budzi natychmiastowe podejrzenia."
     };
 
-    if (opt && !opt.isCorrect) {
+    if (isCritical) {
+      sounds.playAlarm();
+      set((s) => ({
+        selectedEnvelopeName: id,
+        playerChoices: updatedChoices,
+        score: Math.max(60, s.score - 15),
+        criticalErrorsCount: s.criticalErrorsCount + 1,
+        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+        btcReward: +(Math.max(0, s.btcReward - btcLoss)).toFixed(2)
+      }));
+      get().triggerDetection(
+        "WYKRYTO: KOPERTA ZE ZWOLNIENIEM PRZEKAZANA DO KADR!",
+        "Koperta z napisem 'WYPOWIEDZENIE UMOWY' trafiła natychmiast do działu HR i ochrony!",
+        6
+      );
+    } else if (!isCorrect) {
       sounds.playError();
       set((s) => ({
         selectedEnvelopeName: id,
         playerChoices: updatedChoices,
         score: Math.max(70, s.score - 10),
-        criticalErrorsCount: s.criticalErrorsCount + 1,
-        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1)
+        goodChoicesCount: s.goodChoicesCount + 1,
+        perfectChoicesCount: Math.max(0, s.perfectChoicesCount - 1),
+        btcReward: +(Math.max(0, s.btcReward - btcLoss)).toFixed(2)
       }));
     } else {
       sounds.playSuccess();
@@ -1196,18 +1539,20 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const mapLocations = activeMission.step4?.mapLocations || [];
     const loc = mapLocations.find((l: any) => l.id === selectedCoordId);
     const updatedChoices = [...get().playerChoices];
+    const isCorrect = !!loc?.isCorrect;
+
     updatedChoices[6] = {
       num: 7,
       question: "WSKAŻ DRONOWI ADRES DOMU OFIARY:",
       answer: loc?.address || "NIEZNANY ADRES",
-      isCorrect: !!loc?.isCorrect,
-      details: loc?.isCorrect
+      isCorrect,
+      outcome: isCorrect ? 'ideal' : 'critical',
+      details: isCorrect
         ? "Właściwa lokalizacja uzyskana podczas fazy rekonesansu adresu Mateusza."
         : "Błędne współrzędne – dron wylądował pod niewłaściwym adresem!"
     };
 
-    if (!loc?.isCorrect) {
-      sounds.playError();
+    if (!isCorrect) {
       set((s) => ({
         score: Math.max(60, s.score - 15),
         criticalErrorsCount: s.criticalErrorsCount + 1,
@@ -1215,6 +1560,11 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         playerChoices: updatedChoices,
         droneFlightState: 'flying'
       }));
+      get().triggerDetection(
+        "BŁĘDNY ADRES – DRON WYKRYTY PRZEZ OSOBY POSTRONNE!",
+        `Dron zrzucił przesyłkę pod adresem: ${loc?.address || 'Nieznany'}. Właściciel posesji zauważył drona i zaalarmował służby!`,
+        7
+      );
     } else {
       sounds.playSuccess();
       set({ playerChoices: updatedChoices, droneFlightState: 'flying' });
@@ -1236,18 +1586,20 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const parkingCars = activeMission.step4?.parkingCars || [];
     const car = parkingCars.find((c: any) => c.id === selectedCarId);
     const updatedChoices = [...get().playerChoices];
+    const isTarget = !!car?.isTarget;
+
     updatedChoices[7] = {
       num: 8,
       question: "WYBIERZ MIEJSCE NA PARKINGU (POJAZD OFIARY):",
       answer: car?.desc || `POJAZD #${selectedCarId}`,
-      isCorrect: !!car?.isTarget,
-      details: car?.isTarget
+      isCorrect: isTarget,
+      outcome: isTarget ? 'ideal' : 'critical',
+      details: isTarget
         ? "Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera."
         : "Błędny pojazd – koperta trafiła na samochód osoby postronnej!"
     };
 
-    if (!car?.isTarget) {
-      sounds.playError();
+    if (!isTarget) {
       set((s) => ({
         score: Math.max(60, s.score - 20),
         criticalErrorsCount: s.criticalErrorsCount + 1,
@@ -1256,6 +1608,11 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         droneDropSuccess: true,
         droneFlightState: 'dropped'
       }));
+      get().triggerDetection(
+        "BŁĘDNY POJAZD – KOPERTA TRAFIŁA NA NIEWŁAŚCIWY SAMOCHÓD!",
+        `Zostawiłeś kopertę na pojeździe: "${car?.desc || 'Nieznany pojazd'}". Kierowca natychmiast zgłosił podejrzaną paczkę ochronie osiedla!`,
+        8
+      );
     } else {
       sounds.playSuccess();
       set({
@@ -1508,6 +1865,72 @@ export const useMissionStore = create<MissionState>((set, get) => ({
           ]
         }));
       }, 1000);
+    }
+  },
+
+  // ----------------- GENERIC SCENARIO TRANSITIONS -----------------
+  runScenarioTransition: (transitionId) => {
+    const { activeMission } = get();
+    const transition = activeMission.transitions?.[transitionId];
+    if (!transition) return;
+
+    if (transition.closeActiveApp) {
+      set({ activeApp: null });
+    }
+
+    if (transition.unlockIcons && transition.unlockIcons.length > 0) {
+      const currentUnlocked = [...get().unlockedIcons];
+      transition.unlockIcons.forEach((icon) => {
+        if (!currentUnlocked.includes(icon)) currentUnlocked.push(icon);
+      });
+      set({ unlockedIcons: currentUnlocked });
+    }
+
+    if (transition.badges) {
+      set((s) => ({
+        notificationBadges: { ...s.notificationBadges, ...transition.badges }
+      }));
+    }
+
+    if (transition.timeJump) {
+      sounds.playRadarBlip();
+      set((s) => ({
+        systemTime: transition.timeJump!,
+        chatMessages: [
+          ...s.chatMessages,
+          {
+            id: `msg_${Date.now()}`,
+            sender: 'SYSTEM',
+            text: `--- ${transition.timeJump} : NASTĄPIŁ PRZESKOK CZASU ---`
+          }
+        ]
+      }));
+    }
+
+    const messages = transition.byteMasterMessages || [];
+    const nextChoices = transition.nextChatChoices || [];
+
+    if (messages.length > 0) {
+      set({ isByteMasterTyping: true, chatAvailableChoices: [] });
+      setTimeout(() => {
+        sounds.playRadarBlip();
+        set((s) => ({
+          chatMessages: [
+            ...s.chatMessages,
+            ...messages.map((m, idx) => ({
+              id: `msg_${Date.now()}_${idx}`,
+              sender: 'BYTE_MASTER' as const,
+              text: m.text,
+              actionButton: m.actionButton,
+              imageSrc: m.imageSrc
+            }))
+          ],
+          isByteMasterTyping: false,
+          chatAvailableChoices: nextChoices
+        }));
+      }, 1200);
+    } else if (nextChoices.length > 0) {
+      set({ chatAvailableChoices: nextChoices });
     }
   },
 

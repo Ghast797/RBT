@@ -10,8 +10,8 @@ import {
   RefreshCw,
   PhoneCall
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
-import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../store/useMissionStore';
+import { sounds } from '../audio/soundEffects';
 
 interface FileItem {
   name: string;
@@ -22,13 +22,13 @@ interface FileItem {
 // 10 files pool - thoroughly INTERSPERSED (Freevolt files are NOT the first 3 files!)
 const FILES_POOL: FileItem[] = [
   { name: 'WYPOWIEDZENIE.PDF', type: 'decoy', size: '1.2 MB' },
-  { name: 'FREEVOLT_SCHEMAT.PDF', type: 'freevolt', size: '28.6 MB' }, // Freevolt 1
+  { name: 'FREEVOLT_SCHEMAT.PDF', type: 'freevolt', size: '28.6 MB' },
   { name: 'MAREK.JPG', type: 'decoy', size: '4.8 MB' },
   { name: 'SEKRET.TXT', type: 'honeypot', size: '12 KB' },
-  { name: 'ENERGIA_FVOLT.KCF', type: 'freevolt', size: '8.4 MB' },   // Freevolt 2
+  { name: 'ENERGIA_FVOLT.KCF', type: 'freevolt', size: '8.4 MB' },
   { name: 'KONTRAKTY.XCF', type: 'decoy', size: '19.1 MB' },
   { name: 'WAZNE_DANE.DOCX', type: 'honeypot', size: '45 KB' },
-  { name: 'FVOLT_TECH.DOCX', type: 'freevolt', size: '14.2 MB' },     // Freevolt 3
+  { name: 'FVOLT_TECH.DOCX', type: 'freevolt', size: '14.2 MB' },
   { name: 'MATERIALY.TXT', type: 'decoy', size: '240 KB' },
   { name: 'UMOWA2022.PDF', type: 'decoy', size: '2.1 MB' }
 ];
@@ -71,48 +71,69 @@ export const WorkstationExfiltrationApp: React.FC = () => {
     const freevoltSelected = selectedFiles.filter(f => 
       ['FVOLT_TECH.DOCX', 'FREEVOLT_SCHEMAT.PDF', 'ENERGIA_FVOLT.KCF'].includes(f)
     );
-    const nonFreevoltSelected = selectedFiles.filter(f => 
-      !['FVOLT_TECH.DOCX', 'FREEVOLT_SCHEMAT.PDF', 'ENERGIA_FVOLT.KCF'].includes(f)
+    const honeypotSelected = selectedFiles.filter(f => 
+      ['SEKRET.TXT', 'WAZNE_DANE.DOCX'].includes(f)
+    );
+    const decoySelected = selectedFiles.filter(f => 
+      !['FVOLT_TECH.DOCX', 'FREEVOLT_SCHEMAT.PDF', 'ENERGIA_FVOLT.KCF', 'SEKRET.TXT', 'WAZNE_DANE.DOCX'].includes(f)
     );
 
-    const isAllFreevolt = freevoltSelected.length === 3;
-    const hasExtras = nonFreevoltSelected.length > 0;
-
+    let outcome: 'ideal' | 'suboptimal' | 'critical' = 'ideal';
     let isCorrect = false;
-    let points = 0.0;
+    let penalty = 0;
+    let btcPenalty = 0;
     let feedback = '';
 
-    if (isAllFreevolt && !hasExtras) {
+    if (honeypotSelected.length > 0) {
+      outcome = 'critical';
+      isCorrect = false;
+      penalty = 11.11;
+      btcPenalty = -0.89;
+      feedback = 'Pobrano plik-pułapkę (honeypot: ' + honeypotSelected.join(', ') + '), co uruchomiło procedurę automatycznego odcięcia transferu przez SOC!';
+    } else if (freevoltSelected.length < 3) {
+      outcome = 'critical';
+      isCorrect = false;
+      penalty = 11.11;
+      btcPenalty = -0.89;
+      feedback = 'Główny cel zlecenia nie został osiągnięty – brakujące kluczowe pliki technologii Freevolt (' + freevoltSelected.length + '/3).';
+    } else if (decoySelected.length === 0) {
+      outcome = 'ideal';
       isCorrect = true;
-      points = 11.11;
+      penalty = 0;
+      btcPenalty = 0;
       feedback = 'Pobrano kompletny zestaw dokumentacji technologii Freevolt (3 pliki) bez pozostawiania śladów w logach.';
-    } else if (isAllFreevolt && hasExtras) {
-      points = 6.0;
-      feedback = 'Generowanie niepotrzebnego transferu sieciowego – pobrano pliki Freevolt, lecz także zbędne pliki decoy/honeypot.';
     } else {
-      points = 0.0;
-      feedback = 'Główny cel zlecenia nie został osiągnięty – brakujące kluczowe pliki technologii Freevolt.';
+      // Freevolt = 3 and decoy > 0, but no honeypot
+      outcome = 'suboptimal';
+      isCorrect = false;
+      penalty = 5.11;
+      btcPenalty = -0.45;
+      feedback = 'Generowanie niepotrzebnego transferu sieciowego – pobrano pliki Freevolt, lecz także zbędne pliki decoy (' + decoySelected.length + ').';
     }
 
     recordChoice({
       num: 8,
       question: 'Wybór plików do kradzieży:',
-      answer: `Pobrano ${selectedFiles.length} plików (${freevoltSelected.length}/3 Freevolt, ${nonFreevoltSelected.length} zbędnych)`,
-      isCorrect: isCorrect,
+      answer: `Pobrano ${selectedFiles.length} plików (${freevoltSelected.length}/3 Freevolt, ${decoySelected.length} decoy, ${honeypotSelected.length} honeypot)`,
+      isCorrect,
+      outcome,
+      btcPenalty,
       details: feedback
-    }, isCorrect ? 0 : (points === 0 ? 11.11 : 5.11));
+    }, penalty);
 
     setCustomState('m4_exfil_done', true);
     setCustomState('m4_exfil_files', selectedFiles);
 
-    // Show Ransomware Note Flash on screen as IT Chief emergency call comes in!
-    sounds.playAlarm();
-    setShowRansomNoteFlash(true);
+    if (outcome !== 'critical') {
+      // Show Ransomware Note Flash on screen as IT Chief emergency call comes in!
+      sounds.playAlarm();
+      setShowRansomNoteFlash(true);
 
-    await new Promise((res) => setTimeout(res, 2200));
+      await new Promise((res) => setTimeout(res, 2200));
 
-    // Advance story: closes app, returns to desktop, unlocks negotiation chat with incoming call alert, Byte_Master guides player in chat
-    advanceMission4Story('workstation_done');
+      // Advance story: closes app, returns to desktop, unlocks negotiation chat
+      advanceMission4Story('workstation_done');
+    }
   };
 
   return (
@@ -165,7 +186,7 @@ export const WorkstationExfiltrationApp: React.FC = () => {
         </span>
       </div>
 
-      {/* PHASE 1: Ransomware Trigger Banner (FIRST!) */}
+      {/* PHASE 1: Ransomware Trigger Banner */}
       {!isEncrypted ? (
         <div className="p-5 rounded-xl bg-[#1c0808] border-2 border-[#ef4444] flex flex-col md:flex-row items-center justify-between gap-4 shadow-[0_0_25px_rgba(239,68,68,0.4)] animate-in fade-in duration-200">
           <div className="flex items-center space-x-3.5">
@@ -199,7 +220,7 @@ export const WorkstationExfiltrationApp: React.FC = () => {
         </div>
       )}
 
-      {/* PHASE 2: Exfiltration Selection (LOCKED UNTIL ENCRYPTED) */}
+      {/* PHASE 2: Exfiltration Selection */}
       {isEncrypted ? (
         <div className="space-y-2 animate-in fade-in duration-300">
           <div className="flex justify-between items-center text-xs font-bold text-gray-300">
@@ -209,7 +230,6 @@ export const WorkstationExfiltrationApp: React.FC = () => {
             </span>
           </div>
 
-          {/* Mixed Files Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             {FILES_POOL.map((file) => {
               const isSelected = selectedFiles.includes(file.name);

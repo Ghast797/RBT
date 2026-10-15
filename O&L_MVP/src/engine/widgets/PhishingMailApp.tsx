@@ -7,8 +7,8 @@ import {
   AtSign,
   Lock
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
-import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../store/useMissionStore';
+import { sounds } from '../audio/soundEffects';
 
 interface SubjectOption {
   id: string;
@@ -55,8 +55,7 @@ const SUBJECT_OPTIONS: SubjectOption[] = [
   }
 ];
 
-// Order: Wariant A (swobodny), Wariant B (formalny z hasłem), Wariant C (niedbały) - Correct is NOT first!
-// No giveaway parentheses in labels!
+// Order: Wariant A, Wariant B, Wariant C
 const BODY_OPTIONS: BodyOption[] = [
   {
     id: 'body_no_pwd',
@@ -108,25 +107,43 @@ export const PhishingMailApp: React.FC = () => {
     setCustomState('m4_mail_body', selectedBody.id);
 
     // Record Step 5 (Subject)
+    const isSubjIdeal = selectedSubject.isCorrect;
+    const isSubjCritical = !!selectedSubject.isCriticalError;
+    const subjOutcome = isSubjIdeal ? 'ideal' : (isSubjCritical ? 'critical' : 'suboptimal');
+    const subjPenalty = isSubjIdeal ? 0 : (isSubjCritical ? 11.11 : 6.11);
+    const subjBtcPenalty = isSubjIdeal ? 0 : (isSubjCritical ? -0.89 : -0.45);
+
     recordChoice({
       num: 5,
       question: 'Wybierz temat maila:',
       answer: selectedSubject.label,
       isCorrect: selectedSubject.isCorrect,
+      outcome: subjOutcome,
+      btcPenalty: subjBtcPenalty,
       details: selectedSubject.feedback
-    }, selectedSubject.isCorrect ? 0 : (selectedSubject.isCriticalError ? 11.11 : 6.11));
+    }, subjPenalty);
 
     // Record Step 6 (Body)
+    const isBodyIdeal = selectedBody.isCorrect;
+    const isBodyCritical = !!selectedBody.isCriticalError;
+    const bodyOutcome = isBodyIdeal ? 'ideal' : (isBodyCritical ? 'critical' : 'suboptimal');
+    const bodyPenalty = isBodyIdeal ? 0 : (isBodyCritical ? 11.11 : 7.11);
+    const bodyBtcPenalty = isBodyIdeal ? 0 : (isBodyCritical ? -0.89 : -0.45);
+
     recordChoice({
       num: 6,
       question: 'Wybierz treść maila:',
       answer: selectedBody.label,
       isCorrect: selectedBody.isCorrect,
+      outcome: bodyOutcome,
+      btcPenalty: bodyBtcPenalty,
       details: selectedBody.feedback
-    }, selectedBody.isCorrect ? 0 : (selectedBody.isCriticalError ? 11.11 : 7.11));
+    }, bodyPenalty);
 
-    // Advance story: closes app, returns to desktop, unlocks VPN with badge, Byte_Master guides player in chat
-    advanceMission4Story('mail_done');
+    // Advance story only if no critical error occurred
+    if (subjOutcome !== 'critical' && bodyOutcome !== 'critical') {
+      advanceMission4Story('mail_done');
+    }
   };
 
   return (
@@ -159,7 +176,7 @@ export const PhishingMailApp: React.FC = () => {
         </span>
       </div>
 
-      {/* Step 5: Email Subject - NO spoilers/hints under cards, NO real-time answer indicators */}
+      {/* Step 5: Email Subject */}
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs font-bold text-gray-300">
           <span>KROK 5: WYBIERZ TEMAT WIADOMOŚCI E-MAIL:</span>
@@ -196,7 +213,7 @@ export const PhishingMailApp: React.FC = () => {
         </div>
       </div>
 
-      {/* Step 6: Email Body - NO giveaway parentheses, neutral WARIANT A/B/C labels */}
+      {/* Step 6: Email Body */}
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs font-bold text-gray-300">
           <span>KROK 6: WYBIERZ TREŚĆ WIADOMOŚCI E-MAIL:</span>

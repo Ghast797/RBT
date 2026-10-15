@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { AlertTriangle, Bug, Cpu, Layers, PackageCheck, Terminal, X, CheckCircle2 } from 'lucide-react';
-import { useMissionStore } from '../../store/useMissionStore';
+import { AlertTriangle, Bug, Cpu, Layers, PackageCheck, Terminal, X, CheckCircle2, ArrowRight } from 'lucide-react';
+import { useMissionStore } from '../store/useMissionStore';
 
 export const VirusDatabaseApp: React.FC = () => {
   const {
@@ -22,6 +22,7 @@ export const VirusDatabaseApp: React.FC = () => {
   } = useMissionStore();
 
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [allowSuboptimalBuilder, setAllowSuboptimalBuilder] = useState(false);
 
   const step1 = activeMission.step1 || {};
   const viruses: any[] = step1.viruses || [];
@@ -43,6 +44,8 @@ export const VirusDatabaseApp: React.FC = () => {
     }
   };
 
+  const showBuilder = selectedVirus === 'rat' || (selectedVirus === 'keylogger' && allowSuboptimalBuilder);
+
   return (
     <div className="flex flex-col h-full space-y-4 font-mono select-none">
       {/* App Header */}
@@ -63,7 +66,7 @@ export const VirusDatabaseApp: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1">
         {/* Step 1.1: 3 Virus Cards (matching baza_wirusow.png) */}
-        {!selectedVirus || selectedVirus !== 'rat' ? (
+        {!showBuilder ? (
           <div className="space-y-4">
             <div className="text-center space-y-1">
               <h2 className="text-base font-bold text-[#00ff66] tracking-widest text-glow-green">
@@ -111,7 +114,7 @@ export const VirusDatabaseApp: React.FC = () => {
 
                     {isSelected && !v.isCorrect && (
                       <div className="mt-2 text-[10px] text-[#ff3366] font-bold">
-                        [NIEZALECANE DO TEJ MISJI]
+                        {v.id === 'keylogger' ? '[WYBÓR SUBOPTYMALNY - KARA BTC]' : '[BŁĄD KRYTYCZNY - ALARM]'}
                       </div>
                     )}
                   </div>
@@ -120,9 +123,20 @@ export const VirusDatabaseApp: React.FC = () => {
             </div>
 
             {feedbackMsg && (
-              <div className="p-3 rounded bg-[#ff3366]/10 border border-[#ff3366]/50 text-xs text-[#ff3366] flex items-center space-x-2">
-                <AlertTriangle size={16} className="shrink-0" />
-                <span>{feedbackMsg}</span>
+              <div className="p-3 rounded bg-[#ff3366]/10 border border-[#ff3366]/50 text-xs text-[#ff3366] flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle size={16} className="shrink-0" />
+                  <span>{feedbackMsg}</span>
+                </div>
+                {selectedVirus === 'keylogger' && (
+                  <button
+                    onClick={() => setAllowSuboptimalBuilder(true)}
+                    className="ml-3 px-3 py-1 bg-amber-500/20 border border-amber-500 text-amber-300 hover:bg-amber-500/30 rounded font-bold text-[11px] flex items-center space-x-1 shrink-0"
+                  >
+                    <span>KONTYNUUJ Z KEYLOGGEREM</span>
+                    <ArrowRight size={12} />
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -143,7 +157,20 @@ export const VirusDatabaseApp: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <span className="text-[10px] text-[#00ff66] font-bold">STATUS: KONFIGURACJA</span>
+              <div className="flex items-center space-x-2">
+                {selectedVirus === 'keylogger' && (
+                  <button
+                    onClick={() => {
+                      setAllowSuboptimalBuilder(false);
+                      selectVirusCard('rat');
+                    }}
+                    className="text-[10px] text-[#00f0ff] underline hover:text-white"
+                  >
+                    [ZMIEŃ NA RAT]
+                  </button>
+                )}
+                <span className="text-[10px] text-[#00ff66] font-bold">STATUS: KONFIGURACJA</span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">

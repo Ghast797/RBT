@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, X, ChevronRight, Phone, Mail, Sparkles, Building2, User, Camera } from 'lucide-react';
-import { useMissionStore } from '../../store/useMissionStore';
+import { useMissionStore } from '../store/useMissionStore';
 
 export const TorBrowserApp: React.FC = () => {
   const {
@@ -47,7 +47,7 @@ export const TorBrowserApp: React.FC = () => {
         </button>
       </div>
 
-      {/* Website Navigation Header (matching strona_O&L1.png) */}
+      {/* Website Navigation Header */}
       <div className="px-4 py-3 bg-[#0e1d2e] border-b border-blue-900/60 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center space-x-2 text-white font-bold text-sm tracking-wider">
           <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white">
@@ -98,22 +98,19 @@ export const TorBrowserApp: React.FC = () => {
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 text-xs text-[#d1fae5]">
         {activeTab === 'home' ? (
           <div className="space-y-4">
-            {/* Refinery Hero Banner (vector SVG depiction) */}
+            {/* Refinery Hero Banner */}
             <div className="relative w-full h-36 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-lg overflow-hidden border border-blue-800/40 flex items-center justify-center">
               <svg viewBox="0 0 500 140" className="w-full h-full opacity-60">
-                {/* Factory Silhouettes */}
                 <rect x="60" y="30" width="35" height="110" fill="#1e293b" />
                 <rect x="110" y="50" width="25" height="90" fill="#334155" />
                 <line x1="77" y1="30" x2="77" y2="10" stroke="#94a3b8" strokeWidth="3" />
                 <rect x="200" y="60" width="60" height="80" rx="6" fill="#1e293b" />
                 <rect x="280" y="40" width="30" height="100" fill="#334155" />
                 <line x1="295" y1="40" x2="295" y2="15" stroke="#ef4444" strokeWidth="2" />
-                {/* Towers and Pipe structures */}
                 <line x1="60" y1="80" x2="200" y2="80" stroke="#475569" strokeWidth="4" />
                 <line x1="260" y1="90" x2="400" y2="90" stroke="#475569" strokeWidth="4" />
               </svg>
 
-              {/* O&L Watermark in Center */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-4xl font-black text-white/30 tracking-widest flex items-center space-x-2">
                   <span>⚙ O&L</span>
@@ -151,7 +148,6 @@ export const TorBrowserApp: React.FC = () => {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          {/* Avatar icon */}
                           <div
                             className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
                             style={{ backgroundColor: emp.avatarBg }}
@@ -209,14 +205,13 @@ export const TorBrowserApp: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* WYDARZENIA Tab (matching strona_O&L2.png) */
+          /* WYDARZENIA Tab */
           <div className="space-y-4">
             {site.news.map((item: any) => (
               <div
                 key={item.id}
                 className="p-4 bg-[#08121c] border border-blue-900/60 rounded-lg space-y-3"
               >
-                {/* Event Top Bar */}
                 <div className="flex items-center justify-between border-b border-blue-900/40 pb-2">
                   <span className="font-black text-sm text-blue-300 flex items-center space-x-1.5">
                     <Sparkles size={15} />
@@ -225,7 +220,6 @@ export const TorBrowserApp: React.FC = () => {
                   <span className="text-xs text-gray-400">{item.date}</span>
                 </div>
 
-                {/* Pub / Event Photo Placeholder (Vector SVG) */}
                 <div className="w-full h-32 bg-slate-900 rounded border border-slate-700 flex flex-col items-center justify-center p-2 text-center text-gray-400">
                   <div className="text-2xl mb-1">🍻 🎉</div>
                   <span className="text-[11px] font-bold text-blue-200">
@@ -233,7 +227,6 @@ export const TorBrowserApp: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Green Framed Box from VR screenshot */}
                 <div className="p-3 bg-[#00ff66]/10 border-2 border-[#00ff66] rounded-md text-center text-xs font-bold text-[#00ff66] tracking-wide">
                   {item.boxText}
                 </div>
@@ -250,7 +243,6 @@ export const TorBrowserApp: React.FC = () => {
                   {item.galleryText}
                 </div>
 
-                {/* Mini Photo Gallery Grid */}
                 <div className="grid grid-cols-4 gap-2 pt-1">
                   {[1, 2, 3, 4].map((n) => (
                     <div

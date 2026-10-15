@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ShieldAlert,
   Volume2,
@@ -6,7 +6,12 @@ import {
   RotateCcw,
   ArrowRight,
   MessageSquareCode,
-  HardDrive
+  HardDrive,
+  HelpCircle,
+  AlertTriangle,
+  X,
+  RefreshCw,
+  Play
 } from 'lucide-react';
 import { useMissionStore, type WindowId } from '../store/useMissionStore';
 import { BootSequence } from './BootSequence';
@@ -29,9 +34,17 @@ export const Desktop: React.FC = () => {
     systemTime,
     hasUsbInserted,
     isUsbEjected,
-    resetGame
+    resetGame,
+    isDetectedModalOpen,
+    detectionReason,
+    isRetryModalOpen,
+    openRetryModal,
+    closeRetryModal,
+    retryFromScratch,
+    retryFromChoices
   } = useMissionStore();
 
+  const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -45,6 +58,21 @@ export const Desktop: React.FC = () => {
   const toggleMute = () => {
     const muted = sounds.toggleMute();
     setIsMuted(muted);
+  };
+
+  // Dynamic context-sensitive guidance
+  const getGuidanceText = () => {
+    if (activeApp === null) {
+      if (chatAvailableChoices.length > 0) {
+        return "Sprawdź prawy monitor i odpowiedz wspólnikowi BYTE_MASTER.";
+      }
+      const hasBadges = Object.values(notificationBadges).some((count) => count > 0);
+      if (hasBadges) {
+        return "Uruchom aplikację oznaczoną czerwonym powiadomieniem [1] na pulpicie.";
+      }
+      return "Wybierz narzędzie z pulpitu, aby przejść do kolejnej fazy operacji.";
+    }
+    return "TRYB SWOBODNEJ DECYZJI: Przeanalizuj dane w otwartym narzędziu i podejmij właściwą decyzję. Uważaj – błędy obniżą wypłatę BTC lub doprowadzą do wykrycia!";
   };
 
   // If still in incoming call, intro or bios boot, render BootSequence
@@ -70,12 +98,43 @@ export const Desktop: React.FC = () => {
             <div className="flex items-center space-x-2">
               <ShieldAlert size={14} className="animate-pulse" />
               <span className="font-bold tracking-widest">{activeMission.mission.systemOs || '//HACKERS.OS'}</span>
+
+              {/* VR Style Blue Context Help Button */}
+              <button
+                onClick={() => setIsHelpOpen((prev) => !prev)}
+                className={`ml-2 px-2 py-0.5 rounded flex items-center space-x-1 font-bold text-[10px] tracking-wider transition-all border ${
+                  isHelpOpen
+                    ? 'bg-[#00f0ff] text-[#050b10] border-[#00f0ff] shadow-[0_0_10px_#00f0ff]'
+                    : 'bg-[#00f0ff]/15 text-[#00f0ff] border-[#00f0ff]/50 hover:bg-[#00f0ff]/30'
+                }`}
+                title="Wskazówka taktyczna misji"
+              >
+                <HelpCircle size={12} />
+                <span>WSKAZÓWKA [?]</span>
+              </button>
             </div>
             <div className="flex items-center space-x-4 text-[11px]">
               <span className="text-[#00ff66]/70">CEL: {activeMission.mission.targetCompany?.toUpperCase()}</span>
               <span className="font-bold text-[#00ff66]">{systemTime !== '00:00' ? systemTime : systemDate}</span>
             </div>
           </div>
+
+          {/* Context Help Banner */}
+          {isHelpOpen && (
+            <div className="px-4 py-2 bg-gradient-to-r from-blue-950/80 via-cyan-950/90 to-blue-950/80 border-b border-[#00f0ff]/40 text-blue-200 text-xs flex items-center justify-between shadow-inner animate-in fade-in slide-in-from-top-1 duration-150 relative z-20">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-[#00f0ff] animate-ping shrink-0" />
+                <span className="font-bold text-[#00f0ff]">PODPOWIEDŹ OPERACYJNA:</span>
+                <span className="text-gray-200">{getGuidanceText()}</span>
+              </div>
+              <button
+                onClick={() => setIsHelpOpen(false)}
+                className="text-gray-400 hover:text-white ml-2 p-0.5 rounded"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
 
           {/* Terminal Screen Body */}
           <div className="flex-1 p-4 overflow-hidden relative flex flex-col justify-between">
@@ -277,14 +336,110 @@ export const Desktop: React.FC = () => {
           </button>
 
           <button
-            onClick={resetGame}
+            onClick={openRetryModal}
             className="p-1 rounded hover:bg-[#ff3366]/20 text-gray-400 hover:text-[#ff3366] transition-colors"
-            title="Zrestartuj misję od zera"
+            title="Powtórz misję"
           >
             <RotateCcw size={14} />
           </button>
         </div>
       </div>
+
+      {/* FULL-SCREEN DETECTION ALARM MODAL */}
+      {isDetectedModalOpen && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-[#120407] border-2 border-[#ff3366] rounded-2xl max-w-xl w-full p-6 sm:p-8 text-center space-y-5 shadow-[0_0_60px_rgba(255,51,102,0.6)] relative">
+            <div className="w-20 h-20 rounded-full bg-[#ff3366]/15 border-2 border-[#ff3366] flex items-center justify-center mx-auto text-[#ff3366] shadow-[0_0_30px_#ff3366] animate-bounce">
+              <AlertTriangle size={44} />
+            </div>
+
+            <div className="space-y-1">
+              <div className="text-xs font-black tracking-widest text-[#ff3366] uppercase animate-pulse">
+                ⚠️ OPERACJA SPALONA // ZOSTAŁEŚ WYKRYTY!
+              </div>
+              <h2 className="text-lg sm:text-xl font-black text-white tracking-wide">
+                {detectionReason?.title || "ALARM SYSTEMÓW BEZPIECZEŃSTWA"}
+              </h2>
+            </div>
+
+            <div className="p-4 bg-[#1f060b] border border-[#ff3366]/40 rounded-xl text-left text-xs text-red-200 leading-relaxed shadow-inner">
+              <div className="text-[10px] text-[#ff3366] font-bold uppercase mb-1">
+                SZCZEGÓŁY WPADKI:
+              </div>
+              <p>{detectionReason?.details || "Podjęte działanie zaalarmowało ochronę lub systemy IDS/IPS. Atak został zneutralizowany."}</p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={retryFromChoices}
+                className="flex-1 py-3 px-4 bg-[#00ff66] text-[#05080c] font-black text-xs uppercase tracking-wider rounded-xl hover:bg-[#00ff66]/90 transition-all shadow-[0_0_20px_#00ff66] flex items-center justify-center space-x-2"
+              >
+                <Play size={15} />
+                <span>POWTÓRZ OD WYBORÓW (SZYBKI POWRÓT)</span>
+              </button>
+              <button
+                onClick={retryFromScratch}
+                className="py-3 px-4 bg-slate-800 hover:bg-slate-700 text-gray-200 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center space-x-1.5 border border-slate-700"
+              >
+                <RefreshCw size={14} />
+                <span>OD POCZĄTKU</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VR-STYLE RETRY MODAL (POWTÓRKA) */}
+      {isRetryModalOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-[#07131b] border-2 border-[#00ff66] rounded-2xl max-w-lg w-full p-6 sm:p-7 text-center space-y-5 shadow-[0_0_40px_rgba(0,255,102,0.35)] relative">
+            <button
+              onClick={closeRetryModal}
+              className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1 rounded transition-colors"
+              title="Zamknij"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="w-16 h-16 rounded-full bg-[#00ff66]/15 border-2 border-[#00ff66] flex items-center justify-center mx-auto text-[#00ff66] shadow-[0_0_25px_#00ff66]">
+              <RotateCcw size={32} />
+            </div>
+
+            <div>
+              <h2 className="text-xl font-black text-[#00ff66] tracking-widest text-glow-green uppercase">
+                POWTÓRKA
+              </h2>
+              <p className="text-xs text-gray-300 leading-relaxed max-w-md mx-auto mt-2">
+                MOŻESZ WRÓCIĆ DO ZADANIA, ABY POPRAWIĆ WYNIK LUB UTRWALIĆ WIEDZĘ. TYLKO NAJLEPSZY WYNIK ZOSTANIE ZAPISANY.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <button
+                onClick={retryFromScratch}
+                className="py-3 px-4 bg-[#00ff66]/15 border-2 border-[#00ff66] hover:bg-[#00ff66] text-[#00ff66] hover:text-[#05080c] font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_0_15px_rgba(0,255,102,0.2)] flex flex-col items-center justify-center space-y-1 group"
+              >
+                <div className="flex items-center space-x-1.5">
+                  <RefreshCw size={15} className="group-hover:rotate-180 transition-transform duration-300" />
+                  <span>OD POCZĄTKU</span>
+                </div>
+                <span className="text-[10px] text-gray-400 group-hover:text-gray-900 font-normal">Intro + BIOS + Fabuła</span>
+              </button>
+
+              <button
+                onClick={retryFromChoices}
+                className="py-3 px-4 bg-[#00ff66] text-[#05080c] font-black text-xs uppercase tracking-wider rounded-xl hover:bg-[#00ff66]/90 transition-all shadow-[0_0_20px_#00ff66] flex flex-col items-center justify-center space-y-1"
+              >
+                <div className="flex items-center space-x-1.5">
+                  <Play size={15} />
+                  <span>OD WYBORÓW</span>
+                </div>
+                <span className="text-[10px] text-gray-900 font-normal">Pulpit + Baza Wirusów</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

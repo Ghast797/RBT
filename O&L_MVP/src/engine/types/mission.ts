@@ -60,12 +60,16 @@ export interface DesktopAppConfig {
   minStep?: number;
 }
 
+export type ChoiceOutcome = 'ideal' | 'suboptimal' | 'critical';
+
 export interface PlayerChoiceRecord {
   num: number;
   question: string;
   answer: string;
   isCorrect: boolean;
   details: string;
+  outcome?: ChoiceOutcome;
+  btcPenalty?: number;
 }
 
 export interface DebriefSummaryConfig {
@@ -85,6 +89,8 @@ export interface DebriefChoiceItem {
   answer: string;
   correct: boolean;
   details: string;
+  outcome?: ChoiceOutcome;
+  btcPenalty?: number;
 }
 
 export interface EducationalSlide {
@@ -118,11 +124,48 @@ export interface MissionStep {
   [key: string]: any;
 }
 
+export interface ScenarioTransitionMessage {
+  text: string;
+  actionButton?: {
+    type: 'link_browser' | 'download_attachments' | 'view_car_photo';
+    label: string;
+    payload?: string;
+  };
+  imageSrc?: string;
+}
+
+export interface ScenarioTransitionChoice {
+  id: string;
+  label: string;
+  openAppId?: string;
+  nextTransitionId?: string;
+  outcome?: ChoiceOutcome;
+  choiceRecord?: {
+    num: number;
+    question: string;
+    answer: string;
+    details: string;
+    btcPenalty?: number;
+    scorePenalty?: number;
+  };
+}
+
+export interface ScenarioTransition {
+  id: string;
+  unlockIcons?: string[];
+  badges?: Record<string, number>;
+  closeActiveApp?: boolean;
+  timeJump?: string;
+  byteMasterMessages?: ScenarioTransitionMessage[];
+  nextChatChoices?: ScenarioTransitionChoice[];
+}
+
 // Full Mission Definition
 export interface MissionDefinition {
   mission: MissionMeta;
   intro: MissionIntro;
   desktopApps: DesktopAppConfig[];
+  transitions?: Record<string, ScenarioTransition>;
   steps?: MissionStep[];
   step1?: any;
   step2?: any;
@@ -132,3 +175,4 @@ export interface MissionDefinition {
   step6: DebriefData;
   [key: string]: any;
 }
+

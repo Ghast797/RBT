@@ -3,13 +3,11 @@ import {
   ShieldAlert, 
   Lock, 
   CheckCircle2, 
-  AlertTriangle, 
   ArrowRight,
-  Scan,
-  Check
+  Scan
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
-import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../store/useMissionStore';
+import { sounds } from '../audio/soundEffects';
 
 interface VirusOption {
   id: 'rat' | 'ransomware' | 'keylogger';
@@ -114,17 +112,27 @@ export const RansomwareVirusApp: React.FC = () => {
     setCustomState('m4_step1_confirmed', true);
     setCustomState('m4_step1_scanned', true);
 
-    // Record decision 1 in store
+    const isIdeal = selectedVirus.isCorrect;
+    const isCritical = !!selectedVirus.isCriticalError;
+    const outcome = isIdeal ? 'ideal' : (isCritical ? 'critical' : 'suboptimal');
+    const penalty = isIdeal ? 0 : (isCritical ? 11.11 : 7.11);
+    const btcPenalty = isIdeal ? 0 : (isCritical ? -0.89 : -0.45);
+
+    // Record decision 1 in store with 3-tier outcome
     recordChoice({
       num: 1,
       question: 'Wybierz odpowiedniego wirusa:',
       answer: selectedVirus.name,
       isCorrect: selectedVirus.isCorrect,
+      outcome,
+      btcPenalty,
       details: selectedVirus.feedback
-    }, selectedVirus.isCorrect ? 0 : (selectedVirus.isCriticalError ? 11.11 : 7.11));
+    }, penalty);
 
-    // Advance story: closes app, returns to desktop, unlocks builder with badge, Byte_Master guides in chat
-    advanceMission4Story('virus_done');
+    // If critical error occurred, detection modal is active - do NOT advance story
+    if (outcome !== 'critical') {
+      advanceMission4Story('virus_done');
+    }
   };
 
   return (

@@ -23,15 +23,35 @@ import {
 import { useMissionStore } from '../store/useMissionStore';
 import { ChatApp } from '../apps/ChatApp';
 import { DebriefApp } from '../apps/DebriefApp';
-import { mission3Apps } from '../../scenarios/mission_03_ol_company';
-import { mission4Apps } from '../../scenarios/mission_04_energy_rock';
+import {
+  VirusDatabaseApp,
+  RansomwareVirusApp,
+  RansomwareBuilderApp,
+  TorBrowserApp,
+  PendriveApp,
+  DroneApp,
+  RatSessionApp,
+  PhishingMailApp,
+  VpnApp,
+  WorkstationExfiltrationApp,
+  NegotiationChatApp
+} from '../widgets';
 
 // Base Application Registry for Generic / Shared Apps
 export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
   chat: ChatApp,
   debrief_app: DebriefApp,
-  // Include Mission 3 apps in global map for backwards compatibility
-  ...mission3Apps
+  virus_database: VirusDatabaseApp,
+  ransomware_virus_scanner: RansomwareVirusApp,
+  ransomware_builder: RansomwareBuilderApp,
+  browser: TorBrowserApp,
+  pendrive_app: PendriveApp,
+  drone_app: DroneApp,
+  rat_session: RatSessionApp,
+  mail: PhishingMailApp,
+  vpn_app: VpnApp,
+  victim_workstation: WorkstationExfiltrationApp,
+  negotiation: NegotiationChatApp,
 };
 
 /**
@@ -48,15 +68,10 @@ export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }
   const activeMission = useMissionStore(s => s.activeMission);
   const missionId = activeMission?.mission?.id || '';
 
-  // Determine component based on scenario context
-  let Component: React.ComponentType<any> | undefined;
-
-  if (missionId.includes('4') || missionId.includes('energy-rock')) {
-    Component = mission4Apps[componentId] || appComponentRegistry[componentId];
-  } else if (missionId.includes('3') || missionId.includes('ol-company')) {
-    Component = mission3Apps[componentId] || appComponentRegistry[componentId];
-  } else {
-    Component = appComponentRegistry[componentId];
+  // Determine component from registry with alias fallback
+  let Component = appComponentRegistry[componentId];
+  if (componentId === 'virus_database' && (missionId.includes('4') || missionId.includes('energy-rock'))) {
+    Component = RansomwareVirusApp;
   }
 
   if (!Component) {

@@ -72,7 +72,7 @@
       "label": "//BAZA_WIRUSÓW",
       "color": "#ec4899",
       "icon": "ShieldAlert",
-      "componentId": "virus_database"
+      "componentId": "ransomware_virus_scanner"
     },
     {
       "id": "chat_shortcut",

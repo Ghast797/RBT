@@ -11,8 +11,8 @@ import {
   Wallet,
   AlertOctagon
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
-import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../store/useMissionStore';
+import { sounds } from '../audio/soundEffects';
 
 type BuilderTab = 'password_generator' | 'extortion_strategy' | 'ransom_note';
 
@@ -27,9 +27,7 @@ export const RansomwareBuilderApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<BuilderTab>(customState.m4_builder_tab || 'password_generator');
 
   // Step 2 State: Password Generator
-  // Starts at 12 (not 24), slider 8-24, step 1.
   const [passwordLength, setPasswordLength] = useState<number>(customState.m4_pwd_len || 12);
-  // All toggles start unchecked (false) by default
   const [useUppercase, setUseUppercase] = useState<boolean>(customState.m4_pwd_upper ?? false);
   const [useLowercase, setUseLowercase] = useState<boolean>(customState.m4_pwd_lower ?? false);
   const [useNumbers, setUseNumbers] = useState<boolean>(customState.m4_pwd_nums ?? false);
@@ -43,7 +41,7 @@ export const RansomwareBuilderApp: React.FC = () => {
   const [extortionChoice, setExtortionChoice] = useState<'yes' | 'no' | null>(customState.m4_extortion_choice || null);
   const [step3Saved, setStep3Saved] = useState<boolean>(customState.m4_step3_saved || false);
 
-  // Step 4 State: Ransom Note (green, white, red - correct red is NOT first)
+  // Step 4 State: Ransom Note
   const [selectedColor, setSelectedColor] = useState<'green' | 'white' | 'red' | null>(customState.m4_ransom_color || null);
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
   const [isCompiled, setIsCompiled] = useState<boolean>(customState.m4_compiled || false);
@@ -130,16 +128,26 @@ export const RansomwareBuilderApp: React.FC = () => {
     setCustomState('m4_pwd_national', useNational);
     setCustomState('m4_pwd_spaces', useSpaces);
 
+    const isIdeal = currentEvaluation.isCorrect;
+    const isCritical = !!currentEvaluation.isCriticalError;
+    const outcome = isIdeal ? 'ideal' : (isCritical ? 'critical' : 'suboptimal');
+    const penalty = isIdeal ? 0 : (isCritical ? 11.11 : 5.11);
+    const btcPenalty = isIdeal ? 0 : (isCritical ? -0.89 : -0.45);
+
     recordChoice({
       num: 2,
       question: 'Siła wygenerowanego hasła:',
       answer: `${currentEvaluation.strength}/5 (${passwordLength} znaki, ${useNational || useSpaces ? 'niebezpieczne znaki' : 'bezpieczny charset'})`,
       isCorrect: currentEvaluation.isCorrect,
+      outcome,
+      btcPenalty,
       details: currentEvaluation.feedback
-    }, currentEvaluation.isCorrect ? 0 : (currentEvaluation.isCriticalError ? 11.11 : 5.11));
+    }, penalty);
 
-    setActiveTab('extortion_strategy');
-    setCustomState('m4_builder_tab', 'extortion_strategy');
+    if (outcome !== 'critical') {
+      setActiveTab('extortion_strategy');
+      setCustomState('m4_builder_tab', 'extortion_strategy');
+    }
   };
 
   // Save Step 3
@@ -151,18 +159,26 @@ export const RansomwareBuilderApp: React.FC = () => {
     setCustomState('m4_step3_saved', true);
 
     const isCorrect = choice === 'yes';
+    const outcome = isCorrect ? 'ideal' : 'critical';
+    const penalty = isCorrect ? 0 : 11.11;
+    const btcPenalty = isCorrect ? 0 : -0.89;
+
     recordChoice({
       num: 3,
       question: 'Czy warto wyłudzić okup?',
       answer: isCorrect ? 'TAK' : 'NIE',
       isCorrect: isCorrect,
+      outcome,
+      btcPenalty,
       details: isCorrect
         ? 'Stwarza wiarygodną motywację finansową, skupiając uwagę obrońców na ratowaniu operacji bieżących zamiast na audycie wycieku tajemnic technologicznych.'
         : 'Ofiara natychmiast diagnozuje atak celowany (APT / szpiegostwo przemysłowe) i odcina archiwa techniczne Freevolt.'
-    }, isCorrect ? 0 : 11.11);
+    }, penalty);
 
-    setActiveTab('ransom_note');
-    setCustomState('m4_builder_tab', 'ransom_note');
+    if (outcome !== 'critical') {
+      setActiveTab('ransom_note');
+      setCustomState('m4_builder_tab', 'ransom_note');
+    }
   };
 
   // Compile Step 4
@@ -173,6 +189,9 @@ export const RansomwareBuilderApp: React.FC = () => {
 
     const isCorrectColor = selectedColor === 'red';
     const isMediumColor = selectedColor === 'white';
+    const outcome = isCorrectColor ? 'ideal' : (isMediumColor ? 'suboptimal' : 'critical');
+    const penalty = isCorrectColor ? 0 : (isMediumColor ? 7.11 : 11.11);
+    const btcPenalty = isCorrectColor ? 0 : (isMediumColor ? -0.45 : -0.89);
 
     await new Promise((res) => setTimeout(res, 1800));
 
@@ -187,15 +206,18 @@ export const RansomwareBuilderApp: React.FC = () => {
       question: 'Wybierz kolor okna i elementów:',
       answer: selectedColor.toUpperCase(),
       isCorrect: isCorrectColor,
+      outcome,
+      btcPenalty,
       details: isCorrectColor
         ? 'Kolor alarmowy. Maksymalizuje stres psychologiczny ofiary, potęguje poczucie nieodwracalnej awarii i zmusza decydentów do pośpiechu.'
         : isMediumColor
         ? 'Zbyt neutralny, nie budzi poczucia natychmiastowego kryzysu.'
         : 'Kolor kojarzący się z sukcesem i stabilnością. Pracownicy mogą zignorować powiadomienie jako test systemowy.'
-    }, isCorrectColor ? 0 : (isMediumColor ? 7.11 : 11.11));
+    }, penalty);
 
-    // Advance story: closes app, returns to desktop, unlocks mail client with badge, Byte_Master guides player in chat
-    advanceMission4Story('builder_done');
+    if (outcome !== 'critical') {
+      advanceMission4Story('builder_done');
+    }
   };
 
   return (
@@ -276,7 +298,7 @@ export const RansomwareBuilderApp: React.FC = () => {
             </button>
           </div>
 
-          {/* Slider for Length: 8 to 24 with step 1, starts at 12 */}
+          {/* Slider for Length */}
           <div className="p-3.5 rounded-xl bg-[#08101a] border border-gray-800 space-y-2">
             <div className="flex justify-between text-xs font-bold">
               <span className="text-gray-300">DŁUGOŚĆ KLUCZA (ZAKRES: 8 - 24 ZNAKI, KROK: 1):</span>
@@ -302,7 +324,7 @@ export const RansomwareBuilderApp: React.FC = () => {
             </div>
           </div>
 
-          {/* Character rules switches: NO pre-checked choices, neutral labels without [PUŁAPKA] */}
+          {/* Character rules switches */}
           <div className="space-y-2">
             <div className="text-xs font-bold text-gray-300">
               ZESTAWY ZNAKÓW I REGUŁY SKŁADNIOWE (ZAZNACZ ODPOWIEDNIE):
@@ -376,7 +398,7 @@ export const RansomwareBuilderApp: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 2: Extortion Strategy (Krok 3) - Options shuffled, NIE first, TAK second */}
+      {/* TAB 2: Extortion Strategy (Krok 3) */}
       {activeTab === 'extortion_strategy' && (
         <div className="space-y-4 animate-in fade-in duration-200">
           <div className="border-b border-gray-800 pb-2">
@@ -392,7 +414,7 @@ export const RansomwareBuilderApp: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            {/* Option NIE (first) */}
+            {/* Option NIE */}
             <div
               data-extortion="no"
               onClick={() => handleSaveStep3('no')}
@@ -424,7 +446,7 @@ export const RansomwareBuilderApp: React.FC = () => {
               )}
             </div>
 
-            {/* Option TAK (second) */}
+            {/* Option TAK */}
             <div
               data-extortion="yes"
               onClick={() => handleSaveStep3('yes')}
@@ -459,7 +481,7 @@ export const RansomwareBuilderApp: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 3: Ransom Note Design (Krok 4) - Colors: ZIELONY, BIAŁY, CZERWONY */}
+      {/* TAB 3: Ransom Note Design (Krok 4) */}
       {activeTab === 'ransom_note' && (
         <div className="space-y-4 animate-in fade-in duration-200">
           <div className="border-b border-gray-800 pb-2 flex items-center justify-between">
@@ -469,7 +491,7 @@ export const RansomwareBuilderApp: React.FC = () => {
             <span className="text-[10px] text-[#c084fc]">INTERFEJS SZANTAŻU</span>
           </div>
 
-          {/* Color Selection Buttons: Green, White, Red (Red is NOT first!) */}
+          {/* Color Selection Buttons */}
           <div className="space-y-2">
             <div className="text-xs font-bold text-gray-300">
               WYBIERZ KOLOR OKNA I ELEMENTÓW INTERFEJSU SZANTAŻU:

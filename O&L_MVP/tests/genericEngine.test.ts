@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useMissionStore } from '../src/store/useMissionStore';
-import { registerMission, getMission, resolveInitialMission } from '../src/data/missionRegistry';
-import { appComponentRegistry, registerApp, renderAppIcon } from '../src/components/apps/appRegistry';
-import { createMissionCompletionStatement, MockLRS } from '../src/utils/xapi';
-import { scorm2004, MockSCORM2004 } from '../src/utils/scorm2004';
-import type { MissionDefinition } from '../src/types/mission';
+import { useMissionStore } from '../src/engine/store/useMissionStore';
+import { registerMission, getMission, resolveInitialMission } from '../src/engine/registry/missionRegistry';
+import { appComponentRegistry, registerApp, renderAppIcon } from '../src/engine/registry/appRegistry';
+import { createMissionCompletionStatement, MockLRS } from '../src/engine/scorm/xapi';
+import { scorm2004, MockSCORM2004 } from '../src/engine/scorm/scorm2004';
+import type { MissionDefinition } from '../src/engine/types/mission';
 
 const mockMission99: MissionDefinition = {
   mission: {
@@ -50,6 +50,21 @@ const mockMission99: MissionDefinition = {
       isChatFocus: true
     }
   ],
+  transitions: {
+    step1_complete: {
+      id: 'step1_complete',
+      closeActiveApp: true,
+      unlockIcons: ['custom_tool_unlocked'],
+      badges: { chat: 1 },
+      timeJump: '04:15',
+      byteMasterMessages: [
+        { text: 'Dobra robota, tunel VPN postawiony. Przejdź do exploita.' }
+      ],
+      nextChatChoices: [
+        { id: 'start_exploit', label: 'OTWIERAM EXPLOIT', openAppId: 'vpn_tool' }
+      ]
+    }
+  },
   step6: {
     summary: {
       title: 'SUKCES',
@@ -190,5 +205,85 @@ describe('Generic SCORM Scenario Engine', () => {
     expect(statement.object.definition.name['en-US']).toBe('MISJA 99 – CYBER BANK HEIST');
     expect(statement.result.score.raw).toBe(95);
     expect(statement.result.success).toBe(true);
+  });
+
+  it('supports 3-tier choice outcomes (ideal, suboptimal, critical) and btcPenalty', () => {
+    const store = useMissionStore.getState();
+    store.loadMission(mockMission99);
+
+    const initialScore = store.score;
+    const initialBtc = store.btcReward;
+
+    // Suboptimal choice
+    store.recordChoice({
+      num: 1,
+      question: 'Wybór etykiety nośnika:',
+      answer: 'Dysk USB B&D',
+      isCorrect: false,
+      outcome: 'suboptimal',
+      btcPenalty: -0.89,
+      details: 'Podejrzana nazwa'
+    }, 10);
+
+    const afterSuboptimal = useMissionStore.getState();
+    expect(afterSuboptimal.goodChoicesCount).toBe(1);
+    expect(afterSuboptimal.criticalErrorsCount).toBe(0);
+    expect(afterSuboptimal.score).toBe(initialScore - 10);
+    expect(afterSuboptimal.btcReward).toBeCloseTo(initialBtc - 0.89, 2);
+    expect(afterSuboptimal.playerChoices[0].outcome).toBe('suboptimal');
+  });
+
+  it('triggers critical detection modal and supports retry workflows', () => {
+    const store = useMissionStore.getState();
+    store.loadMission(mockMission99);
+
+    expect(store.isDetectedModalOpen).toBe(false);
+    expect(store.isRetryModalOpen).toBe(false);
+
+    // Trigger detection
+    store.triggerDetection('ALARM DETEKCJI', 'Dron został wykryty', 7);
+    const detectedState = useMissionStore.getState();
+    expect(detectedState.isDetectedModalOpen).toBe(true);
+    expect(detectedState.criticalErrorsCount).toBe(1);
+    expect(detectedState.detectionReason?.title).toBe('ALARM DETEKCJI');
+
+    // Retry from choices
+    store.retryFromChoices();
+    const afterChoicesRetry = useMissionStore.getState();
+    expect(afterChoicesRetry.isDetectedModalOpen).toBe(false);
+    expect(afterChoicesRetry.bootStage).toBe('desktop');
+    expect(afterChoicesRetry.activeApp).toBe('virus_database');
+
+    // Retry from scratch
+    store.openRetryModal();
+    expect(useMissionStore.getState().isRetryModalOpen).toBe(true);
+    store.retryFromScratch();
+    const afterScratch = useMissionStore.getState();
+    expect(afterScratch.bootStage).toBe('incoming_call');
+    expect(afterScratch.isRetryModalOpen).toBe(false);
+  });
+
+  it('declaratively runs scenario transitions and generic chat choices from definition', async () => {
+    const store = useMissionStore.getState();
+    store.loadMission(mockMission99);
+    store.openApp('vpn_tool');
+    expect(useMissionStore.getState().activeApp).toBe('vpn_tool');
+
+    // Run declarative transition
+    store.runScenarioTransition('step1_complete');
+    expect(useMissionStore.getState().activeApp).toBeNull();
+    expect(useMissionStore.getState().unlockedIcons).toContain('custom_tool_unlocked');
+    expect(useMissionStore.getState().notificationBadges['chat']).toBe(1);
+    expect(useMissionStore.getState().systemTime).toBe('04:15');
+
+    // Fast-forward simulated typing
+    await new Promise((r) => setTimeout(r, 1300));
+    const stateAfterMsg = useMissionStore.getState();
+    expect(stateAfterMsg.chatMessages.some((m) => m.text.includes('tunel VPN'))).toBe(true);
+    expect(stateAfterMsg.chatAvailableChoices.some((c) => c.id === 'start_exploit')).toBe(true);
+
+    // Player picks generic choice with openAppId
+    store.chooseChatOption('start_exploit');
+    expect(useMissionStore.getState().activeApp).toBe('vpn_tool');
   });
 });

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { formatIso8601Duration, MockSCORM2004, scorm2004 } from '../src/utils/scorm2004';
-import { useMissionStore } from '../src/store/useMissionStore';
+import { formatIso8601Duration, MockSCORM2004, scorm2004 } from '../src/engine/scorm/scorm2004';
+import { useMissionStore } from '../src/engine/store/useMissionStore';
 
 describe('SCORM 2004 (4th Edition) Engine', () => {
   beforeEach(() => {

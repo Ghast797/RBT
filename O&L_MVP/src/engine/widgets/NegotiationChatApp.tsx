@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  MessageSquareCode, 
   Send, 
   Award, 
   PhoneCall,
@@ -8,8 +7,8 @@ import {
   ShieldAlert,
   Bot
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
-import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../store/useMissionStore';
+import { sounds } from '../audio/soundEffects';
 
 interface DialogChoice {
   id: string;
@@ -27,7 +26,6 @@ interface DialogNode {
   options: DialogChoice[];
 }
 
-// Correct options are NOT always the first ones!
 const NODES: DialogNode[] = [
   {
     nodeId: 1,
@@ -47,7 +45,7 @@ const NODES: DialogNode[] = [
         points: 0.0,
         isCorrect: false,
         isCriticalError: true,
-        feedback: 'Kapitulacja i rezygnacja z szantażu.',
+        feedback: 'Kapitulacja i natychmiastowa rezygnacja z szantażu.',
         nextNode: 2
       },
       {
@@ -133,6 +131,7 @@ export const NegotiationChatApp: React.FC = () => {
   );
   const [isCompleted, setIsCompleted] = useState<boolean>(customState.m4_neg_completed || false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [hadSuboptimal, setHadSuboptimal] = useState<boolean>(customState.m4_neg_suboptimal || false);
 
   const currentNode = NODES.find(n => n.nodeId === currentNodeId);
 
@@ -146,6 +145,27 @@ export const NegotiationChatApp: React.FC = () => {
       { sender: 'TY (HAKER)', text: choice.text, isPlayer: true }
     ];
     setMessages(updatedMessages);
+
+    // If critical error chosen, trigger detection immediately and do not progress
+    if (choice.isCriticalError) {
+      recordChoice({
+        num: 9,
+        question: 'Negocjacje z ofiarą:',
+        answer: choice.text,
+        isCorrect: false,
+        outcome: 'critical',
+        btcPenalty: -0.89,
+        details: choice.feedback
+      }, 11.11);
+
+      setIsProcessing(false);
+      return;
+    }
+
+    if (!choice.isCorrect) {
+      setHadSuboptimal(true);
+      setCustomState('m4_neg_suboptimal', true);
+    }
 
     if (choice.nextNode && choice.nextNode <= 3) {
       const nextN = NODES.find(n => n.nodeId === choice.nextNode);
@@ -186,14 +206,21 @@ export const NegotiationChatApp: React.FC = () => {
         setCustomState('m4_neg_completed', true);
         setCustomState('m4_neg_history', finalMessages);
 
+        const isIdealOverall = choice.isCorrect && !hadSuboptimal;
+        const outcome = isIdealOverall ? 'ideal' : 'suboptimal';
+        const penalty = isIdealOverall ? 0 : 3.0;
+        const btcPenalty = isIdealOverall ? 0 : -0.45;
+
         // Record Decision 9
         recordChoice({
           num: 9,
           question: 'Negocjacje z ofiarą:',
           answer: choice.id === 'deadline_3h' ? 'Twardy limit 3h i żądanie BTC' : choice.text,
-          isCorrect: choice.isCorrect,
+          isCorrect: isIdealOverall,
+          outcome,
+          btcPenalty,
           details: choice.feedback
-        }, choice.isCorrect ? 0 : (choice.isCriticalError ? 11.11 : 7.11));
+        }, penalty);
 
         // Advance story: unlocks debrief app, Byte_Master confirms completion
         advanceMission4Story('negotiation_done');

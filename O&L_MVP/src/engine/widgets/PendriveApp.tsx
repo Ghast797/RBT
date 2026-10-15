@@ -1,6 +1,6 @@
 import React from 'react';
 import { HardDrive, FileArchive, X, CheckCircle, Bug, FileText, ArrowRight } from 'lucide-react';
-import { useMissionStore } from '../../store/useMissionStore';
+import { useMissionStore } from '../store/useMissionStore';
 
 export const PendriveApp: React.FC = () => {
   const {
@@ -26,7 +26,8 @@ export const PendriveApp: React.FC = () => {
   };
   const attachments = step3.attachments || [];
 
-  const hasPhotos = usbFiles.includes('party_photos');
+  const hasAttachment = usbFiles.length > 0;
+  const currentAttachment = attachments.find((a: any) => usbFiles.includes(a.id));
 
   return (
     <div className="flex flex-col h-full bg-[#050b10] rounded-lg overflow-hidden font-mono select-none border border-[#00ff66]/30 shadow-2xl p-4 space-y-4">
@@ -46,7 +47,7 @@ export const PendriveApp: React.FC = () => {
         </button>
       </div>
 
-      {/* Main Two-Panel Layout (matching video 2.mp4) */}
+      {/* Main Two-Panel Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0 overflow-y-auto pr-1">
         {/* Left Panel: //E: USB */}
         <div className="p-4 bg-[#081219] border-2 border-[#00ff66]/40 rounded-xl flex flex-col justify-between space-y-3 relative overflow-hidden">
@@ -59,14 +60,14 @@ export const PendriveApp: React.FC = () => {
             </div>
 
             {/* Empty state / Files on USB */}
-            {!hasPhotos ? (
+            {!hasAttachment ? (
               <div className="py-8 text-center text-gray-500 text-xs italic">
                 Pusty nośnik USB. Kliknij załącznik po prawej stronie, aby przenieść go na dysk.
               </div>
             ) : !isRatBoundToZip ? (
               <div className="space-y-3">
                 <div className="p-2.5 bg-[#050a0f] border border-[#00ff66]/40 rounded text-xs flex items-center justify-between">
-                  <span className="text-[#00ff66]">IMG_00034521.JPG X3</span>
+                  <span className="text-[#00ff66] font-bold">{currentAttachment?.name || 'PLIK'}</span>
                   <CheckCircle size={15} className="text-[#00ff66]" />
                 </div>
 
@@ -75,7 +76,7 @@ export const PendriveApp: React.FC = () => {
                     WYMAGANE: PODPIĘCIE ŁADUNKU WIRUSA
                   </div>
                   <p className="text-[11px] text-gray-300 leading-tight">
-                    Wirus RAT musi zostać ukryty w archiwum ZIP razem ze zdjęciami, aby ominąć podstawowe skanery.
+                    Wirus RAT musi zostać ukryty w archiwum ZIP razem z plikami przynęty, aby ominąć podstawowe skanery.
                   </p>
                   <button
                     onClick={bindRatToArchive}
@@ -87,10 +88,10 @@ export const PendriveApp: React.FC = () => {
                 </div>
               </div>
             ) : !selectedVolumeName ? (
-              /* Modal 1: WYBIERZ NAZWĘ PENDRIVE'A (matching USB.png) */
+              /* Modal 1: WYBIERZ NAZWĘ PENDRIVE'A */
               <div className="space-y-2.5">
                 <div className="p-2 bg-[#00ff66]/15 border border-[#00ff66] rounded text-xs font-bold text-[#00ff66] text-center">
-                  UTWORZONO: FOTKI_AFTERPARTY.ZIP (ŁADUNEK PODPIĘTY)
+                  UTWORZONO: ARCHIWUM_PAYLOAD.ZIP (ŁADUNEK PODPIĘTY)
                 </div>
 
                 <div className="text-center py-1">
@@ -112,7 +113,7 @@ export const PendriveApp: React.FC = () => {
                 </div>
               </div>
             ) : !selectedEnvelopeName ? (
-              /* Modal 2: WYBIERZ PODPIS NA KOPERCIE (matching USB2.png) */
+              /* Modal 2: WYBIERZ PODPIS NA KOPERCIE */
               <div className="space-y-2.5">
                 <div className="p-1.5 bg-[#050a0f] border border-[#00ff66]/30 rounded text-[11px] text-[#00ff66] text-center">
                   NAZWA WOLUMINU: {step3.volumeOptions.find((o: any) => o.id === selectedVolumeName)?.label}
@@ -144,7 +145,7 @@ export const PendriveApp: React.FC = () => {
                 </div>
 
                 <div className="font-black text-sm text-[#00ff66]">
-                  FOTKI_AFTERPARTY.ZIP
+                  {currentAttachment?.name.includes('JPG') ? 'FOTKI_AFTERPARTY.ZIP' : 'DANE_PRZYNĘTY.ZIP'}
                 </div>
 
                 <div className="p-2 bg-[#050b10] border border-[#00ff66]/40 rounded text-[11px] text-gray-300 space-y-0.5">
@@ -164,7 +165,7 @@ export const PendriveApp: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Panel: ZAŁĄCZNIKI (matching video 2.mp4) */}
+        {/* Right Panel: ZAŁĄCZNIKI */}
         <div className="p-4 bg-[#081219] border-2 border-[#00ff66]/40 rounded-xl space-y-3">
           <div className="flex items-center justify-between border-b border-[#00ff66]/30 pb-2 mb-2">
             <span className="font-bold text-xs text-[#00ff66] tracking-wider">ZAŁĄCZNIKI OD BYTE_MASTERA</span>
@@ -177,11 +178,11 @@ export const PendriveApp: React.FC = () => {
               return (
                 <div
                   key={att.id}
-                  onClick={() => !hasPhotos && addAttachmentToUsb(att.id)}
+                  onClick={() => !hasAttachment && addAttachmentToUsb(att.id)}
                   className={`p-3 rounded-lg border-2 cursor-pointer transition-all flex items-center justify-between ${
                     isAdded
                       ? 'bg-[#00ff66]/20 border-[#00ff66]'
-                      : hasPhotos
+                      : hasAttachment
                       ? 'bg-[#050a0f] border-slate-800 opacity-50 cursor-not-allowed'
                       : 'bg-[#050a0f] border-[#00ff66]/30 hover:border-[#00ff66] hover:bg-[#00ff66]/10'
                   }`}
@@ -193,7 +194,7 @@ export const PendriveApp: React.FC = () => {
                     <span className="font-bold text-xs text-white">{att.name}</span>
                   </div>
 
-                  {!isAdded && !hasPhotos && (
+                  {!isAdded && !hasAttachment && (
                     <ArrowRight size={15} className="text-[#00ff66]" />
                   )}
                   {isAdded && (

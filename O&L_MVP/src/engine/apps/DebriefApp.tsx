@@ -20,7 +20,8 @@ export const DebriefApp: React.FC = () => {
     isExitModalOpen,
     submitScormAndExit,
     closeExitModal,
-    openExitModal
+    openExitModal,
+    openRetryModal
   } = useMissionStore();
 
   const [activeSlideIdx, setActiveSlideIdx] = useState<number>(0);
@@ -181,18 +182,26 @@ export const DebriefApp: React.FC = () => {
 
             {choices.map((c, idx) => {
               const isExpanded = expandedChoiceIndex === idx;
+              const outcome = c.outcome || (c.isCorrect ? 'ideal' : 'critical');
+              const isIdeal = outcome === 'ideal';
+              const isSuboptimal = outcome === 'suboptimal';
+
               return (
                 <div
                   key={c.num}
                   className={`p-3 rounded-lg space-y-2 transition-all border ${
-                    c.isCorrect
+                    isIdeal
                       ? 'bg-[#081219] border-[#00ff66]/40 shadow-sm'
+                      : isSuboptimal
+                      ? 'bg-[#141208] border-[#facc15]/50 shadow-[0_0_10px_rgba(250,204,21,0.15)]'
                       : 'bg-[#14080e] border-[#ff3366]/50 shadow-[0_0_10px_rgba(255,51,102,0.15)]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 text-xs">
-                      <span className={`font-bold ${c.isCorrect ? 'text-[#00ff66]' : 'text-[#ff3366]'}`}>
+                      <span className={`font-bold ${
+                        isIdeal ? 'text-[#00ff66]' : isSuboptimal ? 'text-[#facc15]' : 'text-[#ff3366]'
+                      }`}>
                         WYBÓR {c.num}:
                       </span>
                       <span className="text-gray-300">{c.question}</span>
@@ -200,13 +209,26 @@ export const DebriefApp: React.FC = () => {
 
                     <div className="flex items-center space-x-2">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                          c.isCorrect
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center space-x-1 ${
+                          isIdeal
                             ? 'bg-[#00ff66]/15 border-[#00ff66]/40 text-[#00ff66]'
+                            : isSuboptimal
+                            ? 'bg-[#facc15]/15 border-[#facc15]/40 text-[#facc15]'
                             : 'bg-[#ff3366]/15 border-[#ff3366]/40 text-[#ff3366]'
                         }`}
                       >
-                        {c.isCorrect ? '[IDEALNY WYBÓR]' : '[BŁĄD W DECYZJI]'}
+                        <span>
+                          {isIdeal
+                            ? '[IDEALNY WYBÓR]'
+                            : isSuboptimal
+                            ? '[DOBRY, ALE NIEIDEALNY WYBÓR]'
+                            : '[BŁĄD KRYTYCZNY]'}
+                        </span>
+                        {c.btcPenalty && (
+                          <span className="text-amber-300 ml-1 font-black">
+                            ({c.btcPenalty > 0 ? `-${c.btcPenalty}` : c.btcPenalty} ₿)
+                          </span>
+                        )}
                       </span>
 
                       <button
@@ -221,26 +243,39 @@ export const DebriefApp: React.FC = () => {
 
                   <div
                     className={`text-xs font-bold pl-4 border-l-2 ${
-                      c.isCorrect
+                      isIdeal
                         ? 'text-white border-[#00ff66]'
+                        : isSuboptimal
+                        ? 'text-amber-100 border-[#facc15]'
                         : 'text-red-200 border-[#ff3366]'
                     }`}
                   >
                     TWOJA ODPOWIEDŹ:{' '}
-                    <span className={c.isCorrect ? 'text-[#00ff66]' : 'text-[#ff3366]'}>
+                    <span className={isIdeal ? 'text-[#00ff66]' : isSuboptimal ? 'text-[#facc15]' : 'text-[#ff3366]'}>
                       {c.answer}
                     </span>
                   </div>
 
                   {isExpanded && (
                     <div
-                      className={`p-2.5 rounded text-[11px] leading-relaxed mt-2 border ${
-                        c.isCorrect
+                      className={`p-2.5 rounded text-[11px] leading-relaxed mt-2 border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                        isIdeal
                           ? 'bg-[#050a0f] border-slate-800 text-gray-300'
+                          : isSuboptimal
+                          ? 'bg-[#1b1708] border-[#facc15]/30 text-amber-100'
                           : 'bg-[#1b080f] border-[#ff3366]/30 text-red-100'
                       }`}
                     >
-                      {c.details}
+                      <div className="flex-1">{c.details}</div>
+                      {!c.isCorrect && (
+                        <button
+                          onClick={openRetryModal}
+                          className="self-start sm:self-auto px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500 text-yellow-300 rounded font-bold text-[10px] uppercase tracking-wider transition-all flex items-center space-x-1 shrink-0 shadow-sm"
+                        >
+                          <RotateCcw size={11} />
+                          <span>POWTÓRZ ZADANIE</span>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -287,7 +322,7 @@ export const DebriefApp: React.FC = () => {
       {/* Bottom Navigation Buttons */}
       <div className="pt-2 border-t border-[#00ff66]/20 flex flex-wrap items-center justify-between gap-2">
         <button
-          onClick={resetGame}
+          onClick={openRetryModal}
           className="px-3.5 py-2 bg-[#ff3366]/20 hover:bg-[#ff3366]/30 border border-[#ff3366] text-[#ff3366] rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
         >
           <RotateCcw size={14} />

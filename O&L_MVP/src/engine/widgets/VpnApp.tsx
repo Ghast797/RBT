@@ -7,8 +7,8 @@ import {
   RefreshCw,
   Check
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
-import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../store/useMissionStore';
+import { sounds } from '../audio/soundEffects';
 
 interface SenderOption {
   id: string;
@@ -53,10 +53,8 @@ export const VpnApp: React.FC = () => {
     advanceMission4Story 
   } = useMissionStore();
 
-  // Target subnet: 109.43.200.124
   const TARGET_IP = '109.43.200.124';
 
-  // Initial IP starts at 106.55.202.120 (close to target, not pre-set to correct!)
   const [octet1, setOctet1] = useState<number>(customState.m4_vpn_o1 ?? 106);
   const [octet2, setOctet2] = useState<number>(customState.m4_vpn_o2 ?? 55);
   const [octet3, setOctet3] = useState<number>(customState.m4_vpn_o3 ?? 202);
@@ -86,23 +84,53 @@ export const VpnApp: React.FC = () => {
     setCustomState('m4_vpn_o3', octet3);
     setCustomState('m4_vpn_o4', octet4);
 
-    // Record Step 7 Decision
-    const isStepCorrect = selectedSender.isCorrect && isIpCorrect;
-    const isCritical = selectedSender.isCriticalError || !isIpCorrect;
+    // Evaluate choice 7
+    let outcome: 'ideal' | 'suboptimal' | 'critical' = 'ideal';
+    let isStepCorrect = false;
+    let penalty = 0;
+    let btcPenalty = 0;
+    let details = '';
+
+    if (!isIpCorrect) {
+      outcome = 'critical';
+      isStepCorrect = false;
+      penalty = 11.11;
+      btcPenalty = -0.89;
+      details = 'Nieprawidłowy routing IP wywołał natychmiastowy alarm geolokalizacyjny w systemie ochrony poczty Energy Rock!';
+    } else if (selectedSender.isCriticalError) {
+      outcome = 'critical';
+      isStepCorrect = false;
+      penalty = 11.11;
+      btcPenalty = -0.89;
+      details = selectedSender.feedback;
+    } else if (selectedSender.isCorrect) {
+      outcome = 'ideal';
+      isStepCorrect = true;
+      penalty = 0;
+      btcPenalty = 0;
+      details = 'Zapewnia pełną spójność tożsamości kandydata oraz omija reguły geolokalizacyjne filtrowania poczty.';
+    } else {
+      // Suboptimal (e.g. alex@priv.com with correct IP)
+      outcome = 'suboptimal';
+      isStepCorrect = false;
+      penalty = 7.11;
+      btcPenalty = -0.45;
+      details = selectedSender.feedback;
+    }
+
     recordChoice({
       num: 7,
       question: 'Ukrycie tożsamości / VPN nadawcy:',
       answer: `${selectedSender.address} (IP: ${currentIp})`,
       isCorrect: isStepCorrect,
-      details: isStepCorrect
-        ? 'Zapewnia pełną spójność tożsamości kandydata oraz omija reguły geolokalizacyjne filtrowania poczty.'
-        : !selectedSender.isCorrect
-        ? selectedSender.feedback
-        : 'Nieprawidłowy routing IP wywołał alarm geolokalizacyjny w systemie ochrony poczty.'
-    }, isStepCorrect ? 0 : (isCritical ? 11.11 : 7.11));
+      outcome,
+      btcPenalty,
+      details
+    }, penalty);
 
-    // Advance story: closes app, returns to desktop, unlocks victim workstation with alarm, Byte_Master guides player in chat
-    advanceMission4Story('vpn_done');
+    if (outcome !== 'critical') {
+      advanceMission4Story('vpn_done');
+    }
   };
 
   return (
@@ -200,7 +228,7 @@ export const VpnApp: React.FC = () => {
         </div>
       </div>
 
-      {/* Task 2: Sender Address - NO hint spoilers under cards */}
+      {/* Task 2: Sender Address */}
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs font-bold text-gray-300">
           <span>ZADANIE 2: WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA DO HR:</span>

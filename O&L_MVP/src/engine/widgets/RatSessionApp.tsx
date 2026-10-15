@@ -1,6 +1,6 @@
 import React from 'react';
 import { Radio, AlertOctagon, Monitor, Trash2, ArrowRight, FileArchive, FolderOpen } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { useMissionStore } from '../store/useMissionStore';
 
 export const RatSessionApp: React.FC = () => {
   const {
@@ -61,25 +61,21 @@ export const RatSessionApp: React.FC = () => {
         </div>
       )}
 
-      {/* Stage 2: Windows 11 Victim Desktop Takeover (matching 3.mp4) */}
+      {/* Stage 2: Windows 11 Victim Desktop Takeover */}
       {isDesktopTakeoverActive && !isNetworkGraphActive && (
         <div className="flex-1 flex flex-col justify-between rounded-xl overflow-hidden border-2 border-[#00ff66] relative shadow-2xl bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
-          {/* Top Control Banner */}
           <div className="p-2 bg-red-900/80 border-b border-red-500 text-center text-xs font-black text-white tracking-widest flex items-center justify-center space-x-2 z-20">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
             <span>KONTROLUJESZ PULPIT OFIARY (MATEUSZ_BIURO_O&L)</span>
           </div>
 
-          {/* Desktop Wallpaper Watermark */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-15">
             <div className="text-5xl font-black text-white tracking-widest">
               ⚙ O&L Company
             </div>
           </div>
 
-          {/* Desktop Content Area */}
           <div className="flex-1 relative p-4 flex">
-            {/* Desktop Icons */}
             <div className="space-y-4 relative z-10 w-28">
               <div className="flex flex-col items-center p-2 rounded hover:bg-white/10 cursor-pointer text-center text-[10px] text-white">
                 <div className="w-10 h-10 rounded bg-slate-800 border border-slate-600 flex items-center justify-center mb-1 text-slate-300">
@@ -107,7 +103,6 @@ export const RatSessionApp: React.FC = () => {
               </div>
             </div>
 
-            {/* Open Explorer Window showing extracted ZIP from USB (matching Scenariusz.txt L194) */}
             <div className="absolute top-6 right-6 w-80 bg-slate-900/95 border-2 border-blue-500 rounded-lg shadow-2xl overflow-hidden z-20 font-sans">
               <div className="px-3 py-1.5 bg-blue-700 text-white font-bold text-xs flex items-center justify-between">
                 <div className="flex items-center space-x-1.5">
@@ -134,7 +129,6 @@ export const RatSessionApp: React.FC = () => {
             </div>
           </div>
 
-          {/* Action Prompt Banner */}
           <div className="p-2.5 bg-slate-950/90 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-2 z-20">
             <div className="text-[11px] text-amber-300 flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
@@ -149,7 +143,6 @@ export const RatSessionApp: React.FC = () => {
             </button>
           </div>
 
-          {/* Bottom Taskbar */}
           <div className="px-3 py-1.5 bg-[#0a121c]/90 border-t border-slate-700 flex items-center justify-between text-xs text-slate-300 z-10">
             <div className="flex items-center space-x-2">
               <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white text-[10px] font-black">
@@ -164,7 +157,7 @@ export const RatSessionApp: React.FC = () => {
         </div>
       )}
 
-      {/* Stage 3: Remote Network Access Diagram (matching video 3.mp4) */}
+      {/* Stage 3: Remote Network Access Diagram */}
       {isNetworkGraphActive && (
         <div className="flex-1 flex flex-col justify-between p-6 bg-[#081219] border-2 border-[#00ff66] rounded-xl text-center space-y-4">
           <div className="space-y-1">
@@ -176,34 +169,28 @@ export const RatSessionApp: React.FC = () => {
             </div>
           </div>
 
-          {/* Network SVG Graph from video - spacious, adapted to text length */}
           <div className="relative w-full h-56 bg-[#050a0f] rounded-xl border-2 border-[#00ff66]/40 flex items-center justify-center p-3 shadow-inner">
             <svg viewBox="0 0 420 160" className="w-full h-full max-h-52">
-              {/* Connection Lines to Target Nodes */}
               <line x1="210" y1="120" x2="80" y2="58" stroke="#00ff66" strokeWidth="2.5" strokeDasharray="5,5" className="animate-pulse" />
               <line x1="210" y1="120" x2="210" y2="60" stroke="#00ff66" strokeWidth="3" strokeDasharray="5,5" className="animate-pulse" />
               <line x1="210" y1="120" x2="340" y2="58" stroke="#00ff66" strokeWidth="2.5" strokeDasharray="5,5" className="animate-pulse" />
 
-              {/* Target Node: PC-1 */}
               <g>
                 <rect x="45" y="22" width="70" height="36" rx="6" fill="#08141f" stroke="#00ff66" strokeWidth="1.5" />
                 <text x="80" y="44" textAnchor="middle" fill="#00ff66" fontSize="12" fontWeight="bold">PC-1</text>
               </g>
 
-              {/* Target Node: MATEUSZ (wide box comfortably fitting full name + status) */}
               <g>
                 <rect x="145" y="18" width="130" height="42" rx="8" fill="#0b1b26" stroke="#00ff66" strokeWidth="2.5" filter="drop-shadow(0 0 8px rgba(0,255,102,0.4))" />
                 <text x="210" y="38" textAnchor="middle" fill="#00ff66" fontSize="13" fontWeight="900" letterSpacing="1">MATEUSZ</text>
                 <text x="210" y="52" textAnchor="middle" fill="#00ff66" fontSize="9" fontWeight="bold" opacity="0.85">[PRZEJĘTY // RAT]</text>
               </g>
 
-              {/* Target Node: SRV */}
               <g>
                 <rect x="305" y="22" width="70" height="36" rx="6" fill="#08141f" stroke="#00ff66" strokeWidth="1.5" />
                 <text x="340" y="44" textAnchor="middle" fill="#00ff66" fontSize="12" fontWeight="bold">SRV</text>
               </g>
 
-              {/* Hacker Node at Bottom */}
               <g transform="translate(192, 104)">
                 <circle cx="18" cy="18" r="18" fill="#00ff66" filter="drop-shadow(0 0 10px rgba(0,255,102,0.6))" />
                 <text x="18" y="23" textAnchor="middle" fill="#05080c" fontSize="15" fontWeight="black">☣</text>
