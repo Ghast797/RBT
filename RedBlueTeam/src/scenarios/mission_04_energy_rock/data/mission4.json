@@ -9,6 +9,7 @@
     "rewardBtc": 3.79,
     "maxScore": 100,
     "passingScore": 70,
+    "decisionCount": 10,
     "targetCompany": "Energy Rock",
     "description": "Scenariusz szkoleniowy SCORM symulujący atak ransomware i spear-phishing na firmę Energy Rock w celu podniesienia świadomości zagrożeń i procedur obronnych."
   },
@@ -64,7 +65,10 @@
       "SEGMENT ADDRESS: E447",
       "",
       "WELCOME... HACKER"
-    ]
+    ],
+    "desktopGreeting": "POŁĄCZENIE HACKER.OS AKTYWNE. CEL: ENERGY ROCK. OTWÓRZ BAZĘ WIRUSÓW I DOBIERZ ODPOWIEDNI ŁADUNEK.",
+    "firstChoice": { "id": "m4_reply_intro", "label": "DOBRA. ZABIERAM SIĘ ZA DOBÓR WIRUSA.", "openAppId": "virus_database" },
+    "startBadges": { "virus_database": 1, "chat": 1 }
   },
   "desktopApps": [
     {
@@ -137,292 +141,13 @@
       "requiredUnlockId": "mission_completed"
     }
   ],
-  "steps": {
-    "step1_virus_selection": {
-      "title": "BAZA WIRUSÓW",
-      "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA:",
-      "options": [
-        {
-          "id": "rat",
-          "name": "RAT: REMOTE ACCESS TROJAN",
-          "description": "POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY",
-          "isCorrect": false,
-          "points": 5.55,
-          "feedback": "RAT nie paraliżuje operacji spółki ani nie tworzy natychmiastowej przykrywki pod szantaż i żądanie okupu."
-        },
-        {
-          "id": "ransomware",
-          "name": "RANSOMWARE",
-          "description": "MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ",
-          "isCorrect": true,
-          "points": 11.11,
-          "feedback": "Zgodnie z planem pozwala uniemożliwić pracę firmie i zażądać okupu jako przykrywki pod kradzież technologii Freevolt."
-        },
-        {
-          "id": "keylogger",
-          "name": "KEYLOGGER",
-          "description": "POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE",
-          "isCorrect": false,
-          "points": 0,
-          "isCriticalError": true,
-          "feedback": "Zbyt powolna metoda pasywna, wymagająca długiego nasłuchu; brak możliwości natychmiastowego zablokowania serwerów."
-        }
-      ]
-    },
-    "step2_password_generator": {
-      "title": "GENERATOR HASŁA",
-      "question": "SIŁA WYGENEROWANEGO HASŁA (SKALA OD 1 DO 5):",
-      "targetLength": 24,
-      "requiredTags": ["DUŻE LITERY A-Z", "MAŁE LITERY A-Z", "CYFRY 0-9", "ZNAKI SPECJALNE (!@#$%^&*()_+)"],
-      "forbiddenTags": ["ZNAKI NARODOWE (np. Ą, Ę)", "BIAŁE ZNAKI (np. SPACJA)"],
-      "evaluation": {
-        "maxScoreTags": 4,
-        "perfectScore": 5,
-        "feedbackSuccess": "UŻYTO MAKSYMALNEJ ILOŚCI ZNAKÓW ORAZ ZNAKÓW SPECJALNYCH, JEDNOCZEŚNIE UNIKAJĄC TYCH NIEDOZWOLONYCH. STWORZONO NAPRAWDĘ BARDZO SILNE HASŁO"
-      }
-    },
-    "step3_extortion_strategy": {
-      "title": "STRATEGIA SZANTAŻU",
-      "question": "CZY WARTO WYŁUDZIĆ OKUP?",
-      "options": [
-        {
-          "id": "no_extortion",
-          "label": "NIE / TYLKO KRADZIEŻ",
-          "isCorrect": false,
-          "points": 0,
-          "feedback": "Firma natychmiast zorientuje się, że celem jest szpiegostwo przemysłowe, i zablokuje wyciek plików Freevolt."
-        },
-        {
-          "id": "yes_extortion",
-          "label": "TAK",
-          "isCorrect": true,
-          "points": 11.11,
-          "feedback": "Podwójne wymuszenie (Double Extortion) tworzy idealną zasłonę dymną – management skupia się na ratowaniu operacji, a nie na audycie kradzieży technologii Freevolt."
-        }
-      ]
-    },
-    "step4_ransom_note": {
-      "title": "PROJEKTOWANIE ŻĄDANIA OKUPU",
-      "question": "WYBIERZ KOLOR OKNA I ELEMENTÓW:",
-      "requiredBlocks": [
-        "TWOJE PLIKI ZOSTAŁY ZASZYFROWANE!",
-        "KWOTA: $ 200 000",
-        "POZOSTAŁY CZAS: 00:30:00:00",
-        "ADRES: XKAJI023KJDF93",
-        "NAPISZ DO NAS"
-      ],
-      "colorOptions": [
-        {
-          "id": "green",
-          "label": "ZIELONY",
-          "isCorrect": false,
-          "points": 0,
-          "isCriticalError": true,
-          "feedback": "Kolor kojarzony z poprawnością i sukcesem. Pracownicy mogą uznać komunikat za powiadomienie IT lub test."
-        },
-        {
-          "id": "white",
-          "label": "BIAŁY",
-          "isCorrect": false,
-          "points": 5.55,
-          "feedback": "Neutralny, nie budzi poczucia zagrożenia ani pośpiechu."
-        },
-        {
-          "id": "red",
-          "label": "CZERWONY",
-          "isCorrect": true,
-          "points": 11.11,
-          "feedback": "Kolor alarmowy, wywołuje silny stres psychologiczny i natychmiastową potrzebę kontaktu z atakującym."
-        }
-      ]
-    },
-    "step5_email_campaign": {
-      "title": "KAMPANIA SPEAR-PHISHINGOWA",
-      "subjectQuestion": "WYBIERZ TEMAT MAILA:",
-      "subjectOptions": [
-        {
-          "id": "subj_milk",
-          "label": "MILK CV",
-          "isCorrect": false,
-          "points": 0,
-          "isCriticalError": true,
-          "feedback": "Pospieszny, nieprofesjonalny, odrzucony przez automatyczne filtry HR."
-        },
-        {
-          "id": "subj_analyst",
-          "label": "ANALITYK MICHAŁ WILK",
-          "isCorrect": false,
-          "points": 5.55,
-          "feedback": "Brak wymaganego w procedurze dopisku 'CV'."
-        },
-        {
-          "id": "subj_cv_wilk",
-          "label": "CV MICHAŁ WILK",
-          "isCorrect": true,
-          "points": 11.11,
-          "feedback": "Precyzyjny, zgodny z wytycznymi ogłoszenia o pracę."
-        }
-      ],
-      "bodyQuestion": "WYBIERZ TREŚĆ MAILA:",
-      "bodyOptions": [
-        {
-          "id": "body_casual",
-          "label": "HEJ. W ZAŁĄCZNIKU PRZESYŁAM CV. POZDRAWIAM, MICHAŁ WILK",
-          "isCorrect": false,
-          "points": 0,
-          "isCriticalError": true,
-          "feedback": "Niedopuszczalny ton w korespondencji rekrutacyjnej do sektora infrastruktury krytycznej."
-        },
-        {
-          "id": "body_no_pwd",
-          "label": "CZEŚĆ. PRZESYŁAM CV NA STANOWISKO ANALITYKA USŁUG ENERGETYCZNYCH...",
-          "isCorrect": false,
-          "points": 5.55,
-          "feedback": "Niezabezpieczony plik PDF zostanie przeskanowany i zatrzymany przez bramkę antywirusową."
-        },
-        {
-          "id": "body_formal",
-          "label": "DZIEŃ DOBRY. PRZESYŁAM CV W ZWIĄZKU Z REKRUTACJĄ NA STANOWISKO ANALITYKA RYNKÓW ENERGETYCZNYCH. HASŁO DO PLIKU: MWILK. POZDRAWIAM, MICHAŁ WILK",
-          "isCorrect": true,
-          "points": 11.11,
-          "feedback": "Formalny styl biznesowy + zaszyfrowanie załącznika hasłem uniemożliwia bramce e-mail automatyczną detekcję ładunku Ransomware."
-        }
-      ],
-      "attachment": "CV_WILK.PDF"
-    },
-    "step6_vpn_spoofing": {
-      "title": "UKRYCIE TOŻSAMOŚCI I VPN",
-      "targetIp": "109.43.200.124",
-      "initialIp": "106.55.202.120",
-      "senderAddressQuestion": "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:",
-      "senderOptions": [
-        {
-          "id": "sender_spam",
-          "address": "newrapgood@commercial.biz",
-          "isCorrect": false,
-          "points": 0,
-          "isCriticalError": true,
-          "feedback": "Domena o zerowej reputacji, natychmiast trafia do folderu SPAM lub jest odrzucana przez rekordy SPF/DMARC."
-        },
-        {
-          "id": "sender_alex",
-          "address": "alex@priv.com",
-          "isCorrect": false,
-          "points": 5.55,
-          "feedback": "Dysonans tożsamości – podpis pod mailem brzmi 'Michał Wilk', a login nadawcy 'Alex'."
-        },
-        {
-          "id": "sender_wilk",
-          "address": "m.wilk@priv.com",
-          "isCorrect": true,
-          "points": 11.11,
-          "feedback": "Pełna zgodność danych osobowych z treścią aplikacji, neutralna domena."
-        }
-      ]
-    },
-    "step7_exfiltration": {
-      "title": "EKSFILTRACJA PLIKÓW",
-      "targetHost": "ENERGY_ROCK_01_PC",
-      "targetIp": "151.89.159.52",
-      "targetFiles": [
-        "FVOLT_TECH.DOCX",
-        "FREEVOLT_SCHEMAT.PDF",
-        "ENERGIA_FVOLT.KCF"
-      ],
-      "decoyFiles": [
-        "WYPOWIEDZENIE.PDF",
-        "MAREK.JPG",
-        "KONTRAKTY.XCF",
-        "SEKRET.TXT",
-        "WAZNE_DANE.DOCX",
-        "UMOWA2022.PDF"
-      ]
-    },
-    "step8_negotiation": {
-      "title": "NEGOCJACJE Z SZEFEM IT",
-      "targetRespondent": "SZEF IT ENERGY ROCK",
-      "dialogueTree": [
-        {
-          "nodeId": "neg_1",
-          "incoming": "ROZWIĄZUJEMY PROBLEM RANSOMWARE! ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE",
-          "options": [
-            {
-              "id": "surrender",
-              "text": "OKEJ, JUŻ WAM NIE PRZESZKADZAM",
-              "isCorrect": false,
-              "points": 0,
-              "isCriticalError": true,
-              "feedback": "Kapitulacja i utrata pozycji negocjacyjnej."
-            },
-            {
-              "id": "aggression",
-              "text": "NIE BOJĘ SIĘ POLICJI",
-              "isCorrect": false,
-              "points": 5.55,
-              "feedback": "Pusta agresja bez argumentów technicznych."
-            },
-            {
-              "id": "firm_stance",
-              "text": "ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW. ZASTANÓW SIĘ DOBRZE, CO CHCESZ ZROBIĆ",
-              "isCorrect": true,
-              "points": 11.11,
-              "feedback": "Rzeczowy argument techniczny paraliżujący decyzyjność ofiary.",
-              "nextNode": "neg_2"
-            }
-          ]
-        },
-        {
-          "nodeId": "neg_2",
-          "incoming": "CZEGO CHCESZ W ZAMIAN ZA ODSZYFROWANIE DANYCH?",
-          "options": [
-            {
-              "id": "reveal_motive",
-              "text": "CHCĘ DOSTĘPU DO PLIKÓW FREEVOLT",
-              "isCorrect": false,
-              "points": 0,
-              "isCriticalError": true,
-              "feedback": "Dekonspiracja prawdziwego celu ataku i zdemaskowanie zlecenia."
-            },
-            {
-              "id": "troll",
-              "text": "NICZEGO NIE ODSZYFRUJĘ, ROBIĘ TO DLA ZABAWY :D",
-              "isCorrect": false,
-              "points": 5.55,
-              "feedback": "Utrata wiarygodności profesjonalnego szantażu."
-            },
-            {
-              "id": "btc_demand",
-              "text": "TAK, JAK NAPISAŁEM W WIADOMOŚCI - INTERESUJĄ MNIE TYLKO BITCOINY",
-              "isCorrect": true,
-              "points": 11.11,
-              "feedback": "Utrzymanie spójnej przykrywki finansowej.",
-              "nextNode": "neg_3"
-            }
-          ]
-        },
-        {
-          "nodeId": "neg_3",
-          "incoming": "POTRZEBUJEMY CZASU NA ICH ZDOBYCIE",
-          "options": [
-            {
-              "id": "deadline_3h",
-              "text": "MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA DO ODSZYFROWANIA",
-              "isCorrect": true,
-              "points": 11.11,
-              "feedback": "Narzucenie twardego okna czasowego uniemożliwia ofierze wykonanie analizy śledczej i próby deszyfrowania."
-            }
-          ]
-        }
-      ]
-    }
-  },
   "step6": {
     "summary": {
       "title": "SUKCES",
       "subtitle": "UKOŃCZONO ZADANIE 4",
       "company": "Energy Rock",
       "scorePercent": 100,
-      "perfectChoices": 9,
+      "perfectChoices": 10,
       "goodChoices": 0,
       "criticalErrors": 0,
       "btcReward": 3.79
@@ -444,10 +169,10 @@
       },
       {
         "num": 3,
-        "question": "Czy warto wyłudzić okup?:",
-        "answer": "TAK",
+        "question": "Skomponuj komunikat żądania okupu:",
+        "answer": "Tytuł ostrzegawczy + realny limit czasu",
         "correct": true,
-        "details": "Wiarygodna przykrywka szantażu finansowego kamuflująca operację szpiegostwa przemysłowego."
+        "details": "Jasny komunikat i wiarygodny zegar budują presję, a jednocześnie pozwalają ofierze zebrać okup."
       },
       {
         "num": 4,
@@ -472,20 +197,27 @@
       },
       {
         "num": 7,
-        "question": "Ukrycie adresu IP / VPN:",
-        "answer": "m.wilk@priv.com oraz IP 109.43.200.124",
+        "question": "Ukrycie tożsamości / dopasowanie IP (VPN):",
+        "answer": "IP 109.43.200.124 (podsieć Energy Rock)",
         "correct": true,
-        "details": "Zapewnia spójność tożsamości kandydata oraz omija geolokalizacyjne reguły bezpieczeństwa."
+        "details": "Adres IP tunelu zgodny z podsiecią celu omija geolokalizacyjne reguły filtrów poczty."
       },
       {
         "num": 8,
+        "question": "Wybór adresu nadawcy:",
+        "answer": "m.wilk@priv.com",
+        "correct": true,
+        "details": "Pełna spójność tożsamości nadawcy z nazwiskiem kandydata w treści i załączniku."
+      },
+      {
+        "num": 9,
         "question": "Wybór plików do kradzieży:",
         "answer": "Kompletny zestaw dokumentacji technologii Freevolt (3 pliki)",
         "correct": true,
         "details": "Precyzyjne pobranie celów zlecenia bez uruchamiania pułapek honeypot."
       },
       {
-        "num": 9,
+        "num": 10,
         "question": "Negocjacje z ofiarą:",
         "answer": "Narzucenie limitu 3h i konsekwentne żądanie Bitcoinów",
         "correct": true,

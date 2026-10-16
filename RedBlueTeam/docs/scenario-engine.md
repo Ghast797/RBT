@@ -49,9 +49,12 @@ Implementuje je silnik raz. Scenariusz ich nie opisuje — zakłada je.
 
 | Obszar | Konwencja |
 |---|---|
-| Start misji | połączenie przychodzące → dialog wprowadzający z BYTE_MASTEREM → sekwencja BIOS → pulpit |
-| Wypowiedź gracza | w webie: przycisk/kafelek odpowiedzi w panelu czatu (zastępuje rzut kostką 3D z VR) |
-| Prowadzenie do celu | badge `1` na ikonie następnego etapu; ikony nieodblokowane są ukryte/zablokowane |
+| Start misji | połączenie przychodzące → dialog wprowadzający z BYTE_MASTEREM → sekwencja BIOS → pulpit. Rozmowa intro „przenosi się" do logu czatu na prawym monitorze (silnik zasiewa ją z `intro.dialogue`). |
+| Wypowiedź gracza | w webie: przycisk odpowiedzi w panelu czatu (zastępuje rzut kostką 3D z VR); treść to linia z VR; klik = echo, **nigdy** nie otwiera aplikacji |
+| Czat = rozmowa, nie launcher | kliknięcie w czacie nie otwiera aplikacji; kolejny kafelek odblokowuje się + podświetla, gracz klika go sam (lub jawny `openLink` w wiadomości mentora) |
+| Prowadzenie do celu | badge `1` + poświata uwagi (`highlightTile`) na ikonie następnego etapu; ikony nieodblokowane są ukryte |
+| Tempo | BYTE_MASTER „pisze" (animacja) z delayem; rozmowa z NPC (`DialogueTree`) też ma delay i wskaźnik pisania (rozmowa telefoniczna) |
+| Ekrany aplikacji | jeden kafelek = jedna aplikacja; kroki w środku to sekwencyjne pełne ekrany (bez zakładek/cofania), z krótkim ekranem ładowania `ModuleLoader` między nimi |
 | Przejście dalej | przycisk „dalej" wyszarzony, dopóki krok nie spełnia kryterium ukończenia |
 | Podpowiedzi | po bezczynności: T1 subtelna (pulsowanie celu), T2 wyraźna (komunikat tekstowy) |
 | Dźwięki | stały zestaw: klik, sukces, błąd, powiadomienie, alarm (`soundEffects.ts`) |
@@ -86,6 +89,16 @@ Element **dostaje** (props):
 Element **nie robi** samodzielnie: nie liczy punktów, nie odblokowuje ikon, nie pisze wiadomości BYTE_MASTERA, nie dotyka SCORM. To wszystko należy do silnika i do definicji etapów.
 
 Stan między etapami (co wybrano wcześniej) element czyta z `customState`, nie z własnych pól store'a.
+
+**Zamknięcie etapu (mostek do następnego).** Gdy element woła `onComplete()`, silnik wykonuje `StageCompletion` z definicji etapu. Dane (nie kod):
+- `unlockIcons` + `badges` — odblokuj i oznacz następny kafelek;
+- `highlightTile` — podświetl ten kafelek (poświata uwagi na pulpicie);
+- `byteMasterMessages: string[]` — kwestie BYTE_MASTERA z VR, wyświetlane po kolei z animacją „pisze" i delayem;
+- `playerReply: {id,label}` — kwestia gracza z VR (klik = echo, nic nie otwiera);
+- `openLink: {label, appId}` — opcjonalny link w ostatniej wiadomości mentora (jedyny dozwolony sposób otwarcia aplikacji z czatu — jawny klik gracza);
+- `sound` — dźwięk mostka.
+
+Silnik **nie** otwiera aplikacji automatycznie po etapie — gracz klika podświetlony kafelek. (`StageCompletion.nextChoice` z `openAppId` jest `@deprecated`.)
 
 ## 6. Katalog klocków (z M3/M4)
 
@@ -122,4 +135,4 @@ Wzorzec **A jest legacy** — nie kopiuj go do nowych misji. Przepisujemy na **B
 | Minigry (skaner, VPN, stacja) | w `engine/widgets/` z resztą | w `scenarios/mission_XX/minigames/`, kontrakt z sekcji 5 |
 | `steps` w JSON | martwe (żaden komponent nie czyta) | nie używać — dane idą do `blocks` |
 
-**Stan migracji:** negocjacje M4 są już na B (wzorzec do kopiowania). Reszta M4 i całe M3 czekają na konwersję — do tego czasu w kodzie są oba wzorce, ale **nowy kod piszemy wyłącznie w B**.
+**Stan migracji:** **cała Misja 4 jest już na B** — to wzorzec referencyjny do kopiowania (etapy, klocki/minigry, przepływ czatu, tempo). Minigry M4 (`scenarios/mission_04_energy_rock/minigames/`) pokazują: sekwencyjne ekrany per aplikacja, `ModuleLoader` między ekranami, zgłaszanie decyzji przez kontrakt. Misja 3 zostaje na legacy (A) do osobnej konwersji — do tego czasu w kodzie są oba wzorce, ale **nowy kod piszemy wyłącznie w B**.

@@ -36,8 +36,12 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
   const firstNode = config.nodes[0];
   const [currentNodeId, setCurrentNodeId] = useState<string | null>(firstNode?.id ?? null);
   const [isFinished, setIsFinished] = useState(false);
+  const [isRespondentTyping, setIsRespondentTyping] = useState(false);
   const [pathTier, setPathTier] = useState<ChoiceOutcome>('ideal');
   const [lastFeedback, setLastFeedback] = useState<string>('');
+
+  // Rozmowa telefoniczna: rozmówca „pisze" przez chwilę zanim pojawi się jego kwestia.
+  const REPLY_DELAY = 1600;
   const [lines, setLines] = useState<Line[]>(
     firstNode ? [{ sender: config.respondent, text: firstNode.incoming, isPlayer: false }] : []
   );
@@ -53,8 +57,11 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
   ) => {
     setIsFinished(true);
     setCurrentNodeId(null);
+    const willShowClosing = closing && !!config.closingMessage;
+    if (willShowClosing) setIsRespondentTyping(true);
     setTimeout(() => {
-      if (closing && config.closingMessage) {
+      if (willShowClosing) {
+        setIsRespondentTyping(false);
         sounds.playNotification();
         setLines((prev) => [
           ...prev,
@@ -68,7 +75,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
         sounds.playSuccess();
         onComplete();
       }
-    }, 900);
+    }, willShowClosing ? REPLY_DELAY : 900);
   };
 
   const handleChoose = (optionId: string) => {
@@ -109,14 +116,16 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
 
     if (nextNode) {
       setCurrentNodeId(null);
+      setIsRespondentTyping(true);
       setTimeout(() => {
+        setIsRespondentTyping(false);
         sounds.playNotification();
         setLines((prev) => [
           ...prev,
           { sender: config.respondent, text: nextNode.incoming, isPlayer: false }
         ]);
         setCurrentNodeId(nextNode.id);
-      }, 900);
+      }, REPLY_DELAY);
       return;
     }
 
@@ -154,6 +163,19 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
             </div>
           </div>
         ))}
+        {isRespondentTyping && (
+          <div className="flex justify-start">
+            <div className="max-w-[85%] px-3 py-2 rounded-xl bg-black/50 border border-gray-800">
+              <div className="text-[9px] font-bold mb-1 opacity-70">{config.respondent}</div>
+              <div className="flex items-center space-x-1" style={{ color: accent }}>
+                <span className="text-[10px] opacity-80">pisze</span>
+                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '300ms' }} />
+              </div>
+            </div>
+          </div>
+        )}
         {isFinished && lastFeedback && pathTier === 'critical' && (
           <div className="text-[10px] text-red-400 italic px-1">{lastFeedback}</div>
         )}

@@ -27,6 +27,7 @@ export const Desktop: React.FC = () => {
     openApp,
     unlockedIcons,
     notificationBadges,
+    highlightedTileId,
     chatAvailableChoices,
     isChatAttentionActive,
     triggerChatAttention,
@@ -160,7 +161,8 @@ export const Desktop: React.FC = () => {
                     }
 
                     const isChatActiveTile = tile.isChatFocus && (chatAvailableChoices.length > 0 || isChatAttentionActive);
-                    const badgeCount = tile.isChatFocus 
+                    const isHighlighted = !tile.isChatFocus && highlightedTileId === tile.id;
+                    const badgeCount = tile.isChatFocus
                       ? (chatAvailableChoices.length > 0 ? (notificationBadges['chat'] || 1) : notificationBadges['chat'])
                       : notificationBadges[tile.id];
 
@@ -175,13 +177,13 @@ export const Desktop: React.FC = () => {
                           }
                         }}
                         className={`group flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 relative ${
-                          isChatActiveTile ? 'scale-105' : ''
+                          isChatActiveTile || isHighlighted ? 'scale-105' : ''
                         }`}
                       >
                         {/* Tile Icon with L-shaped colored brackets */}
                         <div
                           className={`w-18 h-18 rounded-lg flex items-center justify-center relative transition-transform group-hover:scale-105 ${
-                            isChatActiveTile ? 'ring-2 ring-[#00ff66] shadow-[0_0_20px_#00ff66] animate-pulse' : ''
+                            isChatActiveTile || isHighlighted ? 'ring-2 ring-[#00ff66] shadow-[0_0_20px_#00ff66] animate-pulse' : ''
                           }`}
                           style={{
                             backgroundColor: `${tile.color}15`,

@@ -252,7 +252,8 @@ describe('Generic SCORM Scenario Engine', () => {
     const afterChoicesRetry = useMissionStore.getState();
     expect(afterChoicesRetry.isDetectedModalOpen).toBe(false);
     expect(afterChoicesRetry.bootStage).toBe('desktop');
-    expect(afterChoicesRetry.activeApp).toBe('virus_database');
+    // Czat nie jest launcherem: retry wraca na pulpit, nie otwiera aplikacji automatycznie.
+    expect(afterChoicesRetry.activeApp).toBeNull();
 
     // Retry from scratch
     store.openRetryModal();

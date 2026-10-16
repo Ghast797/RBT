@@ -21,7 +21,7 @@ export interface ChatMessage {
   text: string;
   timestamp?: string;
   actionButton?: {
-    type: 'link_browser' | 'download_attachments' | 'view_car_photo';
+    type: 'link_browser' | 'download_attachments' | 'view_car_photo' | 'open_app';
     label: string;
     payload?: string;
   };
@@ -36,6 +36,8 @@ export interface ChatChoiceOption {
   id: string;
   label: string;
   isCorrect?: boolean;
+  /** Kwestia gracza (dialog z VR): klik wysyła echo, NIE otwiera aplikacji. */
+  reply?: boolean;
   openAppId?: string;
   nextTransitionId?: string;
   outcome?: ChoiceOutcome;
@@ -110,6 +112,8 @@ export interface MissionState {
   selectedVectorId: string | null;
   isChatAttentionActive: boolean;
   hasViewedEvents: boolean;
+  /** Kafelek pulpitu do podświetlenia (świeżo odblokowany następny krok). */
+  highlightedTileId: string | null;
 
   // Step 3: Pendrive USB (Mission 3 compatibility)
   hasUsbInserted: boolean;
@@ -210,9 +214,6 @@ export interface MissionState {
   openNetworkGraph: () => void;
   openDebrief: () => void;
 
-  // Mission 4 Story Actions
-  advanceMission4Story: (stage: 'virus_done' | 'builder_done' | 'mail_done' | 'vpn_done' | 'workstation_done' | 'negotiation_done') => void;
-
   // Step 6 Actions
   toggleChoiceDetails: (index: number) => void;
   toggleKnowledgeBase: () => void;
@@ -225,6 +226,47 @@ export interface MissionState {
   submitScormAndExit: () => { success: boolean; message: string };
   closeExitModal: () => void;
   openExitModal: () => void;
+}
+
+/**
+ * Początkowy stan czatu po starcie systemu — sterowany danymi misji.
+ * Misja może podać `intro.desktopGreeting`, `intro.firstChoice` (z `openAppId`)
+ * i `intro.startBadges`; przy braku danych używamy fallbacku zgodnego z Misją 3.
+ */
+function resolveOpeningChat(mission: MissionDefinition): {
+  messages: ChatMessage[];
+  choices: ChatChoiceOption[];
+  startBadges: Record<string, number>;
+  highlightTile: string | null;
+} {
+  const intro = (mission?.intro || {}) as any;
+  const greeting: string = intro.desktopGreeting || 'Połączenie TOR P2P aktywne. Czekam na stworzenie wirusa.';
+  const rawFirst = intro.firstChoice || { id: 'start_virus', label: 'NAJPIERW STWORZĘ WIRUSA' };
+  // Kafelek do podświetlenia bierzemy z firstChoice.openAppId, ale samego wyboru NIE
+  // robimy launcherem — czat nie otwiera aplikacji, gracz klika kafelek sam.
+  const highlightTile: string | null = rawFirst.openAppId || intro.firstHighlight || null;
+  // Misja data-driven (ma intro.firstChoice) → kwestia gracza z VR (reply). Fallback M3 trafia do własnej gałęzi.
+  const firstChoice: ChatChoiceOption = intro.firstChoice
+    ? { id: rawFirst.id, label: rawFirst.label, reply: true }
+    : { id: rawFirst.id, label: rawFirst.label };
+
+  // Rozmowa intro „przenosi się" do logu czatu jako historia (naprzemiennie BYTE_MASTER / gracz).
+  const history: ChatMessage[] = [];
+  (intro.dialogue || []).forEach((d: any, i: number) => {
+    if (d.text) history.push({ id: `intro_bm_${i}`, sender: 'BYTE_MASTER', text: d.text });
+    if (d.playerResponse) history.push({ id: `intro_pl_${i}`, sender: 'PLAYER', text: d.playerResponse });
+  });
+  const messages: ChatMessage[] = [
+    ...history,
+    { id: 'chat_init', sender: 'BYTE_MASTER', text: greeting }
+  ];
+
+  return {
+    messages,
+    choices: [firstChoice],
+    startBadges: intro.startBadges || { virus_database: 1, chat: 1 },
+    highlightTile
+  };
 }
 
 const getInitialMissionState = (mission: MissionDefinition) => {
@@ -271,6 +313,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     selectedVectorId: null as string | null,
     isChatAttentionActive: false,
     hasViewedEvents: false,
+    highlightedTileId: null as string | null,
 
     // Step 3
     hasUsbInserted: false,
@@ -378,32 +421,20 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   retryFromChoices: () => {
     sounds.playSuccess();
     const currentMission = get().activeMission;
-    const isM4 = currentMission?.mission?.id?.includes('4') || currentMission?.mission?.id?.includes('energy-rock');
     const baseInitial = getInitialMissionState(currentMission);
+    const opening = resolveOpeningChat(currentMission);
 
     set({
       ...baseInitial,
       bootStage: 'desktop',
-      activeApp: 'virus_database',
+      activeApp: null,
       isDetectedModalOpen: false,
       detectionReason: null,
       isRetryModalOpen: false,
-      notificationBadges: { virus_database: 1, chat: 1 },
-      chatMessages: [
-        {
-          id: isM4 ? 'chat_init_m4' : 'chat_init_1',
-          sender: 'BYTE_MASTER',
-          text: isM4
-            ? 'Połączenie HACKER.OS aktywne. Cel: Energy Rock. Otwórz Bazę Wirusów i skonfiguruj odpowiedni ładunek!'
-            : 'Połączenie TOR P2P aktywne. Czekam na stworzenie wirusa.',
-        }
-      ],
-      chatAvailableChoices: [
-        { 
-          id: isM4 ? 'start_virus_m4' : 'start_virus', 
-          label: isM4 ? 'OTWIERAM BAZĘ WIRUSÓW' : 'NAJPIERW STWORZĘ WIRUSA' 
-        }
-      ]
+      notificationBadges: opening.startBadges,
+      highlightedTileId: opening.highlightTile,
+      chatMessages: opening.messages,
+      chatAvailableChoices: opening.choices
     });
   },
 
@@ -504,46 +535,72 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     const { completion } = stage;
 
+    // Wiadomości mentora: preferuj tablicę, przyjmij też pojedynczą (zgodność wstecz).
+    const messages: string[] =
+      completion.byteMasterMessages && completion.byteMasterMessages.length > 0
+        ? completion.byteMasterMessages
+        : completion.byteMasterMessage
+        ? [completion.byteMasterMessage]
+        : [];
+
+    // Końcowe opcje czatu: kwestia gracza z VR (bez otwierania aplikacji) lub legacy nextChoice.
+    const endChoices: ChatChoiceOption[] = completion.playerReply
+      ? [{ id: completion.playerReply.id, label: completion.playerReply.label, reply: true }]
+      : completion.nextChoice
+      ? [completion.nextChoice]
+      : [];
+
+    // Krok 1: odblokowania, badge, podświetlenie kafelka, zamknięcie okna (powrót na pulpit).
     set((s) => {
       const unlocked = [...s.unlockedIcons];
       (completion.unlockIcons || []).forEach((icon) => {
         if (!unlocked.includes(icon)) unlocked.push(icon);
       });
-
       return {
         activeApp: completion.closeActiveApp === false ? s.activeApp : null,
         unlockedIcons: unlocked,
         notificationBadges: { ...s.notificationBadges, ...(completion.badges || {}) },
-        isByteMasterTyping: !!completion.byteMasterMessage,
+        highlightedTileId: completion.highlightTile ?? s.highlightedTileId,
+        isByteMasterTyping: messages.length > 0,
         chatAvailableChoices: []
       };
     });
 
-    if (!completion.byteMasterMessage) {
-      if (completion.nextChoice) {
-        set({ chatAvailableChoices: [completion.nextChoice] });
-      }
+    if (messages.length === 0) {
+      set({ chatAvailableChoices: endChoices });
       return;
     }
 
-    setTimeout(() => {
-      if (completion.sound === 'alarm') sounds.playAlarm();
-      else if (completion.sound === 'success') sounds.playSuccess();
-      else sounds.playNotification();
+    // Krok 2: wiadomości mentora po kolei, z animacją „pisze" i delayem (jak w M3).
+    const TYPING_DELAY = 1500;
+    const deliver = (index: number) => {
+      setTimeout(() => {
+        const isLast = index === messages.length - 1;
+        if (isLast && completion.sound === 'alarm') sounds.playAlarm();
+        else if (isLast && completion.sound === 'success') sounds.playSuccess();
+        else sounds.playNotification();
 
-      set((s) => ({
-        isByteMasterTyping: false,
-        chatMessages: [
-          ...s.chatMessages,
-          {
-            id: `msg_${Date.now()}`,
-            sender: 'BYTE_MASTER' as const,
-            text: completion.byteMasterMessage!
+        set((s) => {
+          const msg: ChatMessage = {
+            id: `msg_${Date.now()}_${index}`,
+            sender: 'BYTE_MASTER',
+            text: messages[index]
+          };
+          // Link do otwarcia kafelka dołączamy do ostatniej wiadomości (klik gracza, nie auto-open).
+          if (isLast && completion.openLink) {
+            msg.actionButton = { type: 'open_app', label: completion.openLink.label, payload: completion.openLink.appId };
           }
-        ],
-        chatAvailableChoices: completion.nextChoice ? [completion.nextChoice] : []
-      }));
-    }, 1000);
+          return {
+            isByteMasterTyping: !isLast,
+            chatMessages: [...s.chatMessages, msg],
+            chatAvailableChoices: isLast ? endChoices : []
+          };
+        });
+
+        if (index < messages.length - 1) deliver(index + 1);
+      }, TYPING_DELAY);
+    };
+    deliver(0);
   },
 
   unlockIcon: (id: string) => {
@@ -588,26 +645,14 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     sounds.playSuccess();
     scorm2004.initialize(true);
     const { activeMission } = get();
-    const isM4 = activeMission?.mission?.id?.includes('4') || activeMission?.mission?.id?.includes('energy-rock');
+    const opening = resolveOpeningChat(activeMission);
 
     set({
       bootStage: 'desktop',
-      notificationBadges: { virus_database: 1, chat: 1 },
-      chatMessages: [
-        {
-          id: isM4 ? 'chat_init_m4' : 'chat_init_1',
-          sender: 'BYTE_MASTER',
-          text: isM4
-            ? 'Połączenie HACKER.OS aktywne. Cel: Energy Rock. Otwórz Bazę Wirusów i skonfiguruj odpowiedni ładunek!'
-            : 'Połączenie TOR P2P aktywne. Czekam na stworzenie wirusa.',
-        }
-      ],
-      chatAvailableChoices: [
-        { 
-          id: isM4 ? 'start_virus_m4' : 'start_virus', 
-          label: isM4 ? 'OTWIERAM BAZĘ WIRUSÓW' : 'NAJPIERW STWORZĘ WIRUSA' 
-        }
-      ]
+      notificationBadges: opening.startBadges,
+      highlightedTileId: opening.highlightTile,
+      chatMessages: opening.messages,
+      chatAvailableChoices: opening.choices
     });
   },
 
@@ -616,6 +661,9 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     sounds.playClick(900, 0.03);
     const badges = { ...get().notificationBadges };
     delete badges[app];
+
+    // Otwarcie podświetlonego kafelka gasi poświatę uwagi.
+    const highlightedTileId = get().highlightedTileId === app ? null : get().highlightedTileId;
 
     const { activeMission } = get();
 
@@ -628,13 +676,14 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       set({
         activeApp: app,
         notificationBadges: badges,
+        highlightedTileId,
         chatStage: 'choose_target',
         chatAvailableChoices: targetChoices
       });
       return;
     }
 
-    set({ activeApp: app, notificationBadges: badges });
+    set({ activeApp: app, notificationBadges: badges, highlightedTileId });
   },
 
   closeApp: () => {
@@ -791,8 +840,21 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const state = get();
     const { activeMission } = state;
 
-    // Generic scenario transition and action handling from chatAvailableChoices
     const genericChoice = state.chatAvailableChoices.find((c) => c.id === optionId);
+
+    // Kwestia gracza z VR (wzorzec B): wysyła echo i nic nie otwiera. Czat nie jest launcherem.
+    if (genericChoice?.reply) {
+      set({
+        chatMessages: [
+          ...state.chatMessages,
+          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: genericChoice.label }
+        ],
+        chatAvailableChoices: []
+      });
+      return;
+    }
+
+    // Generic scenario transition and action handling from chatAvailableChoices
     if (genericChoice && (genericChoice.openAppId || genericChoice.nextTransitionId || genericChoice.choiceRecord)) {
       set({
         chatMessages: [
@@ -829,88 +891,16 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       return;
     }
 
-    if (optionId === 'start_virus' || optionId === 'start_virus_m4') {
-      const isM4 = optionId === 'start_virus_m4';
+    if (optionId === 'start_virus') {
+      // Misja 3 (legacy). M4 używa intro.firstChoice z openAppId (ścieżka generyczna wyżej).
       set({
         chatMessages: [
           ...state.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: isM4 ? 'OTWIERAM BAZĘ WIRUSÓW' : 'NAJPIERW STWORZĘ WIRUSA' }
+          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: 'NAJPIERW STWORZĘ WIRUSA' }
         ],
         chatAvailableChoices: []
       });
       get().openApp('virus_database');
-      return;
-    }
-
-    if (optionId === 'm4_open_builder') {
-      set({
-        chatMessages: [
-          ...state.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: 'OTWIERAM KREATOR RANSOMWARE' }
-        ],
-        chatAvailableChoices: []
-      });
-      get().openApp('ransomware_builder');
-      return;
-    }
-
-    if (optionId === 'm4_open_mail') {
-      set({
-        chatMessages: [
-          ...state.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: 'OTWIERAM POCZTĘ //MAIL' }
-        ],
-        chatAvailableChoices: []
-      });
-      get().openApp('mail');
-      return;
-    }
-
-    if (optionId === 'm4_open_vpn') {
-      set({
-        chatMessages: [
-          ...state.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: 'OTWIERAM KLIENTA VPN' }
-        ],
-        chatAvailableChoices: []
-      });
-      get().openApp('vpn_app');
-      return;
-    }
-
-    if (optionId === 'm4_open_workstation') {
-      set({
-        chatMessages: [
-          ...state.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: 'PRZECHODZĘ DO STACJI OFIARY' }
-        ],
-        chatAvailableChoices: []
-      });
-      get().openApp('victim_workstation');
-      return;
-    }
-
-    if (optionId === 'm4_open_negotiation') {
-      set({
-        chatMessages: [
-          ...state.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: 'OTWIERAM KONSOLĘ NEGOCJACJI' }
-        ],
-        chatAvailableChoices: []
-      });
-      get().openApp('negotiation');
-      return;
-    }
-
-    if (optionId === 'm4_open_debrief') {
-      set({
-        chatMessages: [
-          ...state.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: 'OTWIERAM PODSUMOWANIE MISJI' }
-        ],
-        chatAvailableChoices: []
-      });
-      get().openApp('debrief_app');
       return;
     }
 
@@ -1795,181 +1785,6 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     set(getInitialMissionState(currentMission));
   },
 
-  // ----------------- MISSION 4 STORY PROGRESSION -----------------
-  // LEGACY (wzorzec A): przebieg fabuły zaszyty w store, gałęzie per misja.
-  // Nowy kod używa stages[] + completeStage (wzorzec B, docs/scenario-engine.md).
-  // Do usunięcia po konwersji pozostałych etapów M4.
-  advanceMission4Story: (stage) => {
-    const s = get();
-    if (stage === 'virus_done') {
-      const unlocked = [...s.unlockedIcons];
-      if (!unlocked.includes('ransomware_compiled')) unlocked.push('ransomware_compiled');
-      if (!unlocked.includes('ransomware_builder')) unlocked.push('ransomware_builder');
-      set({
-        activeApp: null,
-        unlockedIcons: unlocked,
-        notificationBadges: { ...s.notificationBadges, ransomware_builder: 1, chat: 1 },
-        isByteMasterTyping: true,
-        chatAvailableChoices: []
-      });
-      setTimeout(() => {
-        sounds.playNotification();
-        set((prev) => ({
-          isByteMasterTyping: false,
-          chatMessages: [
-            ...prev.chatMessages,
-            {
-              id: `msg_${Date.now()}`,
-              sender: 'BYTE_MASTER',
-              text: 'Świetny wybór. Ransomware zablokuje stacje Energy Rock i stworzy idealną zasłonę dymną pod kradzież dokumentacji Freevolt. Otwórz kreator wirusa na pulpicie i skonfiguruj parametry ładunku!'
-            }
-          ],
-          chatAvailableChoices: [
-            { id: 'm4_open_builder', label: 'OTWIERAM KREATOR RANSOMWARE' }
-          ]
-        }));
-      }, 1000);
-    } else if (stage === 'builder_done') {
-      const unlocked = [...s.unlockedIcons];
-      if (!unlocked.includes('mail_unlocked')) unlocked.push('mail_unlocked');
-      if (!unlocked.includes('mail')) unlocked.push('mail');
-      set({
-        activeApp: null,
-        unlockedIcons: unlocked,
-        notificationBadges: { ...s.notificationBadges, mail: 1, chat: 1 },
-        isByteMasterTyping: true,
-        chatAvailableChoices: []
-      });
-      setTimeout(() => {
-        sounds.playNotification();
-        set((prev) => ({
-          isByteMasterTyping: false,
-          chatMessages: [
-            ...prev.chatMessages,
-            {
-              id: `msg_${Date.now()}`,
-              sender: 'BYTE_MASTER',
-              text: 'Klucz RSA-4096 i żądanie okupu gotowe. Teraz musimy przygotować przynętę. Energy Rock poszukuje analityków rynków energetycznych – wyślijmy im spreparowane CV w kampanii spear-phishingowej. Otwórz klienta poczty na pulpicie!'
-            }
-          ],
-          chatAvailableChoices: [
-            { id: 'm4_open_mail', label: 'OTWIERAM POCZTĘ //MAIL' }
-          ]
-        }));
-      }, 1000);
-    } else if (stage === 'mail_done') {
-      const unlocked = [...s.unlockedIcons];
-      if (!unlocked.includes('vpn_unlocked')) unlocked.push('vpn_unlocked');
-      if (!unlocked.includes('vpn_app')) unlocked.push('vpn_app');
-      set({
-        activeApp: null,
-        unlockedIcons: unlocked,
-        notificationBadges: { ...s.notificationBadges, vpn_app: 1, chat: 1 },
-        isByteMasterTyping: true,
-        chatAvailableChoices: []
-      });
-      setTimeout(() => {
-        sounds.playNotification();
-        set((prev) => ({
-          isByteMasterTyping: false,
-          chatMessages: [
-            ...prev.chatMessages,
-            {
-              id: `msg_${Date.now()}`,
-              sender: 'BYTE_MASTER',
-              text: 'Mail przygotowany ze złośliwym załącznikiem. Pamiętaj, że nie możemy wysłać go bezpośrednio z naszego węzła – bramki Energy Rock natychmiast wykryją anomalię geolokalizacyjną. Skonfiguruj tunel VPN i dopasuj podsieć (109.43.200.124)!'
-            }
-          ],
-          chatAvailableChoices: [
-            { id: 'm4_open_vpn', label: 'OTWIERAM KLIENTA VPN' }
-          ]
-        }));
-      }, 1000);
-    } else if (stage === 'vpn_done') {
-      const unlocked = [...s.unlockedIcons];
-      if (!unlocked.includes('victim_workstation_unlocked')) unlocked.push('victim_workstation_unlocked');
-      if (!unlocked.includes('victim_workstation')) unlocked.push('victim_workstation');
-      set({
-        activeApp: null,
-        unlockedIcons: unlocked,
-        notificationBadges: { ...s.notificationBadges, victim_workstation: 1, chat: 1 },
-        isByteMasterTyping: true,
-        chatAvailableChoices: []
-      });
-      setTimeout(() => {
-        sounds.playAlarm();
-        set((prev) => ({
-          isByteMasterTyping: false,
-          chatMessages: [
-            ...prev.chatMessages,
-            {
-              id: `msg_${Date.now()}`,
-              sender: 'BYTE_MASTER',
-              text: 'TRANSMISJA ZAKOŃCZONA SUKCESEM! Rekruter pobrał CV, wpisał hasło i otworzył plik. Mamy aktywną sesję w sieci Energy Rock! Wejdź na stację ofiary: najpierw uruchom procedurę szyfrowania ransomware, a potem natychmiast wyciągnij dokumentację technologii Freevolt!'
-            }
-          ],
-          chatAvailableChoices: [
-            { id: 'm4_open_workstation', label: 'PRZECHODZĘ DO STACJI OFIARY' }
-          ]
-        }));
-      }, 1200);
-    } else if (stage === 'workstation_done') {
-      const unlocked = [...s.unlockedIcons];
-      if (!unlocked.includes('negotiation_unlocked')) unlocked.push('negotiation_unlocked');
-      if (!unlocked.includes('negotiation')) unlocked.push('negotiation');
-      set({
-        activeApp: null,
-        unlockedIcons: unlocked,
-        notificationBadges: { ...s.notificationBadges, negotiation: 1, chat: 1 },
-        isByteMasterTyping: true,
-        chatAvailableChoices: []
-      });
-      setTimeout(() => {
-        sounds.playNotification();
-        set((prev) => ({
-          isByteMasterTyping: false,
-          chatMessages: [
-            ...prev.chatMessages,
-            {
-              id: `msg_${Date.now()}`,
-              sender: 'BYTE_MASTER',
-              text: 'ALARM W CAŁYM ENERGY ROCK! Zarząd panikuje, a ich szef IT próbuje skontaktować się na kanale awaryjnym podanym w notatce! Otwórz konsolę negocjacji. Będę cię asekurował na bieżąco – trzymaj się żądania Bitcoinów i narzuć im twardy limit czasu!'
-            }
-          ],
-          chatAvailableChoices: [
-            { id: 'm4_open_negotiation', label: 'OTWIERAM KONSOLĘ NEGOCJACJI' }
-          ]
-        }));
-      }, 1200);
-    } else if (stage === 'negotiation_done') {
-      const unlocked = [...s.unlockedIcons];
-      if (!unlocked.includes('mission_completed')) unlocked.push('mission_completed');
-      if (!unlocked.includes('debrief_app')) unlocked.push('debrief_app');
-      set({
-        unlockedIcons: unlocked,
-        notificationBadges: { ...s.notificationBadges, debrief_app: 1, chat: 1 },
-        isByteMasterTyping: true,
-        chatAvailableChoices: []
-      });
-      setTimeout(() => {
-        sounds.playSuccess();
-        set((prev) => ({
-          isByteMasterTyping: false,
-          chatMessages: [
-            ...prev.chatMessages,
-            {
-              id: `msg_${Date.now()}`,
-              sender: 'BYTE_MASTER',
-              text: 'PERFEKCYJNA ROBOTA! Cel osiągnięty – technologia Freevolt jest nasza, a oni wierzą, że to zwykły atak ransomware dla pieniędzy. Otwórz raport końcowy, aby zakończyć operację i przesłać wyniki do SCORM.'
-            }
-          ],
-          chatAvailableChoices: [
-            { id: 'm4_open_debrief', label: 'OTWIERAM PODSUMOWANIE MISJI' }
-          ]
-        }));
-      }, 1000);
-    }
-  },
 
   // ----------------- GENERIC SCENARIO TRANSITIONS -----------------
   // LEGACY (wzorzec A): przejścia fabularne z obiektu `transitions` w JSON.

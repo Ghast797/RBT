@@ -25,18 +25,15 @@ import { ChatApp } from '../apps/ChatApp';
 import { DebriefApp } from '../apps/DebriefApp';
 import {
   VirusDatabaseApp,
-  RansomwareVirusApp,
-  RansomwareBuilderApp,
   TorBrowserApp,
   PendriveApp,
   DroneApp,
-  RatSessionApp,
-  PhishingMailApp,
-  VpnApp,
-  WorkstationExfiltrationApp,
-  NegotiationChatApp
+  RatSessionApp
 } from '../widgets';
 import { ChoiceCards, DialogueTree } from '../blocks';
+
+// Minigry misji (np. Energy Rock) rejestrują się same przez registerApp przy
+// załadowaniu swojego modułu scenariusza — nie importujemy ich tutaj.
 
 // Base Application Registry for Generic / Shared Apps
 export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
@@ -48,16 +45,10 @@ export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
   dialogue_tree: DialogueTree,
 
   virus_database: VirusDatabaseApp,
-  ransomware_virus_scanner: RansomwareVirusApp,
-  ransomware_builder: RansomwareBuilderApp,
   browser: TorBrowserApp,
   pendrive_app: PendriveApp,
   drone_app: DroneApp,
   rat_session: RatSessionApp,
-  mail: PhishingMailApp,
-  vpn_app: VpnApp,
-  victim_workstation: WorkstationExfiltrationApp,
-  negotiation: NegotiationChatApp,
 };
 
 /**

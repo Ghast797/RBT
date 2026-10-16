@@ -111,6 +111,16 @@ export const ChatApp: React.FC = () => {
                         <span>{msg.actionButton.label}</span>
                       </button>
                     )}
+
+                    {msg.actionButton.type === 'open_app' && msg.actionButton.payload && (
+                      <button
+                        onClick={() => openApp(msg.actionButton!.payload as any)}
+                        className="w-full py-2 px-3 bg-[#00ff66]/20 hover:bg-[#00ff66]/30 border border-[#00ff66] text-[#00ff66] rounded font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shadow-[0_0_10px_rgba(0,255,102,0.3)]"
+                      >
+                        <Send size={13} />
+                        <span>{msg.actionButton.label}</span>
+                      </button>
+                    )}
                   </div>
                 )}
 

@@ -254,7 +254,7 @@ export interface DialogueTreeConfig {
 // ETAPY MISJI (docs/scenario-engine.md, sekcja 1)
 // ---------------------------------------------------------------------------
 
-/** Co dzieje się po ukończeniu etapu: odblokowania, powiadomienia, wiadomość mentora. */
+/** Co dzieje się po ukończeniu etapu: odblokowania, powiadomienia, rozmowa z mentorem. */
 export interface StageCompletion {
   /** Identyfikatory do dopisania do `unlockedIcons`. */
   unlockIcons?: string[];
@@ -262,9 +262,20 @@ export interface StageCompletion {
   badges?: Record<string, number>;
   /** Czy zamknąć otwarte okno i wrócić na pulpit. */
   closeActiveApp?: boolean;
-  /** Wiadomość BYTE_MASTERA mostkująca do kolejnego etapu. */
+  /** Pojedyncza wiadomość BYTE_MASTERA (zgodność wstecz; preferuj `byteMasterMessages`). */
   byteMasterMessage?: string;
-  /** Opcja odpowiedzi gracza otwierająca kolejny etap. */
+  /** Wiadomości BYTE_MASTERA mostkujące do kolejnego etapu — dostarczane po kolei z animacją „pisze". */
+  byteMasterMessages?: string[];
+  /** Kwestia gracza z VR pokazywana jako odpowiedź w czacie (samo echo, NIE otwiera aplikacji). */
+  playerReply?: { id: string; label: string };
+  /** Kafelek pulpitu do podświetlenia jako następny krok. */
+  highlightTile?: string;
+  /** Opcjonalny link w wiadomości mentora, który gracz może kliknąć, aby otworzyć kafelek. */
+  openLink?: { label: string; appId: string };
+  /**
+   * @deprecated Auto-otwieranie aplikacji z czatu — wygaszane. Czat nie jest launcherem:
+   * kafelek odblokowuje się i podświetla, a gracz klika go sam (lub przez `openLink`).
+   */
   nextChoice?: {
     id: string;
     label: string;

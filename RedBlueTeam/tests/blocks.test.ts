@@ -32,7 +32,7 @@ describe('Scoring (poziomy decyzji)', () => {
   });
 
   it('liczy decyzje z definicji M4', () => {
-    expect(resolveDecisionCount(mission4Definition)).toBe(9);
+    expect(resolveDecisionCount(mission4Definition)).toBe(10);
   });
 });
 
@@ -54,7 +54,7 @@ describe('Mission 4: nowy model (etapy + klocki)', () => {
     const scoreBefore = useMissionStore.getState().score;
 
     store.reportDecision({
-      num: 9,
+      num: 10,
       question: 'Negocjacje z ofiarą:',
       answer: 'MACIE 3 H...',
       tier: 'ideal',
@@ -63,14 +63,14 @@ describe('Mission 4: nowy model (etapy + klocki)', () => {
 
     const state = useMissionStore.getState();
     expect(state.score).toBe(scoreBefore);
-    const choice = state.playerChoices.find((c) => c.num === 9);
+    const choice = state.playerChoices.find((c) => c.num === 10);
     expect(choice?.outcome).toBe('ideal');
   });
 
   it('błąd krytyczny obniża wynik i otwiera ekran wykrycia', () => {
     const store = useMissionStore.getState();
     store.reportDecision({
-      num: 9,
+      num: 10,
       question: 'Negocjacje z ofiarą:',
       answer: 'OKEJ, JUŻ WAM NIE PRZESZKADZAM',
       tier: 'critical',

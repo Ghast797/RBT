@@ -1,11 +1,7 @@
+// Widgety wspólne / Misji 3. Minigry Misji 4 przeniesiono do
+// src/scenarios/mission_04_energy_rock/minigames/ (wzorzec B, reguła rozdziału).
 export { VirusDatabaseApp } from './VirusDatabaseApp';
-export { RansomwareVirusApp } from './RansomwareVirusApp';
-export { RansomwareBuilderApp } from './RansomwareBuilderApp';
 export { TorBrowserApp } from './TorBrowserApp';
 export { PendriveApp } from './PendriveApp';
 export { DroneApp } from './DroneApp';
 export { RatSessionApp } from './RatSessionApp';
-export { PhishingMailApp } from './PhishingMailApp';
-export { VpnApp } from './VpnApp';
-export { WorkstationExfiltrationApp } from './WorkstationExfiltrationApp';
-export { NegotiationChatApp } from './NegotiationChatApp';

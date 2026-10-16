@@ -1,18 +1,18 @@
 import mission4Data from './data/mission4.json';
 import type { MissionDefinition } from '../../engine/types/mission';
+import { registerApp } from '../../engine/registry/appRegistry';
 import { mission4Stages, mission4Blocks } from './stages';
 import {
   RansomwareVirusApp,
   RansomwareBuilderApp,
   PhishingMailApp,
   VpnApp,
-  WorkstationExfiltrationApp,
-  NegotiationChatApp
-} from '../../engine/widgets';
+  WorkstationExfiltrationApp
+} from './minigames';
 
 const base = mission4Data as unknown as MissionDefinition;
 
-// Kafelki przepięte na klocki z katalogu (componentId wskazuje klocek, nie widget misji).
+// Kafelki przepięte na klocki z katalogu (componentId wskazuje klocek, nie minigrę misji).
 const CATALOG_COMPONENT: Record<string, string> = {
   negotiation: 'dialogue_tree'
 };
@@ -29,21 +29,21 @@ export const mission4Definition: MissionDefinition = {
   blocks: mission4Blocks
 };
 
+// Minigry misji rejestrowane w silniku pod swoimi componentId (bez importów w appRegistry).
 export const mission4Apps: Record<string, React.ComponentType<any>> = {
-  virus_database: RansomwareVirusApp,
   ransomware_virus_scanner: RansomwareVirusApp,
   ransomware_builder: RansomwareBuilderApp,
   mail: PhishingMailApp,
   vpn_app: VpnApp,
-  victim_workstation: WorkstationExfiltrationApp,
-  negotiation: NegotiationChatApp
+  victim_workstation: WorkstationExfiltrationApp
 };
+
+Object.entries(mission4Apps).forEach(([componentId, component]) => registerApp(componentId, component));
 
 export {
   RansomwareVirusApp,
   RansomwareBuilderApp,
   PhishingMailApp,
   VpnApp,
-  WorkstationExfiltrationApp,
-  NegotiationChatApp
+  WorkstationExfiltrationApp
 };
