@@ -48,11 +48,13 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
     setGeneratedKey(result);
   }, [passwordLength, useUppercase, useLowercase, useNumbers, useSymbols, useNational, useSpaces]);
 
+  // Hasło nigdy nie jest krytyczne — przepuszczamy gracza nawet ze słabym hasłem,
+  // a werdykt (suboptimal) pojawia się dopiero w podsumowaniu. (Decyzja scenariuszowa.)
   const evaluatePassword = (): { strength: number; tier: ChoiceOutcome } => {
     const hasForbidden = useNational || useSpaces;
     const safeGroups = [useUppercase, useLowercase, useNumbers, useSymbols].filter(Boolean).length;
-    if (safeGroups === 0) return { strength: 1, tier: 'critical' };
-    if (hasForbidden || passwordLength < config.password.minSafeLength || safeGroups < 2) return { strength: 2, tier: 'critical' };
+    if (safeGroups === 0) return { strength: 1, tier: 'suboptimal' };
+    if (hasForbidden || passwordLength < config.password.minSafeLength || safeGroups < 2) return { strength: 2, tier: 'suboptimal' };
     if (passwordLength >= config.password.targetLength - 2 && safeGroups === 4) return { strength: 5, tier: 'ideal' };
     return { strength: 4, tier: 'suboptimal' };
   };
@@ -64,14 +66,21 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
 
   const handleSavePassword = () => {
     sounds.playSuccess();
+    // Słabe hasło (≤2/5) dostaje opis słabości, ale wciąż przepuszcza dalej.
+    const feedback = pwdEval.tier === 'ideal'
+      ? config.password.feedback.ideal
+      : pwdEval.strength <= 2
+      ? config.password.feedback.critical
+      : config.password.feedback.suboptimal;
     onDecision({
       num: config.password.decisionNum,
       question: config.password.question,
       answer: `${pwdEval.strength}/5 (${passwordLength} znaków, ${useNational || useSpaces ? 'niebezpieczne znaki' : 'bezpieczny charset'})`,
       tier: pwdEval.tier,
-      feedback: config.password.feedback[pwdEval.tier]
+      feedback
     });
-    if (pwdEval.tier !== 'critical') setScreen('load_components');
+    // Hasło nigdy nie jest krytyczne — zawsze przechodzimy dalej.
+    setScreen('load_components');
   };
 
   const handleSaveComponents = () => {

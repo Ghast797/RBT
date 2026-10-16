@@ -38,21 +38,29 @@ Jeden `## Etap` na aplikację pulpitu, w kolejności grania.
 ## Etap N: <//NAZWA_APLIKACJI>
 Klocek: <ChoiceCards | DialogueTree | Configurator | PoolSelect | NOWA MINIGRA>
 Cel dydaktyczny: <jedno zdanie, czego gracz ma się nauczyć>
+Ekrany: <po kolei, np. "wybór → skaner (flavor)"> — jeśli minigra ma kilka ekranów
+Oceniane: <D<k>, …>  |  Flavor (nieoceniane): <ekrany bez oceny>
 
 Decyzja D<k>: "<pytanie na ekranie>"
 - <opcja dosłownie> | <ideal | suboptimal | critical> | <1 zdanie feedbacku do debriefu>
 - <opcja dosłownie> | <poziom> | <feedback>
 - <opcja dosłownie> | <poziom> | <feedback>
 
-Po etapie:
+Mostek (rozmowa do kolejnego etapu):
+- BM: "<kwestia mentora, 1:1 z VR>"
+- GRACZ: "<kwestia gracza, 1:1 z VR — ostatnia kwestia gracza odblokowuje kolejny kafelek>"
+- BM: "<ewentualna odpowiedź mentora>"
 - odblokuj: <//IKONA kolejnej aplikacji>
-- BM: "<wiadomość mostkująca do następnego etapu>"
 ```
 
 Reguły:
 - **Opcje dosłownie**, w kolejności wyświetlania. Dokładnie jeden `ideal` na decyzję.
 - Etap bez oceny (sam przerywnik) ma `Cel dydaktyczny` i mechanikę, bez bloku `Decyzja`.
 - Etap może mieć kilka decyzji (np. temat + treść maila = D5, D6).
+- **Mostek to rozmowa (naprzemiennie BM / GRACZ), 1:1 z VR** — także wielobeatowa (np. meldunek). Czat nie otwiera aplikacji; to kwestia gracza odblokowuje kolejny kafelek. Gdy VR milczy na granicy etapów, dodaj krótką kwestię-spójnik gracza i oznacz `[SPÓJNIK]`.
+- **`critical` oszczędnie** — tylko dekonspiracja / pułapka kończąca operację (honeypot, zdradzenie celu, rażąca niespójność). Wybór słaby, ale działający = `suboptimal` (gra toczy się dalej, werdykt w debriefie). Nie blokuj gracza na każdym niedoskonałym wyborze.
+- **Nie podpowiadaj odpowiedzi na ekranie** minigry (np. nie etykietuj puli plików nazwą celu). Gracz identyfikuje cele z fikcji i kwestii mentora.
+- Tempa (loadery, przeskoki czasu, animacje, delaye) **nie opisuj** — daje je silnik (`scenario-engine.md`, sekcja 9).
 
 ### Debrief
 
@@ -94,9 +102,9 @@ Decyzja D1: "WYBIERZ ODPOWIEDNIEGO WIRUSA:"
 - RAT — "<opis z UI>" | suboptimal | nie realizuje celu etapu
 - KEYLOGGER — "<opis z UI>" | critical | metoda chybiona dla tego celu
 
-Po etapie:
+Mostek (rozmowa do kolejnego etapu):
+- GRACZ: "STWORZĘ TAKIE HASŁO, ŻE ICH SPECJALIŚCI NIE ZŁAMIĄ GO PRZEZ TYGODNIE."
 - odblokuj: //WIRUS: RANSOMWARE
-- BM: "<wiadomość mostkująca>"
 
 ## Odchylenia od VR / do decyzji
 - [DO DECYZJI] skaner sygnatury: w VR wodzenie laserem po ekranie; cel = poczucie

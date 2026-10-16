@@ -3,10 +3,11 @@ import { Wifi, Globe, CheckCircle2, Send, Check, ArrowRight } from 'lucide-react
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { TimeJump } from '../../../engine/components/TimeJump';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VpnConfig } from './types';
 
-type Screen = 'ip' | 'sender' | 'load_send';
+type Screen = 'ip' | 'sender' | 'load_send' | 'timejump';
 
 /**
  * D7–D8 — maskowanie tożsamości jako sekwencja ekranów: dopasowanie IP (VPN) →
@@ -58,7 +59,8 @@ export const VpnApp: React.FC<BlockProps<VpnConfig>> = ({ config, onDecision, on
     </div>
   );
 
-  if (screen === 'load_send') return <ModuleLoader label="TRANSMISJA PRZEZ TUNEL VPN — WYSYŁKA SPEAR-PHISHINGU…" durationMs={1800} accent={accent} onDone={onComplete} />;
+  if (screen === 'load_send') return <ModuleLoader label="TRANSMISJA PRZEZ TUNEL VPN — WYSYŁKA SPEAR-PHISHINGU…" durationMs={1800} accent={accent} onDone={() => setScreen('timejump')} />;
+  if (screen === 'timejump') return <TimeJump label="MIJA KILKA GODZIN…" sublabel="CZEKAMY, AŻ REKRUTER ENERGY ROCK OTWORZY ZAŁĄCZNIK I AKTYWUJE ŁADUNEK." durationMs={3200} accent={accent} onDone={onComplete} />;
 
   if (screen === 'sender') {
     return (

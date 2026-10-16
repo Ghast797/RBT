@@ -407,7 +407,7 @@ export const mission4Stages: StageDefinition[] = [
       conversation: [
         { from: 'player', id: 'm4_reply_vpn', label: "WSZYSTKO ZROBIONE. CZEKAMY AŻ OTWORZĄ CV I AKTYWUJĄ RANSOMWARE. JAK NIE PRZYJMIECIE MNIE DO DARKSUN, TO MOŻE DOSTANĘ PRACĘ W ENERGY ROCK." },
         { from: 'byte_master', text: "KTO WIE?" },
-        { from: 'byte_master', text: "MALWARE AKTYWNY — REKRUTER OTWORZYŁ CV NA ENERGY_ROCK_01_PC. WEJDŹ NA STACJĘ OFIARY, ZASZYFRUJ ZASOBY, A POTEM POBIERZ PLIKI ZAWIERAJĄCE 'FREEVOLT' W NAZWIE." }
+        { from: 'byte_master', text: "MALWARE AKTYWNY — REKRUTER OTWORZYŁ CV NA ENERGY_ROCK_01_PC. WEJDŹ NA STACJĘ OFIARY, ZASZYFRUJ ZASOBY, A POTEM WYCIĄGNIJ DOKUMENTACJĘ, PO KTÓRĄ PRZYSZLIŚMY." }
       ],
       unlockIcons: ['victim_workstation_unlocked', 'victim_workstation'],
       badges: { victim_workstation: 1, chat: 1 },

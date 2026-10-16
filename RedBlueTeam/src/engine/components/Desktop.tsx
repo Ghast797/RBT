@@ -176,7 +176,7 @@ export const Desktop: React.FC = () => {
                             openApp(tile.id as WindowId);
                           }
                         }}
-                        className={`group flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 relative ${
+                        className={`group flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 relative animate-in fade-in zoom-in-95 duration-500 ${
                           isChatActiveTile || isHighlighted ? 'scale-105' : ''
                         }`}
                       >

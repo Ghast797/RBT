@@ -135,3 +135,33 @@ Wzorzec **A jest legacy** — nie kopiuj go do nowych misji. Przepisujemy na **B
 | `steps` w JSON | martwe (żaden komponent nie czyta) | nie używać — dane idą do `blocks` |
 
 **Stan migracji:** **cała Misja 4 jest już na B** — to wzorzec referencyjny do kopiowania (etapy, klocki/minigry, przepływ czatu, tempo). Minigry M4 (`scenarios/mission_04_energy_rock/minigames/`) pokazują: sekwencyjne ekrany per aplikacja, `ModuleLoader` między ekranami, zgłaszanie decyzji przez kontrakt. Misja 3 zostaje na legacy (A) do osobnej konwersji — do tego czasu w kodzie są oba wzorce, ale **nowy kod piszemy wyłącznie w B**.
+
+## 9. Tempo i „czucie komputera" (toolkit silnika)
+
+Rzeczy dzieją się rozmyślnie wolno — gracz ma czuć, że obsługuje system. Silnik daje gotowe elementy (scenariusz ich nie opisuje, agent je podpina):
+
+| Element | Gdzie | Zastosowanie |
+|---|---|---|
+| `ModuleLoader` | `engine/components/ModuleLoader.tsx` | pasek ładowania ~1 s przy otwarciu aplikacji i między ekranami minigry („pobieranie modułu", „kompilacja") |
+| `TimeJump` | `engine/components/TimeJump.tsx` | narracyjny przeskok czasu (np. po wysłaniu maila: „MIJA KILKA GODZIN…") przed kolejnym etapem |
+| Rozmowa mostka | `completeStage` → `advanceBridge` | kwestie BYTE_MASTERA po jednej, animacja „pisze" + delay 2 s; kwestie gracza jako przyciski |
+| Pojawienie kafelka | `Desktop.tsx` | świeżo odblokowany kafelek wjeżdża animacją (`animate-in fade-in zoom-in`) + pulsuje (`highlightTile`) |
+
+Minigra z akcją „komputerową" (skan, kompilacja, wysyłka, eksfiltracja) robi krótką pauzę `await setTimeout` + spinner — nigdy natychmiast.
+
+## 10. Zasady z iteracji M4 (stosuj w nowych misjach)
+
+Wnioski z dopracowywania M4 — trzymaj się ich, żeby nie powtarzać iteracji:
+
+1. **Czat to rozmowa, nie launcher.** BYTE_MASTER nie ma dostępu do komputera gracza — nie podaje aplikacji do otwarcia. Mówi, co zrobić; gracz sam klika podświetlony kafelek.
+2. **Aplikacje zablokowane do kwestii gracza.** Kolejny kafelek odblokowuje się dopiero, gdy gracz napisze mentorowi, co chce zrobić (ostatni beat `conversation`). To jego „ja się tym zajmę" jest wyzwalaczem.
+3. **`critical` oszczędnie.** Poziom `critical` (ekran „ZOSTAŁEŚ WYKRYTY!" + powtórka) rezerwuj na prawdziwe dekonspiracje / pułapki kończące operację (honeypot, zdradzenie celu, rażąca niespójność). Wybór słaby, ale działający = `suboptimal`: gra toczy się dalej, a werdykt pada w debriefie. Nie blokuj gracza na każdym niedoskonałym wyborze (np. słabe hasło przepuszcza dalej).
+4. **Nie podpowiadaj odpowiedzi na ekranie.** Minigra nie wypisuje, które elementy są poprawne (np. nie etykietuj puli plików „cel: Freevolt"). Gracz identyfikuje cele z fikcji i wcześniejszych wskazówek mentora.
+5. **Dialogi 1:1 z VR.** Kwestie w czacie (intro i mostki) przepisuj dosłownie ze scenariusza, łącznie z wymianą wielobeatową (np. meldunek: gracz→mentor→gracz→mentor). Tam, gdzie scenariusz milczy na granicy etapów, dołóż krótką kwestię-spójnik gracza (to ona odblokowuje kolejny kafelek) i oznacz ją w kodzie jako spójnik.
+6. **Tempo.** Patrz sekcja 9 — loadery, przeskoki czasu, delaye. Nic nie dzieje się natychmiast.
+
+## 11. Backlog audio (TODO dla agentów)
+
+Do zrobienia w przyszłych iteracjach (nie teraz):
+- **Ścieżka dźwiękowa w tle** per scenariusz (pętla ambientu/napięcia), z regulacją głośności i wyciszeniem spójnym z `soundEffects.ts`.
+- **Dopracowanie dźwięków UI** (kliknięcia, potwierdzenia, alarmy) — spójny, przyjemniejszy zestaw.

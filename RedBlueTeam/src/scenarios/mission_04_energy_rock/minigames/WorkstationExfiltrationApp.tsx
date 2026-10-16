@@ -133,7 +133,7 @@ export const WorkstationExfiltrationApp: React.FC<BlockProps<ExfiltrationConfig>
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
         {header('EKSFILTRACJA — WYBÓR PLIKÓW', 'PLIKI')}
         <div className="flex justify-between items-center text-xs font-bold text-gray-300">
-          <span>ZAZNACZ PLIKI DO POBRANIA (CEL: DOKUMENTACJA „FREEVOLT"):</span>
+          <span>ZAZNACZ PLIKI DO POBRANIA ZE STACJI OFIARY:</span>
           <span style={{ color: accent }}>WYBRANO: {selected.length}</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
