@@ -6,7 +6,7 @@ import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VirusConfig } from './types';
 
-type Screen = 'select' | 'loading' | 'scanner';
+type Screen = 'boot' | 'select' | 'loading' | 'scanner';
 
 /**
  * D1 — dobór złośliwego oprogramowania. Ekrany po kolei:
@@ -15,7 +15,7 @@ type Screen = 'select' | 'loading' | 'scanner';
 export const RansomwareVirusApp: React.FC<BlockProps<VirusConfig>> = ({ config, onDecision, onComplete }) => {
   const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#a855f7';
 
-  const [screen, setScreen] = useState<Screen>('select');
+  const [screen, setScreen] = useState<Screen>('boot');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [scannedCells, setScannedCells] = useState<Set<number>>(new Set());
@@ -72,6 +72,17 @@ export const RansomwareVirusApp: React.FC<BlockProps<VirusConfig>> = ({ config, 
       </div>
     </div>
   );
+
+  if (screen === 'boot') {
+    return (
+      <ModuleLoader
+        label="POBIERANIE I URUCHAMIANIE //BAZA_WIRUSÓW…"
+        durationMs={2600}
+        accent={accent}
+        onDone={() => setScreen('select')}
+      />
+    );
+  }
 
   if (screen === 'loading') {
     return (

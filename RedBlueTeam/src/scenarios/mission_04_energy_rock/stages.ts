@@ -351,22 +351,20 @@ export const mission4Blocks: Record<string, unknown> = {
 // ETAPY MISJI — przebieg przez completeStage (wzorzec B)
 // ---------------------------------------------------------------------------
 
+
 export const mission4Stages: StageDefinition[] = [
   {
     id: 'virus_database',
     appId: 'virus_database',
     decisions: [1],
     completion: {
+      conversation: [
+        { from: 'player', id: 'm4_reply_virus', label: "STWORZĘ TAKIE HASŁO, ŻE NIE MA SZANS, ŻEBY ICH SPECJALIŚCI ZŁAMALI JE PRZEZ NAJBLIŻSZE TYGODNIE. WYKORZYSTAM GENERATOR W MOIM MENEDŻERZE HASEŁ." }
+      ],
       unlockIcons: ['ransomware_compiled', 'ransomware_builder'],
       badges: { ransomware_builder: 1, chat: 1 },
       highlightTile: 'ransomware_builder',
-      sound: 'notification',
-      byteMasterMessages: [
-        'DOBRY WYBÓR. RANSOMWARE SPARALIŻUJE SERWERY ENERGY ROCK I DA NAM IDEALNĄ PRZYKRYWKĘ POD KRADZIEŻ DOKUMENTACJI FREEVOLT.',
-        'TERAZ SKONFIGURUJ ŁADUNEK — KLUCZ SZYFRUJĄCY, KOMUNIKAT OKUPU I JEGO WYGLĄD. OTWÓRZ KREATOR RANSOMWARE NA PULPICIE.'
-      ],
-      openLink: { label: 'OTWÓRZ KREATOR RANSOMWARE', appId: 'ransomware_builder' },
-      playerReply: { id: 'm4_reply_virus', label: 'JASNE. ZABIERAM SIĘ ZA KONFIGURACJĘ WIRUSA.' }
+      sound: 'notification'
     }
   },
   {
@@ -374,16 +372,16 @@ export const mission4Stages: StageDefinition[] = [
     appId: 'ransomware_builder',
     decisions: [2, 3, 4],
     completion: {
+      conversation: [
+        { from: 'byte_master', text: "GDYBY LUDZIE W RZECZYWISTOŚCI TWORZYLI TAK SILNE HASŁA, TO O WIELE RZADZIEJ SŁYSZAŁOBY SIĘ O KRADZIEŻY DANYCH." },
+        { from: 'byte_master', text: "ZNALAZŁEM INFORMACJE, ŻE PRIORYTET MAJĄ W TEJ CHWILI CV WYSYŁANE NA STANOWISKO 'ANALITYK RYNKÓW ENERGETYCZNYCH'. WŁĄCZ APLIKACJĘ MAILA." },
+        { from: 'player', id: 'm4_reply_builder', label: "MAJĄ JAKIEŚ WYTYCZNE DOTYCZĄCE TEMATU MAILA Z CV?" },
+        { from: 'byte_master', text: "TEMAT MAILA POWINIEN ZAWIERAĆ ODPOWIEDNIO NAZWISKO ORAZ IMIĘ Z DOPISKIEM CV." }
+      ],
       unlockIcons: ['mail_unlocked', 'mail'],
       badges: { mail: 1, chat: 1 },
       highlightTile: 'mail',
-      sound: 'notification',
-      byteMasterMessages: [
-        'ŁADUNEK GOTOWY. ZNALAZŁEM INFORMACJE, ŻE PRIORYTET MAJĄ TERAZ CV NA STANOWISKO „ANALITYK RYNKÓW ENERGETYCZNYCH".',
-        'PRZYGOTUJ SPREPAROWANE CV W KAMPANII SPEAR-PHISHINGOWEJ. WŁĄCZ APLIKACJĘ MAILA.'
-      ],
-      openLink: { label: 'OTWÓRZ POCZTĘ //MAIL', appId: 'mail' },
-      playerReply: { id: 'm4_reply_builder', label: 'MAJĄ JAKIEŚ WYTYCZNE DOTYCZĄCE TEMATU MAILA Z CV?' }
+      sound: 'notification'
     }
   },
   {
@@ -391,16 +389,14 @@ export const mission4Stages: StageDefinition[] = [
     appId: 'mail',
     decisions: [5, 6],
     completion: {
+      // Spójnik (brak dialogu w scenariuszu na tej granicy).
+      conversation: [
+        { from: 'player', id: 'm4_reply_mail', label: "ZAŁĄCZNIK UZBROJONY. TERAZ ZAMASKUJĘ IP PRZEZ VPN I WYBIORĘ NADAWCĘ." }
+      ],
       unlockIcons: ['vpn_unlocked', 'vpn_app'],
       badges: { vpn_app: 1, chat: 1 },
       highlightTile: 'vpn_app',
-      sound: 'notification',
-      byteMasterMessages: [
-        'MAIL PRZYGOTOWANY ZE ZŁOŚLIWYM ZAŁĄCZNIKIEM. NIE MOŻEMY GO WYSŁAĆ Z NASZEGO WĘZŁA — BRAMKI ENERGY ROCK WYKRYJĄ ANOMALIĘ GEOLOKALIZACYJNĄ.',
-        'SKONFIGURUJ TUNEL VPN I DOPASUJ PODSIEĆ. OTWÓRZ KLIENTA VPN.'
-      ],
-      openLink: { label: 'OTWÓRZ KLIENTA VPN', appId: 'vpn_app' },
-      playerReply: { id: 'm4_reply_mail', label: 'OKEJ, MASKUJĘ IP I WYBIERAM NADAWCĘ.' }
+      sound: 'notification'
     }
   },
   {
@@ -408,16 +404,15 @@ export const mission4Stages: StageDefinition[] = [
     appId: 'vpn_app',
     decisions: [7, 8],
     completion: {
+      conversation: [
+        { from: 'player', id: 'm4_reply_vpn', label: "WSZYSTKO ZROBIONE. CZEKAMY AŻ OTWORZĄ CV I AKTYWUJĄ RANSOMWARE. JAK NIE PRZYJMIECIE MNIE DO DARKSUN, TO MOŻE DOSTANĘ PRACĘ W ENERGY ROCK." },
+        { from: 'byte_master', text: "KTO WIE?" },
+        { from: 'byte_master', text: "MALWARE AKTYWNY — REKRUTER OTWORZYŁ CV NA ENERGY_ROCK_01_PC. WEJDŹ NA STACJĘ OFIARY, ZASZYFRUJ ZASOBY, A POTEM POBIERZ PLIKI ZAWIERAJĄCE 'FREEVOLT' W NAZWIE." }
+      ],
       unlockIcons: ['victim_workstation_unlocked', 'victim_workstation'],
       badges: { victim_workstation: 1, chat: 1 },
       highlightTile: 'victim_workstation',
-      sound: 'alarm',
-      byteMasterMessages: [
-        'TRANSMISJA ZAKOŃCZONA SUKCESEM! REKRUTER POBRAŁ CV, WPISAŁ HASŁO I OTWORZYŁ PLIK. MAMY AKTYWNĄ SESJĘ W SIECI ENERGY ROCK!',
-        'WEJDŹ NA STACJĘ OFIARY: NAJPIERW URUCHOM SZYFROWANIE, POTEM WYCIĄGNIJ DOKUMENTACJĘ FREEVOLT.'
-      ],
-      openLink: { label: 'PRZEJDŹ DO STACJI OFIARY', appId: 'victim_workstation' },
-      playerReply: { id: 'm4_reply_vpn', label: 'WCHODZĘ NA STACJĘ. SZYFRUJĘ I POBIERAM PLIKI.' }
+      sound: 'alarm'
     }
   },
   {
@@ -425,16 +420,14 @@ export const mission4Stages: StageDefinition[] = [
     appId: 'victim_workstation',
     decisions: [9],
     completion: {
+      // Spójnik: po eksfiltracji Szef IT dzwoni na kanale awaryjnym.
+      conversation: [
+        { from: 'player', id: 'm4_reply_workstation', label: "MAM PLIKI FREEVOLT. SZEF IT DZWONI NA KANALE AWARYJNYM — ODBIERAM I NEGOCJUJĘ." }
+      ],
       unlockIcons: ['negotiation_unlocked', 'negotiation'],
       badges: { negotiation: 1, chat: 1 },
       highlightTile: 'negotiation',
-      sound: 'alarm',
-      byteMasterMessages: [
-        'ALARM W CAŁYM ENERGY ROCK! ZARZĄD PANIKUJE, A SZEF IT PRÓBUJE SKONTAKTOWAĆ SIĘ NA KANALE AWARYJNYM Z NOTATKI.',
-        'OTWÓRZ KONSOLĘ NEGOCJACJI. TRZYMAJ SIĘ ŻĄDANIA BITCOINÓW I NARZUĆ TWARDY LIMIT CZASU.'
-      ],
-      openLink: { label: 'OTWÓRZ KONSOLĘ NEGOCJACJI', appId: 'negotiation' },
-      playerReply: { id: 'm4_reply_workstation', label: 'MAM PLIKI. ODBIERAM POŁĄCZENIE OD SZEFA IT.' }
+      sound: 'alarm'
     }
   },
   {
@@ -442,16 +435,17 @@ export const mission4Stages: StageDefinition[] = [
     appId: 'negotiation',
     decisions: [10],
     completion: {
+      // Meldunek u mentora — 1:1 ze scenariuszem (sekcja 8, krok 4).
+      conversation: [
+        { from: 'player', id: 'm4_reply_neg_1', label: "MAM TWOJE PLIKI, UDAŁO SIĘ BEZ WIĘKSZYCH PROBLEMÓW." },
+        { from: 'byte_master', text: "PAMIĘTAJ TYLKO, ŻE POTRZEBUJEMY I PLIKÓW, I OKUPU." },
+        { from: 'player', id: 'm4_reply_neg_2', label: "CZY TO ZNACZY, ŻE W KOŃCU PRZYJMIECIE MNIE DO DARKSUN?" },
+        { from: 'byte_master', text: "TERAZ POWINNIŚMY MIEĆ JUŻ WSZYSTKO. NIE TAK SZYBKO, MAM DLA CIEBIE JESZCZE WISIENKĘ NA TORCIE. KILKA WISIENEK. PRZYGOTUJ SIĘ." }
+      ],
       unlockIcons: ['mission_completed', 'debrief_app'],
       badges: { debrief_app: 1, chat: 1 },
       highlightTile: 'debrief_app',
-      sound: 'success',
-      byteMasterMessages: [
-        'PERFEKCYJNA ROBOTA! DOKUMENTACJA FREEVOLT JEST NASZA, A ENERGY ROCK KUPIŁO PRZYKRYWKĘ ZWYKŁEGO ATAKU DLA PIENIĘDZY.',
-        'OTWÓRZ RAPORT KOŃCOWY, ABY ZAMKNĄĆ OPERACJĘ I PRZESŁAĆ WYNIK DO SCORM.'
-      ],
-      openLink: { label: 'OTWÓRZ PODSUMOWANIE MISJI', appId: 'debrief_app' },
-      playerReply: { id: 'm4_reply_negotiation', label: 'CZY TO ZNACZY, ŻE W KOŃCU PRZYJMIECIE MNIE DO DARKSUN?' }
+      sound: 'success'
     }
   }
 ];

@@ -12,7 +12,7 @@ W grze 2D cały pulpit jest na ekranie naraz. Gracz nie ma przestrzeni, która w
 
 1. **Jeden aktywny cel.** Odblokowany jest tylko kafelek bieżącego etapu. Pozostałe są ukryte albo wyszarzone (`unlockedOnly` + `requiredUnlockId`). Gracz nie może „zgubić się" w aplikacji, która jeszcze nie ma sensu.
 2. **Następny krok ma widoczny znacznik.** Świeżo odblokowany kafelek dostaje powiadomienie `[1]` (`notificationBadges`) **oraz poświatę uwagi** (`completion.highlightTile` → pulsująca zielona obwódka na pulpicie). Gdy czeka odpowiedź na czacie — uwaga idzie na czat (callout na prawy monitor).
-3. **Czat jest rozmową, nie launcherem.** Kliknięcie w czacie **nigdy** nie otwiera aplikacji. Po etapie mentor pisze kwestię (z VR), gracz klika swoją kwestię (też z VR — samo echo), a kolejny kafelek się odblokowuje i podświetla; gracz **sam** go klika. Wiadomość mentora może nieść opcjonalny **link** (`completion.openLink`), który gracz może kliknąć zamiast kafelka — to jedyny dozwolony sposób otwarcia aplikacji z czatu (jawny klik, jak link do strony).
+3. **Czat jest rozmową, nie launcherem.** Kliknięcie w czacie **nigdy** nie otwiera aplikacji. Mentor nie ma dostępu do komputera gracza, więc **nie podaje aplikacji do otwarcia** — prowadzi rozmowę (`completion.conversation`, naprzemiennie mentor/gracz). Dopiero gdy gracz napisze mentorowi, co chce zrobić, kolejny kafelek się **odblokowuje i podświetla**; gracz **sam** go klika.
 4. **Przejście dalej jest zablokowane, dopóki krok nie jest zrobiony.** Przycisk „dalej/zatwierdź" jest wyszarzony do spełnienia kryterium ukończenia, potem aktywny (zielony). Nigdy odwrotnie.
 5. **Podpowiedź po bezczynności, dwa poziomy.** T1 subtelny (pulsowanie celu), T2 wyraźny (komunikat tekstowy, `WSKAZÓWKA [?]`). Dla **decyzji** podpowiedź naprowadza na myślenie („przypomnij sobie ustalenia z mentorem"), nie zdradza odpowiedzi. Dla **czynności** („otwórz aplikację", „przeciągnij plik") podpowiedź może wskazać obiekt wprost.
 6. **Czat ma pierwszeństwo.** Kiedy mentor czeka na odpowiedź, gracz odpowiada, zanim przejdzie do pulpitu. Dialog nie konkuruje z minigrą o uwagę w tym samym momencie. Mentor „pisze" (animacja) z delayem, żeby rozmowa miała rytm — nie wyrzucaj kilku zdań naraz.
@@ -28,7 +28,7 @@ Dla każdego etapu agent potrzebuje ze scenariusza:
 - **cel etapu** — jednym zdaniem, co gracz w tym momencie robi (to zasila podpowiedź i wiadomość mentora),
 - **następny cel** — którą aplikację/kafelek etap odblokowuje i podświetla (`unlockIcons` + `highlightTile`),
 - **kryterium ukończenia** — sprawdzalny warunek zamknięcia etapu,
-- **mostek mentora** — kwestie BYTE_MASTERA z VR (`byteMasterMessages`), które kierują do następnego etapu, oraz kwestia gracza z VR (`playerReply`) i opcjonalny link (`openLink`),
+- **mostek mentora** — skrypt rozmowy 1:1 z VR (`conversation`: naprzemiennie kwestie mentora i gracza); kwestia gracza odblokowuje kolejny etap,
 - **typ kroku** — decyzja (podpowiedź naprowadza) czy czynność (podpowiedź wskazuje), bo od tego zależy brzmienie podpowiedzi.
 
 Czego scenariusz **nie** opisuje: pulsowania, hoverów, dźwięków, badge'y, czasów T1/T2, animacji „pisze", ekranów ładowania. To są stałe mechanizmy silnika — agent je podpina, nie wymyśla per misja. Scenariusz dostarcza **treść** (kwestie z VR), silnik dostarcza **rytm**.
@@ -36,7 +36,7 @@ Czego scenariusz **nie** opisuje: pulsowania, hoverów, dźwięków, badge'y, cz
 ## Kontrola przed oddaniem misji
 
 - Czy w każdym momencie jest dokładnie jeden odblokowany, oznaczony i **podświetlony** cel?
-- Czy żadne kliknięcie w czacie nie otwiera aplikacji automatycznie (tylko kafelek / `openLink`)?
+- Czy żadne kliknięcie w czacie nie otwiera aplikacji (otwiera tylko klik kafelka przez gracza)?
 - Czy kwestie gracza w czacie to linie z VR, a nie meta-teksty („Otwieram…")?
 - Czy każdy etap ma sprawdzalne kryterium ukończenia?
 - Czy każdy etap odblokowuje następny, podświetla go i wysyła mostek mentora (kwestie z VR)?

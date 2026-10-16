@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { MissionDefinition, PlayerChoiceRecord, DecisionReport } from '../types/mission';
+import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, ConversationBeat } from '../types/mission';
 import { penaltyForTier, btcForScore, resolveDecisionCount } from '../core/scoring';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
@@ -36,8 +36,8 @@ export interface ChatChoiceOption {
   id: string;
   label: string;
   isCorrect?: boolean;
-  /** Kwestia gracza (dialog z VR): klik wysyła echo, NIE otwiera aplikacji. */
-  reply?: boolean;
+  /** Kwestia gracza w rozmowie mostkującej (dialog z VR): klik wysyła echo i przesuwa rozmowę, NIE otwiera aplikacji. */
+  bridgeBeat?: boolean;
   openAppId?: string;
   nextTransitionId?: string;
   outcome?: ChoiceOutcome;
@@ -114,6 +114,13 @@ export interface MissionState {
   hasViewedEvents: boolean;
   /** Kafelek pulpitu do podświetlenia (świeżo odblokowany następny krok). */
   highlightedTileId: string | null;
+  /** Trwająca rozmowa mostkująca etapy (skrypt + pozycja + odblokowania na końcu). */
+  pendingBridge: {
+    beats: ConversationBeat[];
+    index: number;
+    unlock: { unlockIcons?: string[]; badges?: Record<string, number>; highlightTile?: string };
+    sound?: 'notification' | 'alarm' | 'success';
+  } | null;
 
   // Step 3: Pendrive USB (Mission 3 compatibility)
   hasUsbInserted: boolean;
@@ -153,6 +160,7 @@ export interface MissionState {
   reportDecision: (report: DecisionReport) => void;
   /** Kontrakt klocka/minigry: ukończenie etapu (odblokowania, badge, wiadomość mentora). */
   completeStage: (stageId: string) => void;
+  advanceBridge: () => void;
 
   // Detection & Retry Modals
   isDetectedModalOpen: boolean;
@@ -230,25 +238,18 @@ export interface MissionState {
 
 /**
  * Początkowy stan czatu po starcie systemu — sterowany danymi misji.
- * Misja może podać `intro.desktopGreeting`, `intro.firstChoice` (z `openAppId`)
- * i `intro.startBadges`; przy braku danych używamy fallbacku zgodnego z Misją 3.
+ * Misja data-driven (wzorzec B) podaje `intro.dialogue` (trafia do logu czatu jako
+ * historia), `intro.firstChoice` (kwestia gracza z VR) i `intro.firstUnlock`
+ * (co odblokować po tej kwestii) — to pierwsza rozmowa mostkująca. Przy braku
+ * `intro.firstChoice` używamy fallbacku zgodnego z Misją 3 (greeting + start_virus).
  */
 function resolveOpeningChat(mission: MissionDefinition): {
   messages: ChatMessage[];
-  choices: ChatChoiceOption[];
   startBadges: Record<string, number>;
-  highlightTile: string | null;
+  bridge: MissionState['pendingBridge'] | null;
+  choices: ChatChoiceOption[];
 } {
   const intro = (mission?.intro || {}) as any;
-  const greeting: string = intro.desktopGreeting || 'Połączenie TOR P2P aktywne. Czekam na stworzenie wirusa.';
-  const rawFirst = intro.firstChoice || { id: 'start_virus', label: 'NAJPIERW STWORZĘ WIRUSA' };
-  // Kafelek do podświetlenia bierzemy z firstChoice.openAppId, ale samego wyboru NIE
-  // robimy launcherem — czat nie otwiera aplikacji, gracz klika kafelek sam.
-  const highlightTile: string | null = rawFirst.openAppId || intro.firstHighlight || null;
-  // Misja data-driven (ma intro.firstChoice) → kwestia gracza z VR (reply). Fallback M3 trafia do własnej gałęzi.
-  const firstChoice: ChatChoiceOption = intro.firstChoice
-    ? { id: rawFirst.id, label: rawFirst.label, reply: true }
-    : { id: rawFirst.id, label: rawFirst.label };
 
   // Rozmowa intro „przenosi się" do logu czatu jako historia (naprzemiennie BYTE_MASTER / gracz).
   const history: ChatMessage[] = [];
@@ -256,16 +257,30 @@ function resolveOpeningChat(mission: MissionDefinition): {
     if (d.text) history.push({ id: `intro_bm_${i}`, sender: 'BYTE_MASTER', text: d.text });
     if (d.playerResponse) history.push({ id: `intro_pl_${i}`, sender: 'PLAYER', text: d.playerResponse });
   });
-  const messages: ChatMessage[] = [
-    ...history,
-    { id: 'chat_init', sender: 'BYTE_MASTER', text: greeting }
-  ];
 
+  // Wzorzec B: intro kończy się kwestią gracza (firstChoice), która odblokowuje pierwszą aplikację.
+  if (intro.firstChoice) {
+    const bridge: MissionState['pendingBridge'] = {
+      beats: [{ from: 'player', id: intro.firstChoice.id, label: intro.firstChoice.label }],
+      index: 0,
+      unlock: intro.firstUnlock || {},
+      sound: 'notification'
+    };
+    return {
+      messages: history,
+      startBadges: intro.startBadges || { chat: 1 },
+      bridge,
+      choices: []
+    };
+  }
+
+  // Fallback (Misja 3 / legacy): greeting + pojedynczy wybór trafiający do własnej gałęzi.
+  const greeting: string = intro.desktopGreeting || 'Połączenie TOR P2P aktywne. Czekam na stworzenie wirusa.';
   return {
-    messages,
-    choices: [firstChoice],
+    messages: [...history, { id: 'chat_init', sender: 'BYTE_MASTER', text: greeting }],
     startBadges: intro.startBadges || { virus_database: 1, chat: 1 },
-    highlightTile
+    bridge: null,
+    choices: [{ id: 'start_virus', label: 'NAJPIERW STWORZĘ WIRUSA' }]
   };
 }
 
@@ -314,6 +329,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     isChatAttentionActive: false,
     hasViewedEvents: false,
     highlightedTileId: null as string | null,
+    pendingBridge: null as MissionState['pendingBridge'],
 
     // Step 3
     hasUsbInserted: false,
@@ -359,6 +375,11 @@ const getInitialMissionState = (mission: MissionDefinition) => {
 };
 
 const initialMission = resolveInitialMission();
+
+// Tempo rozmowy mostkującej: pauza „pisze" przed każdą kwestią BYTE_MASTERA (2 s).
+let BRIDGE_DELAY = 2000;
+/** Tylko do testów: skraca delay rozmowy, by nie czekać sekund. */
+export function __setBridgeDelayForTests(ms: number) { BRIDGE_DELAY = ms; }
 
 export const useMissionStore = create<MissionState>((set, get) => ({
   ...getInitialMissionState(initialMission),
@@ -432,10 +453,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       detectionReason: null,
       isRetryModalOpen: false,
       notificationBadges: opening.startBadges,
-      highlightedTileId: opening.highlightTile,
+      highlightedTileId: null,
       chatMessages: opening.messages,
-      chatAvailableChoices: opening.choices
+      chatAvailableChoices: opening.choices,
+      pendingBridge: opening.bridge
     });
+    if (opening.bridge) get().advanceBridge();
   },
 
   recordChoice: (choice, penalty = 0) => {
@@ -535,72 +558,74 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     const { completion } = stage;
 
-    // Wiadomości mentora: preferuj tablicę, przyjmij też pojedynczą (zgodność wstecz).
-    const messages: string[] =
-      completion.byteMasterMessages && completion.byteMasterMessages.length > 0
-        ? completion.byteMasterMessages
-        : completion.byteMasterMessage
-        ? [completion.byteMasterMessage]
-        : [];
+    // Powrót na pulpit; start rozmowy mostkującej (odblokowania DOPIERO po jej zakończeniu).
+    set((s) => ({
+      activeApp: completion.closeActiveApp === false ? s.activeApp : null,
+      chatAvailableChoices: [],
+      isByteMasterTyping: false,
+      pendingBridge: {
+        beats: completion.conversation || [],
+        index: 0,
+        unlock: {
+          unlockIcons: completion.unlockIcons,
+          badges: completion.badges,
+          highlightTile: completion.highlightTile
+        },
+        sound: completion.sound
+      }
+    }));
+    get().advanceBridge();
+  },
 
-    // Końcowe opcje czatu: kwestia gracza z VR (bez otwierania aplikacji) lub legacy nextChoice.
-    const endChoices: ChatChoiceOption[] = completion.playerReply
-      ? [{ id: completion.playerReply.id, label: completion.playerReply.label, reply: true }]
-      : completion.nextChoice
-      ? [completion.nextChoice]
-      : [];
+  // ----------------- ROZMOWA MOSTKUJĄCA (wzorzec B) -----------------
+  // Gra skrypt `conversation` po kolei: kwestie BYTE_MASTERA z animacją „pisze" i
+  // delayem, kwestie gracza jako przyciski w czacie. Po ostatnim beacie stosuje
+  // odblokowania — więc kafelek odblokowuje się dopiero, gdy gracz napisze do mentora.
+  advanceBridge: () => {
+    const pb = get().pendingBridge;
+    if (!pb) return;
+    const i = pb.index;
 
-    // Krok 1: odblokowania, badge, podświetlenie kafelka, zamknięcie okna (powrót na pulpit).
-    set((s) => {
-      const unlocked = [...s.unlockedIcons];
-      (completion.unlockIcons || []).forEach((icon) => {
-        if (!unlocked.includes(icon)) unlocked.push(icon);
+    // Koniec rozmowy → odblokowania, badge, podświetlenie.
+    if (i >= pb.beats.length) {
+      set((s) => {
+        const unlocked = [...s.unlockedIcons];
+        (pb.unlock.unlockIcons || []).forEach((ic) => {
+          if (!unlocked.includes(ic)) unlocked.push(ic);
+        });
+        return {
+          unlockedIcons: unlocked,
+          notificationBadges: { ...s.notificationBadges, ...(pb.unlock.badges || {}) },
+          highlightedTileId: pb.unlock.highlightTile ?? s.highlightedTileId,
+          isByteMasterTyping: false,
+          pendingBridge: null
+        };
       });
-      return {
-        activeApp: completion.closeActiveApp === false ? s.activeApp : null,
-        unlockedIcons: unlocked,
-        notificationBadges: { ...s.notificationBadges, ...(completion.badges || {}) },
-        highlightedTileId: completion.highlightTile ?? s.highlightedTileId,
-        isByteMasterTyping: messages.length > 0,
-        chatAvailableChoices: []
-      };
-    });
-
-    if (messages.length === 0) {
-      set({ chatAvailableChoices: endChoices });
+      if (pb.sound === 'alarm') sounds.playAlarm();
+      else if (pb.sound === 'success') sounds.playSuccess();
+      else sounds.playNotification();
       return;
     }
 
-    // Krok 2: wiadomości mentora po kolei, z animacją „pisze" i delayem (jak w M3).
-    const TYPING_DELAY = 1500;
-    const deliver = (index: number) => {
-      setTimeout(() => {
-        const isLast = index === messages.length - 1;
-        if (isLast && completion.sound === 'alarm') sounds.playAlarm();
-        else if (isLast && completion.sound === 'success') sounds.playSuccess();
-        else sounds.playNotification();
+    const beat = pb.beats[i];
 
-        set((s) => {
-          const msg: ChatMessage = {
-            id: `msg_${Date.now()}_${index}`,
-            sender: 'BYTE_MASTER',
-            text: messages[index]
-          };
-          // Link do otwarcia kafelka dołączamy do ostatniej wiadomości (klik gracza, nie auto-open).
-          if (isLast && completion.openLink) {
-            msg.actionButton = { type: 'open_app', label: completion.openLink.label, payload: completion.openLink.appId };
-          }
-          return {
-            isByteMasterTyping: !isLast,
-            chatMessages: [...s.chatMessages, msg],
-            chatAvailableChoices: isLast ? endChoices : []
-          };
-        });
+    // Kwestia gracza → przycisk w czacie (klik przesunie rozmowę).
+    if (beat.from === 'player') {
+      set({ isByteMasterTyping: false, chatAvailableChoices: [{ id: beat.id, label: beat.label, bridgeBeat: true }] });
+      return;
+    }
 
-        if (index < messages.length - 1) deliver(index + 1);
-      }, TYPING_DELAY);
-    };
-    deliver(0);
+    // Kwestia BYTE_MASTERA → animacja „pisze" + delay, potem wiadomość, potem następny beat.
+    set({ isByteMasterTyping: true, chatAvailableChoices: [] });
+    setTimeout(() => {
+      sounds.playNotification();
+      set((s) => ({
+        isByteMasterTyping: false,
+        chatMessages: [...s.chatMessages, { id: `bm_${Date.now()}_${i}`, sender: 'BYTE_MASTER' as const, text: beat.text }],
+        pendingBridge: s.pendingBridge ? { ...s.pendingBridge, index: i + 1 } : null
+      }));
+      get().advanceBridge();
+    }, BRIDGE_DELAY);
   },
 
   unlockIcon: (id: string) => {
@@ -650,10 +675,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     set({
       bootStage: 'desktop',
       notificationBadges: opening.startBadges,
-      highlightedTileId: opening.highlightTile,
+      highlightedTileId: null,
       chatMessages: opening.messages,
-      chatAvailableChoices: opening.choices
+      chatAvailableChoices: opening.choices,
+      pendingBridge: opening.bridge
     });
+    if (opening.bridge) get().advanceBridge();
   },
 
   // ----------------- APP NAVIGATION -----------------
@@ -842,15 +869,17 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     const genericChoice = state.chatAvailableChoices.find((c) => c.id === optionId);
 
-    // Kwestia gracza z VR (wzorzec B): wysyła echo i nic nie otwiera. Czat nie jest launcherem.
-    if (genericChoice?.reply) {
-      set({
+    // Kwestia gracza w rozmowie mostkującej (wzorzec B): echo + przesunięcie rozmowy; nic nie otwiera.
+    if (genericChoice?.bridgeBeat) {
+      set((s) => ({
         chatMessages: [
-          ...state.chatMessages,
+          ...s.chatMessages,
           { id: `msg_${Date.now()}`, sender: 'PLAYER', text: genericChoice.label }
         ],
-        chatAvailableChoices: []
-      });
+        chatAvailableChoices: [],
+        pendingBridge: s.pendingBridge ? { ...s.pendingBridge, index: s.pendingBridge.index + 1 } : null
+      }));
+      get().advanceBridge();
       return;
     }
 

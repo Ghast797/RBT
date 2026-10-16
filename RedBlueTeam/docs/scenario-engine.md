@@ -51,7 +51,7 @@ Implementuje je silnik raz. Scenariusz ich nie opisuje — zakłada je.
 |---|---|
 | Start misji | połączenie przychodzące → dialog wprowadzający z BYTE_MASTEREM → sekwencja BIOS → pulpit. Rozmowa intro „przenosi się" do logu czatu na prawym monitorze (silnik zasiewa ją z `intro.dialogue`). |
 | Wypowiedź gracza | w webie: przycisk odpowiedzi w panelu czatu (zastępuje rzut kostką 3D z VR); treść to linia z VR; klik = echo, **nigdy** nie otwiera aplikacji |
-| Czat = rozmowa, nie launcher | kliknięcie w czacie nie otwiera aplikacji; kolejny kafelek odblokowuje się + podświetla, gracz klika go sam (lub jawny `openLink` w wiadomości mentora) |
+| Czat = rozmowa, nie launcher | kliknięcie w czacie nie otwiera aplikacji; mentor nie podaje aplikacji do otwarcia; kolejny kafelek odblokowuje się + podświetla po kwestii gracza, a gracz klika go sam |
 | Prowadzenie do celu | badge `1` + poświata uwagi (`highlightTile`) na ikonie następnego etapu; ikony nieodblokowane są ukryte |
 | Tempo | BYTE_MASTER „pisze" (animacja) z delayem; rozmowa z NPC (`DialogueTree`) też ma delay i wskaźnik pisania (rozmowa telefoniczna) |
 | Ekrany aplikacji | jeden kafelek = jedna aplikacja; kroki w środku to sekwencyjne pełne ekrany (bez zakładek/cofania), z krótkim ekranem ładowania `ModuleLoader` między nimi |
@@ -90,15 +90,14 @@ Element **nie robi** samodzielnie: nie liczy punktów, nie odblokowuje ikon, nie
 
 Stan między etapami (co wybrano wcześniej) element czyta z `customState`, nie z własnych pól store'a.
 
-**Zamknięcie etapu (mostek do następnego).** Gdy element woła `onComplete()`, silnik wykonuje `StageCompletion` z definicji etapu. Dane (nie kod):
-- `unlockIcons` + `badges` — odblokuj i oznacz następny kafelek;
-- `highlightTile` — podświetl ten kafelek (poświata uwagi na pulpicie);
-- `byteMasterMessages: string[]` — kwestie BYTE_MASTERA z VR, wyświetlane po kolei z animacją „pisze" i delayem;
-- `playerReply: {id,label}` — kwestia gracza z VR (klik = echo, nic nie otwiera);
-- `openLink: {label, appId}` — opcjonalny link w ostatniej wiadomości mentora (jedyny dozwolony sposób otwarcia aplikacji z czatu — jawny klik gracza);
-- `sound` — dźwięk mostka.
+**Zamknięcie etapu (mostek do następnego).** Gdy element woła `onComplete()`, silnik gra `StageCompletion` z definicji etapu jako **rozmowę mostkującą**. Dane (nie kod):
+- `conversation: ConversationBeat[]` — skrypt rozmowy 1:1 z VR, naprzemiennie:
+  - `{ from: 'byte_master', text }` — kwestia mentora: pojawia się po jednej, z animacją „pisze" i delayem (2 s);
+  - `{ from: 'player', id, label }` — kwestia gracza: przycisk w czacie; klik wysyła echo i przesuwa rozmowę, **nic nie otwiera**.
+- `unlockIcons` + `badges` + `highlightTile` — stosowane **dopiero po ostatnim beacie** rozmowy. Kafelek odblokowuje się więc wtedy, gdy gracz napisze do mentora, co ma zrobić.
+- `sound` — dźwięk na koniec mostka.
 
-Silnik **nie** otwiera aplikacji automatycznie po etapie — gracz klika podświetlony kafelek. (`StageCompletion.nextChoice` z `openAppId` jest `@deprecated`.)
+Zasady: BYTE_MASTER nie ma dostępu do komputera gracza, więc **nie podaje aplikacji do otwarcia** — mówi, co zrobić, a gracz sam klika podświetlony kafelek. Mostek bez dialogu w scenariuszu dostaje krótką kwestię spójnikową gracza (to ona odblokowuje kolejny kafelek). Rozmowa wielobeatowa (np. meldunek: gracz→mentor→gracz→mentor) odwzorowuje scenariusz 1:1.
 
 ## 6. Katalog klocków (z M3/M4)
 

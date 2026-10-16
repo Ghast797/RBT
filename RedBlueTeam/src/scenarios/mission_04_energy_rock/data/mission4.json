@@ -44,8 +44,7 @@
       {
         "id": "node_5",
         "sender": "BYTE_MASTER",
-        "text": "BĘDĄ Z CIEBIE LUDZIE",
-        "playerResponse": "DOBRA. ZABIERAM SIĘ ZA TWORZENIE WIRUSA"
+        "text": "BĘDĄ Z CIEBIE LUDZIE"
       }
     ],
     "biosLines": [
@@ -66,9 +65,9 @@
       "",
       "WELCOME... HACKER"
     ],
-    "desktopGreeting": "POŁĄCZENIE HACKER.OS AKTYWNE. CEL: ENERGY ROCK. OTWÓRZ BAZĘ WIRUSÓW I DOBIERZ ODPOWIEDNI ŁADUNEK.",
-    "firstChoice": { "id": "m4_reply_intro", "label": "DOBRA. ZABIERAM SIĘ ZA DOBÓR WIRUSA.", "openAppId": "virus_database" },
-    "startBadges": { "virus_database": 1, "chat": 1 }
+    "firstChoice": { "id": "m4_reply_intro", "label": "DOBRA. ZABIERAM SIĘ ZA TWORZENIE WIRUSA." },
+    "firstUnlock": { "unlockIcons": ["virus_database_unlocked"], "badges": { "virus_database": 1 }, "highlightTile": "virus_database" },
+    "startBadges": { "chat": 1 }
   },
   "desktopApps": [
     {
@@ -76,7 +75,9 @@
       "label": "//BAZA_WIRUSÓW",
       "color": "#ec4899",
       "icon": "ShieldAlert",
-      "componentId": "ransomware_virus_scanner"
+      "componentId": "ransomware_virus_scanner",
+      "unlockedOnly": true,
+      "requiredUnlockId": "virus_database_unlocked"
     },
     {
       "id": "chat_shortcut",

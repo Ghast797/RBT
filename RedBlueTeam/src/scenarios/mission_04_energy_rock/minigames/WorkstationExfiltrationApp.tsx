@@ -39,15 +39,17 @@ export const WorkstationExfiltrationApp: React.FC<BlockProps<ExfiltrationConfig>
     setSelected((prev) => (prev.includes(name) ? prev.filter((f) => f !== name) : [...prev, name]));
   };
 
+  // Gracz może zaznaczyć dowolne pliki — punkty daje TYLKO dokładna kombinacja 3 plików Freevolt.
   const evaluate = (): { tier: ChoiceOutcome; feedback: string } => {
     const byName = new Map(config.files.map((f) => [f.name, f.type]));
     const honeypot = selected.filter((f) => byName.get(f) === 'honeypot');
     const freevolt = selected.filter((f) => byName.get(f) === 'freevolt');
-    const decoy = selected.filter((f) => byName.get(f) === 'decoy');
-    if (honeypot.length > 0) return { tier: 'critical', feedback: config.feedback.criticalHoneypot };
     if (freevolt.length < config.requiredFreevolt) return { tier: 'critical', feedback: config.feedback.criticalIncomplete };
-    if (decoy.length === 0) return { tier: 'ideal', feedback: config.feedback.ideal };
-    return { tier: 'suboptimal', feedback: config.feedback.suboptimal };
+    if (selected.length === config.requiredFreevolt && freevolt.length === config.requiredFreevolt) {
+      return { tier: 'ideal', feedback: config.feedback.ideal };
+    }
+    if (honeypot.length > 0) return { tier: 'critical', feedback: config.feedback.criticalHoneypot };
+    return { tier: 'critical', feedback: 'Pobrano pliki spoza dokumentacji Freevolt — nadmiarowy transfer wywołał detekcję przez SOC.' };
   };
 
   const handleExfiltrate = async () => {
@@ -131,7 +133,7 @@ export const WorkstationExfiltrationApp: React.FC<BlockProps<ExfiltrationConfig>
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
         {header('EKSFILTRACJA — WYBÓR PLIKÓW', 'PLIKI')}
         <div className="flex justify-between items-center text-xs font-bold text-gray-300">
-          <span>WYBIERZ DOKŁADNIE {config.requiredFreevolt} PLIKI TECHNOLOGII 'FREEVOLT':</span>
+          <span>ZAZNACZ PLIKI DO POBRANIA (CEL: DOKUMENTACJA „FREEVOLT"):</span>
           <span style={{ color: accent }}>WYBRANO: {selected.length}</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">

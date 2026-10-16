@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { useMissionStore } from '../src/engine/store/useMissionStore';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { useMissionStore, __setBridgeDelayForTests } from '../src/engine/store/useMissionStore';
 import { mission4Definition } from '../src/scenarios/mission_04_energy_rock';
 import {
   decisionShare,
@@ -83,12 +83,27 @@ describe('Mission 4: nowy model (etapy + klocki)', () => {
     expect(state.score).toBeLessThan(100);
   });
 
-  it('completeStage(negotiation) odblokowuje raport końcowy', () => {
-    const store = useMissionStore.getState();
-    store.completeStage('negotiation');
-
-    const state = useMissionStore.getState();
-    expect(state.unlockedIcons).toContain('debrief_app');
-    expect(state.unlockedIcons).toContain('mission_completed');
+  it('completeStage(negotiation) odblokowuje raport końcowy po rozmowie meldunkowej', () => {
+    vi.useFakeTimers();
+    __setBridgeDelayForTests(0);
+    try {
+      const store = useMissionStore.getState();
+      store.completeStage('negotiation');
+      // Odblokowanie następuje dopiero po przegraniu rozmowy mostkującej (meldunek).
+      for (let i = 0; i < 40; i++) {
+        vi.runAllTimers();
+        const st = useMissionStore.getState();
+        if (!st.pendingBridge) break;
+        const beat = st.chatAvailableChoices.find((c) => c.bridgeBeat);
+        if (beat) useMissionStore.getState().chooseChatOption(beat.id);
+        else break;
+      }
+      const state = useMissionStore.getState();
+      expect(state.unlockedIcons).toContain('debrief_app');
+      expect(state.unlockedIcons).toContain('mission_completed');
+    } finally {
+      vi.useRealTimers();
+      __setBridgeDelayForTests(2000);
+    }
   });
 });

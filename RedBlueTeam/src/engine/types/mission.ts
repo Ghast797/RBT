@@ -254,34 +254,32 @@ export interface DialogueTreeConfig {
 // ETAPY MISJI (docs/scenario-engine.md, sekcja 1)
 // ---------------------------------------------------------------------------
 
-/** Co dzieje się po ukończeniu etapu: odblokowania, powiadomienia, rozmowa z mentorem. */
+/**
+ * Jeden „beat" rozmowy mostkującej etapy: albo kwestia BYTE_MASTERA (pojawia się
+ * z animacją „pisze" i delayem), albo kwestia gracza z VR (przycisk w czacie; klik
+ * wysyła echo i przesuwa rozmowę — NIE otwiera aplikacji).
+ */
+export type ConversationBeat =
+  | { from: 'byte_master'; text: string }
+  | { from: 'player'; id: string; label: string };
+
+/** Co dzieje się po ukończeniu etapu: rozmowa z mentorem, a na jej końcu odblokowania. */
 export interface StageCompletion {
-  /** Identyfikatory do dopisania do `unlockedIcons`. */
-  unlockIcons?: string[];
-  /** Powiadomienia `[1]` na kafelkach. */
-  badges?: Record<string, number>;
-  /** Czy zamknąć otwarte okno i wrócić na pulpit. */
-  closeActiveApp?: boolean;
-  /** Pojedyncza wiadomość BYTE_MASTERA (zgodność wstecz; preferuj `byteMasterMessages`). */
-  byteMasterMessage?: string;
-  /** Wiadomości BYTE_MASTERA mostkujące do kolejnego etapu — dostarczane po kolei z animacją „pisze". */
-  byteMasterMessages?: string[];
-  /** Kwestia gracza z VR pokazywana jako odpowiedź w czacie (samo echo, NIE otwiera aplikacji). */
-  playerReply?: { id: string; label: string };
-  /** Kafelek pulpitu do podświetlenia jako następny krok. */
-  highlightTile?: string;
-  /** Opcjonalny link w wiadomości mentora, który gracz może kliknąć, aby otworzyć kafelek. */
-  openLink?: { label: string; appId: string };
   /**
-   * @deprecated Auto-otwieranie aplikacji z czatu — wygaszane. Czat nie jest launcherem:
-   * kafelek odblokowuje się i podświetla, a gracz klika go sam (lub przez `openLink`).
+   * Skrypt rozmowy mostkującej do kolejnego etapu (naprzemiennie BYTE_MASTER / gracz),
+   * 1:1 z VR. Silnik gra go po kolei; dopiero po ostatnim beacie stosuje odblokowania.
+   * Kafelek odblokowuje się więc PO tym, jak gracz napisze do mentora.
    */
-  nextChoice?: {
-    id: string;
-    label: string;
-    openAppId?: string;
-  };
-  /** Dźwięk towarzyszący wiadomości. */
+  conversation?: ConversationBeat[];
+  /** Identyfikatory do dopisania do `unlockedIcons` (po zakończeniu rozmowy). */
+  unlockIcons?: string[];
+  /** Powiadomienia `[1]` na kafelkach (po zakończeniu rozmowy). */
+  badges?: Record<string, number>;
+  /** Kafelek pulpitu do podświetlenia jako następny krok (po zakończeniu rozmowy). */
+  highlightTile?: string;
+  /** Czy zamknąć otwarte okno i wrócić na pulpit (domyślnie tak). */
+  closeActiveApp?: boolean;
+  /** Dźwięk na koniec mostka. */
   sound?: 'notification' | 'alarm' | 'success';
 }
 
