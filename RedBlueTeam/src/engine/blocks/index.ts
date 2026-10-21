@@ -3,3 +3,4 @@
 
 export { ChoiceCards } from './ChoiceCards';
 export { DialogueTree } from './DialogueTree';
+export { VpnRouter } from './VpnRouter';

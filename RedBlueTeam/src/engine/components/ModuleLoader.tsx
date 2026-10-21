@@ -4,10 +4,12 @@ import { sounds } from '../audio/soundEffects';
 interface ModuleLoaderProps {
   /** Nagłówek paska (np. "ŁADOWANIE MODUŁU: SKANER SYGNATURY"). */
   label?: string;
+  message?: string;
   /** Czas trwania ładowania w ms (domyślnie 1000). */
   durationMs?: number;
   /** Wywoływane po dojściu do 100%. */
-  onDone: () => void;
+  onDone?: () => void;
+  onComplete?: () => void;
   /** Kolor akcentu (hex). */
   accent?: string;
 }
@@ -18,11 +20,15 @@ interface ModuleLoaderProps {
  * Zob. docs/scenario-engine.md (tempo/loadery).
  */
 export const ModuleLoader: React.FC<ModuleLoaderProps> = ({
-  label = 'ŁADOWANIE MODUŁU…',
+  label,
+  message,
   durationMs = 1000,
   onDone,
+  onComplete,
   accent = '#a855f7'
 }) => {
+  const displayLabel = label || message || 'ŁADOWANIE MODUŁU…';
+  const callback = onDone || onComplete;
   const [progress, setProgress] = useState(0);
   const doneRef = useRef(false);
 
@@ -39,7 +45,9 @@ export const ModuleLoader: React.FC<ModuleLoaderProps> = ({
         if (!doneRef.current) {
           doneRef.current = true;
           sounds.playSuccess();
-          setTimeout(onDone, 180);
+          if (callback) {
+            setTimeout(callback, 180);
+          }
         }
       }
     }, tick);
@@ -50,7 +58,7 @@ export const ModuleLoader: React.FC<ModuleLoaderProps> = ({
   return (
     <div className="flex flex-col items-center justify-center h-full bg-[#05090f] text-gray-200 font-mono select-none p-8 space-y-4">
       <div className="text-xs font-bold tracking-widest text-center" style={{ color: accent }}>
-        {label}
+        {displayLabel}
       </div>
       <div className="w-64 h-3 bg-[#0a1610] border rounded p-0.5" style={{ borderColor: accent }}>
         <div

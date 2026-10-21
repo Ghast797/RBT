@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldAlert,
-  Coins
+  Coins,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { useMissionStore, type WindowId } from '../store/useMissionStore';
 import { renderAppIcon } from '../registry/appRegistry';
+import { sounds } from '../audio/soundEffects';
 
 export const Taskbar: React.FC = () => {
+  const [isMuted, setIsMuted] = useState<boolean>(sounds.getMuted());
   const {
     activeMission,
     activeApp,
@@ -93,6 +97,18 @@ export const Taskbar: React.FC = () => {
         <div className="px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[11px] tracking-widest text-[#00ff66]">
           {time}
         </div>
+
+        {/* Audio / Ambient Mute Toggle */}
+        <button
+          onClick={() => {
+            const next = sounds.toggleMute();
+            setIsMuted(next);
+          }}
+          className="p-1 rounded bg-[#091119] border border-[#00ff66]/30 text-[#00ff66] hover:bg-[#00ff66]/15 transition-all cursor-pointer"
+          title={isMuted ? "Włącz dźwięk i ambient" : "Wycisz dźwięk i ambient"}
+        >
+          {isMuted ? <VolumeX size={14} className="text-gray-500" /> : <Volume2 size={14} className="animate-pulse" />}
+        </button>
       </div>
     </div>
   );

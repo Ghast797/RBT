@@ -7,6 +7,7 @@
     "dev": "node node_modules/vite/bin/vite.js",
     "build": "node node_modules/typescript/bin/tsc && node node_modules/vite/bin/vite.js build",
     "build:scorm": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js",
+    "build:scorm:m2": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=2",
     "build:scorm:m3": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=3",
     "build:scorm:m4": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=4",
     "build:scorm:all": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --all",

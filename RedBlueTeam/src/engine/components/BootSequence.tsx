@@ -16,12 +16,17 @@ export const BootSequence: React.FC = () => {
 
   const [biosLineCount, setBiosLineCount] = useState<number>(0);
   const [bootProgress, setBootProgress] = useState<number>(0);
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
 
   const introDialogue = activeMission.intro?.dialogue || [];
   const currentDialog = introDialogue[introDialogIndex] || { id: '', text: '', playerResponse: '' };
   const biosLines = activeMission.intro?.biosLines || [];
   const callerName = activeMission.intro?.callerName || 'BYTE_MASTER';
   const callStatus = activeMission.intro?.callStatus || 'POŁĄCZENIE PRZYCHODZĄCE (TOR v3)';
+
+  useEffect(() => {
+    setSelectedOptionId(null);
+  }, [introDialogIndex]);
 
   // Handle BIOS typewriter effect & progress bar
   useEffect(() => {
@@ -111,21 +116,81 @@ export const BootSequence: React.FC = () => {
               {currentDialog.text}
             </div>
 
-            {/* Player's Response / Thought */}
-            <div className="p-4 bg-[#00f0ff]/10 border border-[#00f0ff]/50 rounded-lg text-sm text-[#00f0ff] leading-relaxed">
-              <span className="text-[10px] text-[#d1fae5]/60 font-bold block mb-1">
-                TWOJA ODPOWIEDŹ:
-              </span>
-              "{currentDialog.playerResponse}"
-            </div>
+            {/* Player's Choice Options (if present) */}
+            {currentDialog.playerOptions && currentDialog.playerOptions.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <span className="text-[10px] text-[#00f0ff] font-bold tracking-widest uppercase block">
+                  WYBIERZ SWOJĄ ODPOWIEDŹ:
+                </span>
+                <div className="grid grid-cols-1 gap-2.5">
+                  {currentDialog.playerOptions.map((opt) => {
+                    const isSelected = selectedOptionId === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => {
+                          sounds.playClick();
+                          setSelectedOptionId(opt.id);
+                        }}
+                        className={`p-3 rounded-lg border text-left text-xs transition-all flex items-start space-x-2.5 cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#00f0ff]/20 border-[#00f0ff] text-white shadow-[0_0_15px_rgba(0,240,255,0.3)]'
+                            : 'bg-[#061019] border-[#00f0ff]/30 text-gray-300 hover:border-[#00f0ff]/70 hover:bg-[#00f0ff]/10'
+                        }`}
+                      >
+                        <span
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] shrink-0 mt-0.5 ${
+                            isSelected
+                              ? 'border-[#00f0ff] bg-[#00f0ff] text-[#05080c] font-bold'
+                              : 'border-gray-500 text-gray-400'
+                          }`}
+                        >
+                          {isSelected ? '✓' : '•'}
+                        </span>
+                        <span className="leading-snug">{opt.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Mentor's reaction to selected option */}
+                {selectedOptionId && (() => {
+                  const selectedOpt = currentDialog.playerOptions?.find((o) => o.id === selectedOptionId);
+                  if (!selectedOpt?.mentorReaction) return null;
+                  return (
+                    <div className="p-3 bg-[#061420] border border-[#00f0ff]/50 rounded-lg text-xs text-[#a7f3d0] leading-relaxed shadow-inner mt-2">
+                      <span className="text-[10px] text-[#00f0ff] font-bold block mb-1">
+                        {callerName}:
+                      </span>
+                      {selectedOpt.mentorReaction}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* Player's Response / Thought (if present and no playerOptions) */}
+            {(!currentDialog.playerOptions || currentDialog.playerOptions.length === 0) &&
+              Boolean(currentDialog.playerResponse && currentDialog.playerResponse.trim()) && (
+              <div className="p-4 bg-[#00f0ff]/10 border border-[#00f0ff]/50 rounded-lg text-sm text-[#00f0ff] leading-relaxed">
+                <span className="text-[10px] text-[#d1fae5]/60 font-bold block mb-1">
+                  TWOJA ODPOWIEDŹ:
+                </span>
+                "{currentDialog.playerResponse}"
+              </div>
+            )}
           </div>
 
           {/* Action Button */}
           <div className="pt-4 border-t border-[#00f0ff]/30 flex justify-end">
             {!isLastDialog ? (
               <button
-                onClick={nextIntroDialog}
-                className="px-6 py-2.5 bg-[#00f0ff] text-[#05080c] font-bold text-xs uppercase tracking-wider rounded hover:bg-[#00f0ff]/90 transition-all flex items-center space-x-1.5 shadow-[0_0_15px_rgba(0,240,255,0.4)]"
+                onClick={() => {
+                  setSelectedOptionId(null);
+                  nextIntroDialog();
+                }}
+                disabled={Boolean(currentDialog.playerOptions?.length && !selectedOptionId)}
+                className="px-6 py-2.5 bg-[#00f0ff] text-[#05080c] font-bold text-xs uppercase tracking-wider rounded hover:bg-[#00f0ff]/90 transition-all flex items-center space-x-1.5 shadow-[0_0_15px_rgba(0,240,255,0.4)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 <span>DALEJ</span>
                 <ChevronRight size={15} />

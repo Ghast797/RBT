@@ -18,6 +18,9 @@ import {
   Server,
   Key,
   FolderOpen,
+  Search,
+  Users,
+  Monitor,
   HelpCircle
 } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
@@ -30,7 +33,7 @@ import {
   DroneApp,
   RatSessionApp
 } from '../widgets';
-import { ChoiceCards, DialogueTree } from '../blocks';
+import { ChoiceCards, DialogueTree, VpnRouter } from '../blocks';
 
 // Minigry misji (np. Energy Rock) rejestrują się same przez registerApp przy
 // załadowaniu swojego modułu scenariusza — nie importujemy ich tutaj.
@@ -43,6 +46,8 @@ export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
   // Katalog klocków (docs/scenario-engine.md, sekcja 6)
   choice_cards: ChoiceCards,
   dialogue_tree: DialogueTree,
+  vpn_router: VpnRouter,
+  vpn_app: VpnRouter,
 
   virus_database: VirusDatabaseApp,
   browser: TorBrowserApp,
@@ -50,6 +55,21 @@ export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
   drone_app: DroneApp,
   rat_session: RatSessionApp,
 };
+
+/**
+ * Rejestr minigier per scenariusz (zapobiega kolizjom componentId między misjami w trybie dev)
+ */
+export const scenarioAppRegistry: Record<string, Record<string, React.ComponentType<any>>> = {};
+
+/**
+ * Rejestruje zestaw minigier dedykowanych dla danego scenariusza
+ */
+export function registerScenarioApps(missionId: string, apps: Record<string, React.ComponentType<any>>): void {
+  scenarioAppRegistry[missionId] = {
+    ...(scenarioAppRegistry[missionId] || {}),
+    ...apps
+  };
+}
 
 /**
  * Register a custom app component dynamically
@@ -77,7 +97,8 @@ export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }
   const componentId = tile?.componentId || appKey;
   const tileId = tile?.id || appKey;
 
-  const Component = appComponentRegistry[componentId];
+  const missionId = activeMission?.mission?.id;
+  const Component = (missionId && scenarioAppRegistry[missionId]?.[componentId]) || appComponentRegistry[componentId];
 
   const config = (activeMission?.blocks as Record<string, unknown> | undefined)?.[tileId];
   const stage = (activeMission?.stages || []).find(s => s.appId === tileId);
@@ -147,6 +168,12 @@ export function renderAppIcon(iconName: string, size = 26): React.ReactNode {
       return <Key size={size} />;
     case 'FolderOpen':
       return <FolderOpen size={size} />;
+    case 'Search':
+      return <Search size={size} />;
+    case 'Users':
+      return <Users size={size} />;
+    case 'Monitor':
+      return <Monitor size={size} />;
     default:
       return <Terminal size={size} />;
   }

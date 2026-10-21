@@ -1,0 +1,230 @@
+{
+  "mission": {
+    "id": "mission-2-carbonflow",
+    "title": "MISJA 2 – CARBONFLOW",
+    "subTitle": "Kampania phishingowa, infekcja robakiem 0-day i formowanie botnetu",
+    "systemOs": "//HACKERS.OS",
+    "date": "19.05.2026",
+    "accentColor": "#00ff66",
+    "rewardBtc": 2.96,
+    "maxScore": 100,
+    "passingScore": 80,
+    "decisionCount": 5,
+    "targetCompany": "CarbonFlow Inc.",
+    "description": "Scenariusz szkoleniowy SCORM symulujący kampanię phishingową, infekcję robakiem 0-day i utworzenie sieci zombie (botnet) na serwerach CarbonFlow Inc."
+  },
+  "intro": {
+    "callerName": "BYTE_MASTER",
+    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE (HACKER.OS)",
+    "dialogue": [
+      {
+        "id": "node_1",
+        "sender": "BYTE_MASTER",
+        "text": "MAM DLA CIEBIE KOLEJNE ZADANIE",
+        "playerResponse": "HEJ, CO MASZ DLA MNIE TYM RAZEM?"
+      },
+      {
+        "id": "node_2",
+        "sender": "BYTE_MASTER",
+        "text": "Z DOKUMENTÓW, KTÓRE DLA NAS ZDOBYŁEŚ WYNIKA, ŻE JEDNĄ Z FIRM, KTÓRA MOŻE POSIADAĆ WIĘCEJ INFORMACJI O TECHNOLOGII FREEVOLT JEST CARBONFLOW INC.",
+        "playerResponse": "CO TO ZA FIRMA?"
+      },
+      {
+        "id": "node_3",
+        "sender": "BYTE_MASTER",
+        "text": "TO OPERATOR SYSTEMU PRZESYŁOWEGO PALIW, KTÓREGO SZEFEM JEST ROBERT MORIS, WSPÓŁPRACUJĄ Z NAJWIĘKSZYMI KONCERNAMI ZAJMUJĄCYMI SIĘ PRODUKCJĄ I DYSTRYBUCJĄ GAZU ORAZ ROPY. CHCEMY NAPSUĆ IM TROCHĘ KRWI I SPRAWIĆ, ŻE ICH KLIENCI STRACĄ DO NICH ZAUFANIE. POTRZEBUJEMY TEŻ ZASŁONY DYMNEJ, ŻEBY NA SPOKOJNIE ROZEJRZEĆ SIĘ PO ICH SERWERACH. JAKIEŚ POMYSŁY, SHERLOCKU?",
+        "playerResponse": "JAKIE MAJĄ ZABEZPIECZENIA?"
+      },
+      {
+        "id": "node_4",
+        "sender": "BYTE_MASTER",
+        "text": "DOŚĆ SŁABE. W MAILACH OD NICH ZAUWAŻYŁEM SYGNATURĘ BEZPŁATNEGO ANTYWIRUSA. OPRÓCZ TEGO, ICH SERWER POCZTOWY DAWNO NIE BYŁ AKTUALIZOWANY, WIĘC NA PEWNO MAJĄ LUKI BEZPIECZEŃSTWA",
+        "playerResponse": "CO POWIESZ NA FAŁSZYWĄ ANKIETĘ ZAINFEKOWANĄ WIRUSEM 0-DAY, KTÓRY WYKRYJE DLA NAS TE LUKI? ROBAKI 0-DAY SĄ PRAKTYCZNIE NIEWYKRYWALNE PRZEZ ANTYWIRUSY, A CO DOPIERO W PRZYPADKU GDY ICH OPROGRAMOWANIE JEST NIEAKTUALNE"
+      },
+      {
+        "id": "node_5",
+        "sender": "BYTE_MASTER",
+        "text": "A CO Z TĄ ANKIETĄ?",
+        "playerResponse": "ZAREJESTRUJĘ FAŁSZYWĄ DOMENĘ I STWORZĘ ANKIETĘ, KTÓRĄ WYŚLĘ WSZYSTKIM PRACOWNIKOM W FIRMIE. KIEDY TYLKO KLIKNĄ W LINK, ROBAK ZAINFEKUJE ICH KOMPUTERY I ROZEŚLE ZAINFEKOWANE WIADOMOŚCI DO KLIENTÓW Z FIRMOWEJ BAZY KONTAKTÓW. TO NA 100% PODKOPIE WIARYGODNOŚĆ CARBONFLOW, A NAM DA MOŻLIWOŚĆ ROZEJRZENIA SIĘ PO SERWERACH I ZDOBYCIE DANYCH NA TEMAT FREEVOLT"
+      },
+      {
+        "id": "node_6",
+        "sender": "BYTE_MASTER",
+        "text": "CZYLI KLASYCZNY PHISHING?",
+        "playerResponse": "CZASEM NAJPROSTSZE ROZWIĄZANIA SĄ NAJLEPSZE"
+      },
+      {
+        "id": "node_7",
+        "sender": "BYTE_MASTER",
+        "text": "DOBRZE SIĘ SKŁADA, BO MAM AKURAT DLA CIEBIE LISTĘ MAILINGOWĄ PRACOWNIKÓW CARBONFLOW I ADRESY IP, KTÓRE SĄ NA BIAŁEJ LIŚCIE NADAWCÓW",
+        "playerResponse": "CZYLI OD POCZĄTKU WIEDZIAŁEŚ, ŻE BĘDĘ PLANOWAĆ ATAK PHISHINGOWY?"
+      },
+      {
+        "id": "node_8",
+        "sender": "BYTE_MASTER",
+        "text": "PAMIĘTAJ, JESTEM ZAWSZE DWA KROKI PRZED TOBĄ. A TERAZ ZABIERAJ SIĘ DO PRACY"
+      }
+    ],
+    "biosLines": [
+      "HACKERSBIOS 2.0 RELEASE 6.1",
+      "COPYRIGHT 1985-2022 HACKERS COLLECTIVE TECHNOLOGIES",
+      "ALL RIGHTS RESERVED",
+      "BIOS VERSION 2.0 R 6.1",
+      "GATEWAY AS54",
+      "SYSTEM ID # 00528156",
+      "BUILD TIME: 03/09/2022 19:26:54",
+      "CPU - UNKNOWN",
+      "1061 KB SYSTEM RAM PASSED",
+      "512M EXTENDED RAM PASSED",
+      "512K CACHE SRAM PASSED",
+      "SYSTEM BIOS SHADOWED",
+      "VIDEO BIOS SHADOWED",
+      "SEGMENT ADDRESS: E447",
+      "",
+      "WELCOME... HACKER"
+    ],
+    "firstUnlock": {
+      "unlockIcons": ["phishing_unlocked", "phishing_app"],
+      "badges": { "phishing_app": 1 },
+      "highlightTile": "phishing_app"
+    },
+    "startBadges": {
+      "phishing_app": 1
+    }
+  },
+  "desktopApps": [
+    {
+      "id": "chat_shortcut",
+      "label": "//CHAT: BYTE_MASTER",
+      "color": "#00ff66",
+      "icon": "MessageSquareCode",
+      "componentId": "chat",
+      "isChatFocus": true
+    },
+    {
+      "id": "phishing_app",
+      "label": "//PHISHING",
+      "color": "#38bdf8",
+      "icon": "Mail",
+      "componentId": "phishing_campaign",
+      "unlockedOnly": true,
+      "requiredUnlockId": "phishing_unlocked"
+    },
+    {
+      "id": "vpn_app",
+      "label": "//VPN",
+      "color": "#a855f7",
+      "icon": "Wifi",
+      "componentId": "vpn_app",
+      "unlockedOnly": true,
+      "requiredUnlockId": "vpn_unlocked"
+    },
+    {
+      "id": "virus_database",
+      "label": "//BAZA_WIRUSÓW",
+      "color": "#ec4899",
+      "icon": "ShieldAlert",
+      "componentId": "worm_builder",
+      "unlockedOnly": true,
+      "requiredUnlockId": "virus_database_unlocked"
+    },
+    {
+      "id": "phishing_dispatch",
+      "label": "//PHISHING (Wysyłka)",
+      "color": "#00ff66",
+      "icon": "Send",
+      "componentId": "phishing_dispatch",
+      "unlockedOnly": true,
+      "requiredUnlockId": "phishing_dispatch_unlocked"
+    },
+    {
+      "id": "botnet_monitor",
+      "label": "//MONITOR_BOTNETU",
+      "color": "#3b82f6",
+      "icon": "Radio",
+      "componentId": "botnet_monitor",
+      "unlockedOnly": true,
+      "requiredUnlockId": "botnet_monitor_unlocked"
+    },
+    {
+      "id": "debrief_app",
+      "label": "//PODSUMOWANIE",
+      "color": "#10b981",
+      "icon": "Award",
+      "componentId": "debrief_app",
+      "unlockedOnly": true,
+      "requiredUnlockId": "mission_completed"
+    }
+  ],
+  "step6": {
+    "summary": {
+      "title": "ZHAKOWANO CARBONFLOW",
+      "subtitle": "UKOŃCZONO ZADANIE 2",
+      "company": "CarbonFlow Inc.",
+      "scorePercent": 100,
+      "perfectChoices": 5,
+      "goodChoices": 0,
+      "criticalErrors": 0,
+      "btcReward": 2.96
+    },
+    "choices": [
+      {
+        "num": 1,
+        "question": "WYBIERZ RODZAJ AKCJI",
+        "answer": "WIRUS 0-DAY",
+        "correct": true,
+        "details": "Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary."
+      },
+      {
+        "num": 2,
+        "question": "WYBIERZ SZABLON MAILA",
+        "answer": "POODLE (POODLE FORMS)",
+        "correct": true,
+        "details": "Profesjonalny szablon formularza ankietowego idealnie pasuje do planu wysłania fałszywej ankiety pracowniczej."
+      },
+      {
+        "num": 3,
+        "question": "WYBIERZ TEMAT ANKIETY",
+        "answer": "OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO",
+        "correct": true,
+        "details": "Przymus w połączeniu z tematem integracji tworzy idealną presję socjotechniczną."
+      },
+      {
+        "num": 4,
+        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
+        "answer": "ROBAK",
+        "correct": true,
+        "details": "Robak samodzielnie powiela się w sieci i formuje botnet."
+      },
+      {
+        "num": 5,
+        "question": "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA",
+        "answer": "KADRY@CARDONFLOW.COM",
+        "correct": true,
+        "details": "Typosquatting (podmiana 'b' na 'd' w nazwie domeny) połączony z wiarygodnym działem kadr."
+      }
+    ],
+    "educationalSlides": [
+      {
+        "title": "ANTYWIRUS",
+        "desc": "Dobre oprogramowanie chroniące przed wirusami jest pierwszą linią obrony przeciwko atakom hakerskim. Zminimalizuje szkody i powiadomi o próbie zainfekowania urządzenia, co pozwoli na szybką reakcję administratora."
+      },
+      {
+        "title": "ODNOŚNIKI W MAILACH",
+        "desc": "Każdy mail posiadający odnośnik należy sprawdzić pod kątem złośliwego oprogramowania. Jeżeli nie jesteś pewny linku, zapytaj swojego administratora. Zalecane jest sprawdzenie czy dany rodzaj wiadomości faktycznie został wysłany do pracowników oraz czy nadawca jest ci znany."
+      },
+      {
+        "title": "WYCIECKI DANYCH",
+        "desc": "Jeśli wiadomość wydaje się podejrzana, przyjrzyj się domenie oraz całemu adresowi, z którego została wysłana. Może się okazać, że dane kontaktowe pracowników firmy są w niepowołanych rękach i będzie trzeba wdrożyć dodatkowe środki ostrożności."
+      },
+      {
+        "title": "PODSUMOWUJĄC – NA CO NALEŻY UWAŻAĆ",
+        "desc": "Zawsze miej zainstalowane oprogramowanie antywirusowe. Uważaj na odnośniki w mailach. Pamiętaj, że dane pracowników mogły ulec wyciekom."
+      },
+      {
+        "title": "CHCESZ UNIKNĄĆ HAKOWANIA?",
+        "desc": "Wszystkie wskazówki na temat cyberbezpieczeństwa znajdziesz w panelu Baza Wiedzy w głównym menu hakera (Darknecie)."
+      }
+    ]
+  }
+}

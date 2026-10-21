@@ -16,11 +16,18 @@ export interface MissionMeta {
   description?: string;
 }
 
+export interface IntroDialogueOption {
+  id: string;
+  label: string;
+  mentorReaction?: string;
+}
+
 export interface IntroDialogueItem {
   id: string;
   sender: string;
   text: string;
-  playerResponse: string;
+  playerResponse?: string;
+  playerOptions?: IntroDialogueOption[];
 }
 
 export interface MissionIntro {
@@ -47,7 +54,11 @@ export type LucideIconName =
   | 'Send'
   | 'Wifi'
   | 'Server'
-  | 'Key';
+  | 'Key'
+  | 'FolderOpen'
+  | 'Search'
+  | 'Users'
+  | 'Monitor';
 
 export interface DesktopAppConfig {
   id: string; // Window ID, e.g. "virus_database", "pendrive_app"

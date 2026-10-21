@@ -11,6 +11,18 @@ const distDir = path.resolve(rootDir, 'dist');
 // Available missions metadata catalog
 const MISSION_CATALOG = [
   {
+    num: '1',
+    id: 'mission-1-petrolog',
+    title: 'MISJA 1 – PETROLOG',
+    dataFile: path.resolve(rootDir, 'src', 'scenarios', 'mission_01_petrolog', 'data', 'mission1.json')
+  },
+  {
+    num: '2',
+    id: 'mission-2-carbonflow',
+    title: 'MISJA 2 – CARBONFLOW',
+    dataFile: path.resolve(rootDir, 'src', 'scenarios', 'mission_02_carbon_flow', 'data', 'mission2.json')
+  },
+  {
     num: '3',
     id: 'mission-3-ol-company',
     title: 'MISJA 3 – O&L COMPANY',

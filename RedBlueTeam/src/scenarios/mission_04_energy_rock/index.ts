@@ -1,6 +1,6 @@
 import mission4Data from './data/mission4.json';
 import type { MissionDefinition } from '../../engine/types/mission';
-import { registerApp } from '../../engine/registry/appRegistry';
+import { registerApp, registerScenarioApps } from '../../engine/registry/appRegistry';
 import { mission4Stages, mission4Blocks } from './stages';
 import {
   RansomwareVirusApp,
@@ -14,7 +14,8 @@ const base = mission4Data as unknown as MissionDefinition;
 
 // Kafelki przepięte na klocki z katalogu (componentId wskazuje klocek, nie minigrę misji).
 const CATALOG_COMPONENT: Record<string, string> = {
-  negotiation: 'dialogue_tree'
+  negotiation: 'dialogue_tree',
+  vpn_app: 'vpn_router'
 };
 
 const desktopApps = base.desktopApps.map((tile) =>
@@ -38,6 +39,9 @@ export const mission4Apps: Record<string, React.ComponentType<any>> = {
   victim_workstation: WorkstationExfiltrationApp
 };
 
+// Rejestracja per-scenariusz oraz globalna
+registerScenarioApps('mission-4-energy-rock', mission4Apps);
+registerScenarioApps('4', mission4Apps);
 Object.entries(mission4Apps).forEach(([componentId, component]) => registerApp(componentId, component));
 
 export {
@@ -47,3 +51,6 @@ export {
   VpnApp,
   WorkstationExfiltrationApp
 };
+
+export const scenarioDefinition = mission4Definition;
+export const scenarioApps = mission4Apps;

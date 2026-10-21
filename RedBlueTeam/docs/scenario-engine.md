@@ -10,10 +10,14 @@ Dokument dla agentów implementujących misje szkoleniowe (SCORM 2004 dla Moodle
 2. Dla każdego etapu wybierz element: **klocek** z katalogu (sekcja 6) albo **minigra** misji w `scenarios/mission_XX/minigames/` wg kontraktu (sekcja 5).
 3. Wypisz dane do `blocks{}` (opcje, poziomy, feedback) i etapy do `stages[]` (odblokowania, badge, wiadomość mentora, następny krok).
 4. Ustaw prowadzenie wg [`player-guidance.md`](player-guidance.md): w każdej chwili jeden jasny następny krok.
-5. Złóż definicję w `index.ts`, zarejestruj w `missionRegistry.ts` i `scripts/package-scorm.js`.
-6. `npm test` + `node scripts/package-scorm.js --mission=X`.
+5. Złóż definicję w `index.ts` misji i wyeksportuj standardowy kontrakt:
+   - `export const scenarioDefinition = ...;`
+   - `export const scenarioApps = ...;`
+   Vite (`virtual:active-scenario`) automatycznie wykrywa każdy folder `src/scenarios/mission_XX/` — **nie edytujesz** ręcznie `missionRegistry.ts`.
+6. Dodaj metadane do `MISSION_CATALOG` w `scripts/package-scorm.js`.
+7. `npm test` + `node scripts/package-scorm.js --mission=X`.
 
-Czego **nie** robisz: nie dodajesz gałęzi per misja do `useMissionStore.ts`, nie liczysz punktów w komponencie, nie opisujesz prowadzenia/dźwięków w danych. To należy do silnika.
+Czego **nie** robisz: nie dodajesz gałęzi per misja do `useMissionStore.ts`, nie edytujesz na sztywno importów w `missionRegistry.ts`, nie liczysz punktów w komponencie, nie opisujesz prowadzenia/dźwięków w danych. To należy do silnika.
 
 Wzorcowy, działający przykład w kodzie: negocjacje M4 — `scenarios/mission_04_energy_rock/stages.ts` + klocek `engine/blocks/DialogueTree.tsx`.
 
@@ -160,7 +164,26 @@ Wnioski z dopracowywania M4 — trzymaj się ich, żeby nie powtarzać iteracji:
 5. **Dialogi 1:1 z VR.** Kwestie w czacie (intro i mostki) przepisuj dosłownie ze scenariusza, łącznie z wymianą wielobeatową (np. meldunek: gracz→mentor→gracz→mentor). Tam, gdzie scenariusz milczy na granicy etapów, dołóż krótką kwestię-spójnik gracza (to ona odblokowuje kolejny kafelek) i oznacz ją w kodzie jako spójnik.
 6. **Tempo.** Patrz sekcja 9 — loadery, przeskoki czasu, delaye. Nic nie dzieje się natychmiast.
 
-## 11. Backlog audio (TODO dla agentów)
+## 11. Architektura budowania i izolacja paczek SCORM
+
+Każda generowana paczka SCORM 2004 (`dist/scorm-mission-X.zip`) jest **fizycznie odizolowanym bundle'em**:
+
+1. **Wirtualny moduł `virtual:active-scenario` w Vite:**
+   - Podczas budowania produkcyjnego (`node scripts/package-scorm.js --mission=X`) zmienna środowiskowa `VITE_MISSION_ID` wskazuje kompilatorowi aktywny scenariusz.
+   - Plugin w `vite.config.ts` importuje wyłącznie plik `index.ts` wybranej misji. Pozostałe foldery `mission_YY/`, ich minigry, pliki JSON i teksty są całkowicie pomijane i odrzucane przez mechanizm Tree-Shaking.
+   - Wynikowy plik JS wewnątrz archiwum `.zip` nie zawiera żadnych danych ani logiki innych misji (ochrona przed spoilerami, brak wycieku odpowiedzi do konsoli przeglądarki, minimalny rozmiar paczki ~130–140 KB).
+2. **Kontrakt wejściowy `src/scenarios/mission_XX/index.ts`:**
+   Każdy scenariusz wystawia:
+   ```ts
+   export const scenarioDefinition: MissionDefinition = ...;
+   export const scenarioApps: Record<string, React.ComponentType<any>> = ...;
+   ```
+   Dzięki temu silnik automatycznie podpina minigry pod kafelki i etapy.
+3. **Tryb deweloperski i testy:**
+   - W trybie dev (`npm run dev`) oraz testach (`npm test`), gdy `VITE_MISSION_ID` nie jest ustawiony, wirtualny moduł udostępnia wszystkie wykryte scenariusze, umożliwiając przełączanie w przeglądarce (`?mission=2`, `?mission=3`, `?mission=4`).
+   - W devie można też odpalić izolację konkretnej misji: `VITE_MISSION_ID=4 npm run dev`.
+
+## 12. Backlog audio (TODO dla agentów)
 
 Do zrobienia w przyszłych iteracjach (nie teraz):
 - **Ścieżka dźwiękowa w tle** per scenariusz (pętla ambientu/napięcia), z regulacją głośności i wyciszeniem spójnym z `soundEffects.ts`.

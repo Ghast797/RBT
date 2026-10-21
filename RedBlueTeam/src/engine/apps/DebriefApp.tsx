@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Trophy, CheckCircle, AlertTriangle, XCircle, Award, ChevronDown, ChevronUp, RotateCcw, BookOpen, CheckCheck, ExternalLink, Send, ShieldCheck, X } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
+import { resolveDecisionCount } from '../core/scoring';
 
 export const DebriefApp: React.FC = () => {
   const {
@@ -69,6 +70,7 @@ export const DebriefApp: React.FC = () => {
     btcReward: activeMission.mission.rewardBtc
   };
   const choices = playerChoices;
+  const totalDecisions = resolveDecisionCount(activeMission);
   const slides = activeMission.step6?.educationalSlides || [];
 
   return (
@@ -177,7 +179,7 @@ export const DebriefApp: React.FC = () => {
           /* Detailed 8 Choices Review with Accordion */
           <div className="space-y-2">
             <div className="text-xs font-bold text-[#00ff66] uppercase tracking-wider mb-1">
-              TWOJE WYBORY ({choices.length}/8):
+              TWOJE WYBORY ({choices.length}/{totalDecisions}):
             </div>
 
             {choices.map((c, idx) => {

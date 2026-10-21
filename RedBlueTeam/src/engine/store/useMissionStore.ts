@@ -274,6 +274,22 @@ function resolveOpeningChat(mission: MissionDefinition): {
     };
   }
 
+  // Wzorzec B (bez kwestii w czacie): aplikacja odblokowana od razu po starcie pulpitu
+  if (intro.firstUnlock) {
+    const bridge: MissionState['pendingBridge'] = {
+      beats: [],
+      index: 0,
+      unlock: intro.firstUnlock,
+      sound: 'notification'
+    };
+    return {
+      messages: history,
+      startBadges: intro.startBadges || intro.firstUnlock.badges || {},
+      bridge,
+      choices: []
+    };
+  }
+
   // Fallback (Misja 3 / legacy): greeting + pojedynczy wybór trafiający do własnej gałęzi.
   const greeting: string = intro.desktopGreeting || 'Połączenie TOR P2P aktywne. Czekam na stworzenie wirusa.';
   return {

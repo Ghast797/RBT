@@ -54,6 +54,12 @@ export const Desktop: React.FC = () => {
     }
   }, [isChatAttentionActive]);
 
+  React.useEffect(() => {
+    if (bootStage === 'desktop') {
+      sounds.startAmbient(0.05);
+    }
+  }, [bootStage]);
+
   const [isMuted, setIsMuted] = React.useState<boolean>(sounds.getMuted());
 
   const toggleMute = () => {
@@ -114,9 +120,16 @@ export const Desktop: React.FC = () => {
                 <span>WSKAZÓWKA [?]</span>
               </button>
             </div>
-            <div className="flex items-center space-x-4 text-[11px]">
+            <div className="flex items-center space-x-3 text-[11px]">
               <span className="text-[#00ff66]/70">CEL: {activeMission.mission.targetCompany?.toUpperCase()}</span>
               <span className="font-bold text-[#00ff66]">{systemTime !== '00:00' ? systemTime : systemDate}</span>
+              <button
+                onClick={toggleMute}
+                className="p-1 rounded text-[#00ff66]/70 hover:text-[#00ff66] transition-colors border border-transparent hover:border-[#00ff66]/40 cursor-pointer ml-1"
+                title={isMuted ? "Włącz dźwięk i ambient" : "Wycisz dźwięk i ambient"}
+              >
+                {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} className="animate-pulse" />}
+              </button>
             </div>
           </div>
 

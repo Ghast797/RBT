@@ -35,16 +35,19 @@
     - `docs/` — materiały źródłowe (PDF, notatki z nagrania VR)
     - `index.ts` — składa i rejestruje definicję
 
-### 4. NIEZALEŻNE BUDOWANIE PACZEK SCORM DLA KAŻDEGO SCENARIUSZA
-- Budowanie paczek SCORM musi umożliwiać wygenerowanie oddzielnego archiwum ZIP dla każdej misji z osobna:
+### 4. NIEZALEŻNE BUDOWANIE PACZEK SCORM DLA KAŻDEGO SCENARIUSZA (IZOLACJA BUNDLE'A)
+- Każda paczka SCORM zawiera **fizycznie w kodzie wyłącznie jeden wybrany scenariusz** (oraz wspólny silnik). Pozostałe scenariusze, ich minigry i pliki JSON są całkowicie odrzucane przez mechanizm Tree-Shaking w Vite (`virtual:active-scenario`).
+- Budowanie paczek SCORM umożliwia wygenerowanie oddzielnego archiwum ZIP dla każdej misji z osobna:
   - `node scripts/package-scorm.js --mission=3` -> tworzy `dist/scorm-mission-3-ol-company.zip`
   - `node scripts/package-scorm.js --mission=4` -> tworzy `dist/scorm-mission-4-energy-rock.zip`
-- Podczas budowania paczki, zmienna środowiskowa `VITE_MISSION_ID` oraz manifest `imsmanifest.xml` ustawiają twarde powiązanie z konkretnym scenariuszem, dzięki czemu w Moodle moduł działa w 100% samodzielnie.
+  - `node scripts/package-scorm.js --all` -> buduje kolejno wszystkie odizolowane paczki
+- Podczas budowania paczki, zmienna środowiskowa `VITE_MISSION_ID` oraz manifest `imsmanifest.xml` ustawiają twarde powiązanie z konkretnym scenariuszem, a wynikowy plik JS nie zawiera żadnych danych ani kodu innych misji.
 
 ### 5. TESTOWANIE W PRZEGLĄDARCE
-- W trybie deweloperskim przełączanie misji odbywa się wyłącznie poprzez parametr URL:
+- W trybie deweloperskim przełączanie misji odbywa się poprzez parametr URL:
   - `http://localhost:5173/?mission=3`
   - `http://localhost:5173/?mission=4`
+- Możliwe jest też uruchomienie dev serwera z izolacją konkretnej misji: `VITE_MISSION_ID=4 npm run dev`.
 
 ---
 
@@ -52,9 +55,11 @@
 
 1. **Scenariusz** (`scenario.md`) powstaje ze skilla VR→scenariusz. Format: `RedBlueTeam/docs/scenario-format.md`.
 2. **Implementacja** wg `RedBlueTeam/docs/scenario-engine.md` i reguł prowadzenia gracza z `docs/player-guidance.md`:
+   - utwórz katalog `src/scenarios/mission_XX_nazwa/` (Vite wykrywa go automatycznie);
    - dla każdej decyzji dobierz klocek z `src/engine/blocks/` albo napisz minigrę w `minigames/` misji (kontrakt silnika);
    - ustaw etapy tak, by w każdej chwili był jeden jasny następny krok (`player-guidance.md`);
-   - złóż definicję misji (`desktopApps`, `stages`, `blocks`, intro, debrief) i zarejestruj w `missionRegistry.ts` i `scripts/package-scorm.js`.
-3. **Weryfikacja**: `npm test` oraz `node scripts/package-scorm.js --mission=X`.
+   - złóż definicję misji (`desktopApps`, `stages`, `blocks`, intro, debrief) i w `index.ts` wyeksportuj standardowy kontrakt: `scenarioDefinition` oraz `scenarioApps`;
+   - dodaj misję do `MISSION_CATALOG` w `scripts/package-scorm.js`.
+3. **Weryfikacja**: `npm test` oraz `node scripts/package-scorm.js --mission=X` (sprawdź czy ZIP w `dist/` zawiera wyłącznie tę misję).
 
 Poziomy decyzji: `ideal` (pełne punkty + BTC), `suboptimal` (część punktów, gra trwa), `critical` (0 pkt, ekran `ZOSTAŁEŚ WYKRYTY!` i powtórka). Punkty liczy silnik z poziomu — nie w widgecie.
