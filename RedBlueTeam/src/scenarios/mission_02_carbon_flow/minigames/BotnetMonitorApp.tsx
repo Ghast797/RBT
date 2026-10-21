@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Radio, AlertOctagon, CheckCircle2, ArrowRight, Server, Cpu, ShieldCheck, Activity } from 'lucide-react';
+import { Radio, AlertOctagon, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';

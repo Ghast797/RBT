@@ -4,19 +4,13 @@ import {
   Mail,
   Globe,
   Download,
-  ShieldCheck,
   CheckCircle2,
   ArrowRight,
   Server,
-  Terminal,
   Activity,
   Cpu,
-  Lock,
-  Unlock,
   Sparkles,
-  Wifi
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VictimMonitorConfig } from './types';
@@ -27,7 +21,6 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
   config,
   onComplete
 }) => {
-  const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#00ff66';
   const blue = '#3b82f6';
 
   const [step, setStep] = useState<MonitorStep>('email_inbox');

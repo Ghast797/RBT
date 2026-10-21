@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
 import {
   Mail,
-  CheckCircle2,
   ArrowRight,
   Globe,
   FileText,
-  User,
-  AtSign,
   Bug,
   Sparkles,
   Send,
   Download,
-  ShieldAlert
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
@@ -36,7 +31,6 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
   onDecision,
   onComplete
 }) => {
-  const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#00ff66';
   const pink = '#ec4899';
 
   const [screen, setScreen] = useState<BuilderScreen>('domain');
@@ -235,7 +229,8 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
       {/* LOADER TO PAYLOAD */}
       {screen === 'load_payload' && (
         <ModuleLoader
-          title="REZERWOWANIE DOMENY I KONFIGURACJA STRONY INTERNETOWEJ..."
+          label="REZERWOWANIE DOMENY I KONFIGURACJA STRONY INTERNETOWEJ..."
+          accent={pink}
           onComplete={() => setScreen('payload')}
         />
       )}
@@ -266,7 +261,8 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
       {/* LOADER TO INJECTION */}
       {screen === 'load_injection' && (
         <ModuleLoader
-          title="KOMPILOWANIE MODUŁU ROZPRZESTRZENIANIA WIRUSA..."
+          label="KOMPILOWANIE MODUŁU ROZPRZESTRZENIANIA WIRUSA..."
+          accent={pink}
           onComplete={() => setScreen('injection')}
         />
       )}
@@ -404,7 +400,8 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
       {/* LOADER TO SENDER */}
       {screen === 'load_sender' && (
         <ModuleLoader
-          title="PODŁĄCZANIE SYSTEMU SPOOFINGU TOŻSAMOŚCI..."
+          label="PODŁĄCZANIE SYSTEMU SPOOFINGU TOŻSAMOŚCI..."
+          accent={pink}
           onComplete={() => setScreen('sender')}
         />
       )}
@@ -435,7 +432,8 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
       {/* LOADER TO EMAIL */}
       {screen === 'load_email' && (
         <ModuleLoader
-          title="ANALIZA ZABEZPIECZEŃ SPF/DKIM I WYBÓR ADRESU SPOOFINGOWEGO..."
+          label="ANALIZA ZABEZPIECZEŃ SPF/DKIM I WYBÓR ADRESU SPOOFINGOWEGO..."
+          accent={pink}
           onComplete={() => setScreen('email')}
         />
       )}

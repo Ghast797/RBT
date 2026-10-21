@@ -3,19 +3,14 @@ import {
   Users,
   CheckCircle2,
   ArrowRight,
-  Sparkles,
   Camera,
   Briefcase,
   MessageCircle,
   Scan,
   AlertCircle,
-  Share2,
-  Heart,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck
 } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { SocialIntelConfig, SocialPost } from './types';
@@ -24,7 +19,6 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   config,
   onComplete
 }) => {
-  const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#00ff66';
   const purple = '#a855f7';
 
   const [activePlatformId, setActivePlatformId] = useState<'kneenook' | 'quickgram' | 'joinin'>('kneenook');

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldAlert, Bug, CheckCircle2, ArrowRight, Code, Terminal, Play, Cpu, Layers } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { ShieldAlert, Bug, CheckCircle2, ArrowRight, Code, Terminal, Cpu } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
@@ -13,7 +12,6 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
   onDecision,
   onComplete
 }) => {
-  const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#a855f7';
   const purple = '#a855f7';
 
   const [screen, setScreen] = useState<Screen>('virus_select');
@@ -200,7 +198,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
                     >
                       <div className="space-y-0.5">
                         <div className="text-xs font-mono font-bold" style={{ color: isChecked ? '#c084fc' : '#9ca3af' }}>{inst.code}</div>
-                        <div className="text-[10px] text-gray-400">{inst.label}</div>
+                        <div className="text-[10px] text-gray-400">{inst.desc}</div>
                       </div>
                       <div
                         className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${

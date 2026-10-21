@@ -35,7 +35,6 @@ export const Desktop: React.FC = () => {
     systemTime,
     hasUsbInserted,
     isUsbEjected,
-    resetGame,
     isDetectedModalOpen,
     detectionReason,
     isRetryModalOpen,

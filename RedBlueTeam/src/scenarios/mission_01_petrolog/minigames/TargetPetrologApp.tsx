@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Crosshair, ArrowRight, CheckCircle2, ShieldAlert, Database, ChevronRight, FileText } from 'lucide-react';
+import { Crosshair, ArrowRight } from 'lucide-react';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';

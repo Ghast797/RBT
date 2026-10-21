@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Send, AtSign, CheckCircle2, ArrowRight, ShieldCheck, Mail, AlertTriangle, ExternalLink } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { Send, AtSign, ArrowRight, ExternalLink } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
@@ -13,7 +12,6 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
   onDecision,
   onComplete
 }) => {
-  const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#00ff66';
   const blue = '#38bdf8';
 
   const [screen, setScreen] = useState<Screen>('sender_select');

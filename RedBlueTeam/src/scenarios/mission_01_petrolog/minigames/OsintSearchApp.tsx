@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Lock, Unlock, AlertTriangle, ArrowRight, UserCheck, ShieldAlert, Sparkles } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { Search, Lock, Unlock, AlertTriangle, ArrowRight, UserCheck } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
@@ -10,7 +9,6 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
   config,
   onComplete
 }) => {
-  const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#00ff66';
   const blue = '#38bdf8';
 
   const [query, setQuery] = useState(config.suggestedQuery || 'PETROLOG PRACOWNICY');
@@ -84,7 +82,8 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
 
       {isLoadingResults ? (
         <ModuleLoader
-          title="INDEKSOWANIE PUBLICZNYCH REJESTRÓW I PROFILI SPOŁECZNOŚCIOWYCH..."
+          label="INDEKSOWANIE PUBLICZNYCH REJESTRÓW I PROFILI SPOŁECZNOŚCIOWYCH..."
+          accent={blue}
           onComplete={handleLoaderFinish}
         />
       ) : (

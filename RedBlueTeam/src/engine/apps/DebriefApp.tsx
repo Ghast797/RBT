@@ -16,7 +16,6 @@ export const DebriefApp: React.FC = () => {
     isKnowledgeBaseOpen,
     toggleKnowledgeBase,
     playerChoices,
-    resetGame,
     isScormSubmitted,
     isExitModalOpen,
     submitScormAndExit,
