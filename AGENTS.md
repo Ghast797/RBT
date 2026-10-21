@@ -10,6 +10,11 @@
 - **Nowa misja = jej własny folder:** etapy i dane klocków (`stages`, `blocks`) plus minigry unikalne dla misji w `src/scenarios/mission_XX/minigames/`.
 - **Klocek wielokrotnego użytku** mieszka w `src/engine/blocks/`. Minigra trafia tam dopiero, gdy użyje jej druga misja (reguła dwóch).
 
+### 1a. APLIKACJE PAMIĘTAJĄ STAN (ZASADA SILNIKA)
+- Każda aplikacja na pulpicie HACKERS.OS — we wszystkich misjach — ma przycisk wyjścia na pulpit (**PULPIT** w nagłówku terminala) i po ponownym otwarciu wraca dokładnie tam, gdzie gracz ją zostawił. Zaliczonej aktywności nie robi się od nowa.
+- Zapewnia to silnik (`AppHost` + `openedApps`, `completedStages` w `useMissionStore.ts`), nie minigra. W klockach i minigrach używaj zwykłego stanu Reacta; nie resetuj go przy zamknięciu i nie renderuj aplikacji poza `AppHost`. Stan czyści tylko powtórka misji.
+- Szczegóły: `RedBlueTeam/docs/scenario-engine.md`, sekcja 5 („Pamięć stanu aplikacji”).
+
 ### 2. SCENARIUSZE TO ODDZIELNE PACZKI SCORM DLA MOODLE
 - Każdy scenariusz (np. Misja 3 – O&L Company, Misja 4 – Energy Rock) to **niezależna paczka SCORM 2004 (.zip)** do osadzenia w Moodle (`mod_scorm`).
 - **ZAKAZ**: W interfejsie graficznym gracza (wewnątrz aplikacji) **NIE MOŻE BYĆ** żadnego przełącznika ani selektora scenariuszy. Student w systemie LMS rozwiązuje jeden, konkretny scenariusz.

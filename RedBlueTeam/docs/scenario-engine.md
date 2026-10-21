@@ -103,6 +103,12 @@ Stan między etapami (co wybrano wcześniej) element czyta z `customState`, nie 
 
 Zasady: BYTE_MASTER nie ma dostępu do komputera gracza, więc **nie podaje aplikacji do otwarcia** — mówi, co zrobić, a gracz sam klika podświetlony kafelek. Mostek bez dialogu w scenariuszu dostaje krótką kwestię spójnikową gracza (to ona odblokowuje kolejny kafelek). Rozmowa wielobeatowa (np. meldunek: gracz→mentor→gracz→mentor) odwzorowuje scenariusz 1:1.
 
+**Pamięć stanu aplikacji (zasada silnika, dotyczy wszystkich misji).** Aplikacja na pulpicie HACKERS.OS pamięta, gdzie gracz skończył. Gracz może w każdej chwili wyjść na pulpit przyciskiem **PULPIT** w nagłówku terminala, a po ponownym otwarciu wraca do tego samego miejsca — także do aktywności już zaliczonej, której nie musi robić od nowa. Realizuje to silnik, nie minigra:
+- `AppHost` (`registry/appRegistry.tsx`) trzyma każdą aplikację otwartą w tym podejściu zamontowaną (`openedApps`) i tylko ją ukrywa. Zwykły `useState` w klocku/minigrze wystarcza — **nie resetuj stanu przy zamknięciu, nie przenoś go do store'a „na zapas” i nie montuj aplikacji warunkowo poza `AppHost`**.
+- Ponowne `onComplete()` w zaliczonym etapie (`completedStages`) tylko zamyka okno — mostek, punkty i odblokowania nie powtarzają się.
+- Stan czyści wyłącznie powtórka misji (`retryFromChoices`, `retryFromScratch`, `loadMission`), która zmienia `appRunId`.
+- Minigra nie dokłada własnego „zamknij, zacznij od nowa”. Własny przycisk powrotu może jedynie wołać `closeApp()`.
+
 ## 6. Katalog klocków (z M3/M4)
 
 Tylko klocki, które **już się powtarzają** w istniejącym kodzie. Katalog rośnie przyrostowo (sekcja 7), nie projektujemy go z góry pod 10 misji.

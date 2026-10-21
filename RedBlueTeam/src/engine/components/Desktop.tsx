@@ -11,12 +11,13 @@ import {
   AlertTriangle,
   X,
   RefreshCw,
-  Play
+  Play,
+  ArrowLeft
 } from 'lucide-react';
 import { useMissionStore, type WindowId } from '../store/useMissionStore';
 import { BootSequence } from './BootSequence';
 import { ChatApp } from '../apps/ChatApp';
-import { AppRenderer, renderAppIcon } from '../registry/appRegistry';
+import { AppHost, renderAppIcon } from '../registry/appRegistry';
 import { sounds } from '../audio/soundEffects';
 
 export const Desktop: React.FC = () => {
@@ -25,6 +26,7 @@ export const Desktop: React.FC = () => {
     bootStage,
     activeApp,
     openApp,
+    closeApp,
     unlockedIcons,
     notificationBadges,
     highlightedTileId,
@@ -118,6 +120,18 @@ export const Desktop: React.FC = () => {
                 <HelpCircle size={12} />
                 <span>WSKAZÓWKA [?]</span>
               </button>
+
+              {/* Wyjście z aplikacji na pulpit — stan aplikacji zostaje zapamiętany */}
+              {activeApp !== null && (
+                <button
+                  onClick={closeApp}
+                  className="ml-1 px-2 py-0.5 rounded flex items-center space-x-1 font-bold text-[10px] tracking-wider transition-all border bg-[#00ff66]/10 text-[#00ff66] border-[#00ff66]/50 hover:bg-[#00ff66] hover:text-[#050b10]"
+                  title="Wróć na pulpit (postęp w aplikacji zostanie zapamiętany)"
+                >
+                  <ArrowLeft size={12} />
+                  <span>PULPIT</span>
+                </button>
+              )}
             </div>
             <div className="flex items-center space-x-3 text-[11px]">
               <span className="text-[#00ff66]/70">CEL: {activeMission.mission.targetCompany?.toUpperCase()}</span>
@@ -161,9 +175,8 @@ export const Desktop: React.FC = () => {
 
             {/* Content: Either Active Tool OR Desktop Icon Grid */}
             <div className="flex-1 relative z-10 flex flex-col min-h-0">
-              {activeApp !== null ? (
-                <AppRenderer componentId={activeApp} />
-              ) : (
+              <AppHost />
+              {activeApp === null && (
                 /* Dynamic Desktop Icon Grid */
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 my-auto">
                   {desktopTiles.map((tile) => {

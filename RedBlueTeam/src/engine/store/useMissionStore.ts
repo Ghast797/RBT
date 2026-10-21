@@ -85,6 +85,16 @@ export interface MissionState {
 
   // Desktop Focus & System
   activeApp: WindowId | null;
+  /**
+   * Aplikacje uruchomione w tym podejściu. Silnik trzyma je zamontowane (ukryte),
+   * więc po wyjściu na pulpit i ponownym otwarciu gracz wraca tam, gdzie był.
+   * Zerowane przy wczytaniu misji i każdej powtórce.
+   */
+  openedApps: WindowId[];
+  /** Identyfikator podejścia — zmiana odmontowuje wszystkie zapamiętane aplikacje. */
+  appRunId: number;
+  /** Etapy już ukończone — ponowne ukończenie tylko zamyka okno, bez powtórki mostka. */
+  completedStages: string[];
   unlockedIcons: string[];
   unlockIcon: (id: string) => void;
   notificationBadges: Record<string, number>;
@@ -184,6 +194,8 @@ export interface MissionState {
   finishBiosBoot: () => void;
 
   openApp: (app: WindowId) => void;
+  /** Dopisuje aplikację do zapamiętanych (gdy ustawiono `activeApp` z pominięciem `openApp`). */
+  rememberApp: (app: WindowId) => void;
   closeApp: () => void;
 
   // Step 1 Actions
@@ -300,6 +312,11 @@ function resolveOpeningChat(mission: MissionDefinition): {
   };
 }
 
+let appRunCounter = 0;
+
+const withOpenedApp = (opened: WindowId[], app: WindowId): WindowId[] =>
+  opened.includes(app) ? opened : [...opened, app];
+
 const getInitialMissionState = (mission: MissionDefinition) => {
   const choices: PlayerChoiceRecord[] = (mission.step6?.choices || []).map((c: any) => ({
     num: c.num,
@@ -319,6 +336,9 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     introDialogIndex: 0,
 
     activeApp: null as WindowId | null,
+    openedApps: [] as WindowId[],
+    appRunId: ++appRunCounter,
+    completedStages: [] as string[],
     unlockedIcons: initialUnlocked.length > 0 ? initialUnlocked : ['virus_database', 'chat', 'mail', 'browser'],
     notificationBadges: { virus_database: 1 } as Record<string, number>,
     systemDate: mission.mission?.date || '19.05.2026',
@@ -572,11 +592,18 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       return;
     }
 
+    // Etap już zaliczony (gracz wrócił do zapamiętanej aplikacji) — tylko powrót na pulpit.
+    if (get().completedStages.includes(stageId)) {
+      if (stage.completion.closeActiveApp !== false) set({ activeApp: null });
+      return;
+    }
+
     const { completion } = stage;
 
     // Powrót na pulpit; start rozmowy mostkującej (odblokowania DOPIERO po jej zakończeniu).
     set((s) => ({
       activeApp: completion.closeActiveApp === false ? s.activeApp : null,
+      completedStages: [...s.completedStages, stageId],
       chatAvailableChoices: [],
       isByteMasterTyping: false,
       pendingBridge: {
@@ -718,6 +745,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       }));
       set({
         activeApp: app,
+        openedApps: withOpenedApp(get().openedApps, app),
         notificationBadges: badges,
         highlightedTileId,
         chatStage: 'choose_target',
@@ -726,7 +754,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       return;
     }
 
-    set({ activeApp: app, notificationBadges: badges, highlightedTileId });
+    set({ activeApp: app, openedApps: withOpenedApp(get().openedApps, app), notificationBadges: badges, highlightedTileId });
+  },
+
+  rememberApp: (app) => {
+    const openedApps = get().openedApps;
+    if (!openedApps.includes(app)) set({ openedApps: [...openedApps, app] });
   },
 
   closeApp: () => {

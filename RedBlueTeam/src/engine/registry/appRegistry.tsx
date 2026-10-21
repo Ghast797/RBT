@@ -128,6 +128,41 @@ export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }
 };
 
 /**
+ * Host aplikacji pulpitu z pamięcią stanu (zasada silnika: „aplikacja pamięta, gdzie
+ * skończyłeś”). Każda aplikacja otwarta w tym podejściu zostaje zamontowana i jest
+ * tylko ukrywana, gdy gracz wraca na pulpit — jej stan Reacta (postęp, wybory,
+ * zebrane fakty) przetrwa zamknięcie i ponowne otwarcie. Minigry nie muszą nic
+ * robić, by z tego korzystać. Powtórka misji zmienia `appRunId` i odmontowuje
+ * wszystko, więc nowe podejście zaczyna się od zera.
+ */
+export const AppHost: React.FC = () => {
+  const activeApp = useMissionStore(s => s.activeApp);
+  const openedApps = useMissionStore(s => s.openedApps);
+  const appRunId = useMissionStore(s => s.appRunId);
+  const rememberApp = useMissionStore(s => s.rememberApp);
+
+  React.useEffect(() => {
+    if (activeApp) rememberApp(activeApp);
+  }, [activeApp, rememberApp]);
+
+  const mounted = activeApp && !openedApps.includes(activeApp) ? [...openedApps, activeApp] : openedApps;
+
+  return (
+    <React.Fragment key={appRunId}>
+      {mounted.map(appKey => (
+        <div
+          key={appKey}
+          className={appKey === activeApp ? 'flex-1 flex flex-col min-h-0' : 'hidden'}
+          aria-hidden={appKey !== activeApp}
+        >
+          <AppRenderer componentId={appKey} />
+        </div>
+      ))}
+    </React.Fragment>
+  );
+};
+
+/**
  * Icon Map for dynamic icon rendering from JSON
  */
 export function renderAppIcon(iconName: string, size = 26): React.ReactNode {
