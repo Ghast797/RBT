@@ -11,7 +11,7 @@
 - **Klocek wielokrotnego użytku** mieszka w `src/engine/blocks/`. Minigra trafia tam dopiero, gdy użyje jej druga misja (reguła dwóch).
 
 ### 1a. APLIKACJE PAMIĘTAJĄ STAN (ZASADA SILNIKA)
-- Każda aplikacja na pulpicie HACKERS.OS — we wszystkich misjach — ma przycisk wyjścia na pulpit (**PULPIT** w nagłówku terminala) i po ponownym otwarciu wraca dokładnie tam, gdzie gracz ją zostawił. Zaliczonej aktywności nie robi się od nowa.
+- Każda aplikacja na pulpicie HACKERS.OS — we wszystkich misjach — ma przycisk wyjścia na pulpit (krzyżyk **X** w prawym górnym rogu terminala, jak w systemie operacyjnym) i po ponownym otwarciu wraca dokładnie tam, gdzie gracz ją zostawił. Zaliczonej aktywności nie robi się od nowa.
 - Zapewnia to silnik (`AppHost` + `openedApps`, `completedStages` w `useMissionStore.ts`), nie minigra. W klockach i minigrach używaj zwykłego stanu Reacta; nie resetuj go przy zamknięciu i nie renderuj aplikacji poza `AppHost`. Stan czyści tylko powtórka misji.
 - Szczegóły: `RedBlueTeam/docs/scenario-engine.md`, sekcja 5 („Pamięć stanu aplikacji”).
 

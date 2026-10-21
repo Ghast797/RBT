@@ -11,8 +11,7 @@ import {
   AlertTriangle,
   X,
   RefreshCw,
-  Play,
-  ArrowLeft
+  Play
 } from 'lucide-react';
 import { useMissionStore, type WindowId } from '../store/useMissionStore';
 import { BootSequence } from './BootSequence';
@@ -121,17 +120,6 @@ export const Desktop: React.FC = () => {
                 <span>WSKAZÓWKA [?]</span>
               </button>
 
-              {/* Wyjście z aplikacji na pulpit — stan aplikacji zostaje zapamiętany */}
-              {activeApp !== null && (
-                <button
-                  onClick={closeApp}
-                  className="ml-1 px-2 py-0.5 rounded flex items-center space-x-1 font-bold text-[10px] tracking-wider transition-all border bg-[#00ff66]/10 text-[#00ff66] border-[#00ff66]/50 hover:bg-[#00ff66] hover:text-[#050b10]"
-                  title="Wróć na pulpit (postęp w aplikacji zostanie zapamiętany)"
-                >
-                  <ArrowLeft size={12} />
-                  <span>PULPIT</span>
-                </button>
-              )}
             </div>
             <div className="flex items-center space-x-3 text-[11px]">
               <span className="text-[#00ff66]/70">CEL: {activeMission.mission.targetCompany?.toUpperCase()}</span>
@@ -143,6 +131,18 @@ export const Desktop: React.FC = () => {
               >
                 {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} className="animate-pulse" />}
               </button>
+
+              {/* Zamknięcie aplikacji (jak w systemie) — powrót na pulpit, stan zostaje zapamiętany */}
+              {activeApp !== null && (
+                <button
+                  onClick={closeApp}
+                  className="p-1 rounded border border-[#ff3366]/50 bg-[#ff3366]/10 text-[#ff3366] hover:bg-[#ff3366] hover:text-white transition-colors cursor-pointer"
+                  title="Zamknij aplikację (postęp zostanie zapamiętany)"
+                  aria-label="Zamknij aplikację"
+                >
+                  <X size={15} />
+                </button>
+              )}
             </div>
           </div>
 
