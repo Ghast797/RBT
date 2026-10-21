@@ -36,3 +36,4 @@ reference_graphics/
 
 # Temporary / backups
 .git_backup*
+.claude/launch.json

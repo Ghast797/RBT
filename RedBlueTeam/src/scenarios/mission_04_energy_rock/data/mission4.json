@@ -1,0 +1,243 @@
+{
+  "mission": {
+    "id": "mission-4-energy-rock",
+    "title": "MISJA 4 – ENERGY ROCK",
+    "subTitle": "Atak ransomware i eksfiltracja technologii Freevolt",
+    "systemOs": "//HACKERS.OS",
+    "date": "19.05.2026",
+    "accentColor": "#a855f7",
+    "rewardBtc": 3.79,
+    "maxScore": 100,
+    "passingScore": 70,
+    "decisionCount": 10,
+    "targetCompany": "Energy Rock",
+    "description": "Scenariusz szkoleniowy SCORM symulujący atak ransomware i spear-phishing na firmę Energy Rock w celu podniesienia świadomości zagrożeń i procedur obronnych."
+  },
+  "intro": {
+    "callerName": "BYTE_MASTER",
+    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE (HACKER.OS)",
+    "dialogue": [
+      {
+        "id": "node_1",
+        "sender": "BYTE_MASTER",
+        "text": "MAMY PROBLEM",
+        "playerResponse": "CO SIĘ STAŁO?"
+      },
+      {
+        "id": "node_2",
+        "sender": "BYTE_MASTER",
+        "text": "BRAKUJE KILKU WAŻNYCH PLIKÓW NA TEMAT FREEVOLT. MUSIMY JE ZNALEŹĆ. Z DANYCH WYKRADZIONYCH Z PETROLOG WYNIKA, ŻE MOGĄ ZNAJDOWAĆ SIĘ W RĘKACH ENERGY ROCK - JEDNEJ Z NAJWIĘKSZYCH FIRM ZAJMUJĄCYCH SIĘ MAGAZYNOWANIEM I ZARZĄDZANIEM ZAPASAMI PALIWOWYMI",
+        "playerResponse": "CO DOKŁADNIE MAM ZROBIĆ?"
+      },
+      {
+        "id": "node_3",
+        "sender": "BYTE_MASTER",
+        "text": "MAJĄ CAŁKIEM DOBRE ZABEZPIECZENIA, WIĘC MUSIMY WYMYŚLIĆ JAKIŚ WIARYGODNY SPOSÓB NA WEJŚCIE. MYŚLĘ, ŻE NAJLEPIEJ ZNOWU POBAWIĆ SIĘ SOCJOTECHNIKAMI I WYKORZYSTAĆ BŁĄD LUDZKI. POZA TYM W SIECI KRĄŻĄ TEŻ PLOTKI O TYM, ŻE KTOŚ WYKRADŁ PLIKI TECHNOLOGII FREEVOLT, WIĘC POTRZEBUJEMY NAPRAWDĘ DOBREJ PRZYKRYWKI",
+        "playerResponse": "Z TECHNICZNEGO PUNKTU WIDZENIA MOŻEMY WYKORZYSTAĆ RANSOMWARE. NIE DOŚĆ, ŻE UZYSKAMY DOSTĘP DO DANYCH, TO JESZCZE ZASZYFRUJEMY JE I UNIEMOŻLIWIMY IM PRACĘ"
+      },
+      {
+        "id": "node_4",
+        "sender": "BYTE_MASTER",
+        "text": "WIDZĘ, ŻE PROWADZĄ REKRUTACJĘ NA KILKA STANOWISK. MÓGŁBYŚ PODESŁAĆ IM ZAINFEKOWANE CV",
+        "playerResponse": "A CO Z PRZYKRYWKĄ? MOŻE WYŁUDZENIE OKUPU? ZASZANTAŻUJEMY ICH, ŻE UPUBLICZNIMY HANIEBNE ZANIEDBANIA PROCEDUR BEZPIECZEŃSTWA W ICH FIRMIE I TAKIE TAM"
+      },
+      {
+        "id": "node_5",
+        "sender": "BYTE_MASTER",
+        "text": "BĘDĄ Z CIEBIE LUDZIE"
+      }
+    ],
+    "biosLines": [
+      "HACKERSBIOS 2.0 RELEASE 6.1",
+      "COPYRIGHT 1985-2022 HACKERS COLLECTIVE TECHNOLOGIES",
+      "ALL RIGHTS RESERVED",
+      "BIOS VERSION 2.0 R 6.1",
+      "GATEWAY AS54",
+      "SYSTEM ID # 00528156",
+      "BUILD TIME: 03/09/2022 19:26:54",
+      "CPU - UNKNOWN",
+      "1061 KB SYSTEM RAM PASSED",
+      "512M EXTENDED RAM PASSED",
+      "512K CACHE SRAM PASSED",
+      "SYSTEM BIOS SHADOWED",
+      "VIDEO BIOS SHADOWED",
+      "SEGMENT ADDRESS: E447",
+      "",
+      "WELCOME... HACKER"
+    ],
+    "firstChoice": { "id": "m4_reply_intro", "label": "DOBRA. ZABIERAM SIĘ ZA TWORZENIE WIRUSA." },
+    "firstUnlock": { "unlockIcons": ["virus_database_unlocked"], "badges": { "virus_database": 1 }, "highlightTile": "virus_database" },
+    "startBadges": { "chat": 1 }
+  },
+  "desktopApps": [
+    {
+      "id": "virus_database",
+      "label": "//BAZA_WIRUSÓW",
+      "color": "#ec4899",
+      "icon": "ShieldAlert",
+      "componentId": "ransomware_virus_scanner",
+      "unlockedOnly": true,
+      "requiredUnlockId": "virus_database_unlocked"
+    },
+    {
+      "id": "chat_shortcut",
+      "label": "//CHAT: BYTE_MASTER",
+      "color": "#00ff66",
+      "icon": "MessageSquareCode",
+      "componentId": "chat",
+      "isChatFocus": true
+    },
+    {
+      "id": "ransomware_builder",
+      "label": "//WIRUS: RANSOMWARE",
+      "color": "#a855f7",
+      "icon": "Lock",
+      "componentId": "ransomware_builder",
+      "unlockedOnly": true,
+      "requiredUnlockId": "ransomware_compiled"
+    },
+    {
+      "id": "mail",
+      "label": "//MAIL",
+      "color": "#38bdf8",
+      "icon": "Mail",
+      "componentId": "mail",
+      "unlockedOnly": true,
+      "requiredUnlockId": "mail_unlocked"
+    },
+    {
+      "id": "vpn_app",
+      "label": "//VPN",
+      "color": "#a855f7",
+      "icon": "Wifi",
+      "componentId": "vpn_app",
+      "unlockedOnly": true,
+      "requiredUnlockId": "vpn_unlocked"
+    },
+    {
+      "id": "victim_workstation",
+      "label": "//STACJA OFIARY",
+      "color": "#ef4444",
+      "icon": "Server",
+      "componentId": "victim_workstation",
+      "unlockedOnly": true,
+      "requiredUnlockId": "victim_workstation_unlocked"
+    },
+    {
+      "id": "negotiation",
+      "label": "//NEGOCJACJE: SZEF IT",
+      "color": "#f59e0b",
+      "icon": "MessageSquareCode",
+      "componentId": "negotiation",
+      "unlockedOnly": true,
+      "requiredUnlockId": "negotiation_unlocked"
+    },
+    {
+      "id": "debrief_app",
+      "label": "//PODSUMOWANIE",
+      "color": "#10b981",
+      "icon": "Award",
+      "componentId": "debrief_app",
+      "unlockedOnly": true,
+      "requiredUnlockId": "mission_completed"
+    }
+  ],
+  "step6": {
+    "summary": {
+      "title": "SUKCES",
+      "subtitle": "UKOŃCZONO ZADANIE 4",
+      "company": "Energy Rock",
+      "scorePercent": 100,
+      "perfectChoices": 10,
+      "goodChoices": 0,
+      "criticalErrors": 0,
+      "btcReward": 3.79
+    },
+    "choices": [
+      {
+        "num": 1,
+        "question": "Wybierz odpowiedniego wirusa:",
+        "answer": "RANSOMWARE",
+        "correct": true,
+        "details": "Zaszyfrowanie danych i blokada operacyjna umożliwia wywołanie presji szantażem i odwrócenie uwagi od kradzieży dokumentacji."
+      },
+      {
+        "num": 2,
+        "question": "Siła wygenerowanego hasła:",
+        "answer": "5/5 (24 znaki, pełny charset)",
+        "correct": true,
+        "details": "Maksymalna długość 24 znaki oraz znaki specjalne uniemożliwiają przełamanie klucza metodami brute-force."
+      },
+      {
+        "num": 3,
+        "question": "Skomponuj komunikat żądania okupu:",
+        "answer": "Tytuł ostrzegawczy + realny limit czasu",
+        "correct": true,
+        "details": "Jasny komunikat i wiarygodny zegar budują presję, a jednocześnie pozwalają ofierze zebrać okup."
+      },
+      {
+        "num": 4,
+        "question": "Wybierz kolor okna i elementów:",
+        "answer": "CZERWONY",
+        "correct": true,
+        "details": "Kolor alarmowy wywołuje natychmiastową presję psychologiczną i poczucie zagrożenia."
+      },
+      {
+        "num": 5,
+        "question": "Wybierz temat maila:",
+        "answer": "CV MICHAŁ WILK",
+        "correct": true,
+        "details": "Temat precyzyjnie wpisuje się w wymagania działu HR i nie budzi podejrzeń filtrów rekrutacyjnych."
+      },
+      {
+        "num": 6,
+        "question": "Wybierz treść maila:",
+        "answer": "Formalna treść na analityka z hasłem do pliku",
+        "correct": true,
+        "details": "Szyfrowanie załącznika hasłem uniemożliwia bramce pocztowej automatyczne wykrycie ładunku złośliwego."
+      },
+      {
+        "num": 7,
+        "question": "Ukrycie tożsamości / dopasowanie IP (VPN):",
+        "answer": "IP 109.43.200.124 (podsieć Energy Rock)",
+        "correct": true,
+        "details": "Adres IP tunelu zgodny z podsiecią celu omija geolokalizacyjne reguły filtrów poczty."
+      },
+      {
+        "num": 8,
+        "question": "Wybór adresu nadawcy:",
+        "answer": "m.wilk@priv.com",
+        "correct": true,
+        "details": "Pełna spójność tożsamości nadawcy z nazwiskiem kandydata w treści i załączniku."
+      },
+      {
+        "num": 9,
+        "question": "Wybór plików do kradzieży:",
+        "answer": "Kompletny zestaw dokumentacji technologii Freevolt (3 pliki)",
+        "correct": true,
+        "details": "Precyzyjne pobranie celów zlecenia bez uruchamiania pułapek honeypot."
+      },
+      {
+        "num": 10,
+        "question": "Negocjacje z ofiarą:",
+        "answer": "Narzucenie limitu 3h i konsekwentne żądanie Bitcoinów",
+        "correct": true,
+        "details": "Presja czasowa uniemożliwia ofierze odzyskanie danych z procedur zapasowych i kontakt z zewnętrznymi ekspertami."
+      }
+    ],
+    "educationalSlides": [
+      {
+        "title": "RANSOMWARE",
+        "desc": "Malware, który szyfruje dane i żąda okupu. Upewnij się, że dane są zabezpieczone systematycznymi backupami oraz regularnymi aktualizacjami systemów."
+      },
+      {
+        "title": "BACKUPY DANYCH",
+        "desc": "Skuteczny backup to taki, który można odtworzyć. Stosuj politykę reguły 3-2-1 (3 kopie, 2 różne nośniki, 1 kopia off-site). Sprawdzaj cyklicznie procedurę przywracania."
+      },
+      {
+        "title": "SILNE HASŁA",
+        "desc": "Do generowania używaj menedżera haseł. Menedżer przechowuje bezpiecznie unikalne i skomplikowane hasła w zaszyfrowanej bazie, eliminując ryzyko ataków słownikowych."
+      }
+    ]
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "mission": {
+    "id": "mission-1-petrolog",
+    "title": "MISJA 1 – PETROLOG",
+    "subTitle": "OSINT, profilowanie pracownika i ukierunkowany spear-phishing",
+    "systemOs": "//HACKERS.OS",
+    "date": "14.01.2025",
+    "accentColor": "#00ff66",
+    "rewardBtc": 2.52,
+    "maxScore": 100,
+    "passingScore": 75,
+    "decisionCount": 4,
+    "targetCompany": "PetroLog",
+    "description": "Scenariusz szkoleniowy SCORM symulujący biały wywiad (OSINT), profilowanie psychologiczne pracownika i atak spear-phishingowy w celu infiltracji przedsiębiorstwa logistycznego PetroLog."
+  },
+  "intro": {
+    "callerName": "BYTE_MASTER",
+    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE (HACKER.OS)",
+    "dialogue": [
+      {
+        "id": "node_1",
+        "sender": "BYTE_MASTER",
+        "text": "DOSTAŁEM TWOJĄ WIADOMOŚĆ. A WIĘC CHCESZ DO NAS DOŁĄCZYĆ.",
+        "playerResponse": "TAK, MAM INFORMACJE, ILE DOBREGO WASZA GRUPA ROBI W SIECI. ZNAM SIĘ NA CYBERBEZPIECZEŃSTWIE, UMIEM ZDOBYWAĆ DANE NIEDOSTĘPNE DLA INNYCH. MOŻE SIĘ PRZYDAM?"
+      },
+      {
+        "id": "node_2",
+        "sender": "BYTE_MASTER",
+        "text": "DARKSUN TO NIE ZABAWA. WYKRADAMY INFORMACJE NAJLEPIEJ STRZEŻONYCH FIRM I NIE BIERZEMY JEŃCÓW. MUSISZ BYĆ W PEŁNEJ GOTOWOŚCI.",
+        "playerResponse": "JESTEM. W KOŃCU DZIAŁACIE W SŁUŻBIE NAS WSZYSTKICH."
+      },
+      {
+        "id": "node_3",
+        "sender": "BYTE_MASTER",
+        "text": "ZGADZA SIĘ, LUBIMY PSUĆ PLANY TYM, KTÓRZY MYŚLĄ, ŻE SĄ PANAMI TEGO ŚWIATA. ZANIM JEDNAK PRZYJMIEMY CIĘ W SWOJE SZEREGI, MUSISZ SIĘ WYKAZAĆ. TAK SIĘ SKŁADA, ŻE MAM DLA CIEBIE IDEALNE ZADANIE.",
+        "playerResponse": "OK, PRZYJMUJĘ WYZWANIE."
+      },
+      {
+        "id": "node_4",
+        "sender": "BYTE_MASTER",
+        "text": "FREEVOLT - MÓWI CI TO COŚ?",
+        "playerResponse": "NIE ZA WIELE."
+      },
+      {
+        "id": "node_5",
+        "sender": "BYTE_MASTER",
+        "text": "NO WŁAŚNIE. TO TECHNOLOGIA, KTÓRA POZWOLIŁABY LUDZIOM NA DARMOWY I NIESKOŃCZONY DOSTĘP DO ENERGII. JAK SIĘ DOMYŚLASZ, JEST TO SPRZECZNE Z INTERESAMI WIELKICH KONCERNÓW ENERGETYCZNYCH, KTÓRE WESZŁY W POSIADANIE CAŁEJ DOKUMENTACJI I PILNIE STRZEGĄ, ŻEBY NIKT SIĘ O NIEJ NIE DOWIEDZIAŁ.",
+        "playerResponse": "CZYLI MAM WYKRAŚĆ TE DANE?"
+      },
+      {
+        "id": "node_6",
+        "sender": "BYTE_MASTER",
+        "text": "DOKŁADNIE, A PRZY OKAZJI MOŻESZ NA TYM NIEŹLE ZAROBIĆ. POTRAKTUJ TO JAKO ZACHĘTĘ DO DZIAŁANIA.",
+        "playerResponse": "BRZMI JAK PLAN. TO OD CZEGO ZACZYNAMY?"
+      },
+      {
+        "id": "node_7",
+        "sender": "BYTE_MASTER",
+        "text": "PETROLOG. TO FIRMA LOGISTYCZNA, DZIĘKI KTÓREJ POZNAMY DOKŁADNY ŁAŃCUCH DOSTAW I NAZWY FIRM POSIADAJĄCYCH INFORMACJE O FREEVOLT. TO POZWOLI NAM ZAPLANOWAĆ DALSZE RUCHY.",
+        "playerOptions": [
+          {
+            "id": "opt_a",
+            "label": "Z MOJEGO DOŚWIADCZENIA WYNIKA, ŻE NAJSŁABSZYM OGNIWEM SĄ LUDZIE. SPRAWDZĘ PRACOWNIKÓW FIRMY I ZOBACZĘ, KOGO MOŻNA NAJŁATWIEJ ZHAKOWAĆ.",
+            "mentorReaction": "DOKŁADNIE. CZŁOWIEK TO ZAWSZE NAJSŁABSZE OGNIWO. NAMIERZ CEL PRZEZ OSINT."
+          },
+          {
+            "id": "opt_b",
+            "label": "PRZEJMĘ ICH SOCIAL MEDIA I STWORZĘ WIRUSA, KTÓRY PRZECHWYCI POTRZEBNE DANE.",
+            "mentorReaction": "SOCIAL MEDIA TO DOBRY KIERUNEK, ALE NAJPIERW MUSIMY ZNALEŹĆ KONKRETNEGO PRACOWNIKA PRZEZ BIAŁY WYWIAD (OSINT). BEZ CELU NIE MA WEKTORA ATAKU."
+          }
+        ]
+      },
+      {
+        "id": "node_8",
+        "sender": "BYTE_MASTER",
+        "text": "BIERZ SIĘ DO PRACY I CZEKAM NA WIADOMOŚĆ."
+      }
+    ],
+    "biosLines": [
+      "HACKERSBIOS 2.0 RELEASE 6.1",
+      "COPYRIGHT 1985-2022 HACKERS COLLECTIVE TECHNOLOGIES",
+      "ALL RIGHTS RESERVED",
+      "BIOS VERSION 2.0 R 6.1",
+      "GATEWAY AS54",
+      "SYSTEM ID # 00528156",
+      "BUILD TIME: 03/09/2022 19:26:54",
+      "CPU - UNKNOWN",
+      "1061 KB SYSTEM RAM PASSED",
+      "512M EXTENDED RAM PASSED",
+      "512K CACHE SRAM PASSED",
+      "SYSTEM BIOS SHADOWED",
+      "VIDEO BIOS SHADOWED",
+      "SEGMENT ADDRESS: E447",
+      "",
+      "WELCOME... HACKER"
+    ],
+    "firstChoice": {
+      "id": "m1_reply_intro",
+      "label": "ZACZYNAM OD ZAPOZNANIA SIĘ Z BAZĄ INFORMACJI O FIRMIE PETROLOG."
+    },
+    "firstUnlock": {
+      "unlockIcons": ["target_petrolog_unlocked", "app_target_petrolog"],
+      "badges": { "app_target_petrolog": 1, "chat": 1 },
+      "highlightTile": "app_target_petrolog"
+    },
+    "startBadges": {
+      "chat": 1
+    }
+  },
+  "desktopApps": [
+    {
+      "id": "chat_shortcut",
+      "label": "//CHAT: BYTE_MASTER",
+      "color": "#00ff66",
+      "icon": "MessageSquareCode",
+      "componentId": "chat",
+      "isChatFocus": true
+    },
+    {
+      "id": "app_target_petrolog",
+      "label": "//BAZA_CELU: PETROLOG",
+      "color": "#00ff66",
+      "icon": "Crosshair",
+      "componentId": "target_petrolog",
+      "unlockedOnly": true,
+      "requiredUnlockId": "target_petrolog_unlocked"
+    },
+    {
+      "id": "app_osint_search",
+      "label": "//WYSZUKIWARKA: OSINT",
+      "color": "#38bdf8",
+      "icon": "Search",
+      "componentId": "osint_search",
+      "unlockedOnly": true,
+      "requiredUnlockId": "osint_search_unlocked"
+    },
+    {
+      "id": "app_social_intel",
+      "label": "//INTEL_SOCIAL_MEDIA",
+      "color": "#a855f7",
+      "icon": "Users",
+      "componentId": "social_intel",
+      "unlockedOnly": true,
+      "requiredUnlockId": "social_intel_unlocked"
+    },
+    {
+      "id": "app_phishing_builder",
+      "label": "//KREATOR_PHISHINGU",
+      "color": "#ec4899",
+      "icon": "Mail",
+      "componentId": "phishing_builder",
+      "unlockedOnly": true,
+      "requiredUnlockId": "phishing_builder_unlocked"
+    },
+    {
+      "id": "app_victim_monitor",
+      "label": "//MONITOR_OFIARY",
+      "color": "#3b82f6",
+      "icon": "Monitor",
+      "componentId": "victim_monitor",
+      "unlockedOnly": true,
+      "requiredUnlockId": "victim_monitor_unlocked"
+    },
+    {
+      "id": "debrief_app",
+      "label": "//PODSUMOWANIE",
+      "color": "#10b981",
+      "icon": "Award",
+      "componentId": "debrief_app",
+      "unlockedOnly": true,
+      "requiredUnlockId": "mission_completed"
+    }
+  ],
+  "step6": {
+    "summary": {
+      "title": "ZHAKOWANO PETROLOG",
+      "subtitle": "UKOŃCZONO ZADANIE 1",
+      "company": "PetroLog",
+      "scorePercent": 100,
+      "perfectChoices": 4,
+      "goodChoices": 0,
+      "criticalErrors": 0,
+      "btcReward": 2.52
+    },
+    "choices": [
+      {
+        "num": 1,
+        "question": "Wybór strony WWW",
+        "answer": "DALEKBIEG.INFO",
+        "correct": true,
+        "details": "Bezpośrednie odwołanie do pasji do biegów długodystansowych i poszukiwania porad przez ofiarę."
+      },
+      {
+        "num": 2,
+        "question": "Wybór pliku do pobrania",
+        "answer": "PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK",
+        "correct": true,
+        "details": "Precyzyjna odpowiedź na publiczne zapytanie Anity z portalu Joinin."
+      },
+      {
+        "num": 3,
+        "question": "Wybór nadawcy wiadomości",
+        "answer": "JAKUB KWIATKOWSKI",
+        "correct": true,
+        "details": "Zaufany współpracownik z tego samego pokoju oraz partner z wieczornych biegów."
+      },
+      {
+        "num": 4,
+        "question": "Wybór adresu e-mail nadawcy",
+        "answer": "K.KWIATKOWSKI@PETROLOG.COM",
+        "correct": true,
+        "details": "Domena firmowa PetroLog – pełne uwiarygodnienie wewnętrznej korespondencji służbowej."
+      }
+    ],
+    "educationalSlides": [
+      {
+        "title": "OSINT – BIAŁY WYWIAD W MEDIACH SPOŁECZNOŚCIOWYCH",
+        "desc": "Cyberprzestępcy nie potrzebują łamać skomplikowanych zabezpieczeń, gdy sami publikujemy kluczowe informacje. Posty z biura, relacje z urlopu czy zapytania o hobby pozwalają stworzyć dokładny profil psychologiczny pracownika. Ogranicz widoczność swoich postów w mediach społecznościowych wyłącznie do zaufanego kręgu znajomych."
+      },
+      {
+        "title": "SPEAR-PHISHING – ATAK SPERSONALIZOWANY",
+        "desc": "W przeciwieństwie do masowego spamu, spear-phishing jest precyzyjnie wymierzony w konkretną osobę. Wykorzystuje autentyczne relacje biurowe, imiona kolegów z zespołu oraz aktualne zainteresowania ofiary, aby uśpić jej czujność i nakłonić do wykonania niebezpiecznej akcji."
+      },
+      {
+        "title": "WERYFIKACJA NADAWCY I SPOOFING DOMENY",
+        "desc": "Atakujący potrafią podrobić nagłówek wiadomości lub zarejestrować domenę łudząco podobną do firmowej (typosquatting). Jeśli otrzymujesz nieoczekiwany link lub załącznik od współpracownika – zweryfikuj to z nim innym kanałem (np. zadzwoń lub zapytaj osobiście przy biurku)."
+      },
+      {
+        "title": "HIGIENA CYFROWA I BEZPIECZNE ODNOŚNIKI",
+        "desc": "Przed kliknięciem w link zawsze najedź kursorem myszy i sprawdź rzeczywisty adres docelowy w lewym dolnym rogu przeglądarki. Stosuj menedżer haseł, regularnie aktualizuj system oraz bezwzględnie włącz uwierzytelnianie dwuskładnikowe (2FA) na wszystkich kontach firmowych i prywatnych."
+      }
+    ]
+  }
+}
