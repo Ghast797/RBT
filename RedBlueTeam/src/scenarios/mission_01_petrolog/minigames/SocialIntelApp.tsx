@@ -327,185 +327,187 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
         {header}
 
-        <div className="w-full max-w-2xl mx-auto space-y-3">
-          {/* Pasek platformy */}
-          <div
-            className="rounded-xl border overflow-hidden"
-            style={{ borderColor: `${platform.accentColor}80` }}
-          >
-            <div
-              className="px-3 py-2 flex items-center justify-between"
-              style={{ backgroundColor: platform.accentColor }}
-            >
-              <div className="flex items-center space-x-2 text-white font-black text-sm tracking-wide">
-                <PlatformIcon size={16} />
-                <span>{platform.name}</span>
-              </div>
-              <button
-                onClick={handleBackToHub}
-                className="px-2 py-1 rounded bg-black/25 hover:bg-black/40 text-white text-[10px] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
-              >
-                <ArrowLeft size={12} />
-                <span>WSZYSTKIE PROFILE</span>
-              </button>
-            </div>
-            <div className="p-3 bg-[#08101a]/95 flex items-center space-x-3">
+        {post && (
+          <div className="flex-1 lg:min-h-0 grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-1 gap-6">
+            {/* LEWA POŁOWA: wpis jak w aplikacji platformy, kwadratowe zdjęcie dopasowane do wolnego miejsca */}
+            <div className="flex items-center justify-center lg:min-h-0 lg:[container-type:size]">
               <div
-                className="w-11 h-11 rounded-full border-2 flex items-center justify-center font-black text-sm text-white shrink-0"
-                style={{ borderColor: platform.accentColor, backgroundColor: `${platform.accentColor}40` }}
+                className="rounded-xl border overflow-hidden bg-[#08101a]/95 flex flex-col w-full max-w-sm lg:max-w-none lg:max-h-full lg:w-[min(100cqw,calc(100cqh-12rem))]"
+                style={{ borderColor: `${platform.accentColor}80` }}
               >
-                {initials}
+                <div
+                  className="px-3 py-1.5 flex items-center justify-between"
+                  style={{ backgroundColor: platform.accentColor }}
+                >
+                  <div className="flex items-center space-x-2 text-white font-black text-sm tracking-wide">
+                    <PlatformIcon size={15} />
+                    <span>{platform.name}</span>
+                  </div>
+                  <button
+                    onClick={handleBackToHub}
+                    className="px-2 py-1 rounded bg-black/25 hover:bg-black/40 text-white text-[10px] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+                  >
+                    <ArrowLeft size={12} />
+                    <span>PROFILE</span>
+                  </button>
+                </div>
+
+                <div className="px-3 py-2 flex items-center space-x-2.5">
+                  <div
+                    className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-[11px] text-white shrink-0"
+                    style={{ borderColor: platform.accentColor, backgroundColor: `${platform.accentColor}40` }}
+                  >
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-white block truncate">{post.handle}</span>
+                    <span className="text-[10px] text-gray-500">{post.timestamp}</span>
+                  </div>
+                </div>
+
+                <ImageSlot name={post.id} label={`wpis ${post.id}`} className="w-full aspect-square shrink-0" />
+
+                <div className="px-3 py-2 space-y-1.5 min-h-0 overflow-y-auto">
+                  <p className="text-sm text-gray-100 leading-snug font-sans">{post.content}</p>
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {post.tags.map((tag) => (
+                        <span key={tag} className="text-[11px]" style={{ color: platform.accentColor }}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-white">{target.name}</h3>
-                <p className="text-[11px] text-gray-400">{platform.handlePrefix || platform.tagline}</p>
+            </div>
+
+            {/* PRAWA POŁOWA: analiza wpisu */}
+            <div className="flex items-center justify-center">
+              <div className="rounded-xl border border-gray-800 bg-[#08101a]/95 p-4 space-y-3 w-full max-w-xl">
+                <div className="flex items-center justify-between border-b border-gray-800 pb-2">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ANALIZA WPISU</span>
+                  <span className="text-[10px] text-gray-500 font-bold">{`WPIS ${postIdx + 1}/${platformPosts.length}`}</span>
+                </div>
+
+                {/* Dedukcja */}
+                {!isPrecisionFailed ? (
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-amber-300 flex items-center space-x-1.5 uppercase tracking-wider">
+                      <HelpCircle size={14} />
+                      <span>JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?</span>
+                    </span>
+
+                    <div className="space-y-1.5">
+                      {getDeductionOptions(post).map((opt, optIdx) => {
+                        const isOptFailed = failedOptionIds.includes(opt.id);
+                        return (
+                          <button
+                            key={opt.id || optIdx}
+                            disabled={isPostSolved || isOptFailed}
+                            onClick={() => handleChooseDeduction(post, opt)}
+                            className={`w-full p-3 rounded-lg border text-left text-xs transition-all flex items-center space-x-2.5 ${
+                              isPostSolved
+                                ? opt.isCorrect
+                                  ? 'border-[#00ff66] bg-[#00ff66]/15 text-white font-bold'
+                                  : 'border-gray-800/40 bg-black/20 text-gray-600 opacity-50'
+                                : isOptFailed
+                                ? 'border-red-500/50 bg-red-950/20 text-red-300 opacity-60 cursor-not-allowed'
+                                : 'border-gray-800 bg-black/40 hover:border-purple-500/60 hover:bg-purple-950/20 text-gray-200 cursor-pointer'
+                            }`}
+                          >
+                            <span
+                              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                                isPostSolved && opt.isCorrect
+                                  ? 'bg-[#00ff66] text-[#05090f]'
+                                  : isOptFailed
+                                  ? 'bg-red-500 text-white'
+                                  : 'bg-gray-800 text-gray-400'
+                              }`}
+                            >
+                              {isPostSolved && opt.isCorrect ? '✓' : isOptFailed ? '✗' : String.fromCharCode(65 + optIdx)}
+                            </span>
+                            <span className="flex-1 font-sans text-xs leading-snug">{opt.text}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-lg border-2 border-red-500 bg-red-950/30 text-center space-y-3 animate-in fade-in">
+                    <div className="flex items-center justify-center space-x-2 text-red-400 font-black text-xs uppercase tracking-wider">
+                      <AlertTriangle size={18} />
+                      <span>{`PRECYZJA WYWIADU SPADŁA DO ${precision}% (PONIŻEJ PROGU ${minPrecision}%)`}</span>
+                    </div>
+                    <p className="text-xs text-gray-300 font-sans leading-relaxed">
+                      <strong className="text-red-300">BYTE_MASTER:</strong> Za dużo pomyłek i niesprawdzonych domysłów. Zacznijmy analizę od nowa.
+                    </p>
+                    <button
+                      onClick={handleResetMinigame}
+                      className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded transition-all inline-flex items-center space-x-2 cursor-pointer shadow-lg active:scale-95"
+                    >
+                      <RotateCcw size={14} />
+                      <span>ZACZNIJMY ANALIZĘ OD NOWA</span>
+                    </button>
+                  </div>
+                )}
+
+                {feedback && (
+                  <div
+                    className={`p-2.5 rounded-lg border text-xs flex items-center space-x-2 animate-in fade-in ${
+                      feedback.type === 'success'
+                        ? 'border-[#00ff66] bg-[#00ff66]/15 text-[#00ff66]'
+                        : feedback.type === 'warning'
+                        ? 'border-amber-500/50 bg-amber-950/30 text-amber-300'
+                        : 'border-red-500/50 bg-red-950/40 text-red-200'
+                    }`}
+                  >
+                    {feedback.type === 'success' ? (
+                      <CheckCircle2 size={16} className="shrink-0 text-[#00ff66]" />
+                    ) : feedback.type === 'warning' ? (
+                      <AlertCircle size={16} className="shrink-0 text-amber-400" />
+                    ) : (
+                      <AlertTriangle size={16} className="shrink-0 text-red-400" />
+                    )}
+                    <span className="font-bold text-[11px] leading-tight font-sans">{feedback.text}</span>
+                  </div>
+                )}
+
+                {/* Postęp wpisów + dalej */}
+                <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
+                  <div className="flex items-center space-x-1.5">
+                    {platformPosts.map((p, idx) => (
+                      <span
+                        key={p.id}
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{
+                          backgroundColor: solvedPostIds.includes(p.id)
+                            ? '#00ff66'
+                            : idx === postIdx
+                            ? platform.accentColor
+                            : '#1f2937'
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => (isLastPost ? handleBackToHub() : handleNextPost(platform.id))}
+                    disabled={!isPostSolved}
+                    className={`px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest flex items-center space-x-1.5 transition-all ${
+                      isPostSolved
+                        ? 'bg-[#00ff66] text-[#05090f] hover:bg-[#00ff66]/90 cursor-pointer shadow-[0_0_15px_rgba(0,255,102,0.35)] active:scale-95'
+                        : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    <span>{isLastPost ? `ZAKOŃCZ ${platform.name.toUpperCase()}` : 'NASTĘPNY WPIS'}</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-
-          {post && (
-            <div className="rounded-xl border border-gray-800 bg-[#08101a]/95 p-4 space-y-3">
-              {/* Wpis */}
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-gray-500">{`${post.handle} • ${post.timestamp}`}</span>
-                <span className="text-[10px] text-gray-500 font-bold">{`WPIS ${postIdx + 1}/${platformPosts.length}`}</span>
-              </div>
-
-              <ImageSlot
-                name={post.id}
-                label={`wpis ${post.id}`}
-                className="w-full h-44 sm:h-52 rounded-lg"
-              />
-
-              <p className="text-sm text-gray-100 leading-relaxed font-sans">{post.content}</p>
-
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {post.tags.map((tag) => (
-                    <span key={tag} className="text-[11px]" style={{ color: platform.accentColor }}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Dedukcja */}
-              {!isPrecisionFailed ? (
-                <div className="pt-3 border-t border-gray-800 space-y-2">
-                  <span className="text-xs font-bold text-amber-300 flex items-center space-x-1.5 uppercase tracking-wider">
-                    <HelpCircle size={14} />
-                    <span>JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?</span>
-                  </span>
-
-                  <div className="space-y-1.5">
-                    {getDeductionOptions(post).map((opt, optIdx) => {
-                      const isOptFailed = failedOptionIds.includes(opt.id);
-                      return (
-                        <button
-                          key={opt.id || optIdx}
-                          disabled={isPostSolved || isOptFailed}
-                          onClick={() => handleChooseDeduction(post, opt)}
-                          className={`w-full p-3 rounded-lg border text-left text-xs transition-all flex items-center space-x-2.5 ${
-                            isPostSolved
-                              ? opt.isCorrect
-                                ? 'border-[#00ff66] bg-[#00ff66]/15 text-white font-bold'
-                                : 'border-gray-800/40 bg-black/20 text-gray-600 opacity-50'
-                              : isOptFailed
-                              ? 'border-red-500/50 bg-red-950/20 text-red-300 opacity-60 cursor-not-allowed'
-                              : 'border-gray-800 bg-black/40 hover:border-purple-500/60 hover:bg-purple-950/20 text-gray-200 cursor-pointer'
-                          }`}
-                        >
-                          <span
-                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                              isPostSolved && opt.isCorrect
-                                ? 'bg-[#00ff66] text-[#05090f]'
-                                : isOptFailed
-                                ? 'bg-red-500 text-white'
-                                : 'bg-gray-800 text-gray-400'
-                            }`}
-                          >
-                            {isPostSolved && opt.isCorrect ? '✓' : isOptFailed ? '✗' : String.fromCharCode(65 + optIdx)}
-                          </span>
-                          <span className="flex-1 font-sans text-xs leading-snug">{opt.text}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4 rounded-lg border-2 border-red-500 bg-red-950/30 text-center space-y-3 animate-in fade-in">
-                  <div className="flex items-center justify-center space-x-2 text-red-400 font-black text-xs uppercase tracking-wider">
-                    <AlertTriangle size={18} />
-                    <span>{`PRECYZJA WYWIADU SPADŁA DO ${precision}% (PONIŻEJ PROGU ${minPrecision}%)`}</span>
-                  </div>
-                  <p className="text-xs text-gray-300 font-sans leading-relaxed">
-                    <strong className="text-red-300">BYTE_MASTER:</strong> Za dużo pomyłek i niesprawdzonych domysłów. Zacznijmy analizę od nowa.
-                  </p>
-                  <button
-                    onClick={handleResetMinigame}
-                    className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded transition-all inline-flex items-center space-x-2 cursor-pointer shadow-lg active:scale-95"
-                  >
-                    <RotateCcw size={14} />
-                    <span>ZACZNIJMY ANALIZĘ OD NOWA</span>
-                  </button>
-                </div>
-              )}
-
-              {feedback && (
-                <div
-                  className={`p-2.5 rounded-lg border text-xs flex items-center space-x-2 animate-in fade-in ${
-                    feedback.type === 'success'
-                      ? 'border-[#00ff66] bg-[#00ff66]/15 text-[#00ff66]'
-                      : feedback.type === 'warning'
-                      ? 'border-amber-500/50 bg-amber-950/30 text-amber-300'
-                      : 'border-red-500/50 bg-red-950/40 text-red-200'
-                  }`}
-                >
-                  {feedback.type === 'success' ? (
-                    <CheckCircle2 size={16} className="shrink-0 text-[#00ff66]" />
-                  ) : feedback.type === 'warning' ? (
-                    <AlertCircle size={16} className="shrink-0 text-amber-400" />
-                  ) : (
-                    <AlertTriangle size={16} className="shrink-0 text-red-400" />
-                  )}
-                  <span className="font-bold text-[11px] leading-tight font-sans">{feedback.text}</span>
-                </div>
-              )}
-
-              {/* Postęp wpisów + dalej */}
-              <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
-                <div className="flex items-center space-x-1.5">
-                  {platformPosts.map((p, idx) => (
-                    <span
-                      key={p.id}
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{
-                        backgroundColor: solvedPostIds.includes(p.id)
-                          ? '#00ff66'
-                          : idx === postIdx
-                          ? platform.accentColor
-                          : '#1f2937'
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => (isLastPost ? handleBackToHub() : handleNextPost(platform.id))}
-                  disabled={!isPostSolved}
-                  className={`px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest flex items-center space-x-1.5 transition-all ${
-                    isPostSolved
-                      ? 'bg-[#00ff66] text-[#05090f] hover:bg-[#00ff66]/90 cursor-pointer shadow-[0_0_15px_rgba(0,255,102,0.35)] active:scale-95'
-                      : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                  }`}
-                >
-                  <span>{isLastPost ? `ZAKOŃCZ ${platform.name.toUpperCase()}` : 'NASTĘPNY WPIS'}</span>
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     );
   }

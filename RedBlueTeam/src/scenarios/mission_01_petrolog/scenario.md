@@ -60,7 +60,8 @@ Ekrany:
 1. PROFILE — 3 grafiki platform (Kneenook → Quickgram → Joinin), odblokowywane po kolei: następna dopiero po przejrzeniu wszystkich wpisów poprzedniej. Pod nimi notatnik z 8 polami na fakty.
 2. Wejście w platformę (krótkie ładowanie) → wpisy jeden po drugim (11 wpisów łącznie), każdy z miejscem na grafikę. Pod wpisem aktywna dedukcja (pytanie: „Jaki fakt wywiadowczy wynika z tego wpisu?” + 3 kafle wyboru: 1 poprawny, 2 zmyłki). „Następny wpis” odblokowuje się po trafnej odpowiedzi; po ostatnim wpisie powrót do ekranu profili.
 Spadek precyzji poniżej 70% pokazuje ekran ostrzegawczy z przyciskiem resetu (powrót do ekranu profili, postęp od zera).
-Grafiki: `assets/social/<id>.png` — id platformy (kneenook, quickgram, joinin) albo id wpisu (kn_1…ji_3).
+Układ wpisu: po lewej wpis jak w aplikacji platformy (kwadratowe zdjęcie, format Instagrama), po prawej osobny panel analizy (pytanie, odpowiedzi, przejście dalej).
+Grafiki: `assets/social/<id>.png` — id platformy (kneenook, quickgram, joinin) albo id wpisu (kn_1…ji_3); grafiki wpisów kwadratowe (1:1).
 Flavor (nieoceniane): zebranie wszystkich 8 wymaganych faktów przy precyzji ≥ 70% odblokowuje przycisk przejścia do kreatora spear-phishingu.
 
 Mostek (rozmowa do kolejnego etapu):
