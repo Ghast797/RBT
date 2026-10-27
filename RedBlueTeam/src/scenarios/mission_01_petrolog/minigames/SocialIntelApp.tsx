@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Gauge,
   RotateCcw,
-  Sparkles,
   HelpCircle,
   AlertTriangle
 } from 'lucide-react';

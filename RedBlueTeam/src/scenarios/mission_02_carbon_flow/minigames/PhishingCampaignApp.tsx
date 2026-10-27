@@ -14,7 +14,8 @@ type Screen =
   | 'import_list'
   | 'sender_select'
   | 'preview'
-  | 'dispatching';
+  | 'dispatching'
+  | 'sent';
 
 export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> = ({
   config,
