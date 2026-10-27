@@ -22,6 +22,11 @@ export interface PhishingCampaignConfig {
     whitelistedIps: string[];
     sampleRecipients: Array<{ name: string; email: string; role: string }>;
   };
+  sender?: {
+    decisionNum: number;
+    question: string;
+    options: ChoiceOption[];
+  };
 }
 
 export interface VpnConfig {

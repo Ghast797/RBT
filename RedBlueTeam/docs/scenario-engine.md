@@ -119,8 +119,9 @@ Tylko klocki, które **już się powtarzają** w istniejącym kodzie. Katalog ro
 | `DialogueTree` | rozmowa z NPC, węzły z opcjami | `nodes[]` z `{incoming, options[], nextNode}` | `onDecision` per węzeł oceniany, `onComplete` na końcu |
 | `Configurator` | suwaki + przełączniki, ocena z funkcji | `controls[]`, `evaluate(state) → tier` | `onDecision` z oceną konfiguracji |
 | `PoolSelect` | zaznacz właściwe z puli (cele / śmieci / pułapki) | `items[]` z `{label, role}`, `targetRole` | `onDecision` z trafnością zestawu |
+| `VpnRouter` | dopasowanie oktetów IP (+/- lub asysta AI) pod reguły sieci | `initialIp`, `targetIp`, `allowedIps[]`, opcjonalny `decisionNum` | `onComplete` (krok `Flavor` bez oceny gdy brak `decisionNum`) lub `onDecision` |
 
-`ChoiceCards` pokrywa dziś 5 decyzji w M4 i część M3 — to pierwszy kandydat do wydzielenia. Intro BYTE_MASTERA i negocjacje to `DialogueTree`.
+`ChoiceCards` pokrywa dziś 5 decyzji w M4 i część M3 — to pierwszy kandydat do wydzielenia. Intro BYTE_MASTERA i negocjacje to `DialogueTree`. `VpnRouter` obsługuje tunelowanie IP w M2 i M4.
 
 ## 7. Jak rośnie katalog (reguła dwóch)
 
@@ -159,9 +160,34 @@ Rzeczy dzieją się rozmyślnie wolno — gracz ma czuć, że obsługuje system.
 
 Minigra z akcją „komputerową" (skan, kompilacja, wysyłka, eksfiltracja) robi krótką pauzę `await setTimeout` + spinner — nigdy natychmiast.
 
-## 10. Zasady z iteracji M4 (stosuj w nowych misjach)
+## 10. Wiążące reguły architektury i projektowania misji
 
-Wnioski z dopracowywania M4 — trzymaj się ich, żeby nie powtarzać iteracji:
+Zasady wypracowane z audytu misji oraz iteracji M4 — bezwzględnie obowiązujące każdego agenta i dewelopera:
+
+### 10.1. Fundamentalne Reguły Architektury
+
+1. **Cyber Kill Chain Order (Logiczny porządek operacji hakerskiej):**  
+   Etapy misji muszą bezwzględnie odzwierciedlać naturalny, przyczynowo-skutkowy przebieg ataku:
+   - `Rekonesans / OSINT` (rozpoznanie celu, pracownicy, infrastruktura)
+   - `Uzbrojenie / Weaponization` (wybór i kompilacja exploita / robaka / ransomware)
+   - `Dostarczenie / Delivery` (zamaskowanie IP przez VPN, spoofing SMTP, phishing, mailing)
+   - `Egzekucja / Exploitation` (otwarcie ładunku przez ofiarę, wyzwolenie stacji)
+   - `Działania na celach / Actions on Objectives` (botnet, eksfiltracja plików, szyfrowanie, negocjacje)  
+   *ZAKAZ*: Nie wolno uzbrajać formularzy, przygotowywać ankiet czy wysyłać maili przed fizycznym skompilowaniem złośliwego ładunku.
+
+2. **No Narrative Spoilers in Guidance (Czystość merytoryczna dialogu):**  
+   Kwestie mentora ani gracza w oknie komunikatora (oraz w podpowiedziach T1/T2) **nie mogą** zdradzać bezpośredniej odpowiedzi ani technicznego identyfikatora nadchodzącej decyzji (np. gracz nie może pisać „podmienię jedną literę w domenie”, a mentor nie może podawać gotowego schematu nazwy pliku). Dialog ma nakreślać intencję taktyczną, zmuszając gracza do samodzielnej analizy opcji na pulpicie.
+
+3. **Zero-Clicker Agency (Wymóg zaangażowania poznawczego):**  
+   Żaden ekran aplikacji pulpitu nie może być pasywnym sekwencerem przycisków „DALEJ”. Każdy etap musi wymagać od gracza przynajmniej jednego sprawdzalnego elementu dedukcji (np. selekcja wariantu, dopasowanie tagu, analiza fragmentu tekstu, weryfikacja logów, ułożenie pipeline'u instrukcji).
+
+4. **Mandatory Canonical Scenario Spec (Kanoniczny dokument źródłowy):**  
+   Warunkiem koniecznym wdrożenia misji do kodu produkcyjnego jest obecność i zatwierdzenie pliku `src/scenarios/mission_XX/scenario.md` sporządzonego w standardzie `RedBlueTeam/docs/scenario-format.md`. Kod misji i testy są wtórne wobec specyfikacji w `scenario.md`.
+
+5. **Kontrakt klocka VpnRouter:**  
+   Gdy w konfiguracji klocka `VpnRouter` pominięty jest parametr `decisionNum`, moduł działa w trybie **aktywności nieocenianej (`Flavor` / techniczny warunek konieczny)**. Błędny dobór IP nie skutkuje karą punktową SCORM, lecz blokuje przejście dalej komunikatem błędu. Dopiero poprawne dopasowanie adresu IP odblokowuje wywołanie `onComplete()`. Gdy `decisionNum` jest podany (np. w M4), niepoprawny wybór natychmiast zgłasza decyzję `critical`.
+
+### 10.2. Wnioski z iteracji M4 (UX i Prowadzenie Gracza)
 
 1. **Czat to rozmowa, nie launcher.** BYTE_MASTER nie ma dostępu do komputera gracza — nie podaje aplikacji do otwarcia. Mówi, co zrobić; gracz sam klika podświetlony kafelek.
 2. **Aplikacje zablokowane do kwestii gracza.** Kolejny kafelek odblokowuje się dopiero, gdy gracz napisze mentorowi, co chce zrobić (ostatni beat `conversation`). To jego „ja się tym zajmę" jest wyzwalaczem.

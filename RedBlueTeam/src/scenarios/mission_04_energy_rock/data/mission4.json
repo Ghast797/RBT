@@ -107,7 +107,7 @@
     },
     {
       "id": "vpn_app",
-      "label": "//VPN",
+      "label": "//TUNEL_VPN",
       "color": "#a855f7",
       "icon": "Wifi",
       "componentId": "vpn_app",
@@ -222,7 +222,30 @@
         "question": "Negocjacje z ofiarą:",
         "answer": "Narzucenie limitu 3h i konsekwentne żądanie Bitcoinów",
         "correct": true,
-        "details": "Presja czasowa uniemożliwia ofierze odzyskanie danych z procedur zapasowych i kontakt z zewnętrznymi ekspertami."
+        "details": "Presja czasowa uniemożliwia ofierze odzyskanie danych z procedur zapasowych i kontakt z zewnętrznymi ekspertami.",
+        "negotiationTranscript": [
+          {
+            "turn": 1,
+            "title": "Tura 1 (Reakcja na szantaż)",
+            "opponent": "Szef IT grozi policją: „ROZWIĄZUJEMY PROBLEM RANSOMWARE! ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE”",
+            "player": "Twarde stanowisko techniczne: „ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW. ZASTANÓW SIĘ DOBRZE, CO CHCESZ ZROBIĆ”",
+            "psychology": "Konfrontacja z technologiczną bezradnością organów ścigania wobec silnej kryptografii natychmiast rozbija złudzenie pomocy z zewnątrz i paraliżuje decyzyjność ofiary."
+          },
+          {
+            "turn": 2,
+            "title": "Tura 2 (Żądanie motywu)",
+            "opponent": "Szef IT sonduje cel ataku: „CZEGO CHCESZ W ZAMIAN ZA ODSZYFROWANIE DANYCH?”",
+            "player": "Żądanie Bitcoinów (kamuflaż): „TAK, JAK NAPISAŁEM W WIADOMOŚCI - INTERESUJĄ MNIE TYLKO BITCOINY”",
+            "psychology": "Utrzymanie narracji o czysto finansowym motywie maskuje rzeczywisty cel szpiegowski (kradzież technologii Freevolt) i uśpiło czujność zespołu bezpieczeństwa."
+          },
+          {
+            "turn": 3,
+            "title": "Tura 3 (Presja czasu)",
+            "opponent": "Szef IT gra na zwłokę: „POTRZEBUJEMY CZASU NA ICH ZDOBYCIE”",
+            "player": "Twardy limit 3h na przelew: „MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA”",
+            "psychology": "Ekstremalny limit czasowy uniemożliwia ofierze odzyskanie danych z kopii zapasowych lub powiadomienie zespołu reagowania na incydenty (CSIRT/SOC)."
+          }
+        ]
       }
     ],
     "educationalSlides": [

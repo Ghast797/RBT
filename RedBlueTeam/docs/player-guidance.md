@@ -21,6 +21,10 @@ W grze 2D cały pulpit jest na ekranie naraz. Gracz nie ma przestrzeni, która w
 9. **Kryterium ukończenia musi być sprawdzalne.** Silnik musi wiedzieć, kiedy odblokować następny etap: „wybrano opcję", „pasek 100%", „wszystkie sloty wypełnione". Rozmyte („gracz zrozumiał") się nie nadaje.
 10. **Błąd krytyczny przerywa z jasnym komunikatem.** Przy decyzji `critical` silnik pokazuje ekran wykrycia z powodem i modal powtórki — gracz wie, co poszło nie tak.
 11. **Kroki po kolei, z tempem.** Jedna aplikacja = jeden kafelek; kroki w środku to **sekwencyjne pełne ekrany** (bez zakładek, bez cofania), oddzielone krótkim **ekranem ładowania** (`ModuleLoader`). Akcje „komputerowe" (kompilacja, skan, wysyłka) mają trwać chwilę — nie dzieją się natychmiast. Mostek z mentorem i odblokowanie kolejnego kafelka następują **tylko na granicy aplikacji**.
+12. **Cyber Kill Chain Order (Kolejność operacji).** Etapy misji muszą zachowywać naturalną sekwencję ataku: Rekonesans/OSINT → Uzbrojenie (wybór i kompilacja malware) → Dostarczenie (VPN / spoofing / mailing / phishing) → Egzekucja → Działania na celach (botnet / eksfiltracja / ransomware / negocjacje). Bezwzględny zakaz uzbrajania formularzy czy wysyłki przed skompilowaniem ładunku.
+13. **Brak spoilerów w narracji (No Spoilers).** Dialogi w czacie (kwestie gracza i mentora) oraz wskazówki T1/T2 nie mogą zdradzać bezpośredniej odpowiedzi (np. gracz nie mówi: „podmienię jedną literę w domenie firmowej”, mentor nie podaje formatu poprawnej odpowiedzi). Gracz musi wywnioskować rozwiązanie samodzielnie w minigrze.
+14. **Zero-Clicker Agency (Aktywne zaangażowanie).** Wyklucza się ekrany będące wyłącznie pasywnym klikaniem przycisku „DALEJ”. Każdy krok wymaga aktywności intelektualnej gracza (wybór wariantu, dopasowanie cechy, analiza logów, decyzja taktyczna).
+15. **Wymóg kanonicznej specyfikacji (`scenario.md`).** Żadna misja nie może powstać w kodzie bez uprzedniego zatwierdzenia kanonicznego pliku `scenario.md` zgodnego z `docs/scenario-format.md`.
 
 ## Co scenariusz musi nieść, żeby to ustawić
 
@@ -35,11 +39,14 @@ Czego scenariusz **nie** opisuje: pulsowania, hoverów, dźwięków, badge'y, cz
 
 ## Kontrola przed oddaniem misji
 
+- Czy etapy misji zachowują kolejność Cyber Kill Chain (OSINT → Uzbrojenie → Dostarczenie → Egzekucja → Cele)?
 - Czy w każdym momencie jest dokładnie jeden odblokowany, oznaczony i **podświetlony** cel?
 - Czy żadne kliknięcie w czacie nie otwiera aplikacji (otwiera tylko klik kafelka przez gracza)?
-- Czy kwestie gracza w czacie to linie z VR, a nie meta-teksty („Otwieram…")?
+- Czy kwestie gracza w czacie to dialog z VR bez spoilerów odpowiedzi do kolejnych decyzji?
+- Czy każdy etap wymaga zaangażowania poznawczego (Zero-Clicker)?
 - Czy każdy etap ma sprawdzalne kryterium ukończenia?
 - Czy każdy etap odblokowuje następny, podświetla go i wysyła mostek mentora (kwestie z VR)?
 - Czy podpowiedzi dla decyzji nie zdradzają odpowiedzi?
 - Czy nieukończony krok trzyma przycisk „dalej" wyszarzony?
 - Czy kroki aplikacji idą po kolei (osobne ekrany + loader), a nie w zakładkach?
+- Czy w katalogu misji znajduje się kompletny, aktualny plik `scenario.md`?

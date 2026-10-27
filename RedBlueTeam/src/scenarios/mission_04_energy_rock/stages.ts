@@ -376,7 +376,7 @@ export const mission4Stages: StageDefinition[] = [
         { from: 'byte_master', text: "GDYBY LUDZIE W RZECZYWISTOŚCI TWORZYLI TAK SILNE HASŁA, TO O WIELE RZADZIEJ SŁYSZAŁOBY SIĘ O KRADZIEŻY DANYCH." },
         { from: 'byte_master', text: "ZNALAZŁEM INFORMACJE, ŻE PRIORYTET MAJĄ W TEJ CHWILI CV WYSYŁANE NA STANOWISKO 'ANALITYK RYNKÓW ENERGETYCZNYCH'. WŁĄCZ APLIKACJĘ MAILA." },
         { from: 'player', id: 'm4_reply_builder', label: "MAJĄ JAKIEŚ WYTYCZNE DOTYCZĄCE TEMATU MAILA Z CV?" },
-        { from: 'byte_master', text: "TEMAT MAILA POWINIEN ZAWIERAĆ ODPOWIEDNIO NAZWISKO ORAZ IMIĘ Z DOPISKIEM CV." }
+        { from: 'byte_master', text: "W OGŁOSZENIU WYMAGAJĄ ZAPISU W FORMIE: CV [IMIĘ I NAZWISKO]. Załącznik z CV zabezpiecz prostym hasłem dla rekrutera, aby bramka pocztowa nie mogła przeskanować zawartości archiwum." }
       ],
       unlockIcons: ['mail_unlocked', 'mail'],
       badges: { mail: 1, chat: 1 },

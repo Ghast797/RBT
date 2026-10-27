@@ -6,84 +6,172 @@ import {
   Camera,
   Briefcase,
   MessageCircle,
-  Scan,
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Gauge,
+  RotateCcw,
+  Sparkles,
+  HelpCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';
-import type { SocialIntelConfig, SocialPost } from './types';
+import type { SocialIntelConfig, SocialPost, DeductionOption } from './types';
 
 export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   config,
   onComplete
 }) => {
   const purple = '#a855f7';
+  const totalRequired = config?.target?.requiredFacts || 8;
+  const minPrecision = config?.target?.requiredPrecision || 70;
+  const posts = config?.posts || [];
+  const target = config?.target || {
+    name: 'Anita Klimek',
+    role: 'Specjalista ds. Księgowości',
+    company: 'PetroLog',
+    requiredFacts: 8,
+    requiredPrecision: 70
+  };
 
   const [activePlatformId, setActivePlatformId] = useState<'kneenook' | 'quickgram' | 'joinin'>('kneenook');
   const [currentPostIndex, setCurrentPostIndex] = useState<number>(0);
   const [discoveredFactIds, setDiscoveredFactIds] = useState<string[]>([]);
-  const [scannedPostIds, setScannedPostIds] = useState<string[]>([]);
-  const [isScanning, setIsScanning] = useState<boolean>(false);
-  const [scanFeedback, setScanFeedback] = useState<{
-    type: 'success' | 'distractor';
+  const [solvedPostIds, setSolvedPostIds] = useState<string[]>([]);
+  const [failedOptionIds, setFailedOptionIds] = useState<string[]>([]);
+  const [precision, setPrecision] = useState<number>(100);
+  const [feedback, setFeedback] = useState<{
+    type: 'success' | 'warning' | 'error';
     text: string;
   } | null>(null);
 
-  const platformPosts = config.posts.filter((p) => p.platform === activePlatformId);
+  const platformPosts = posts.filter((p) => p.platform === activePlatformId);
   const currentPost: SocialPost | undefined = platformPosts[currentPostIndex] || platformPosts[0];
 
-  const totalRequired = config.target.requiredFacts || 8;
-  const isComplete = discoveredFactIds.length >= totalRequired;
+  const isPrecisionFailed = precision < minPrecision;
+  const isComplete = discoveredFactIds.length >= totalRequired && precision >= minPrecision;
+
+  // Fallback deduction options if missing in post config
+  const getDeductionOptions = (post: SocialPost): DeductionOption[] => {
+    if (post.deductionOptions && post.deductionOptions.length > 0) {
+      return post.deductionOptions;
+    }
+    if (post.fact) {
+      return [
+        {
+          id: `${post.id}_fallback_correct`,
+          text: post.fact.text,
+          isCorrect: true,
+          feedback: `Trafna dedukcja! Znaleziono fakt: ${post.fact.text}`
+        },
+        {
+          id: `${post.id}_fallback_d1`,
+          text: 'Brak bezpośredniego związku z profilem zawodowym',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale.'
+        },
+        {
+          id: `${post.id}_fallback_d2`,
+          text: 'Niesprawdzona plotka bez dowodów operacyjnych',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale.'
+        }
+      ];
+    }
+    return [
+      {
+        id: `${post.id}_fallback_distractor_correct`,
+        text: 'Brak wartości operacyjnej (szum informacyjny / post prywatny)',
+        isCorrect: true,
+        feedback: 'Trafna ocena! Wpis nie zawiera przydatnych danych operacyjnych.'
+      },
+      {
+        id: `${post.id}_fallback_distractor_d1`,
+        text: 'Posiada uprawnienia administratora systemów IT',
+        isCorrect: false,
+        feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale.'
+      },
+      {
+        id: `${post.id}_fallback_distractor_d2`,
+        text: 'Nadzoruje procedury bezpieczeństwa fizycznego',
+        isCorrect: false,
+        feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale.'
+      }
+    ];
+  };
 
   const handleSelectPlatform = (pid: 'kneenook' | 'quickgram' | 'joinin') => {
     sounds.playClick();
     setActivePlatformId(pid);
     setCurrentPostIndex(0);
-    setScanFeedback(null);
-  };
-
-  const handleScanPost = () => {
-    if (!currentPost || isScanning || scannedPostIds.includes(currentPost.id)) return;
-
-    sounds.playClick();
-    setIsScanning(true);
-    setScanFeedback(null);
-
-    setTimeout(() => {
-      setIsScanning(false);
-      setScannedPostIds((prev) => [...prev, currentPost.id]);
-
-      if (currentPost.fact) {
-        sounds.playSuccess();
-        setScanFeedback({
-          type: 'success',
-          text: `ZNALEZIONO INFORMACJĘ: "${currentPost.fact.text}"`
-        });
-        if (!discoveredFactIds.includes(currentPost.fact.id)) {
-          setDiscoveredFactIds((prev) => [...prev, currentPost.fact!.id]);
-        }
-      } else {
-        sounds.playNotification();
-        setScanFeedback({
-          type: 'distractor',
-          text: currentPost.distractorNotice || 'BRAK PRZYDATNYCH INFORMACJI (ZMYŁKA)'
-        });
-      }
-    }, 700);
+    setFeedback(null);
   };
 
   const handleNextPost = () => {
     sounds.playClick();
-    setScanFeedback(null);
+    setFeedback(null);
     setCurrentPostIndex((prev) => (prev + 1) % platformPosts.length);
   };
 
   const handlePrevPost = () => {
     sounds.playClick();
-    setScanFeedback(null);
+    setFeedback(null);
     setCurrentPostIndex((prev) => (prev - 1 + platformPosts.length) % platformPosts.length);
+  };
+
+  const handleChooseDeduction = (opt: DeductionOption) => {
+    if (!currentPost || solvedPostIds.includes(currentPost.id) || failedOptionIds.includes(opt.id) || isPrecisionFailed) {
+      return;
+    }
+
+    if (opt.isCorrect) {
+      sounds.playSuccess();
+      setSolvedPostIds((prev) => [...prev, currentPost.id]);
+
+      if (currentPost.fact) {
+        if (!discoveredFactIds.includes(currentPost.fact.id)) {
+          setDiscoveredFactIds((prev) => [...prev, currentPost.fact!.id]);
+        }
+        setFeedback({
+          type: 'success',
+          text: opt.feedback || `ZNALEZIONO FAKT: "${currentPost.fact.text}"`
+        });
+      } else {
+        setFeedback({
+          type: 'success',
+          text: opt.feedback || 'Trafna ocena! Ten wpis nie zawiera przydatnych informacji operacyjnych (szum).'
+        });
+      }
+    } else {
+      sounds.playNotification();
+      setFailedOptionIds((prev) => [...prev, opt.id]);
+      const newPrecision = Math.max(0, precision - 10);
+      setPrecision(newPrecision);
+
+      if (newPrecision < minPrecision) {
+        sounds.playAlarm();
+        setFeedback({
+          type: 'error',
+          text: 'PRECYZJA WYWIADU SPADŁA PONIŻEJ 70%! Zbyt wiele fałszywych wniosków spali naszą operację.'
+        });
+      } else {
+        setFeedback({
+          type: 'warning',
+          text: opt.feedback || 'Nietrafna dedukcja. Zwracaj uwagę na detale, nie zbieraj niesprawdzonych domysłów.'
+        });
+      }
+    }
+  };
+
+  const handleResetMinigame = () => {
+    sounds.playClick();
+    setPrecision(100);
+    setDiscoveredFactIds([]);
+    setSolvedPostIds([]);
+    setFailedOptionIds([]);
+    setFeedback(null);
+    setCurrentPostIndex(0);
   };
 
   const platformMeta = {
@@ -93,15 +181,22 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   };
 
   // Find all facts from config to show slots
-  const allFacts = config.posts
-    .filter((p) => p.fact)
-    .map((p) => p.fact!);
+  const allFacts = Array.from(
+    new Map(
+      posts
+        .filter((p) => p.fact)
+        .map((p) => [p.fact!.id, p.fact!])
+    ).values()
+  );
+
+  // Precision color badge
+  const precisionColor = precision >= 80 ? '#00ff66' : precision >= 70 ? '#facc15' : '#ff3366';
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {/* Header */}
+      {/* Header with Intel Precision Meter */}
       <div
-        className="border-b pb-3 flex items-center justify-between"
+        className="border-b pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
         style={{ borderColor: `${purple}4d` }}
       >
         <div className="flex items-center space-x-2.5">
@@ -112,27 +207,62 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
             <Users size={20} />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-white tracking-widest">//INTEL_SOCIAL_MEDIA</h2>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-sm font-bold text-white tracking-widest">//INTEL_SOCIAL_MEDIA</h2>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-950/70 text-purple-300 border border-purple-500/40 font-bold">
+                DEDUKCJA OPERACYJNA
+              </span>
+            </div>
             <p className="text-[11px]" style={{ color: purple }}>
-              PROFILOWANIE OFIARY: {config.target.name.toUpperCase()} ({config.target.company.toUpperCase()})
+              PROFILOWANIE OFIARY: {target.name.toUpperCase()} ({target.company.toUpperCase()})
             </p>
           </div>
         </div>
+
+        {/* Precision Meter and Facts Counter */}
         <div className="flex items-center space-x-3">
+          {/* Precision Meter Box */}
+          <div className="px-3 py-1.5 rounded-lg border bg-black/40 border-gray-800 flex items-center space-x-2.5">
+            <Gauge size={16} style={{ color: precisionColor }} />
+            <div className="space-y-0.5">
+              <div className="flex justify-between items-center text-[10px] text-gray-400 space-x-2">
+                <span>PRECYZJA WYWIADU:</span>
+                <span className="font-black" style={{ color: precisionColor }}>
+                  {precision}%
+                </span>
+              </div>
+              <div className="w-24 h-1.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
+                <div
+                  className="h-full transition-all duration-300"
+                  style={{
+                    width: `${precision}%`,
+                    backgroundColor: precisionColor,
+                    boxShadow: `0 0 8px ${precisionColor}`
+                  }}
+                />
+              </div>
+            </div>
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">
+              MIN 70%
+            </span>
+          </div>
+
+          {/* Facts count */}
           <span
-            className="text-[10px] px-2.5 py-1 rounded border font-mono tracking-wider font-bold"
+            className="text-[10px] px-2.5 py-2 rounded-lg border font-mono tracking-wider font-bold flex items-center space-x-1"
             style={{
               backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
               borderColor: isComplete ? '#00ff66' : `${purple}66`,
               color: isComplete ? '#00ff66' : purple
             }}
           >
-            ZEBRANE FAKTY: {discoveredFactIds.length}/{totalRequired}
+            <span>FAKTY:</span>
+            <span className="font-black">{discoveredFactIds.length}/{totalRequired}</span>
           </span>
         </div>
       </div>
 
-      {/* Split-Screen: Left Profile & Collected Facts | Right Social Simulator */}
+      {/* Split-Screen: Left Profile & Collected Facts | Right Social Simulator & Deduction */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-0">
         {/* LEFT PANEL: Victim Profile & 8 Trait Slots (cols 5) */}
         <div className="lg:col-span-5 flex flex-col justify-between p-4 rounded-xl border border-gray-800 bg-[#08101a]/95 space-y-3">
@@ -147,10 +277,10 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
               </div>
               <div>
                 <h3 className="text-xs font-bold text-white tracking-wide">
-                  {config.target.name}
+                  {target.name}
                 </h3>
                 <p className="text-[11px] text-gray-400">
-                  {config.target.role} • {config.target.company}
+                  {target.role} • {target.company}
                 </p>
               </div>
             </div>
@@ -212,26 +342,26 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
             <div className="p-3 rounded-lg border-2 border-[#00ff66] bg-[#00ff66]/15 space-y-2 animate-in fade-in">
               <div className="flex items-center space-x-2 text-[#00ff66] text-xs font-bold">
                 <CheckCircle2 size={16} />
-                <span>INFORMACJE GOTOWE!</span>
+                <span>INFORMACJE WYWIADOWCZE SKOMPLETOWANE!</span>
               </div>
               <p className="text-[11px] text-gray-300">
-                Wszystkie 8 kluczowych cech ofiary zostało zebranych. Czas przygotować stronę internetową z wirusem!
+                Wszystkie 8 kluczowych faktów zebrane z precyzją {precision}%. Pora przygotować spersonalizowaną stronę-pułapkę i maila!
               </p>
               <button
                 onClick={() => {
                   sounds.playSuccess();
                   onComplete();
                 }}
-                className="w-full py-2 bg-[#00ff66] text-[#05090f] font-black text-xs uppercase tracking-widest rounded hover:bg-[#00ff66]/90 transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-[0_0_15px_rgba(0,255,102,0.4)]"
+                className="w-full py-2.5 bg-[#00ff66] text-[#05090f] font-black text-xs uppercase tracking-widest rounded hover:bg-[#00ff66]/90 transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-[0_0_20px_rgba(0,255,102,0.4)] active:scale-95"
               >
-                <span>PRZEJDŹ DALEJ</span>
-                <ArrowRight size={14} />
+                <span>ZATWIERDŹ PROFIL // PRZEJDŹ DALEJ</span>
+                <ArrowRight size={15} />
               </button>
             </div>
           )}
         </div>
 
-        {/* RIGHT PANEL: Social Media Simulator (cols 7) */}
+        {/* RIGHT PANEL: Social Media Simulator & Active Deduction (cols 7) */}
         <div className="lg:col-span-7 flex flex-col justify-between p-4 rounded-xl border border-gray-800 bg-[#08101a]/95 space-y-3">
           {/* Platform Switcher Tabs */}
           <div className="flex space-x-2 border-b border-gray-800 pb-2">
@@ -239,8 +369,8 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
               const meta = platformMeta[pid];
               const Icon = meta.icon;
               const isActive = activePlatformId === pid;
-              const factsOnPlatform = config.posts.filter((p) => p.platform === pid && p.fact).length;
-              const discoveredOnPlatform = config.posts.filter(
+              const factsOnPlatform = posts.filter((p) => p.platform === pid && p.fact).length;
+              const discoveredOnPlatform = posts.filter(
                 (p) => p.platform === pid && p.fact && discoveredFactIds.includes(p.fact.id)
               ).length;
 
@@ -273,9 +403,9 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
 
           {/* Social Post Feed Display */}
           {currentPost && (
-            <div className="flex-1 flex flex-col justify-between p-4 rounded-lg border border-gray-800 bg-[#05090f]/90 space-y-4">
+            <div className="flex-1 flex flex-col justify-between p-4 rounded-lg border border-gray-800 bg-[#05090f]/90 space-y-3">
               {/* Post Header */}
-              <div className="flex items-center justify-between border-b border-gray-800 pb-2.5">
+              <div className="flex items-center justify-between border-b border-gray-800 pb-2">
                 <div className="flex items-center space-x-2.5">
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
@@ -294,6 +424,12 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                 </div>
 
                 <div className="flex items-center space-x-2">
+                  {solvedPostIds.includes(currentPost.id) && (
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-500/40 font-bold flex items-center space-x-1">
+                      <CheckCircle2 size={11} />
+                      <span>PRZEANALIZOWANO</span>
+                    </span>
+                  )}
                   <span className="text-[10px] text-gray-500 font-mono">
                     POST {currentPostIndex + 1}/{platformPosts.length}
                   </span>
@@ -301,13 +437,13 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
               </div>
 
               {/* Post Content */}
-              <div className="space-y-3 my-auto">
+              <div className="space-y-2.5 py-1">
                 <p className="text-sm text-gray-200 leading-relaxed font-sans">
                   "{currentPost.content}"
                 </p>
 
                 {currentPost.tags && currentPost.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {currentPost.tags.map((tag) => (
                       <span
                         key={tag}
@@ -320,26 +456,103 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                 )}
               </div>
 
-              {/* Scan Feedback Banner */}
-              {scanFeedback && (
-                <div
-                  className={`p-2.5 rounded-lg border text-xs flex items-center space-x-2 animate-in fade-in ${
-                    scanFeedback.type === 'success'
-                      ? 'border-[#00ff66] bg-[#00ff66]/15 text-[#00ff66]'
-                      : 'border-amber-500/50 bg-amber-950/30 text-amber-300'
-                  }`}
-                >
-                  {scanFeedback.type === 'success' ? (
-                    <CheckCircle2 size={16} className="shrink-0" />
-                  ) : (
-                    <AlertCircle size={16} className="shrink-0" />
-                  )}
-                  <span className="font-bold text-[11px]">{scanFeedback.text}</span>
+              {/* Deduction Section: 3 Tiles */}
+              {!isPrecisionFailed ? (
+                <div className="pt-2 border-t border-gray-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-amber-300 flex items-center space-x-1.5 uppercase tracking-wider">
+                      <HelpCircle size={13} />
+                      <span>JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?</span>
+                    </span>
+                    <span className="text-[10px] text-gray-500">Wskaż trafną dedukcję:</span>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    {getDeductionOptions(currentPost).map((opt, optIdx) => {
+                      const isPostSolved = solvedPostIds.includes(currentPost.id);
+                      const isOptFailed = failedOptionIds.includes(opt.id);
+                      const isOptCorrect = opt.isCorrect;
+
+                      return (
+                        <button
+                          key={opt.id || optIdx}
+                          disabled={isPostSolved || isOptFailed}
+                          onClick={() => handleChooseDeduction(opt)}
+                          className={`w-full p-2.5 rounded-lg border text-left text-xs transition-all flex items-center space-x-2.5 ${
+                            isPostSolved
+                              ? isOptCorrect
+                                ? 'border-[#00ff66] bg-[#00ff66]/15 text-white font-bold'
+                                : 'border-gray-800/40 bg-black/20 text-gray-600 opacity-50'
+                              : isOptFailed
+                              ? 'border-red-500/50 bg-red-950/20 text-red-300 opacity-60 cursor-not-allowed'
+                              : 'border-gray-800 bg-black/40 hover:border-purple-500/60 hover:bg-purple-950/20 text-gray-200 cursor-pointer'
+                          }`}
+                        >
+                          <span
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                              isPostSolved && isOptCorrect
+                                ? 'bg-[#00ff66] text-[#05090f]'
+                                : isOptFailed
+                                ? 'bg-red-500 text-white'
+                                : 'bg-gray-800 text-gray-400'
+                            }`}
+                          >
+                            {isPostSolved && isOptCorrect ? '✓' : isOptFailed ? '✗' : String.fromCharCode(65 + optIdx)}
+                          </span>
+                          <span className="flex-1 font-sans text-[11px] leading-tight">
+                            {opt.text}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                /* Precision Failed Screen */
+                <div className="p-4 rounded-lg border-2 border-red-500 bg-red-950/30 text-center space-y-3 animate-in fade-in">
+                  <div className="flex items-center justify-center space-x-2 text-red-400 font-black text-xs uppercase tracking-wider">
+                    <AlertTriangle size={18} />
+                    <span>PRECYZJA WYWIADU SPADŁA DO {precision}% (PONIŻEJ PROGU 70%)</span>
+                  </div>
+                  <p className="text-xs text-gray-300 font-sans leading-relaxed">
+                    <strong className="text-red-300">BYTE_MASTER:</strong> Za dużo pomyłek i niesprawdzonych domysłów. W ten sposób narazimy się na dekonspirację przed rozpoczęciem kampanii spear-phishingu. Zacznijmy analizę od nowa.
+                  </p>
+                  <button
+                    onClick={handleResetMinigame}
+                    className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest rounded transition-all inline-flex items-center space-x-2 cursor-pointer shadow-lg active:scale-95"
+                  >
+                    <RotateCcw size={14} />
+                    <span>ZACZNIJMY ANALIZĘ OD NOWA</span>
+                  </button>
                 </div>
               )}
 
-              {/* Post Action Footer */}
-              <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
+              {/* Feedback Banner */}
+              {feedback && (
+                <div
+                  className={`p-2.5 rounded-lg border text-xs flex items-center space-x-2 animate-in fade-in ${
+                    feedback.type === 'success'
+                      ? 'border-[#00ff66] bg-[#00ff66]/15 text-[#00ff66]'
+                      : feedback.type === 'warning'
+                      ? 'border-amber-500/50 bg-amber-950/30 text-amber-300'
+                      : 'border-red-500/50 bg-red-950/40 text-red-200'
+                  }`}
+                >
+                  {feedback.type === 'success' ? (
+                    <CheckCircle2 size={16} className="shrink-0 text-[#00ff66]" />
+                  ) : feedback.type === 'warning' ? (
+                    <AlertCircle size={16} className="shrink-0 text-amber-400" />
+                  ) : (
+                    <AlertTriangle size={16} className="shrink-0 text-red-400" />
+                  )}
+                  <span className="font-bold text-[11px] leading-tight font-sans">
+                    {feedback.text}
+                  </span>
+                </div>
+              )}
+
+              {/* Post Navigation Footer */}
+              <div className="pt-2 border-t border-gray-800 flex items-center justify-between">
                 <div className="flex space-x-2">
                   <button
                     onClick={handlePrevPost}
@@ -357,24 +570,16 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                   </button>
                 </div>
 
-                <button
-                  onClick={handleScanPost}
-                  disabled={isScanning || scannedPostIds.includes(currentPost.id)}
-                  className={`px-5 py-2.5 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 ${
-                    scannedPostIds.includes(currentPost.id)
-                      ? 'bg-gray-800 text-gray-400 border border-gray-700 cursor-default'
-                      : 'bg-[#a855f7] text-white hover:bg-[#a855f7]/90 shadow-[0_0_15px_rgba(168,85,247,0.4)] cursor-pointer active:scale-95'
-                  }`}
-                >
-                  <Scan size={14} className={isScanning ? 'animate-spin' : ''} />
-                  <span>
-                    {isScanning
-                      ? 'SKANOWANIE...'
-                      : scannedPostIds.includes(currentPost.id)
-                      ? 'PRZESKANOWANO ✓'
-                      : 'SKANUJ WPIS OFIARY'}
-                  </span>
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleResetMinigame}
+                    title="Zresetuj profilowanie i zacznij od nowa"
+                    className="px-2.5 py-1.5 rounded border border-gray-800 bg-gray-900/60 hover:bg-gray-800 text-gray-400 hover:text-gray-200 text-[10px] font-bold flex items-center space-x-1 cursor-pointer transition-all"
+                  >
+                    <RotateCcw size={11} />
+                    <span>RESET</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}

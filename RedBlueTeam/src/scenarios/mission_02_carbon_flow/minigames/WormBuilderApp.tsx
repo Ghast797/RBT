@@ -287,8 +287,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
               WIRUS GOTOWY! ŁADUNEK 0-DAY SKOMPILOWANY
             </h3>
             <p className="text-xs text-gray-300 max-w-lg mx-auto leading-relaxed">
-              Ładunek robaka został pomyślnie zintegrowany z linkiem formularza POODLE FORMS.
-              Aktywuje się w tle w momencie otwarcia formularza przez dowolnego pracownika CarbonFlow Inc.
+              Ładunek robaka 0-day został pomyślnie skompilowany i zaciemniony. Jest gotowy do wstrzyknięcia w wektor dostarczenia po zamaskowaniu połączenia sieciowego.
             </p>
           </div>
 
@@ -300,7 +299,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
               }}
               className="flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg transition-all"
             >
-              <span>PRZEJDŹ DO WYSYŁKI KAMPANII PHISHINGOWEJ</span>
+              <span>ZAPISZ ŁADUNEK I PRZEJDŹ DALEJ</span>
               <ArrowRight size={14} />
             </button>
           </div>

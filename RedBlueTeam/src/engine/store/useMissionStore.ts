@@ -323,7 +323,10 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     question: c.question,
     answer: c.answer,
     isCorrect: c.correct,
-    details: c.details
+    details: c.details,
+    outcome: c.outcome,
+    btcPenalty: c.btcPenalty,
+    negotiationTranscript: c.negotiationTranscript
   }));
 
   const initialUnlocked = (mission.desktopApps || [])
@@ -506,9 +509,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     if (!outcome) {
       outcome = choice.isCorrect ? 'ideal' : 'critical';
     }
+    const existing = existingIndex >= 0 ? choices[existingIndex] : undefined;
     const finalChoice: PlayerChoiceRecord = {
+      ...existing,
       ...choice,
-      outcome
+      outcome,
+      negotiationTranscript: choice.negotiationTranscript || existing?.negotiationTranscript
     };
 
     if (existingIndex >= 0) {

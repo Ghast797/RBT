@@ -75,6 +75,14 @@ export interface DesktopAppConfig {
 
 export type ChoiceOutcome = 'ideal' | 'suboptimal' | 'critical';
 
+export interface NegotiationTurn {
+  turn: number;
+  title: string;
+  opponent: string;
+  player: string;
+  psychology: string;
+}
+
 export interface PlayerChoiceRecord {
   num: number;
   question: string;
@@ -83,6 +91,7 @@ export interface PlayerChoiceRecord {
   details: string;
   outcome?: ChoiceOutcome;
   btcPenalty?: number;
+  negotiationTranscript?: NegotiationTurn[];
 }
 
 export interface DebriefSummaryConfig {
@@ -104,6 +113,7 @@ export interface DebriefChoiceItem {
   details: string;
   outcome?: ChoiceOutcome;
   btcPenalty?: number;
+  negotiationTranscript?: NegotiationTurn[];
 }
 
 export interface EducationalSlide {

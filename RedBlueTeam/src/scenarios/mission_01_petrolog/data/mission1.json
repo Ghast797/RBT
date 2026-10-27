@@ -209,7 +209,7 @@
         "question": "Wybór adresu e-mail nadawcy",
         "answer": "K.KWIATKOWSKI@PETROLOG.COM",
         "correct": true,
-        "details": "Domena firmowa PetroLog – pełne uwiarygodnienie wewnętrznej korespondencji służbowej."
+        "details": "Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary."
       }
     ],
     "educationalSlides": [

@@ -9,10 +9,37 @@ export interface IntelSlide {
   buttonLabel: string;
 }
 
+export interface DossierTab {
+  id: string;
+  badge: string;
+  tabLabel: string;
+  title: string;
+  lead: string;
+  bulletHeader?: string;
+  bullets: string[];
+  intelNotes?: string;
+}
+
+export interface AttackVectorOption {
+  id: string;
+  letter: 'A' | 'B' | 'C';
+  label: string;
+  description: string;
+  isCorrect: boolean;
+  feedback: string;
+}
+
 export interface TargetPetrologConfig {
   companyName: string;
   targetObjective: string;
-  slides: IntelSlide[];
+  classificationNotice?: string;
+  tabs?: DossierTab[];
+  vectorPrompt?: {
+    title: string;
+    description: string;
+    options: AttackVectorOption[];
+  };
+  slides?: IntelSlide[];
 }
 
 export interface EmployeeProfile {
@@ -38,6 +65,13 @@ export interface SocialFact {
   category: string;
 }
 
+export interface DeductionOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+  feedback?: string;
+}
+
 export interface SocialPost {
   id: string;
   platform: 'kneenook' | 'quickgram' | 'joinin';
@@ -48,6 +82,7 @@ export interface SocialPost {
   tags?: string[];
   fact?: SocialFact;
   distractorNotice?: string;
+  deductionOptions?: DeductionOption[];
 }
 
 export interface SocialPlatformInfo {
@@ -64,6 +99,7 @@ export interface SocialIntelConfig {
     role: string;
     company: string;
     requiredFacts: number;
+    requiredPrecision?: number;
   };
   platforms: SocialPlatformInfo[];
   posts: SocialPost[];

@@ -11,7 +11,7 @@
     "passingScore": 80,
     "decisionCount": 5,
     "targetCompany": "CarbonFlow Inc.",
-    "description": "Scenariusz szkoleniowy SCORM symulujący kampanię phishingową, infekcję robakiem 0-day i utworzenie sieci zombie (botnet) na serwerach CarbonFlow Inc."
+    "description": "Scenariusz szkoleniowy SCORM symulujący dobór robaka 0-day, tunelowanie VPN, kampanię phishingową i utworzenie sieci zombie (botnet) na serwerach CarbonFlow Inc."
   },
   "intro": {
     "callerName": "BYTE_MASTER",
@@ -38,31 +38,19 @@
       {
         "id": "node_4",
         "sender": "BYTE_MASTER",
-        "text": "DOŚĆ SŁABE. W MAILACH OD NICH ZAUWAŻYŁEM SYGNATURĘ BEZPŁATNEGO ANTYWIRUSA. OPRÓCZ TEGO, ICH SERWER POCZTOWY DAWNO NIE BYŁ AKTUALIZOWANY, WIĘC NA PEWNO MAJĄ LUKI BEZPIECZEŃSTWA",
-        "playerResponse": "CO POWIESZ NA FAŁSZYWĄ ANKIETĘ ZAINFEKOWANĄ WIRUSEM 0-DAY, KTÓRY WYKRYJE DLA NAS TE LUKI? ROBAKI 0-DAY SĄ PRAKTYCZNIE NIEWYKRYWALNE PRZEZ ANTYWIRUSY, A CO DOPIERO W PRZYPADKU GDY ICH OPROGRAMOWANIE JEST NIEAKTUALNE"
+        "text": "DOŚĆ SŁABE. W MAILACH OD NICH ZAUWAŻYŁEM SYGNATURĘ BEZPŁATNEGO ANTYWIRUSA. OPRÓCZ TEGO, ICH SERWER POCZTOWY DAWNO NIE BYŁ AKTUALIZOWANY, WIĘC NA PEWNO MAJĄ LUKI BEZPIECZEŃSTWA. JAK ZAMIERZASZ SFORSOWAĆ ICH SIEĆ?",
+        "playerResponse": "MAM KILKA WEKTORÓW, MUSZĘ DOBRAĆ ODPOWIEDNI ŁADUNEK W KONSOLI."
       },
       {
         "id": "node_5",
         "sender": "BYTE_MASTER",
-        "text": "A CO Z TĄ ANKIETĄ?",
-        "playerResponse": "ZAREJESTRUJĘ FAŁSZYWĄ DOMENĘ I STWORZĘ ANKIETĘ, KTÓRĄ WYŚLĘ WSZYSTKIM PRACOWNIKOM W FIRMIE. KIEDY TYLKO KLIKNĄ W LINK, ROBAK ZAINFEKUJE ICH KOMPUTERY I ROZEŚLE ZAINFEKOWANE WIADOMOŚCI DO KLIENTÓW Z FIRMOWEJ BAZY KONTAKTÓW. TO NA 100% PODKOPIE WIARYGODNOŚĆ CARBONFLOW, A NAM DA MOŻLIWOŚĆ ROZEJRZENIA SIĘ PO SERWERACH I ZDOBYCIE DANYCH NA TEMAT FREEVOLT"
+        "text": "ROZSĄDNIE. W BAZIE MAMY KILKA GOTOWYCH ROZWIĄZAŃ. DOBIERZ I ZMODYFIKUJ ODPOWIEDNIEGO WIRUSA, A POTEM PRZYGOTUJEMY WEKTOR DOSTARCZENIA.",
+        "playerResponse": "ROBI SIĘ. PRZEJRZĘ DOSTĘPNE WIRUSY."
       },
       {
         "id": "node_6",
         "sender": "BYTE_MASTER",
-        "text": "CZYLI KLASYCZNY PHISHING?",
-        "playerResponse": "CZASEM NAJPROSTSZE ROZWIĄZANIA SĄ NAJLEPSZE"
-      },
-      {
-        "id": "node_7",
-        "sender": "BYTE_MASTER",
-        "text": "DOBRZE SIĘ SKŁADA, BO MAM AKURAT DLA CIEBIE LISTĘ MAILINGOWĄ PRACOWNIKÓW CARBONFLOW I ADRESY IP, KTÓRE SĄ NA BIAŁEJ LIŚCIE NADAWCÓW",
-        "playerResponse": "CZYLI OD POCZĄTKU WIEDZIAŁEŚ, ŻE BĘDĘ PLANOWAĆ ATAK PHISHINGOWY?"
-      },
-      {
-        "id": "node_8",
-        "sender": "BYTE_MASTER",
-        "text": "PAMIĘTAJ, JESTEM ZAWSZE DWA KROKI PRZED TOBĄ. A TERAZ ZABIERAJ SIĘ DO PRACY"
+        "text": "PAMIĘTAJ, JESTEM ZAWSZE DWA KROKI PRZED TOBĄ. A TERAZ ZABIERAJ SIĘ DO PRACY."
       }
     ],
     "biosLines": [
@@ -84,12 +72,12 @@
       "WELCOME... HACKER"
     ],
     "firstUnlock": {
-      "unlockIcons": ["phishing_unlocked", "phishing_app"],
-      "badges": { "phishing_app": 1 },
-      "highlightTile": "phishing_app"
+      "unlockIcons": ["virus_database_unlocked", "virus_database"],
+      "badges": { "virus_database": 1 },
+      "highlightTile": "virus_database"
     },
     "startBadges": {
-      "phishing_app": 1
+      "virus_database": 1
     }
   },
   "desktopApps": [
@@ -102,24 +90,6 @@
       "isChatFocus": true
     },
     {
-      "id": "phishing_app",
-      "label": "//PHISHING",
-      "color": "#38bdf8",
-      "icon": "Mail",
-      "componentId": "phishing_campaign",
-      "unlockedOnly": true,
-      "requiredUnlockId": "phishing_unlocked"
-    },
-    {
-      "id": "vpn_app",
-      "label": "//VPN",
-      "color": "#a855f7",
-      "icon": "Wifi",
-      "componentId": "vpn_app",
-      "unlockedOnly": true,
-      "requiredUnlockId": "vpn_unlocked"
-    },
-    {
       "id": "virus_database",
       "label": "//BAZA_WIRUSÓW",
       "color": "#ec4899",
@@ -129,13 +99,22 @@
       "requiredUnlockId": "virus_database_unlocked"
     },
     {
-      "id": "phishing_dispatch",
-      "label": "//PHISHING (Wysyłka)",
-      "color": "#00ff66",
-      "icon": "Send",
-      "componentId": "phishing_dispatch",
+      "id": "vpn_app",
+      "label": "//TUNEL_VPN",
+      "color": "#a855f7",
+      "icon": "Wifi",
+      "componentId": "vpn_app",
       "unlockedOnly": true,
-      "requiredUnlockId": "phishing_dispatch_unlocked"
+      "requiredUnlockId": "vpn_unlocked"
+    },
+    {
+      "id": "phishing_app",
+      "label": "//KREATOR_PHISHINGU",
+      "color": "#38bdf8",
+      "icon": "Mail",
+      "componentId": "phishing_campaign",
+      "unlockedOnly": true,
+      "requiredUnlockId": "phishing_unlocked"
     },
     {
       "id": "botnet_monitor",
@@ -170,31 +149,31 @@
     "choices": [
       {
         "num": 1,
+        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
+        "answer": "ROBAK",
+        "correct": true,
+        "details": "Robak samodzielnie powiela się w sieci i formuje botnet."
+      },
+      {
+        "num": 2,
         "question": "WYBIERZ RODZAJ AKCJI",
         "answer": "WIRUS 0-DAY",
         "correct": true,
         "details": "Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary."
       },
       {
-        "num": 2,
+        "num": 3,
         "question": "WYBIERZ SZABLON MAILA",
         "answer": "POODLE (POODLE FORMS)",
         "correct": true,
         "details": "Profesjonalny szablon formularza ankietowego idealnie pasuje do planu wysłania fałszywej ankiety pracowniczej."
       },
       {
-        "num": 3,
+        "num": 4,
         "question": "WYBIERZ TEMAT ANKIETY",
         "answer": "OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO",
         "correct": true,
         "details": "Przymus w połączeniu z tematem integracji tworzy idealną presję socjotechniczną."
-      },
-      {
-        "num": 4,
-        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
-        "answer": "ROBAK",
-        "correct": true,
-        "details": "Robak samodzielnie powiela się w sieci i formuje botnet."
       },
       {
         "num": 5,

@@ -208,5 +208,118 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(st.btcReward).toBe(2.21); // 2.52 * 0.875
       expect(st.goodChoicesCount).toBe(1);
     });
+
+    it('posiada interaktywne Dossier z 4 zakładkami i 3 wektorami (tylko wariant B poprawny)', async () => {
+      const { targetPetrologConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+      expect(targetPetrologConfig.tabs).toBeDefined();
+      expect(targetPetrologConfig.tabs?.length).toBe(4);
+      expect(targetPetrologConfig.tabs?.map((t) => t.id)).toEqual([
+        'tab_org',
+        'tab_sales',
+        'tab_finance',
+        'tab_it'
+      ]);
+
+      const prompt = targetPetrologConfig.vectorPrompt;
+      expect(prompt).toBeDefined();
+      expect(prompt?.options.length).toBe(3);
+      expect(prompt?.options.find((o) => o.letter === 'A')?.isCorrect).toBe(false);
+      expect(prompt?.options.find((o) => o.letter === 'B')?.isCorrect).toBe(true);
+      expect(prompt?.options.find((o) => o.letter === 'C')?.isCorrect).toBe(false);
+      expect(prompt?.options.find((o) => o.letter === 'B')?.label).toContain('spear-phishing');
+    });
+
+    it('posiada aktywną dedukcję faktów ze wskaźnikiem precyzji w SocialIntel', async () => {
+      const { socialIntelConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+      expect(socialIntelConfig.target.requiredFacts).toBe(8);
+      expect(socialIntelConfig.target.requiredPrecision).toBe(70);
+      expect(socialIntelConfig.posts.length).toBe(11);
+
+      // Wszystkie posty muszą mieć po 3 opcje dedukcji z dokładnie 1 poprawną
+      for (const post of socialIntelConfig.posts) {
+        expect(post.deductionOptions).toBeDefined();
+        expect(post.deductionOptions?.length).toBe(3);
+        const correctCount = post.deductionOptions?.filter((o) => o.isCorrect).length;
+        expect(correctCount).toBe(1);
+      }
+    });
+
+    it('renderuje TargetPetrologApp i weryfikuje 4 zakładki oraz 3 opcje wektora', async () => {
+      const React = await import('react');
+      const { renderToString } = await import('react-dom/server');
+      const { TargetPetrologApp } = await import('../src/scenarios/mission_01_petrolog/minigames/TargetPetrologApp');
+      const { targetPetrologConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+
+      const html = renderToString(
+        React.createElement(TargetPetrologApp, {
+          config: targetPetrologConfig,
+          onComplete: vi.fn()
+        })
+      );
+
+      expect(html).toContain('01. STRUKTURA I ZARZĄD');
+      expect(html).toContain('02. SPRZEDAŻ I B2B');
+      expect(html).toContain('03. FINANSE I KSIĘGOWOŚĆ');
+      expect(html).toContain('04. BEZPIECZEŃSTWO IT');
+      expect(html).toContain('PANEL_ANALITYCZNY');
+      expect(html).toContain('OPCJA A');
+      expect(html).toContain('OPCJA B');
+      expect(html).toContain('OPCJA C');
+      expect(html).toContain('Bezpośredni atak DDoS na bramę sieciową firmy');
+      expect(html).toContain('Celowany atak socjotechniczny (spear-phishing)');
+      expect(html).toContain('Fizyczne włamanie do serwerowni w centrali');
+    });
+
+    it('renderuje SocialIntelApp i weryfikuje profil Anity Klimek, wskaźnik precyzji 100% i 8 faktów', async () => {
+      const React = await import('react');
+      const { renderToString } = await import('react-dom/server');
+      const { SocialIntelApp } = await import('../src/scenarios/mission_01_petrolog/minigames/SocialIntelApp');
+      const { socialIntelConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+
+      const html = renderToString(
+        React.createElement(SocialIntelApp, {
+          config: socialIntelConfig,
+          onComplete: vi.fn()
+        })
+      );
+
+      expect(html).toContain('//INTEL_SOCIAL_MEDIA');
+      expect(html).toContain('PRECYZJA WYWIADU');
+      expect(html).toContain('100%');
+      expect(html).toContain('MIN 70%');
+      expect(html).toContain('0/8');
+      expect(html).toContain('ANITA KLIMEK');
+      expect(html).toContain('Kneenook');
+      expect(html).toContain('Quickgram');
+      expect(html).toContain('Joinin');
+      expect(html).toContain('JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?');
+    });
+
+    it('renderuje TargetPetrologApp i SocialIntelApp bezpiecznie z pustym configiem (brak crasha)', async () => {
+      const React = await import('react');
+      const { renderToString } = await import('react-dom/server');
+      const { TargetPetrologApp } = await import('../src/scenarios/mission_01_petrolog/minigames/TargetPetrologApp');
+      const { SocialIntelApp } = await import('../src/scenarios/mission_01_petrolog/minigames/SocialIntelApp');
+
+      // TargetPetrologApp z pustym configiem
+      const htmlTarget = renderToString(
+        React.createElement(TargetPetrologApp, {
+          config: {} as any,
+          onComplete: vi.fn()
+        })
+      );
+      expect(htmlTarget).toContain('//DOSSIER_WYWIADOWCZE: PETROLOG');
+      expect(htmlTarget).toContain('PANEL_ANALITYCZNY');
+
+      // SocialIntelApp z pustym configiem
+      const htmlSocial = renderToString(
+        React.createElement(SocialIntelApp, {
+          config: {} as any,
+          onComplete: vi.fn()
+        })
+      );
+      expect(htmlSocial).toContain('//INTEL_SOCIAL_MEDIA');
+      expect(htmlSocial).toContain('PRECYZJA WYWIADU');
+    });
   });
 });

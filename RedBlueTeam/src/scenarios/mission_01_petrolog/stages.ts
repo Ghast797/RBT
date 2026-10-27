@@ -15,10 +15,100 @@ import type {
 // DANE KLOCKÓW / MINIGIER
 // ---------------------------------------------------------------------------
 
-/** S01: Odprawa wywiadowcza – PetroLog. */
+/** S01: Odprawa wywiadowcza – PetroLog (Interaktywne Dossier + Wektor Ataku). */
 export const targetPetrologConfig: TargetPetrologConfig = {
   companyName: 'PetroLog',
   targetObjective: 'ODPRAWA WYWIADOWCZA I PROFILOWANIE FIRMY',
+  classificationNotice: 'ŚCIŚLE TAJNE // OPSEC LEVEL 4 // DO UŻYTKU WEWNĘTRZNEGO DARKSUN',
+  tabs: [
+    {
+      id: 'tab_org',
+      badge: '01. STRUKTURA I ZARZĄD',
+      tabLabel: '01. ZARZĄD & STRUKTURA',
+      title: 'STRUKTURA ORGANIZACYJNA I SCHEMAT DECYZYJNY',
+      lead: 'PetroLog Sp. z o.o. to regionalny operator logistyki paliwowej zatrudniający 150 osób. Na czele przedsiębiorstwa stoi prezes Roman Buczek.',
+      bulletHeader: 'KLUCZOWE OBSERWACJE WYWIADOWCZE:',
+      bullets: [
+        'Prezes Roman Buczek podejmuje ostateczne decyzje strategiczne, lecz rzadko angażuje się w codzienny obieg korespondencji roboczej.',
+        'W firmie funkcjonuje silna kultura autorytetu: personel administracyjny bezkrytycznie realizuje polecenia formalnie wyglądających autoryzacji.',
+        'Wewnętrzny obieg informacji opiera się na tradycyjnej poczcie elektronicznej bez weryfikacji tożsamości nadawcy.'
+      ],
+      intelNotes: 'WNIOSEK OPERACYJNY: Autorytet zarządu można wykorzystać w socjotechnice, jednak bezpośredni atak na prezesa niesie zbyt duże ryzyko czujności asystentów.'
+    },
+    {
+      id: 'tab_sales',
+      badge: '02. SPRZEDAŻ I B2B',
+      tabLabel: '02. SPRZEDAŻ & B2B',
+      title: 'DZIAŁ SPRZEDAŻY I OBSŁUGI KONTRAKTÓW PALIWOWYCH',
+      lead: 'Dział handlowy odpowiada za negocjacje z dostawcami paliw i partnerami logistycznymi. Obsługuje setki zapytań ofertowych tygodniowo.',
+      bulletHeader: 'PROCEDURY I WERYFIKACJA KONTRAHENTÓW:',
+      bullets: [
+        'Marcelina Sojka (specjalista ds. sprzedaży) stosuje bezwzględną higienę cyfrową — wszystkie jej profile społecznościowe są prywatne (profilowanie OSINT zablokowane).',
+        'Handlowcy podlegają procedurom weryfikacji tożsamości nowych kontrahentów przed przesłaniem cenników paliwowych.',
+        'Kluczowe dane o łańcuchu dostaw prototypu Freevolt nie są archiwizowane na stacjach roboczych działu handlowego.'
+      ],
+      intelNotes: 'WNIOSEK OPERACYJNY: Prywatny profil Marceliny Sojki uniemożliwia przygotowanie spersonalizowanego ataku. Handlowcy nie stanowią dogodnego wektora wejścia.'
+    },
+    {
+      id: 'tab_finance',
+      badge: '03. FINANSE I KSIĘGOWOŚĆ',
+      tabLabel: '03. FINANSE & OBIEG FAKTUR',
+      title: 'DZIAŁ FINANSOWO-KSIĘGOWY I PŁATNOŚCI',
+      lead: 'Niewielki, 3-osobowy zespół księgowy pracujący pod stałą presją terminów płatności. Odpowiada za realizację faktur i rozliczeń dostawców.',
+      bulletHeader: 'WEKTOR PODATNOŚCI LUDZKIEJ I PROCEDURALNEJ:',
+      bullets: [
+        'Anita Klimek (specjalista ds. rozliczeń) oraz Jakub Kwiatkowski codziennie wymieniają się setkami załączników i dokumentów rozliczeniowych.',
+        'Zespół księgowy rutynowo otwiera zewnętrzne pliki PDF i arkusze kalkulacyjne bez analizy w bezpiecznej piaskownicy (sandboxie).',
+        'Anita Klimek prowadzi bardzo aktywny, otwarty profil publiczny w wielu mediach społecznościowych, dzieląc się pracą, relacjami i pasją do biegów.'
+      ],
+      intelNotes: 'WNIOSEK OPERACYJNY: Presja czasu, rutyna otwierania załączników rozliczeniowych oraz bogaty ślad cyfrowy Anity Klimek czynią księgowość idealnym celem spear-phishingu.'
+    },
+    {
+      id: 'tab_it',
+      badge: '04. BEZPIECZEŃSTWO IT',
+      tabLabel: '04. INFRASTRUKTURA & IT',
+      title: 'POLITYKA BEZPIECZEŃSTWA IT I AUDYT SIECIOWY',
+      lead: 'Infrastruktura techniczna PetroLog składa się z lokalnej sieci korporacyjnej zabezpieczonej zaporą brzegową oraz zewnętrznego serwera pocztowego.',
+      bulletHeader: 'AUDYT PODATNOŚCI TECHNICZNYCH:',
+      bullets: [
+        'Zewnętrzna brama sieciowa firmy jest stale monitorowana przez komercyjny SOC — frontalne ataki DDoS lub agresywne skany portów natychmiast wywołają odcięcie łącza.',
+        'Serwer pocztowy firmy PetroLog ma rażącą lukę konfiguracyjną (brak restrykcyjnych polityk SPF/DMARC), co umożliwia bezproblemowe podszycie się pod domenę @petrolog.com.',
+        'W firmie nigdy nie prowadzono symulacji phishingu ani szkoleń Security Awareness dla personelu biurowego.'
+      ],
+      intelNotes: 'WNIOSEK OPERACYJNY: Brama sieciowa jest chroniona przez SOC, ale serwer pocztowy pozwala podszyć się pod zaufanego kolegę z biura bez wzbudzania podejrzeń filtrów.'
+    }
+  ],
+  vectorPrompt: {
+    title: 'WYTYPUJ NAJBARDZIEJ PODATNY WEKTOR WEJŚCIA',
+    description: 'Na podstawie analizy zakładek teczki wywiadowczej wytypuj optymalny wektor przełamania bezpieczeństwa PetroLog:',
+    options: [
+      {
+        id: 'vector_ddos',
+        letter: 'A',
+        label: 'Bezpośredni atak DDoS na bramę sieciową firmy',
+        description: 'Próba przeciążenia łącza internetowego i wymuszenia awarii firewalli brzegowych PetroLog.',
+        isCorrect: false,
+        feedback: 'BŁĄD WEKTORA! Brama sieciowa PetroLog jest monitorowana przez zewnętrzny SOC. Atak DDoS natychmiast wyzwoli alarmy operacyjne, zablokuje ruch i bezpowrotnie spali operację. Przeanalizuj ponownie zakładki teczki akt.'
+      },
+      {
+        id: 'vector_spear_phishing',
+        letter: 'B',
+        label: 'Celowany atak socjotechniczny (spear-phishing) na pracownika działu księgowego z dostępem do faktur',
+        description: 'Wykorzystanie publicznego profilu Anity Klimek, luki w weryfikacji tożsamości poczty oraz rutyny rozliczania faktur.',
+        isCorrect: true,
+        feedback: 'WEKTOR ZATWIERDZONY! Połączenie publicznego śladu cyfrowego Anity Klimek, słabej konfiguracji serwera pocztowego i braku szkoleń w księgowości to optymalny wektor wejścia. SOC nie wykryje anomalii.'
+      },
+      {
+        id: 'vector_physical',
+        letter: 'C',
+        label: 'Fizyczne włamanie do serwerowni w centrali',
+        description: 'Próba sforsowania drzwi do budynku centrali PetroLog i podłączenia fizycznego implantu do przełącznika sieciowego.',
+        isCorrect: false,
+        feedback: 'BŁĄD WEKTORA! Centrala posiada dozór fizyczny i monitoring CCTV. Ryzyko ujęcia operatora na miejscu jest niedopuszczalne. Działamy zdalnie w cyberprzestrzeni. Przeanalizuj ponownie zakładki teczki akt.'
+      }
+    ]
+  },
+  // Zachowujemy slajdy informacyjne dla pełnej wstecznej zgodności
   slides: [
     {
       id: 'slide_1',
@@ -82,7 +172,7 @@ export const osintSearchConfig: OsintSearchConfig = {
       avatarText: 'MS',
       isPublic: false,
       privacyNotice:
-        "ERROR: MARCELINA SOJKA USTAWIŁA WSZYSTKIE SWOJE SOCIAL MEDIA NA 'PRYWATNE'. NIE MAMY JAK ZDOBYĆ O NIEJ INFORMACJI.",
+        "ERROR: MARCELINA SOJKA USTAWIŁA WSZYSTKIE SWOJE SOCIAL MEDIA NA 'PRYWATNE'. NIE MAMY JAK ZDOBYĆ O NIEJ INFORMACJI.\n\n[WSKAZÓWKA EDUKACYJNA T2]: Profil prywatny to najskuteczniejsza ochrona pracownika przed białym wywiadem (OSINT). Ukrycie informacji przed osobami z zewnątrz uniemożliwia przestępcom poznanie relacji, nawyków czy zainteresowań ofiary, co całkowicie paraliżuje próbę przygotowania spersonalizowanego ataku phishingowego.",
       tags: ['SPRZEDAŻ', 'LOGISTYKA', 'B2B', 'PROFIL PRYWATNY']
     },
     {
@@ -103,7 +193,8 @@ export const socialIntelConfig: SocialIntelConfig = {
     name: 'Anita Klimek',
     role: 'Specjalista ds. Księgowości',
     company: 'PetroLog',
-    requiredFacts: 8
+    requiredFacts: 8,
+    requiredPrecision: 70
   },
   platforms: [
     {
@@ -143,7 +234,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f1',
         text: 'PRACUJE W FIRMIE PETROLOG',
         category: 'ZAWODOWE'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'kn1_opt_1',
+          text: 'Pracuje w firmie PetroLog od 5 lat',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! 5-letni staż Anity w PetroLog oznacza doskonałą znajomość zespołu i procedur.'
+        },
+        {
+          id: 'kn1_opt_2',
+          text: 'Planuje zwolnić się i przejść do konkurencyjnej firmy paliwowej',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — Anita pisze, że uwielbia tę pracę i poleca firmę.'
+        },
+        {
+          id: 'kn1_opt_3',
+          text: 'Zarządza flotą 50 cystern transportowych w PetroLog',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis nie wspomina o flocie ani zarządzaniu transportem.'
+        }
+      ]
     },
     {
       id: 'kn_2',
@@ -158,7 +269,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f2',
         text: 'JEST MATKĄ DWÓJKI DZIECI',
         category: 'RODZINA'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'kn2_opt_1',
+          text: 'Prowadzi przedszkole integracyjne poza godzinami pracy',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis mówi o weekendzie z własnymi dziećmi.'
+        },
+        {
+          id: 'kn2_opt_2',
+          text: 'Jest matką dwójki dzieci',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! Dzieci to kluczowy element profilu osobistego i potencjalny wektor empatii.'
+        },
+        {
+          id: 'kn2_opt_3',
+          text: 'Mieszka sama w kawalerce bez rodziny',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis wprost odwołuje się do rodziny i dzieci.'
+        }
+      ]
     },
     {
       id: 'kn_3',
@@ -173,7 +304,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f3',
         text: 'UWIELBIA BIEGAĆ',
         category: 'PASJA'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'kn3_opt_1',
+          text: 'Uwielbia biegać i trenuje nawet na wakacjach',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! Bieganie to jej pasja sportowa — idealny temat pod spersonalizowaną przynętę.'
+        },
+        {
+          id: 'kn3_opt_2',
+          text: 'Zawodowo trenuje pływanie na otwartych akwenach',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — emoji i tekst wskazują jednoznacznie na bieganie.'
+        },
+        {
+          id: 'kn3_opt_3',
+          text: 'Jest właścicielką nadmorskiego klubu fitness',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — Anita pisze o prywatnym bieganiu po plaży.'
+        }
+      ]
     },
     {
       id: 'kn_4',
@@ -184,7 +335,27 @@ export const socialIntelConfig: SocialIntelConfig = {
       content: 'W końcu remont po 6 latach! Potrzebowałam tego, a tym bardziej moi chłopcy!',
       tags: ['#Remont', '#Dom'],
       distractorNotice:
-        'BRAK PRZYDATNYCH INFORMACJI (Wpis o remoncie pokoju nie dostarcza konkretnego wektora do spear-phishingu)'
+        'BRAK PRZYDATNYCH INFORMACJI (Wpis o remoncie pokoju nie dostarcza konkretnego wektora do spear-phishingu)',
+      deductionOptions: [
+        {
+          id: 'kn4_opt_1',
+          text: 'Zajmuje się architekturą wnętrz i zamówieniami mebli biurowych',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — remont dotyczy jej prywatnego domu, a nie biura.'
+        },
+        {
+          id: 'kn4_opt_2',
+          text: 'Brak wartości operacyjnej (szum informacyjny / prywatny remont)',
+          isCorrect: true,
+          feedback: 'Trafna ocena! Informacja o remoncie pokoju nie dostarcza konkretnego wektora do ataku.'
+        },
+        {
+          id: 'kn4_opt_3',
+          text: 'Planuje pilną wyprowadzkę do innego województwa',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis mówi jedynie o odświeżeniu pokoju po 6 latach.'
+        }
+      ]
     },
 
     // Quickgram (4 wpisy, 3 fakty, 1 zmyłka)
@@ -198,7 +369,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         'Kawa i ciasteczka! ☕️ Poniedziałki potrafią być ciężkie, ale w tym zestawie zawsze dam radę! #work #coffee #magia',
       tags: ['#Coffee', '#WorkLife'],
       distractorNotice:
-        'BRAK PRZYDATNYCH INFORMACJI (Typowy post lifestylowy o kawie – brak precyzyjnego motywu socjotechnicznego)'
+        'BRAK PRZYDATNYCH INFORMACJI (Typowy post lifestylowy o kawie – brak precyzyjnego motywu socjotechnicznego)',
+      deductionOptions: [
+        {
+          id: 'qg1_opt_1',
+          text: 'Odpowiada za zakupy ekspresów do kawy w całej centrali',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — to tylko prywatne zdjęcie filiżanki kawy.'
+        },
+        {
+          id: 'qg1_opt_2',
+          text: 'Prowadzi komercyjnego bloga cukierniczego na Instagramie',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis to zwykła relacja z poniedziałkowego poranka.'
+        },
+        {
+          id: 'qg1_opt_3',
+          text: 'Brak wartości operacyjnej (post lifestylowy / kawa biurowa)',
+          isCorrect: true,
+          feedback: 'Trafna ocena! Standardowy post lifestylowy o porannej kawie nie zawiera danych przydatnych w ataku.'
+        }
+      ]
     },
     {
       id: 'qg_2',
@@ -212,7 +403,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f4',
         text: 'LUBI PIEC CIASTA',
         category: 'HOBBY'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'qg2_opt_1',
+          text: 'Lubi piec ciasta w wolnym czasie (hobby kulinarne)',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! Pieczenie ciast to jej hobby domowe, choć mniej przydatne niż sport.'
+        },
+        {
+          id: 'qg2_opt_2',
+          text: 'Jest zawodowym szefem kuchni w restauracji',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — Anita piecze amatorsko w domowym zaciszu w soboty.'
+        },
+        {
+          id: 'qg2_opt_3',
+          text: 'Cierpi na ostrą alergię na wypieki pszenne',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — z entuzjazmem publikuje własne ciasto.'
+        }
+      ]
     },
     {
       id: 'qg_3',
@@ -227,7 +438,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f5',
         text: 'CODZIENNIE WIECZOREM BIEGA Z KUBĄ KWIATKOWSKIM',
         category: 'RELACJE'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'qg3_opt_1',
+          text: 'Kuba Kwiatkowski jest jej instruktorem krav magi',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis mówi o wspólnym bieganiu wieczornym.'
+        },
+        {
+          id: 'qg3_opt_2',
+          text: 'Codziennie wieczorem trenuje bieganie z Kubą Kwiatkowskim',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! Relacja z Kubą Kwiatkowskim to kluczowe odkrycie łączące hobby i zaufanie biurowe.'
+        },
+        {
+          id: 'qg3_opt_3',
+          text: 'Przygotowuje się do zawodów triathlonowych na rowerze',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — mowa jest wyłącznie o treningu biegowym.'
+        }
+      ]
     },
     {
       id: 'qg_4',
@@ -242,7 +473,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f6',
         text: 'BIEGA DŁUGODYSTANSOWO',
         category: 'PASJA'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'qg4_opt_1',
+          text: 'Bierze udział wyłącznie w krótkich biegach sprinterskich na 100m',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — Anita wprost pisze: "Nienawidzę sprintów!".'
+        },
+        {
+          id: 'qg4_opt_2',
+          text: 'Biega wyłącznie długodystansowo (nie cierpi sprintów)',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! Precyzyjny profil biegowy: długie dystanse, równe tempo i muzyka.'
+        },
+        {
+          id: 'qg4_opt_3',
+          text: 'Zajmuje się nagrywaniem podcastów o muzyce elektronicznej',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — muzyka to tylko tło do jej treningu biegowego.'
+        }
+      ]
     },
 
     // Joinin (3 wpisy, 2 fakty, 1 zmyłka)
@@ -256,7 +507,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         'Kolejny sukces w pracy! Jaki jest mój sekret? Codzienna dawka sportu! To właśnie dlatego mam tyle energii!',
       tags: ['#Sukces', '#Energia'],
       distractorNotice:
-        'BRAK PRZYDATNYCH INFORMACJI (Ogólna wypowiedź motywacyjna bez szczegółów ułatwiających podszycie)'
+        'BRAK PRZYDATNYCH INFORMACJI (Ogólna wypowiedź motywacyjna bez szczegółów ułatwiających podszycie)',
+      deductionOptions: [
+        {
+          id: 'ji1_opt_1',
+          text: 'Brak wartości operacyjnej (ogólny wpis motywacyjny bez faktów)',
+          isCorrect: true,
+          feedback: 'Trafna ocena! Ogólna wypowiedź motywacyjna o energii i sporcie bez przydatnych detali.'
+        },
+        {
+          id: 'ji1_opt_2',
+          text: 'Otrzymała państwowe odznaczenie za zasługi dla logistyki',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — post nie zawiera wzmianki o żadnych nagrodach.'
+        },
+        {
+          id: 'ji1_opt_3',
+          text: 'Została awansowana na stanowisko dyrektora generalnego PetroLog',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — to tylko typowy post na portalu biznesowym.'
+        }
+      ]
     },
     {
       id: 'ji_2',
@@ -271,7 +542,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f7',
         text: 'PRACUJE Z KUBĄ KWIATKOWSKIM',
         category: 'ZAWODOWE'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'ji2_opt_1',
+          text: 'Pracuje w księgowości z Kubą Kwiatkowskim (rozliczają faktury)',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! Kuba Kwiatkowski to zaufany kolega z biura rozliczeń — idealna tożsamość do podszycia.'
+        },
+        {
+          id: 'ji2_opt_2',
+          text: 'Kuba Kwiatkowski jest administratorem serwerów Linux w PetroLog',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — Anita wprost pisze: "razem rozliczamy każdą fakturę".'
+        },
+        {
+          id: 'ji2_opt_3',
+          text: 'Kuba Kwiatkowski pracuje w oddziale firmy w Berlinie',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — stanowią jeden bezpośredni zespół księgowy.'
+        }
+      ]
     },
     {
       id: 'ji_3',
@@ -286,7 +577,27 @@ export const socialIntelConfig: SocialIntelConfig = {
         id: 'f8',
         text: 'SZUKA RAD NA TEMAT BIEGANIA DŁUGODYSTANSOWEGO',
         category: 'POTRZEBA'
-      }
+      },
+      deductionOptions: [
+        {
+          id: 'ji3_opt_1',
+          text: 'Oferuje płatne konsultacje dietetyczne dla sportowców',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — Anita zadaje pytanie społeczności, a nie oferuje usługi.'
+        },
+        {
+          id: 'ji3_opt_2',
+          text: 'Szuka profesjonalnych rad na temat biegów długodystansowych',
+          isCorrect: true,
+          feedback: 'Trafna dedukcja! Kluczowa potrzeba edukacyjna ofiary — idealny wabik na materiał szkoleniowy w PDF.'
+        },
+        {
+          id: 'ji3_opt_3',
+          text: 'Sprzedaje używany sprzęt do biegania i buty maratońskie',
+          isCorrect: false,
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — post to prośba o wskazówki treningowe.'
+        }
+      ]
     }
   ]
 };
@@ -407,11 +718,11 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
       {
         id: 'kwiatkowski_petrolog',
         label: 'K.KWIATKOWSKI@PETROLOG.COM',
-        desc: 'Wiarygodny adres w domenie korporacyjnej PetroLog.',
-        tags: ['FIRMOWY', 'SPOOFING', 'PETROLOG.COM'],
+        desc: 'Adres w domenie firmowej @petrolog.com. Serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika.',
+        tags: ['FIRMOWY', 'PODSZYWANIE', 'PETROLOG.COM'],
         tier: 'ideal',
         feedback:
-          'Domena firmowa PetroLog – pełne uwiarygodnienie wewnętrznej korespondencji służbowej.'
+          'Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary bez podejrzeń.'
       },
       {
         id: 'kwiatkowski_hach',

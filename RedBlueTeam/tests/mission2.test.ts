@@ -44,11 +44,10 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     expect(getMission('mission2')?.mission.id).toBe('mission-2-carbonflow');
   });
 
-  it('registers all 5 custom minigames in appRegistry', () => {
+  it('registers custom minigames in appRegistry', () => {
     expect(appComponentRegistry['phishing_campaign']).toBeDefined();
     expect(appComponentRegistry['vpn_app']).toBeDefined();
     expect(appComponentRegistry['worm_builder']).toBeDefined();
-    expect(appComponentRegistry['phishing_dispatch']).toBeDefined();
     expect(appComponentRegistry['botnet_monitor']).toBeDefined();
   });
 
@@ -62,7 +61,7 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     expect(state.systemDate).toBe('19.05.2026');
   });
 
-  describe('przepływ z rozmowami mostkującymi (wzorzec B)', () => {
+  describe('przepływ z rozmowami mostkującymi (wzorzec B, Cyber Kill Chain)', () => {
     beforeEach(() => {
       vi.useFakeTimers();
       __setBridgeDelayForTests(0);
@@ -80,34 +79,20 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     it('przechodzi wzorcem B przez 5 decyzji, odblokowuje etapy i składa paczkę SCORM', () => {
       const store = useMissionStore.getState();
 
-      // Start: po BIOSie kafelek phishingu odblokowuje się od razu bez opcji w czacie
-      expect(useMissionStore.getState().unlockedIcons).toContain('phishing_unlocked');
-      expect(useMissionStore.getState().highlightedTileId).toBe('phishing_app');
+      // Start: po BIOSie kafelek Bazy Wirusów odblokowuje się od razu (Etap 1 - Uzbrojenie)
+      expect(useMissionStore.getState().unlockedIcons).toContain('virus_database_unlocked');
+      expect(useMissionStore.getState().highlightedTileId).toBe('virus_database');
       expect(useMissionStore.getState().chatAvailableChoices.length).toBe(0);
 
-      // ETAP 1: Phishing (D1, D2, D3)
+      // ETAP 1: Baza Wirusów (D1)
       store.reportDecision({
         num: 1,
-        question: 'WYBIERZ RODZAJ AKCJI:',
-        answer: 'WIRUS 0-DAY',
+        question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
+        answer: 'ROBAK',
         tier: 'ideal',
-        feedback: 'Wirus 0-day bezbłędnie realizuje cel zlecenia.'
+        feedback: 'Robak samodzielnie powiela się w sieci i formuje botnet.'
       });
-      store.reportDecision({
-        num: 2,
-        question: 'WYBIERZ SZABLON FORMULARZA:',
-        answer: 'POODLE FORMS',
-        tier: 'ideal',
-        feedback: 'Profesjonalny szablon formularza ankietowego.'
-      });
-      store.reportDecision({
-        num: 3,
-        question: 'WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:',
-        answer: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO',
-        tier: 'ideal',
-        feedback: 'Przymus w połączeniu z tematem integracji tworzy idealną presję.'
-      });
-      store.completeStage('phishing_app');
+      store.completeStage('virus_database');
 
       // Mostek: rozmowa o czarnej liście IP -> odblokowanie VPN
       driveBridge();
@@ -117,27 +102,33 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       // ETAP 2: VPN (Flavor / techniczne)
       store.completeStage('vpn_app');
 
-      // Mostek: rozmowa o wirusie 0-day -> odblokowanie Bazy Wirusów
+      // Mostek: rozmowa o wektorze i domenie (bez spoilerów) -> odblokowanie Kreatora Phishingu
       driveBridge();
-      expect(useMissionStore.getState().unlockedIcons).toContain('virus_database_unlocked');
-      expect(useMissionStore.getState().highlightedTileId).toBe('virus_database');
+      expect(useMissionStore.getState().unlockedIcons).toContain('phishing_unlocked');
+      expect(useMissionStore.getState().highlightedTileId).toBe('phishing_app');
 
-      // ETAP 3: Baza Wirusów (D4)
+      // ETAP 3: Kreator Phishingu (D2, D3, D4, D5)
+      store.reportDecision({
+        num: 2,
+        question: 'WYBIERZ RODZAJ AKCJI:',
+        answer: 'WIRUS 0-DAY',
+        tier: 'ideal',
+        feedback: 'Wirus 0-day bezbłędnie realizuje cel zlecenia.'
+      });
+      store.reportDecision({
+        num: 3,
+        question: 'WYBIERZ SZABLON FORMULARZA:',
+        answer: 'POODLE FORMS',
+        tier: 'ideal',
+        feedback: 'Profesjonalny szablon formularza ankietowego.'
+      });
       store.reportDecision({
         num: 4,
-        question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
-        answer: 'ROBAK',
+        question: 'WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:',
+        answer: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO',
         tier: 'ideal',
-        feedback: 'Robak samodzielnie powiela się w sieci i formuje botnet.'
+        feedback: 'Przymus w połączeniu z tematem integracji tworzy idealną presję.'
       });
-      store.completeStage('virus_database');
-
-      // Mostek: rozmowa o domenie firmowej -> odblokowanie Wysyłki Phishingu
-      driveBridge();
-      expect(useMissionStore.getState().unlockedIcons).toContain('phishing_dispatch_unlocked');
-      expect(useMissionStore.getState().highlightedTileId).toBe('phishing_dispatch');
-
-      // ETAP 4: Wysyłka Phishingu (D5)
       store.reportDecision({
         num: 5,
         question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
@@ -145,14 +136,14 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
         tier: 'ideal',
         feedback: "Typosquatting (podmiana 'b' na 'd' w nazwie domeny)."
       });
-      store.completeStage('phishing_dispatch');
+      store.completeStage('phishing_app');
 
       // Mostek: oczekiwanie na aktywację -> odblokowanie Monitora Botnetu
       driveBridge();
       expect(useMissionStore.getState().unlockedIcons).toContain('botnet_monitor_unlocked');
       expect(useMissionStore.getState().highlightedTileId).toBe('botnet_monitor');
 
-      // ETAP 5: Monitor Botnetu
+      // ETAP 4: Monitor Botnetu
       store.completeStage('botnet_monitor');
 
       // Mostek końcowy: pochwała Byte_Mastera -> odblokowanie Debriefu
@@ -174,6 +165,42 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       expect(api.GetValue('cmi.success_status')).toBe('passed');
       expect(api.GetValue('cmi.completion_status')).toBe('completed');
       expect(api.GetValue('cmi.score.raw')).toBe('100');
+    });
+
+    it('reaguje na błąd krytyczny (np. D1 ransomware) wyzwalając modal dekonspiracji', () => {
+      const store = useMissionStore.getState();
+
+      store.reportDecision({
+        num: 1,
+        question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
+        answer: 'RANSOMWARE – MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ',
+        tier: 'critical',
+        feedback: 'Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.'
+      });
+
+      const state = useMissionStore.getState();
+      expect(state.isDetectedModalOpen).toBe(true);
+      expect(state.criticalErrorsCount).toBe(1);
+      expect(state.score).toBeLessThan(100);
+      expect(state.detectionReason?.title).toContain('ZOSTAŁEŚ WYKRYTY');
+    });
+
+    it('poprawnie nalicza karę punktową i BTC przy wyborze suboptimal w M2', () => {
+      const store = useMissionStore.getState();
+
+      // Wybór suboptimal dla D1: 50% punktów za decyzję (10 pkt straty ze 100)
+      store.reportDecision({
+        num: 1,
+        question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
+        answer: 'KEYLOGGER – POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE',
+        tier: 'suboptimal',
+        feedback: 'Przechwytuje dane na jednej stacji, nie tworzy botnetu.'
+      });
+
+      const state = useMissionStore.getState();
+      expect(state.score).toBe(90);
+      expect(state.btcReward).toBeCloseTo(2.96 * 0.9, 2);
+      expect(state.goodChoicesCount).toBe(1);
     });
   });
 });

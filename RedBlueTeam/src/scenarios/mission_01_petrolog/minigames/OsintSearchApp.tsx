@@ -151,7 +151,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                 <AlertTriangle size={18} className="animate-pulse" />
                 <span className="tracking-wider">BŁĄD POZYSKIWANIA INFORMACJI</span>
               </div>
-              <p className="text-xs text-red-200 leading-relaxed font-mono">
+              <p className="text-xs text-red-200 leading-relaxed font-mono whitespace-pre-line">
                 {errorMessage}
               </p>
               <button

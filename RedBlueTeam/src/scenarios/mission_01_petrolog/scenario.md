@@ -25,10 +25,10 @@
 - BM: BIERZ SIĘ DO PRACY I CZEKAM NA WIADOMOŚĆ.
 
 ## Etap 1: //BAZA_CELU: PETROLOG
-Klocek: NOWA MINIGRA (Briefing operacyjny)
-Cel dydaktyczny: zapoznanie się z celem ataku i kluczowymi wektorami operacyjnymi (liczba pracowników, aktywność w social mediach).
-Ekrany: 4 slajdy informacyjne wywiadu o PetroLog
-Flavor (nieoceniane): przegląd wywiadu operacyjnego
+Klocek: NOWA MINIGRA (Interaktywna teczka wywiadowcza Dossier)
+Cel dydaktyczny: analiza 4 działów firmy PetroLog (Zarząd, Sprzedaż, Finanse, Bezpieczeństwo IT) i wytypowanie najbardziej podatnego wektora ataku (spear-phishing vs DDoS vs włamanie fizyczne).
+Ekrany: 4 zakładki teczki akt (Zarząd, Sprzedaż, Finanse, IT) + panel analityczny z 3 opcjami wyboru wektora wejścia (A: DDoS – alarm SOC, B: spear-phishing – ideal/zatwierdzenie, C: włamanie fizyczne – dozór CCTV).
+Flavor (nieoceniane): bramka jakościowa Flavor — poprawny wybór wektora B odblokowuje przycisk zatwierdzenia i przejście do kolejnego etapu; błędne opcje A i C wyświetlają ostrzeżenie analityczne DarkSun i nakazują ponowną analizę teczki.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "150 OSÓB TO SPORO. ZACZNIJ OD WYSZUKANIA PRACOWNIKÓW PETROLOG W SIECI."
@@ -38,8 +38,8 @@ Mostek (rozmowa do kolejnego etapu):
 ## Etap 2: //WYSZUKIWARKA: OSINT
 Klocek: NOWA MINIGRA (Wyszukiwarka OSINT i selekcja celu)
 Cel dydaktyczny: weryfikacja dostępności profili pracowników i wybór ofiary z publicznym profilem (bramka logiczna).
-Ekrany: wyszukiwanie frazy "PETROLOG PRACOWNICY" → wyniki (Marcelina Sojka vs Anita Klimek)
-Flavor (nieoceniane): selekcja celu z publicznym profilem
+Ekrany: wyszukiwanie frazy "PETROLOG PRACOWNICY" → wyniki (Marcelina Sojka vs Anita Klimek). Wybór Marceliny Sojki wyzwala komunikat błędu z wyraźną wskazówką edukacyjną T2 (dlaczego profil prywatny stanowi skuteczną barierę przed białym wywiadem OSINT).
+Flavor (nieoceniane): selekcja celu z publicznym profilem (bramka OSINT)
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "ANITA KLIMEK Z DZIAŁU KSIĘGOWOŚCI. JEJ PROFIL JEST CAŁKOWICIE PUBLICZNY. PRZEŚWIETL JEJ MEDIA SPOŁECZNOŚCIOWE."
@@ -47,10 +47,10 @@ Mostek (rozmowa do kolejnego etapu):
 - odblokuj: //INTEL_SOCIAL_MEDIA
 
 ## Etap 3: //INTEL_SOCIAL_MEDIA
-Klocek: NOWA MINIGRA (Symulator platform społecznościowych i zbieranie faktów)
-Cel dydaktyczny: OSINT na portalach społecznościowych, oddzielenie faktów istotnych pod socjotechnikę od zmyłek.
-Ekrany: profil ofiary + symulator feedu (Kneenook, Quickgram, Joinin)
-Flavor (nieoceniane): skanowanie wpisów i kompletowanie 8 faktów
+Klocek: NOWA MINIGRA (Symulator platform społecznościowych i aktywna dedukcja faktów)
+Cel dydaktyczny: OSINT na portalach społecznościowych, wyciąganie poprawnych wniosków wywiadowczych pod presją Wskaźnika Precyzji Wywiadu (Intel Precision Meter, min. 70%).
+Ekrany: profil ofiary + symulator feedu (Kneenook, Quickgram, Joinin) z aktywną dedukcją pod każdym z 11 wpisów (pytanie: „Jaki fakt wywiadowczy wynika z tego wpisu?” + 3 kafle wyboru: 1 poprawny, 2 zmyłki) oraz ekranem ostrzegawczym i przyciskiem resetu w razie spadku precyzji poniżej 70%.
+Flavor (nieoceniane): zebranie wszystkich 8 wymaganych faktów przy precyzji ≥ 70% odblokowuje przycisk przejścia do kreatora spear-phishingu.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "MAMY KOMPLET INFORMACJI O OFIERZE. ANITA JEST ZAPALONĄ BIEGACZKĄ DŁUGODYSTANSOWĄ I SZUKA PORAD TRENINGOWYCH. CZAS NA PRZYGOTOWANIE STRONY-PUŁAPKI I MAILA."
@@ -79,7 +79,7 @@ Decyzja D3: "WYSŁAĆ MAILA – WYŚLIJ MAILA DO SWOJEJ OFIARY. PODSZYJ SIĘ POD
 - TWÓJ SYNEK | critical | Małe dzieci nie wysyłają maili ze skrzynki korporacyjnej PetroLog.
 
 Decyzja D4: "WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ."
-- K.KWIATKOWSKI@PETROLOG.COM | ideal | Domena firmowa PetroLog – pełne uwiarygodnienie wewnętrznej korespondencji służbowej.
+- K.KWIATKOWSKI@PETROLOG.COM | ideal | Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary.
 - K.KWIATKOWSKI@HACH.COM | suboptimal | Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.
 - DARKSUN.JAKUB@GMAIL.COM | critical | Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.
 

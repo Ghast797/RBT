@@ -159,6 +159,7 @@ describe('Mission 4: Energy Rock Scenario & SCORM Engine', () => {
       expect(finalState.unlockedIcons).toContain('debrief_app');
       expect(finalState.score).toBe(100);
       expect(finalState.playerChoices.filter(c => c.outcome === 'ideal').length).toBe(10);
+      expect(finalState.playerChoices.find(c => c.num === 10)?.negotiationTranscript?.length).toBe(3);
 
       const submitResult = store.submitScormAndExit();
       expect(submitResult.success).toBe(true);
@@ -188,5 +189,30 @@ describe('Mission 4: Energy Rock Scenario & SCORM Engine', () => {
     expect(state.isDetectedModalOpen).toBe(true);
     expect(state.criticalErrorsCount).toBe(1);
     expect(state.score).toBeLessThan(100);
+  });
+
+  it('decyzja D10 w debriefie zawiera mini-transkrypt negocjacji z 3 turami i analizą psychologiczną', () => {
+    const store = useMissionStore.getState();
+    store.loadMission('mission-4-energy-rock');
+    const state = useMissionStore.getState();
+
+    const d10 = state.playerChoices.find((c) => c.num === 10);
+    expect(d10).toBeDefined();
+    expect(d10?.negotiationTranscript).toBeDefined();
+    expect(d10?.negotiationTranscript?.length).toBe(3);
+
+    const [turn1, turn2, turn3] = d10!.negotiationTranscript!;
+    expect(turn1.title).toContain('Tura 1');
+    expect(turn1.opponent).toContain('SŁUŻBY');
+    expect(turn1.player).toContain('NIE ODSZYFRUJĄ');
+    expect(turn1.psychology.length).toBeGreaterThan(15);
+
+    expect(turn2.title).toContain('Tura 2');
+    expect(turn2.player).toContain('BITCOINY');
+    expect(turn2.psychology.length).toBeGreaterThan(15);
+
+    expect(turn3.title).toContain('Tura 3');
+    expect(turn3.player).toContain('3 H');
+    expect(turn3.psychology.length).toBeGreaterThan(15);
   });
 });

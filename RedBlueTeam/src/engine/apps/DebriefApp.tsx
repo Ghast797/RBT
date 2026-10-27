@@ -1,7 +1,49 @@
 import React, { useState } from 'react';
-import { Trophy, CheckCircle, AlertTriangle, XCircle, Award, ChevronDown, ChevronUp, RotateCcw, BookOpen, CheckCheck, ExternalLink, Send, ShieldCheck, X } from 'lucide-react';
+import {
+  Trophy,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Award,
+  ChevronDown,
+  ChevronUp,
+  RotateCcw,
+  BookOpen,
+  CheckCheck,
+  ExternalLink,
+  Send,
+  ShieldCheck,
+  X,
+  MessageSquareQuote,
+  Terminal
+} from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
 import { resolveDecisionCount } from '../core/scoring';
+import type { NegotiationTurn } from '../types/mission';
+
+const DEFAULT_M4_NEGOTIATION_TRANSCRIPT: NegotiationTurn[] = [
+  {
+    turn: 1,
+    title: 'Tura 1 (Reakcja na szantaż)',
+    opponent: 'Szef IT grozi policją: „ROZWIĄZUJEMY PROBLEM RANSOMWARE! ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE”',
+    player: 'Twarde stanowisko techniczne: „ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW. ZASTANÓW SIĘ DOBRZE, CO CHCESZ ZROBIĆ”',
+    psychology: 'Konfrontacja z technologiczną bezradnością organów ścigania wobec silnej kryptografii natychmiast rozbija złudzenie pomocy z zewnątrz i paraliżuje decyzyjność ofiary.'
+  },
+  {
+    turn: 2,
+    title: 'Tura 2 (Żądanie motywu)',
+    opponent: 'Szef IT sonduje cel ataku: „CZEGO CHCESZ W ZAMIAN ZA ODSZYFROWANIE DANYCH?”',
+    player: 'Żądanie Bitcoinów (kamuflaż): „TAK, JAK NAPISAŁEM W WIADOMOŚCI - INTERESUJĄ MNIE TYLKO BITCOINY”',
+    psychology: 'Utrzymanie narracji o czysto finansowym motywie maskuje rzeczywisty cel szpiegowski (kradzież technologii Freevolt) i uśpiło czujność zespołu bezpieczeństwa.'
+  },
+  {
+    turn: 3,
+    title: 'Tura 3 (Presja czasu)',
+    opponent: 'Szef IT gra na zwłokę: „POTRZEBUJEMY CZASU NA ICH ZDOBYCIE”',
+    player: 'Twardy limit 3h na przelew: „MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA”',
+    psychology: 'Ekstremalny limit czasowy uniemożliwia ofierze odzyskanie danych z kopii zapasowych lub powiadomienie zespołu reagowania na incydenty (CSIRT/SOC).'
+  }
+];
 
 export const DebriefApp: React.FC = () => {
   const {
@@ -26,6 +68,11 @@ export const DebriefApp: React.FC = () => {
 
   const [activeSlideIdx, setActiveSlideIdx] = useState<number>(0);
   const [isCloseAttempted, setIsCloseAttempted] = useState<boolean>(false);
+  const [expandedTranscripts, setExpandedTranscripts] = useState<Record<number, boolean>>({});
+
+  const toggleTranscript = (num: number) => {
+    setExpandedTranscripts((prev) => ({ ...prev, [num]: !prev[num] }));
+  };
 
   const handleCloseTab = () => {
     // 1. Focus the opener window (Moodle course page)
@@ -186,6 +233,13 @@ export const DebriefApp: React.FC = () => {
               const outcome = c.outcome || (c.isCorrect ? 'ideal' : 'critical');
               const isIdeal = outcome === 'ideal';
               const isSuboptimal = outcome === 'suboptimal';
+              const transcript =
+                c.negotiationTranscript ||
+                activeMission.step6?.choices?.find((sc) => sc.num === c.num)?.negotiationTranscript ||
+                (activeMission.mission?.id?.includes('mission-4') && c.num === 10
+                  ? DEFAULT_M4_NEGOTIATION_TRANSCRIPT
+                  : undefined);
+              const isTranscriptOpen = !!expandedTranscripts[c.num];
 
               return (
                 <div
@@ -276,6 +330,80 @@ export const DebriefApp: React.FC = () => {
                           <RotateCcw size={11} />
                           <span>POWTÓRZ ZADANIE</span>
                         </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Rozwijalny Mini-Transkrypt Negocjacji (D10 / Misja 4) */}
+                  {transcript && transcript.length > 0 && (
+                    <div className="pt-2 border-t border-gray-800/80">
+                      <button
+                        type="button"
+                        onClick={() => toggleTranscript(c.num)}
+                        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/30 text-cyan-300 hover:bg-cyan-900/40 text-[11px] font-bold flex items-center space-x-1.5 cursor-pointer transition-all shadow-sm"
+                      >
+                        <MessageSquareQuote size={13} />
+                        <span>
+                          {isTranscriptOpen ? 'UKRYJ PRZEBIEG NEGOCJACJI' : 'POKAŻ PRZEBIEG NEGOCJACJI'}
+                        </span>
+                        {isTranscriptOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                      </button>
+
+                      {isTranscriptOpen && (
+                        <div className="mt-2.5 p-3.5 rounded-xl border border-cyan-500/40 bg-[#06131c] space-y-3 animate-in fade-in">
+                          <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                            <span className="text-[11px] font-black uppercase tracking-wider text-cyan-400 flex items-center space-x-1.5">
+                              <Terminal size={13} />
+                              <span>//ZAPIS_AUDIO_I_CZATU: PRZEBIEG NEGOCJACJI Z SZEFEM IT (3 TURY)</span>
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-mono">D10 // TRANSCRIPT</span>
+                          </div>
+
+                          <div className="space-y-2.5">
+                            {transcript.map((turn) => (
+                              <div
+                                key={turn.turn}
+                                className="p-3 rounded-lg border border-gray-800 bg-black/40 space-y-2"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+                                    {turn.title}
+                                  </span>
+                                  <span className="text-[10px] text-gray-500 font-mono">
+                                    TURA 0{turn.turn}
+                                  </span>
+                                </div>
+
+                                {/* Wypowiedzi stron */}
+                                <div className="space-y-1.5 text-xs">
+                                  <div className="p-2 rounded bg-red-950/20 border border-red-500/30 text-red-200">
+                                    <span className="text-[10px] uppercase font-bold text-red-400 block mb-0.5">
+                                      SZEF IT:
+                                    </span>
+                                    <span className="font-sans leading-relaxed">{turn.opponent}</span>
+                                  </div>
+                                  <div className="p-2 rounded bg-emerald-950/20 border border-emerald-500/30 text-emerald-200">
+                                    <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5">
+                                      TWOJA ODPOWIEDŹ:
+                                    </span>
+                                    <span className="font-sans leading-relaxed">{turn.player}</span>
+                                  </div>
+                                </div>
+
+                                {/* Komentarz psychologiczny */}
+                                <div className="p-2 rounded bg-purple-950/20 border border-purple-500/30 text-purple-200 text-[11px] flex items-start space-x-2">
+                                  <span className="text-purple-400 shrink-0 mt-0.5">🧠</span>
+                                  <div className="font-sans leading-relaxed">
+                                    <strong className="text-purple-300">
+                                      Komentarz psychologiczny:{' '}
+                                    </strong>
+                                    <span>{turn.psychology}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
