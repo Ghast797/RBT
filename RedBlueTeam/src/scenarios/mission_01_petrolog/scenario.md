@@ -25,10 +25,17 @@
 - BM: BIERZ SIĘ DO PRACY I CZEKAM NA WIADOMOŚĆ.
 
 ## Etap 1: //BAZA_CELU: PETROLOG
-Klocek: NOWA MINIGRA (Interaktywna teczka wywiadowcza Dossier)
-Cel dydaktyczny: analiza 4 działów firmy PetroLog (Zarząd, Sprzedaż, Finanse, Bezpieczeństwo IT) i wytypowanie najbardziej podatnego wektora ataku (spear-phishing vs DDoS vs włamanie fizyczne).
-Ekrany: 4 zakładki teczki akt (Zarząd, Sprzedaż, Finanse, IT) + panel analityczny z 3 opcjami wyboru wektora wejścia (A: DDoS – alarm SOC, B: spear-phishing – ideal/zatwierdzenie, C: włamanie fizyczne – dozór CCTV).
-Flavor (nieoceniane): bramka jakościowa Flavor — poprawny wybór wektora B odblokowuje przycisk zatwierdzenia i przejście do kolejnego etapu; błędne opcje A i C wyświetlają ostrzeżenie analityczne DarkSun i nakazują ponowną analizę teczki.
+Klocek: NOWA MINIGRA (Rozpoznanie celu w 3 krokach: Poznaj → Zbadaj → Zdecyduj)
+Cel dydaktyczny: gracz sam sprawdza, które miejsca w firmie są dobrze chronione, a które słabe, i na tej podstawie wybiera drogę ataku (podstępny mail vs atak na serwery vs włamanie do budynku). Język prosty, bez żargonu — termin „spear-phishing” pada dopiero po trafnej decyzji, jako wyjaśnienie.
+Ekrany (kolejno, oddzielone ekranem ładowania, bez cofania):
+1. POZNAJ CEL — 3 zaszyfrowane karty z odprawy VR, odkrywane kliknięciem: „MAJĄ DOKUMENTY O FREEVOLT”, „PRACUJE TAM 150 OSÓB”, „PRACOWNICY DUŻO PUBLIKUJĄ W SIECI”. Dalej po odkryciu wszystkich trzech.
+2. ZBADAJ FIRMĘ — plan firmy z 4 miejscami: Budynek centrali, Serwerownia, Dział sprzedaży, Księgowość. Każde miejsce to 2 krótkie zdania obserwacji i pytanie „Słaby punkt czy dobrze chronione?”. Trafna ocena dopisuje trop do notatnika; nietrafna pokazuje naprowadzenie i pozwala ocenić ponownie. Dalej po ocenieniu wszystkich 4 miejsc. Bez imion pracowników (gracz pozna je w etapie 2).
+   - Budynek centrali: chronione (karty wejściowe, ochrona, kamery).
+   - Serwerownia: chronione (zewnętrzna ochrona 24/7 widzi każdy atak na sieć).
+   - Dział sprzedaży: chronione (sprawdzają każdego nowego klienta).
+   - Księgowość: słaby punkt (pośpiech, dziesiątki faktur w załącznikach, nikt nie sprawdza nadawcy maila).
+3. ZDECYDUJ — notatnik z tropami gracza + 3 drogi ataku: „Zaatakować serwery firmy”, „Włamać się do budynku”, „Wysłać podstępnego maila do pracownika”. Nietrafny wybór odsyła do konkretnego tropu z notatnika.
+Flavor (nieoceniane): trafny wybór (podstępny mail) odblokowuje przycisk przejścia do kolejnego etapu; pozostałe opcje pokazują ostrzeżenie DarkSun i pozwalają wybrać ponownie.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "150 OSÓB TO SPORO. ZACZNIJ OD WYSZUKANIA PRACOWNIKÓW PETROLOG W SIECI."
@@ -49,7 +56,11 @@ Mostek (rozmowa do kolejnego etapu):
 ## Etap 3: //INTEL_SOCIAL_MEDIA
 Klocek: NOWA MINIGRA (Symulator platform społecznościowych i aktywna dedukcja faktów)
 Cel dydaktyczny: OSINT na portalach społecznościowych, wyciąganie poprawnych wniosków wywiadowczych pod presją Wskaźnika Precyzji Wywiadu (Intel Precision Meter, min. 70%).
-Ekrany: profil ofiary + symulator feedu (Kneenook, Quickgram, Joinin) z aktywną dedukcją pod każdym z 11 wpisów (pytanie: „Jaki fakt wywiadowczy wynika z tego wpisu?” + 3 kafle wyboru: 1 poprawny, 2 zmyłki) oraz ekranem ostrzegawczym i przyciskiem resetu w razie spadku precyzji poniżej 70%.
+Ekrany:
+1. PROFILE — 3 grafiki platform (Kneenook → Quickgram → Joinin), odblokowywane po kolei: następna dopiero po przejrzeniu wszystkich wpisów poprzedniej. Pod nimi notatnik z 8 polami na fakty.
+2. Wejście w platformę (krótkie ładowanie) → wpisy jeden po drugim (11 wpisów łącznie), każdy z miejscem na grafikę. Pod wpisem aktywna dedukcja (pytanie: „Jaki fakt wywiadowczy wynika z tego wpisu?” + 3 kafle wyboru: 1 poprawny, 2 zmyłki). „Następny wpis” odblokowuje się po trafnej odpowiedzi; po ostatnim wpisie powrót do ekranu profili.
+Spadek precyzji poniżej 70% pokazuje ekran ostrzegawczy z przyciskiem resetu (powrót do ekranu profili, postęp od zera).
+Grafiki: `assets/social/<id>.png` — id platformy (kneenook, quickgram, joinin) albo id wpisu (kn_1…ji_3).
 Flavor (nieoceniane): zebranie wszystkich 8 wymaganych faktów przy precyzji ≥ 70% odblokowuje przycisk przejścia do kreatora spear-phishingu.
 
 Mostek (rozmowa do kolejnego etapu):

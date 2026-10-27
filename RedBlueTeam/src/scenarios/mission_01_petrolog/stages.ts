@@ -15,148 +15,111 @@ import type {
 // DANE KLOCKÓW / MINIGIER
 // ---------------------------------------------------------------------------
 
-/** S01: Odprawa wywiadowcza – PetroLog (Interaktywne Dossier + Wektor Ataku). */
+/** S01: Baza celu PetroLog – Rozpoznanie celu w 3 krokach (Poznaj → Zbadaj → Zdecyduj). */
 export const targetPetrologConfig: TargetPetrologConfig = {
   companyName: 'PetroLog',
-  targetObjective: 'ODPRAWA WYWIADOWCZA I PROFILOWANIE FIRMY',
-  classificationNotice: 'ŚCIŚLE TAJNE // OPSEC LEVEL 4 // DO UŻYTKU WEWNĘTRZNEGO DARKSUN',
-  tabs: [
-    {
-      id: 'tab_org',
-      badge: '01. STRUKTURA I ZARZĄD',
-      tabLabel: '01. ZARZĄD & STRUKTURA',
-      title: 'STRUKTURA ORGANIZACYJNA I SCHEMAT DECYZYJNY',
-      lead: 'PetroLog Sp. z o.o. to regionalny operator logistyki paliwowej zatrudniający 150 osób. Na czele przedsiębiorstwa stoi prezes Roman Buczek.',
-      bulletHeader: 'KLUCZOWE OBSERWACJE WYWIADOWCZE:',
-      bullets: [
-        'Prezes Roman Buczek podejmuje ostateczne decyzje strategiczne, lecz rzadko angażuje się w codzienny obieg korespondencji roboczej.',
-        'W firmie funkcjonuje silna kultura autorytetu: personel administracyjny bezkrytycznie realizuje polecenia formalnie wyglądających autoryzacji.',
-        'Wewnętrzny obieg informacji opiera się na tradycyjnej poczcie elektronicznej bez weryfikacji tożsamości nadawcy.'
-      ],
-      intelNotes: 'WNIOSEK OPERACYJNY: Autorytet zarządu można wykorzystać w socjotechnice, jednak bezpośredni atak na prezesa niesie zbyt duże ryzyko czujności asystentów.'
-    },
-    {
-      id: 'tab_sales',
-      badge: '02. SPRZEDAŻ I B2B',
-      tabLabel: '02. SPRZEDAŻ & B2B',
-      title: 'DZIAŁ SPRZEDAŻY I OBSŁUGI KONTRAKTÓW PALIWOWYCH',
-      lead: 'Dział handlowy odpowiada za negocjacje z dostawcami paliw i partnerami logistycznymi. Obsługuje setki zapytań ofertowych tygodniowo.',
-      bulletHeader: 'PROCEDURY I WERYFIKACJA KONTRAHENTÓW:',
-      bullets: [
-        'Marcelina Sojka (specjalista ds. sprzedaży) stosuje bezwzględną higienę cyfrową — wszystkie jej profile społecznościowe są prywatne (profilowanie OSINT zablokowane).',
-        'Handlowcy podlegają procedurom weryfikacji tożsamości nowych kontrahentów przed przesłaniem cenników paliwowych.',
-        'Kluczowe dane o łańcuchu dostaw prototypu Freevolt nie są archiwizowane na stacjach roboczych działu handlowego.'
-      ],
-      intelNotes: 'WNIOSEK OPERACYJNY: Prywatny profil Marceliny Sojki uniemożliwia przygotowanie spersonalizowanego ataku. Handlowcy nie stanowią dogodnego wektora wejścia.'
-    },
-    {
-      id: 'tab_finance',
-      badge: '03. FINANSE I KSIĘGOWOŚĆ',
-      tabLabel: '03. FINANSE & OBIEG FAKTUR',
-      title: 'DZIAŁ FINANSOWO-KSIĘGOWY I PŁATNOŚCI',
-      lead: 'Niewielki, 3-osobowy zespół księgowy pracujący pod stałą presją terminów płatności. Odpowiada za realizację faktur i rozliczeń dostawców.',
-      bulletHeader: 'WEKTOR PODATNOŚCI LUDZKIEJ I PROCEDURALNEJ:',
-      bullets: [
-        'Anita Klimek (specjalista ds. rozliczeń) oraz Jakub Kwiatkowski codziennie wymieniają się setkami załączników i dokumentów rozliczeniowych.',
-        'Zespół księgowy rutynowo otwiera zewnętrzne pliki PDF i arkusze kalkulacyjne bez analizy w bezpiecznej piaskownicy (sandboxie).',
-        'Anita Klimek prowadzi bardzo aktywny, otwarty profil publiczny w wielu mediach społecznościowych, dzieląc się pracą, relacjami i pasją do biegów.'
-      ],
-      intelNotes: 'WNIOSEK OPERACYJNY: Presja czasu, rutyna otwierania załączników rozliczeniowych oraz bogaty ślad cyfrowy Anity Klimek czynią księgowość idealnym celem spear-phishingu.'
-    },
-    {
-      id: 'tab_it',
-      badge: '04. BEZPIECZEŃSTWO IT',
-      tabLabel: '04. INFRASTRUKTURA & IT',
-      title: 'POLITYKA BEZPIECZEŃSTWA IT I AUDYT SIECIOWY',
-      lead: 'Infrastruktura techniczna PetroLog składa się z lokalnej sieci korporacyjnej zabezpieczonej zaporą brzegową oraz zewnętrznego serwera pocztowego.',
-      bulletHeader: 'AUDYT PODATNOŚCI TECHNICZNYCH:',
-      bullets: [
-        'Zewnętrzna brama sieciowa firmy jest stale monitorowana przez komercyjny SOC — frontalne ataki DDoS lub agresywne skany portów natychmiast wywołają odcięcie łącza.',
-        'Serwer pocztowy firmy PetroLog ma rażącą lukę konfiguracyjną (brak restrykcyjnych polityk SPF/DMARC), co umożliwia bezproblemowe podszycie się pod domenę @petrolog.com.',
-        'W firmie nigdy nie prowadzono symulacji phishingu ani szkoleń Security Awareness dla personelu biurowego.'
-      ],
-      intelNotes: 'WNIOSEK OPERACYJNY: Brama sieciowa jest chroniona przez SOC, ale serwer pocztowy pozwala podszyć się pod zaufanego kolegę z biura bez wzbudzania podejrzeń filtrów.'
-    }
-  ],
-  vectorPrompt: {
-    title: 'WYTYPUJ NAJBARDZIEJ PODATNY WEKTOR WEJŚCIA',
-    description: 'Na podstawie analizy zakładek teczki wywiadowczej wytypuj optymalny wektor przełamania bezpieczeństwa PetroLog:',
-    options: [
+  targetObjective: 'ROZPOZNANIE CELU I WYBÓR DROGI ATAKU',
+  briefing: {
+    title: 'POZNAJ CEL',
+    instruction: 'Kliknij zaszyfrowane karty, aby odszyfrować kluczowe informacje o celu.',
+    facts: [
       {
-        id: 'vector_ddos',
-        letter: 'A',
-        label: 'Bezpośredni atak DDoS na bramę sieciową firmy',
-        description: 'Próba przeciążenia łącza internetowego i wymuszenia awarii firewalli brzegowych PetroLog.',
-        isCorrect: false,
-        feedback: 'BŁĄD WEKTORA! Brama sieciowa PetroLog jest monitorowana przez zewnętrzny SOC. Atak DDoS natychmiast wyzwoli alarmy operacyjne, zablokuje ruch i bezpowrotnie spali operację. Przeanalizuj ponownie zakładki teczki akt.'
+        id: 'fact_freevolt',
+        title: 'MAJĄ DOKUMENTY O FREEVOLT',
+        explanation: 'PetroLog odpowiada za newralgiczny łańcuch dostaw i dysponuje pełną dokumentacją technologii Freevolt.'
       },
       {
-        id: 'vector_spear_phishing',
-        letter: 'B',
-        label: 'Celowany atak socjotechniczny (spear-phishing) na pracownika działu księgowego z dostępem do faktur',
-        description: 'Wykorzystanie publicznego profilu Anity Klimek, luki w weryfikacji tożsamości poczty oraz rutyny rozliczania faktur.',
-        isCorrect: true,
-        feedback: 'WEKTOR ZATWIERDZONY! Połączenie publicznego śladu cyfrowego Anity Klimek, słabej konfiguracji serwera pocztowego i braku szkoleń w księgowości to optymalny wektor wejścia. SOC nie wykryje anomalii.'
+        id: 'fact_employees',
+        title: 'PRACUJE TAM 150 OSÓB',
+        explanation: 'Duża liczba zatrudnionych w strukturze firmy ułatwia ukrycie ataku socjotechnicznego.'
       },
       {
-        id: 'vector_physical',
-        letter: 'C',
-        label: 'Fizyczne włamanie do serwerowni w centrali',
-        description: 'Próba sforsowania drzwi do budynku centrali PetroLog i podłączenia fizycznego implantu do przełącznika sieciowego.',
-        isCorrect: false,
-        feedback: 'BŁĄD WEKTORA! Centrala posiada dozór fizyczny i monitoring CCTV. Ryzyko ujęcia operatora na miejscu jest niedopuszczalne. Działamy zdalnie w cyberprzestrzeni. Przeanalizuj ponownie zakładki teczki akt.'
+        id: 'fact_socials',
+        title: 'PRACOWNICY DUŻO PUBLIKUJĄ W SIECI',
+        explanation: 'Personel aktywnie dzieli się życiem zawodowym i prywatnym w otwartych mediach społecznościowych.'
       }
     ]
   },
-  // Zachowujemy slajdy informacyjne dla pełnej wstecznej zgodności
-  slides: [
-    {
-      id: 'slide_1',
-      badge: 'CEL OPERACJI',
-      title: 'ZADANIE 1: MUSISZ ZHAKOWAĆ FIRMĘ LOGISTYCZNĄ PETROLOG',
-      content:
-        'Cel ataku: PetroLog – przedsiębiorstwo logistyczne dysponujące danymi o łańcuchu dostaw technologii Freevolt.',
-      bullets: [
-        'Poznaj strukturę organizacyjną przedsiębiorstwa i kluczowy personel',
-        'Znajdź wektor wejścia poprzez nieświadomego pracownika podatnego na socjotechnikę',
-        'Pozyskaj dane logistyczne i wykaz podmiotów przechowujących specyfikację Freevolt'
-      ],
-      buttonLabel: 'START ZADANIA'
-    },
-    {
-      id: 'slide_2',
-      badge: 'WSKAZÓWKA WYWIADOWCZA 1/3',
-      title: 'CO WIEMY O FIRMIE PETROLOG?',
-      content: '1. POSIADA INFORMACJE O FREEVOLT',
-      bullets: [
-        'PetroLog odpowiada za newralgiczne łańcuchy dostaw komponentów prototypu Freevolt',
-        'Wewnętrzne bazy danych zawierają pełną listę dostawców i magazynów'
-      ],
-      buttonLabel: 'NASTĘPNA WSKAZÓWKA'
-    },
-    {
-      id: 'slide_3',
-      badge: 'WSKAZÓWKA WYWIADOWCZA 2/3',
-      title: 'STRUKTURA PERSONELU',
-      content: '2. W FIRMIE PRACUJE 150 OSÓB',
-      bullets: [
-        'Duża liczba zatrudnionych ułatwia ukrycie ataku spear-phishingowego',
-        'Różne poziomy świadomości cyberzagrożeń w poszczególnych działach'
-      ],
-      buttonLabel: 'NASTĘPNA WSKAZÓWKA'
-    },
-    {
-      id: 'slide_4',
-      badge: 'WSKAZÓWKA WYWIADOWCZA 3/3',
-      title: 'AKTYWNOŚĆ W SIECI',
-      content: '3. PRACOWNICY SĄ BARDZO AKTYWNI NA SOCIAL MEDIACH',
-      bullets: [
-        'Personel publikuje publiczne relacje z pracy, wydarzeń biurowych oraz życia prywatnego',
-        'Biały wywiad (OSINT) pozwoli bez przeszkód stworzyć profil psychologiczny pracownika'
-      ],
-      buttonLabel: 'URUCHOM WYSZUKIWARKĘ'
-    }
-  ]
+  investigation: {
+    title: 'ZBADAJ FIRMĘ',
+    instruction: 'Zbadaj każde miejsce w firmie i oceń, czy jest słabym punktem, czy jest dobrze chronione.',
+    places: [
+      {
+        id: 'place_hq',
+        name: 'Budynek centrali',
+        iconName: 'building',
+        observations: 'Wejście zabezpieczone elektronicznymi kartami dostępu i całodobową recepcją z ochroną fizyczną. Na korytarzach działa gęsta sieć kamer monitoringu CCTV.',
+        correctAssessment: 'protected',
+        clue: 'Budynek centrali: ochrona fizyczna, karty dostępu i stały monitoring kamer.',
+        feedbackCorrect: 'Trafna ocena! Budynek jest silnie chroniony fizycznie, bezpośrednie wtargnięcie jest zbyt ryzykowne.',
+        feedbackIncorrect: 'Zwróć uwagę na ochroniarzy i monitoring CCTV przy wejściu. To nie jest łatwy cel.'
+      },
+      {
+        id: 'place_server',
+        name: 'Serwerownia',
+        iconName: 'server',
+        observations: 'Ruch sieciowy jest monitorowany 24/7 przez zewnętrzną wyspecjalizowaną firmę ochronną (SOC). Każde podejrzane skanowanie portów natychmiast wywołuje alarm i blokadę adresu IP.',
+        correctAssessment: 'protected',
+        clue: 'Serwerownia: zewnętrzna ochrona 24/7 widzi każdy atak na sieć.',
+        feedbackCorrect: 'Trafna ocena! Bezpośredni atak na infrastrukturę sieciową zostanie natychmiast zablokowany przez SOC.',
+        feedbackIncorrect: 'Zewnętrzny zespół monitoruje ruch przez całą dobę. Próba przełamania serwera natychmiast nas zdradzi.'
+      },
+      {
+        id: 'place_sales',
+        name: 'Dział sprzedaży',
+        iconName: 'users',
+        observations: 'Handlowcy podlegają ścisłym procedurom weryfikacji tożsamości każdego nowego klienta. Przed przesłaniem cenników i dokumentów sprawdzają dane firmy w rejestrach.',
+        correctAssessment: 'protected',
+        clue: 'Dział sprzedaży: personel dokładnie weryfikuje tożsamość każdego nowego kontaktu.',
+        feedbackCorrect: 'Trafna ocena! Handlowcy skrupulatnie sprawdzają nieznajomych i stosują procedury weryfikacyjne.',
+        feedbackIncorrect: 'Handlowcy dokładnie weryfikują każdego rozmówcę. Zwykły podstęp w tym dziale szybko spali sprawę.'
+      },
+      {
+        id: 'place_finance',
+        name: 'Księgowość',
+        iconName: 'calculator',
+        observations: 'Pracownicy działają pod ciągłą presją czasu, obsługując dziesiątki faktur w załącznikach dziennie. Nikt nie sprawdza autentyczności adresu nadawcy przed otwarciem pliku.',
+        correctAssessment: 'vulnerable',
+        clue: 'Księgowość: pośpiech, dziesiątki faktur w załącznikach, nikt nie sprawdza nadawcy maila.',
+        feedbackCorrect: 'Trafna ocena! Ciągły pośpiech i bezkrytyczne otwieranie setek załączników to idealny słaby punkt.',
+        feedbackIncorrect: 'Zauważ presję terminów i nawyk otwierania każdego nadesłanego pliku bez weryfikacji nadawcy.'
+      }
+    ]
+  },
+  decision: {
+    title: 'ZDECYDUJ',
+    instruction: 'Na podstawie zebranych w notatniku ustaleń wybierz optymalną drogę ataku na PetroLog.',
+    question: 'Wskaż najskuteczniejszą drogę ataku na firmę PetroLog:',
+    options: [
+      {
+        id: 'attack_servers',
+        iconName: 'server',
+        title: 'Zaatakować serwery firmy',
+        description: 'Próba przełamania zapory sieciowej i sforsowania serwerów firmy przez Internet.',
+        isCorrect: false,
+        relatedClueId: 'place_server',
+        feedback: 'Ostrzeżenie DarkSun: Przeczytaj ponownie trop dotyczący serwerowni. Zewnętrzny SOC natychmiast wykryje próbę ataku na sieć i zablokuje naszą operację!'
+      },
+      {
+        id: 'attack_building',
+        iconName: 'building',
+        title: 'Włamać się do budynku',
+        description: 'Fizyczne wejście do siedziby przedsiębiorstwa i próba podłączenia urządzenia do sieci.',
+        isCorrect: false,
+        relatedClueId: 'place_hq',
+        feedback: 'Ostrzeżenie DarkSun: Przeczytaj ponownie trop dotyczący budynku centrali. Ochrona fizyczna i monitoring CCTV gwarantują natychmiastową wpadkę!'
+      },
+      {
+        id: 'attack_phishing',
+        iconName: 'mail',
+        title: 'Wysłać podstępnego maila do pracownika',
+        description: 'Skierowanie wiadomości ze złośliwym plikiem do podatnego działu firmy.',
+        isCorrect: true,
+        relatedClueId: 'place_finance',
+        feedback: 'Trafny wybór! Ta technika to spear-phishing — celowany atak socjotechniczny, który wykorzystuje pośpiech w księgowości i omija zewnętrzne zabezpieczenia sieciowe.'
+      }
+    ]
+  }
 };
 
 /** S02: Wyszukiwarka OSINT i selekcja celu. */

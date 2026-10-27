@@ -209,24 +209,19 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(st.goodChoicesCount).toBe(1);
     });
 
-    it('posiada interaktywne Dossier z 4 zakładkami i 3 wektorami (tylko wariant B poprawny)', async () => {
+    it('posiada konfigurację rozpoznania celu w 3 krokach: briefing, badanie firmy i decyzję', async () => {
       const { targetPetrologConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
-      expect(targetPetrologConfig.tabs).toBeDefined();
-      expect(targetPetrologConfig.tabs?.length).toBe(4);
-      expect(targetPetrologConfig.tabs?.map((t) => t.id)).toEqual([
-        'tab_org',
-        'tab_sales',
-        'tab_finance',
-        'tab_it'
-      ]);
+      expect(targetPetrologConfig.briefing?.facts.length).toBe(3);
+      expect(targetPetrologConfig.investigation?.places.length).toBe(4);
+      expect(targetPetrologConfig.decision?.options.length).toBe(3);
 
-      const prompt = targetPetrologConfig.vectorPrompt;
-      expect(prompt).toBeDefined();
-      expect(prompt?.options.length).toBe(3);
-      expect(prompt?.options.find((o) => o.letter === 'A')?.isCorrect).toBe(false);
-      expect(prompt?.options.find((o) => o.letter === 'B')?.isCorrect).toBe(true);
-      expect(prompt?.options.find((o) => o.letter === 'C')?.isCorrect).toBe(false);
-      expect(prompt?.options.find((o) => o.letter === 'B')?.label).toContain('spear-phishing');
+      const correctOption = targetPetrologConfig.decision?.options.find((o) => o.isCorrect);
+      expect(correctOption).toBeDefined();
+      expect(correctOption?.title).toContain('mail');
+      expect(correctOption?.feedback).toContain('spear-phishing');
+
+      const wrongOptions = targetPetrologConfig.decision?.options.filter((o) => !o.isCorrect);
+      expect(wrongOptions?.length).toBe(2);
     });
 
     it('posiada aktywną dedukcję faktów ze wskaźnikiem precyzji w SocialIntel', async () => {
@@ -244,7 +239,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       }
     });
 
-    it('renderuje TargetPetrologApp i weryfikuje 4 zakładki oraz 3 opcje wektora', async () => {
+    it('renderuje TargetPetrologApp i weryfikuje pasek kroków oraz 3 zaszyfrowane karty na starcie', async () => {
       const React = await import('react');
       const { renderToString } = await import('react-dom/server');
       const { TargetPetrologApp } = await import('../src/scenarios/mission_01_petrolog/minigames/TargetPetrologApp');
@@ -257,20 +252,21 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
         })
       );
 
-      expect(html).toContain('01. STRUKTURA I ZARZĄD');
-      expect(html).toContain('02. SPRZEDAŻ I B2B');
-      expect(html).toContain('03. FINANSE I KSIĘGOWOŚĆ');
-      expect(html).toContain('04. BEZPIECZEŃSTWO IT');
-      expect(html).toContain('PANEL_ANALITYCZNY');
-      expect(html).toContain('OPCJA A');
-      expect(html).toContain('OPCJA B');
-      expect(html).toContain('OPCJA C');
-      expect(html).toContain('Bezpośredni atak DDoS na bramę sieciową firmy');
-      expect(html).toContain('Celowany atak socjotechniczny (spear-phishing)');
-      expect(html).toContain('Fizyczne włamanie do serwerowni w centrali');
+      // Pasek kroków i nagłówek
+      expect(html).toContain('//BAZA_CELU: PETROLOG');
+      expect(html).toContain('1 POZNAJ');
+      expect(html).toContain('2 ZBADAJ');
+      expect(html).toContain('3 ZDECYDUJ');
+      expect(html).toContain('Kliknij zaszyfrowane karty');
+
+      // 3 zaszyfrowane karty na starcie
+      const encryptedMatches = html.match(/ZASZYFROWANE/g);
+      expect(encryptedMatches).toBeDefined();
+      expect(encryptedMatches?.length).toBe(3);
+      expect(html).toContain('Odszyfrowano 0/3');
     });
 
-    it('renderuje SocialIntelApp i weryfikuje profil Anity Klimek, wskaźnik precyzji 100% i 8 faktów', async () => {
+    it('renderuje SocialIntelApp: ekran profili z 3 platformami, z których tylko pierwsza jest odblokowana', async () => {
       const React = await import('react');
       const { renderToString } = await import('react-dom/server');
       const { SocialIntelApp } = await import('../src/scenarios/mission_01_petrolog/minigames/SocialIntelApp');
@@ -292,7 +288,9 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(html).toContain('Kneenook');
       expect(html).toContain('Quickgram');
       expect(html).toContain('Joinin');
-      expect(html).toContain('JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?');
+      expect(html).toContain('OTWÓRZ');
+      expect(html.match(/ZABLOKOWANE/g)?.length).toBe(2);
+      expect(html).toContain('NOTATNIK');
     });
 
     it('renderuje TargetPetrologApp i SocialIntelApp bezpiecznie z pustym configiem (brak crasha)', async () => {
@@ -308,8 +306,10 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
           onComplete: vi.fn()
         })
       );
-      expect(htmlTarget).toContain('//DOSSIER_WYWIADOWCZE: PETROLOG');
-      expect(htmlTarget).toContain('PANEL_ANALITYCZNY');
+      expect(htmlTarget).toContain('//BAZA_CELU: PETROLOG');
+      expect(htmlTarget).toContain('1 POZNAJ');
+      expect(htmlTarget).toContain('2 ZBADAJ');
+      expect(htmlTarget).toContain('3 ZDECYDUJ');
 
       // SocialIntelApp z pustym configiem
       const htmlSocial = renderToString(

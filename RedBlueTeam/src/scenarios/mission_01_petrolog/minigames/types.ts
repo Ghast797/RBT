@@ -1,45 +1,53 @@
 import type { ChoiceOption } from '../../../engine/types/mission';
 
-export interface IntelSlide {
+export interface BriefingFact {
   id: string;
-  badge: string;
   title: string;
-  content: string;
-  bullets?: string[];
-  buttonLabel: string;
+  explanation: string;
 }
 
-export interface DossierTab {
+export type AssessmentType = 'vulnerable' | 'protected';
+
+export interface InvestigationPlace {
   id: string;
-  badge: string;
-  tabLabel: string;
-  title: string;
-  lead: string;
-  bulletHeader?: string;
-  bullets: string[];
-  intelNotes?: string;
+  name: string;
+  iconName?: 'building' | 'server' | 'users' | 'calculator' | string;
+  observations: string;
+  correctAssessment: AssessmentType;
+  clue: string;
+  feedbackCorrect: string;
+  feedbackIncorrect: string;
 }
 
-export interface AttackVectorOption {
+export interface AttackVectorDecision {
   id: string;
-  letter: 'A' | 'B' | 'C';
-  label: string;
+  iconName?: 'server' | 'building' | 'mail' | string;
+  title: string;
   description: string;
   isCorrect: boolean;
+  relatedClueId?: string;
   feedback: string;
 }
 
 export interface TargetPetrologConfig {
-  companyName: string;
-  targetObjective: string;
-  classificationNotice?: string;
-  tabs?: DossierTab[];
-  vectorPrompt?: {
-    title: string;
-    description: string;
-    options: AttackVectorOption[];
+  companyName?: string;
+  targetObjective?: string;
+  briefing?: {
+    title?: string;
+    instruction?: string;
+    facts: BriefingFact[];
   };
-  slides?: IntelSlide[];
+  investigation?: {
+    title?: string;
+    instruction?: string;
+    places: InvestigationPlace[];
+  };
+  decision?: {
+    title?: string;
+    instruction?: string;
+    question: string;
+    options: AttackVectorDecision[];
+  };
 }
 
 export interface EmployeeProfile {

@@ -3,20 +3,66 @@ import {
   Users,
   CheckCircle2,
   ArrowRight,
+  ArrowLeft,
   Camera,
   Briefcase,
   MessageCircle,
   AlertCircle,
-  ChevronLeft,
-  ChevronRight,
   Gauge,
   RotateCcw,
   HelpCircle,
-  AlertTriangle
+  AlertTriangle,
+  Lock,
+  ImageIcon
 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
+import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
-import type { SocialIntelConfig, SocialPost, DeductionOption } from './types';
+import type { SocialIntelConfig, SocialPost, SocialPlatformInfo, DeductionOption } from './types';
+import { resolveSocialImage, SOCIAL_ASSETS_DIR } from './socialAssets';
+
+type PlatformId = SocialPlatformInfo['id'];
+
+// Ekrany: HUB (3 grafiki platform, odblokowywane po kolei) → ładowanie → FEED (wpisy jeden po drugim).
+type Phase =
+  | { kind: 'hub' }
+  | { kind: 'loading'; platformId: PlatformId }
+  | { kind: 'feed'; platformId: PlatformId };
+
+const PLATFORM_ICONS = {
+  kneenook: MessageCircle,
+  quickgram: Camera,
+  joinin: Briefcase
+};
+
+const DEFAULT_PLATFORMS: SocialPlatformInfo[] = [
+  { id: 'kneenook', name: 'Kneenook', handlePrefix: '', accentColor: '#3b82f6', tagline: 'Platforma społecznościowa' },
+  { id: 'quickgram', name: 'Quickgram', handlePrefix: '', accentColor: '#ec4899', tagline: 'Fotorelacje i chwile' },
+  { id: 'joinin', name: 'Joinin', handlePrefix: '', accentColor: '#06b6d4', tagline: 'Sieć kontaktów zawodowych' }
+];
+
+/** Miejsce na grafikę: plik z assets/social/<name>.*, w dev zastępnik z nazwą brakującego pliku. */
+const ImageSlot: React.FC<{
+  name: string;
+  label: string;
+  className: string;
+  fallback?: React.ReactNode;
+}> = ({ name, label, className, fallback = null }) => {
+  const url = resolveSocialImage(name);
+  if (url) {
+    return <img src={url} alt={label} className={`${className} object-cover`} draggable={false} />;
+  }
+  if (!import.meta.env.DEV) return <>{fallback}</>;
+  return (
+    <div
+      className={`${className} border-2 border-dashed border-gray-700 bg-black/40 flex flex-col items-center justify-center text-center p-2 space-y-1`}
+    >
+      <ImageIcon size={22} className="text-gray-600" />
+      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{`GRAFIKA: ${label}`}</span>
+      <span className="text-[9px] text-gray-600">{`${SOCIAL_ASSETS_DIR}/${name}.png`}</span>
+    </div>
+  );
+};
 
 export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   config,
@@ -26,6 +72,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   const totalRequired = config?.target?.requiredFacts || 8;
   const minPrecision = config?.target?.requiredPrecision || 70;
   const posts = config?.posts || [];
+  const platforms = config?.platforms && config.platforms.length > 0 ? config.platforms : DEFAULT_PLATFORMS;
   const target = config?.target || {
     name: 'Anita Klimek',
     role: 'Specjalista ds. Księgowości',
@@ -33,9 +80,14 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     requiredFacts: 8,
     requiredPrecision: 70
   };
+  const initials = target.name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase();
 
-  const [activePlatformId, setActivePlatformId] = useState<'kneenook' | 'quickgram' | 'joinin'>('kneenook');
-  const [currentPostIndex, setCurrentPostIndex] = useState<number>(0);
+  const [phase, setPhase] = useState<Phase>({ kind: 'hub' });
+  const [postIndexByPlatform, setPostIndexByPlatform] = useState<Partial<Record<PlatformId, number>>>({});
   const [discoveredFactIds, setDiscoveredFactIds] = useState<string[]>([]);
   const [solvedPostIds, setSolvedPostIds] = useState<string[]>([]);
   const [failedOptionIds, setFailedOptionIds] = useState<string[]>([]);
@@ -45,8 +97,11 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     text: string;
   } | null>(null);
 
-  const platformPosts = posts.filter((p) => p.platform === activePlatformId);
-  const currentPost: SocialPost | undefined = platformPosts[currentPostIndex] || platformPosts[0];
+  const postsOf = (pid: PlatformId) => posts.filter((p) => p.platform === pid);
+  const isPlatformDone = (pid: PlatformId) => postsOf(pid).every((p) => solvedPostIds.includes(p.id));
+  // Platforma odblokowuje się dopiero po przejrzeniu wszystkich poprzednich.
+  const isPlatformUnlocked = (idx: number) => platforms.slice(0, idx).every((p) => isPlatformDone(p.id));
+  const nextPlatformIdx = platforms.findIndex((p) => !isPlatformDone(p.id));
 
   const isPrecisionFailed = precision < minPrecision;
   const isComplete = discoveredFactIds.length >= totalRequired && precision >= minPrecision;
@@ -100,41 +155,40 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     ];
   };
 
-  const handleSelectPlatform = (pid: 'kneenook' | 'quickgram' | 'joinin') => {
-    sounds.playClick();
-    setActivePlatformId(pid);
-    setCurrentPostIndex(0);
-    setFeedback(null);
-  };
-
-  const handleNextPost = () => {
+  const handleOpenPlatform = (pid: PlatformId) => {
     sounds.playClick();
     setFeedback(null);
-    setCurrentPostIndex((prev) => (prev + 1) % platformPosts.length);
+    setPhase({ kind: 'loading', platformId: pid });
   };
 
-  const handlePrevPost = () => {
+  const handleBackToHub = () => {
     sounds.playClick();
     setFeedback(null);
-    setCurrentPostIndex((prev) => (prev - 1 + platformPosts.length) % platformPosts.length);
+    setPhase({ kind: 'hub' });
   };
 
-  const handleChooseDeduction = (opt: DeductionOption) => {
-    if (!currentPost || solvedPostIds.includes(currentPost.id) || failedOptionIds.includes(opt.id) || isPrecisionFailed) {
+  const handleNextPost = (pid: PlatformId) => {
+    sounds.playClick();
+    setFeedback(null);
+    setPostIndexByPlatform((prev) => ({ ...prev, [pid]: (prev[pid] || 0) + 1 }));
+  };
+
+  const handleChooseDeduction = (post: SocialPost, opt: DeductionOption) => {
+    if (solvedPostIds.includes(post.id) || failedOptionIds.includes(opt.id) || isPrecisionFailed) {
       return;
     }
 
     if (opt.isCorrect) {
       sounds.playSuccess();
-      setSolvedPostIds((prev) => [...prev, currentPost.id]);
+      setSolvedPostIds((prev) => [...prev, post.id]);
 
-      if (currentPost.fact) {
-        if (!discoveredFactIds.includes(currentPost.fact.id)) {
-          setDiscoveredFactIds((prev) => [...prev, currentPost.fact!.id]);
+      if (post.fact) {
+        if (!discoveredFactIds.includes(post.fact.id)) {
+          setDiscoveredFactIds((prev) => [...prev, post.fact!.id]);
         }
         setFeedback({
           type: 'success',
-          text: opt.feedback || `ZNALEZIONO FAKT: "${currentPost.fact.text}"`
+          text: opt.feedback || `ZNALEZIONO FAKT: "${post.fact.text}"`
         });
       } else {
         setFeedback({
@@ -152,7 +206,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
         sounds.playAlarm();
         setFeedback({
           type: 'error',
-          text: 'PRECYZJA WYWIADU SPADŁA PONIŻEJ 70%! Zbyt wiele fałszywych wniosków spali naszą operację.'
+          text: `PRECYZJA WYWIADU SPADŁA PONIŻEJ ${minPrecision}%! Zbyt wiele fałszywych wniosków spali naszą operację.`
         });
       } else {
         setFeedback({
@@ -170,13 +224,8 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     setSolvedPostIds([]);
     setFailedOptionIds([]);
     setFeedback(null);
-    setCurrentPostIndex(0);
-  };
-
-  const platformMeta = {
-    kneenook: { icon: MessageCircle, color: '#3b82f6', label: 'Kneenook' },
-    quickgram: { icon: Camera, color: '#ec4899', label: 'Quickgram' },
-    joinin: { icon: Briefcase, color: '#06b6d4', label: 'Joinin' }
+    setPostIndexByPlatform({});
+    setPhase({ kind: 'hub' });
   };
 
   // Find all facts from config to show slots
@@ -189,297 +238,176 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   );
 
   // Precision color badge
-  const precisionColor = precision >= 80 ? '#00ff66' : precision >= 70 ? '#facc15' : '#ff3366';
+  const precisionColor = precision >= 80 ? '#00ff66' : precision >= minPrecision ? '#facc15' : '#ff3366';
 
-  return (
-    <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {/* Header with Intel Precision Meter */}
-      <div
-        className="border-b pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-        style={{ borderColor: `${purple}4d` }}
-      >
-        <div className="flex items-center space-x-2.5">
-          <div
-            className="p-1.5 rounded border"
-            style={{ backgroundColor: `${purple}26`, borderColor: purple, color: purple }}
-          >
-            <Users size={20} />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-sm font-bold text-white tracking-widest">//INTEL_SOCIAL_MEDIA</h2>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-950/70 text-purple-300 border border-purple-500/40 font-bold">
-                DEDUKCJA OPERACYJNA
-              </span>
-            </div>
-            <p className="text-[11px]" style={{ color: purple }}>
-              PROFILOWANIE OFIARY: {target.name.toUpperCase()} ({target.company.toUpperCase()})
-            </p>
-          </div>
+  const header = (
+    <div
+      className="border-b pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      style={{ borderColor: `${purple}4d` }}
+    >
+      <div className="flex items-center space-x-2.5">
+        <div
+          className="p-1.5 rounded border"
+          style={{ backgroundColor: `${purple}26`, borderColor: purple, color: purple }}
+        >
+          <Users size={20} />
         </div>
-
-        {/* Precision Meter and Facts Counter */}
-        <div className="flex items-center space-x-3">
-          {/* Precision Meter Box */}
-          <div className="px-3 py-1.5 rounded-lg border bg-black/40 border-gray-800 flex items-center space-x-2.5">
-            <Gauge size={16} style={{ color: precisionColor }} />
-            <div className="space-y-0.5">
-              <div className="flex justify-between items-center text-[10px] text-gray-400 space-x-2">
-                <span>PRECYZJA WYWIADU:</span>
-                <span className="font-black" style={{ color: precisionColor }}>
-                  {precision}%
-                </span>
-              </div>
-              <div className="w-24 h-1.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
-                <div
-                  className="h-full transition-all duration-300"
-                  style={{
-                    width: `${precision}%`,
-                    backgroundColor: precisionColor,
-                    boxShadow: `0 0 8px ${precisionColor}`
-                  }}
-                />
-              </div>
-            </div>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">
-              MIN 70%
-            </span>
-          </div>
-
-          {/* Facts count */}
-          <span
-            className="text-[10px] px-2.5 py-2 rounded-lg border font-mono tracking-wider font-bold flex items-center space-x-1"
-            style={{
-              backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
-              borderColor: isComplete ? '#00ff66' : `${purple}66`,
-              color: isComplete ? '#00ff66' : purple
-            }}
-          >
-            <span>FAKTY:</span>
-            <span className="font-black">{discoveredFactIds.length}/{totalRequired}</span>
-          </span>
+        <div>
+          <h2 className="text-sm font-bold text-white tracking-widest">//INTEL_SOCIAL_MEDIA</h2>
+          <p className="text-[11px]" style={{ color: purple }}>
+            {`PROFILOWANIE OFIARY: ${target.name.toUpperCase()} (${target.company.toUpperCase()})`}
+          </p>
         </div>
       </div>
 
-      {/* Split-Screen: Left Profile & Collected Facts | Right Social Simulator & Deduction */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-0">
-        {/* LEFT PANEL: Victim Profile & 8 Trait Slots (cols 5) */}
-        <div className="lg:col-span-5 flex flex-col justify-between p-4 rounded-xl border border-gray-800 bg-[#08101a]/95 space-y-3">
-          {/* Victim Mini-Card */}
-          <div className="p-3 rounded-lg border border-gray-800 bg-black/40 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div
-                className="w-10 h-10 rounded-full border-2 flex items-center justify-center font-black text-sm"
-                style={{ borderColor: purple, color: purple, backgroundColor: `${purple}20` }}
-              >
-                AK
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-white tracking-wide">
-                  {target.name}
-                </h3>
-                <p className="text-[11px] text-gray-400">
-                  {target.role} • {target.company}
-                </p>
-              </div>
-            </div>
-            <span className="text-[9px] px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-500/40 font-bold">
-              PROFIL PUBLICZNY
-            </span>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="space-y-1">
-            <div className="flex justify-between text-[10px] text-gray-400">
-              <span>POSTĘP PROFILOWANIA SOCJOTECHNICZNEGO</span>
-              <span className="font-bold" style={{ color: isComplete ? '#00ff66' : purple }}>
-                {Math.round((discoveredFactIds.length / totalRequired) * 100)}%
+      <div className="flex items-center space-x-3">
+        <div className="px-3 py-1.5 rounded-lg border bg-black/40 border-gray-800 flex items-center space-x-2.5">
+          <Gauge size={16} style={{ color: precisionColor }} />
+          <div className="space-y-0.5">
+            <div className="flex justify-between items-center text-[10px] text-gray-400 space-x-2">
+              <span>PRECYZJA WYWIADU:</span>
+              <span className="font-black" style={{ color: precisionColor }}>
+                {`${precision}%`}
               </span>
             </div>
-            <div className="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden border border-gray-800">
+            <div className="w-24 h-1.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
               <div
-                className="h-full transition-all duration-500"
-                style={{
-                  width: `${(discoveredFactIds.length / totalRequired) * 100}%`,
-                  backgroundColor: isComplete ? '#00ff66' : purple,
-                  boxShadow: `0 0 10px ${isComplete ? '#00ff66' : purple}`
-                }}
+                className="h-full transition-all duration-300"
+                style={{ width: `${precision}%`, backgroundColor: precisionColor, boxShadow: `0 0 8px ${precisionColor}` }}
               />
             </div>
           </div>
-
-          {/* 8 Fact Slots List */}
-          <div className="flex-1 space-y-1.5 overflow-y-auto pr-1">
-            {allFacts.map((fact, idx) => {
-              const isFound = discoveredFactIds.includes(fact.id);
-              return (
-                <div
-                  key={fact.id || idx}
-                  className={`p-2 rounded-lg border text-xs flex items-center space-x-2 transition-all ${
-                    isFound
-                      ? 'border-[#00ff66] bg-[#00ff66]/10 text-white shadow-[0_0_10px_rgba(0,255,102,0.15)] animate-in fade-in zoom-in-95'
-                      : 'border-gray-800/80 bg-black/20 text-gray-600'
-                  }`}
-                >
-                  <span
-                    className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 font-bold ${
-                      isFound ? 'bg-[#00ff66] text-[#05090f]' : 'bg-gray-800 text-gray-500'
-                    }`}
-                  >
-                    {isFound ? '✓' : idx + 1}
-                  </span>
-                  <span className={`text-[11px] leading-tight font-mono ${isFound ? 'text-emerald-200 font-bold' : ''}`}>
-                    {isFound ? fact.text : `[ NIEODKRYTY FAKT #${idx + 1} ]`}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Completion Callout */}
-          {isComplete && (
-            <div className="p-3 rounded-lg border-2 border-[#00ff66] bg-[#00ff66]/15 space-y-2 animate-in fade-in">
-              <div className="flex items-center space-x-2 text-[#00ff66] text-xs font-bold">
-                <CheckCircle2 size={16} />
-                <span>INFORMACJE WYWIADOWCZE SKOMPLETOWANE!</span>
-              </div>
-              <p className="text-[11px] text-gray-300">
-                Wszystkie 8 kluczowych faktów zebrane z precyzją {precision}%. Pora przygotować spersonalizowaną stronę-pułapkę i maila!
-              </p>
-              <button
-                onClick={() => {
-                  sounds.playSuccess();
-                  onComplete();
-                }}
-                className="w-full py-2.5 bg-[#00ff66] text-[#05090f] font-black text-xs uppercase tracking-widest rounded hover:bg-[#00ff66]/90 transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-[0_0_20px_rgba(0,255,102,0.4)] active:scale-95"
-              >
-                <span>ZATWIERDŹ PROFIL // PRZEJDŹ DALEJ</span>
-                <ArrowRight size={15} />
-              </button>
-            </div>
-          )}
+          <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">
+            {`MIN ${minPrecision}%`}
+          </span>
         </div>
 
-        {/* RIGHT PANEL: Social Media Simulator & Active Deduction (cols 7) */}
-        <div className="lg:col-span-7 flex flex-col justify-between p-4 rounded-xl border border-gray-800 bg-[#08101a]/95 space-y-3">
-          {/* Platform Switcher Tabs */}
-          <div className="flex space-x-2 border-b border-gray-800 pb-2">
-            {(['kneenook', 'quickgram', 'joinin'] as const).map((pid) => {
-              const meta = platformMeta[pid];
-              const Icon = meta.icon;
-              const isActive = activePlatformId === pid;
-              const factsOnPlatform = posts.filter((p) => p.platform === pid && p.fact).length;
-              const discoveredOnPlatform = posts.filter(
-                (p) => p.platform === pid && p.fact && discoveredFactIds.includes(p.fact.id)
-              ).length;
+        <span
+          className="text-[10px] px-2.5 py-2 rounded-lg border font-mono tracking-wider font-bold"
+          style={{
+            backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
+            borderColor: isComplete ? '#00ff66' : `${purple}66`,
+            color: isComplete ? '#00ff66' : purple
+          }}
+        >
+          {`FAKTY: ${discoveredFactIds.length}/${totalRequired}`}
+        </span>
+      </div>
+    </div>
+  );
 
-              return (
-                <button
-                  key={pid}
-                  onClick={() => handleSelectPlatform(pid)}
-                  className={`flex-1 flex items-center justify-center space-x-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
-                    isActive
-                      ? 'border-transparent text-white shadow-lg'
-                      : 'border-gray-800 text-gray-400 hover:text-gray-200 hover:bg-white/5'
-                  }`}
-                  style={{
-                    backgroundColor: isActive ? meta.color : undefined
-                  }}
-                >
-                  <Icon size={14} />
-                  <span>{meta.label}</span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                      isActive ? 'bg-black/30 text-white' : 'bg-gray-800 text-gray-400'
-                    }`}
-                  >
-                    {discoveredOnPlatform}/{factsOnPlatform}
-                  </span>
-                </button>
-              );
-            })}
+  // ---------------------------------------------------------------------------
+  // ŁADOWANIE PLATFORMY
+  // ---------------------------------------------------------------------------
+  if (phase.kind === 'loading') {
+    const platform = platforms.find((p) => p.id === phase.platformId)!;
+    return (
+      <ModuleLoader
+        label={`ŁĄCZENIE Z ${platform.name.toUpperCase()}…`}
+        accent={platform.accentColor}
+        durationMs={900}
+        onDone={() => setPhase({ kind: 'feed', platformId: phase.platformId })}
+      />
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // FEED PLATFORMY: wpisy jeden po drugim
+  // ---------------------------------------------------------------------------
+  if (phase.kind === 'feed') {
+    const platform = platforms.find((p) => p.id === phase.platformId)!;
+    const PlatformIcon = PLATFORM_ICONS[platform.id];
+    const platformPosts = postsOf(platform.id);
+    const postIdx = Math.min(postIndexByPlatform[platform.id] || 0, platformPosts.length - 1);
+    const post = platformPosts[postIdx];
+    const isPostSolved = post ? solvedPostIds.includes(post.id) : false;
+    const isLastPost = postIdx >= platformPosts.length - 1;
+
+    return (
+      <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
+        {header}
+
+        <div className="w-full max-w-2xl mx-auto space-y-3">
+          {/* Pasek platformy */}
+          <div
+            className="rounded-xl border overflow-hidden"
+            style={{ borderColor: `${platform.accentColor}80` }}
+          >
+            <div
+              className="px-3 py-2 flex items-center justify-between"
+              style={{ backgroundColor: platform.accentColor }}
+            >
+              <div className="flex items-center space-x-2 text-white font-black text-sm tracking-wide">
+                <PlatformIcon size={16} />
+                <span>{platform.name}</span>
+              </div>
+              <button
+                onClick={handleBackToHub}
+                className="px-2 py-1 rounded bg-black/25 hover:bg-black/40 text-white text-[10px] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+              >
+                <ArrowLeft size={12} />
+                <span>WSZYSTKIE PROFILE</span>
+              </button>
+            </div>
+            <div className="p-3 bg-[#08101a]/95 flex items-center space-x-3">
+              <div
+                className="w-11 h-11 rounded-full border-2 flex items-center justify-center font-black text-sm text-white shrink-0"
+                style={{ borderColor: platform.accentColor, backgroundColor: `${platform.accentColor}40` }}
+              >
+                {initials}
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">{target.name}</h3>
+                <p className="text-[11px] text-gray-400">{platform.handlePrefix || platform.tagline}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Social Post Feed Display */}
-          {currentPost && (
-            <div className="flex-1 flex flex-col justify-between p-4 rounded-lg border border-gray-800 bg-[#05090f]/90 space-y-3">
-              {/* Post Header */}
-              <div className="flex items-center justify-between border-b border-gray-800 pb-2">
-                <div className="flex items-center space-x-2.5">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ backgroundColor: platformMeta[activePlatformId].color }}
-                  >
-                    AK
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white tracking-wide">
-                      {currentPost.author}
-                    </h4>
-                    <span className="text-[10px] text-gray-500">
-                      {currentPost.handle} • {currentPost.timestamp}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  {solvedPostIds.includes(currentPost.id) && (
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950/70 text-emerald-400 border border-emerald-500/40 font-bold flex items-center space-x-1">
-                      <CheckCircle2 size={11} />
-                      <span>PRZEANALIZOWANO</span>
-                    </span>
-                  )}
-                  <span className="text-[10px] text-gray-500 font-mono">
-                    POST {currentPostIndex + 1}/{platformPosts.length}
-                  </span>
-                </div>
+          {post && (
+            <div className="rounded-xl border border-gray-800 bg-[#08101a]/95 p-4 space-y-3">
+              {/* Wpis */}
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-gray-500">{`${post.handle} • ${post.timestamp}`}</span>
+                <span className="text-[10px] text-gray-500 font-bold">{`WPIS ${postIdx + 1}/${platformPosts.length}`}</span>
               </div>
 
-              {/* Post Content */}
-              <div className="space-y-2.5 py-1">
-                <p className="text-sm text-gray-200 leading-relaxed font-sans">
-                  "{currentPost.content}"
-                </p>
+              <ImageSlot
+                name={post.id}
+                label={`wpis ${post.id}`}
+                className="w-full h-44 sm:h-52 rounded-lg"
+              />
 
-                {currentPost.tags && currentPost.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {currentPost.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-[10px] text-sky-400 hover:underline cursor-pointer"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <p className="text-sm text-gray-100 leading-relaxed font-sans">{post.content}</p>
 
-              {/* Deduction Section: 3 Tiles */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {post.tags.map((tag) => (
+                    <span key={tag} className="text-[11px]" style={{ color: platform.accentColor }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Dedukcja */}
               {!isPrecisionFailed ? (
-                <div className="pt-2 border-t border-gray-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-amber-300 flex items-center space-x-1.5 uppercase tracking-wider">
-                      <HelpCircle size={13} />
-                      <span>JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?</span>
-                    </span>
-                    <span className="text-[10px] text-gray-500">Wskaż trafną dedukcję:</span>
-                  </div>
+                <div className="pt-3 border-t border-gray-800 space-y-2">
+                  <span className="text-xs font-bold text-amber-300 flex items-center space-x-1.5 uppercase tracking-wider">
+                    <HelpCircle size={14} />
+                    <span>JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?</span>
+                  </span>
 
                   <div className="space-y-1.5">
-                    {getDeductionOptions(currentPost).map((opt, optIdx) => {
-                      const isPostSolved = solvedPostIds.includes(currentPost.id);
+                    {getDeductionOptions(post).map((opt, optIdx) => {
                       const isOptFailed = failedOptionIds.includes(opt.id);
-                      const isOptCorrect = opt.isCorrect;
-
                       return (
                         <button
                           key={opt.id || optIdx}
                           disabled={isPostSolved || isOptFailed}
-                          onClick={() => handleChooseDeduction(opt)}
-                          className={`w-full p-2.5 rounded-lg border text-left text-xs transition-all flex items-center space-x-2.5 ${
+                          onClick={() => handleChooseDeduction(post, opt)}
+                          className={`w-full p-3 rounded-lg border text-left text-xs transition-all flex items-center space-x-2.5 ${
                             isPostSolved
-                              ? isOptCorrect
+                              ? opt.isCorrect
                                 ? 'border-[#00ff66] bg-[#00ff66]/15 text-white font-bold'
                                 : 'border-gray-800/40 bg-black/20 text-gray-600 opacity-50'
                               : isOptFailed
@@ -489,32 +417,29 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                         >
                           <span
                             className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                              isPostSolved && isOptCorrect
+                              isPostSolved && opt.isCorrect
                                 ? 'bg-[#00ff66] text-[#05090f]'
                                 : isOptFailed
                                 ? 'bg-red-500 text-white'
                                 : 'bg-gray-800 text-gray-400'
                             }`}
                           >
-                            {isPostSolved && isOptCorrect ? '✓' : isOptFailed ? '✗' : String.fromCharCode(65 + optIdx)}
+                            {isPostSolved && opt.isCorrect ? '✓' : isOptFailed ? '✗' : String.fromCharCode(65 + optIdx)}
                           </span>
-                          <span className="flex-1 font-sans text-[11px] leading-tight">
-                            {opt.text}
-                          </span>
+                          <span className="flex-1 font-sans text-xs leading-snug">{opt.text}</span>
                         </button>
                       );
                     })}
                   </div>
                 </div>
               ) : (
-                /* Precision Failed Screen */
                 <div className="p-4 rounded-lg border-2 border-red-500 bg-red-950/30 text-center space-y-3 animate-in fade-in">
                   <div className="flex items-center justify-center space-x-2 text-red-400 font-black text-xs uppercase tracking-wider">
                     <AlertTriangle size={18} />
-                    <span>PRECYZJA WYWIADU SPADŁA DO {precision}% (PONIŻEJ PROGU 70%)</span>
+                    <span>{`PRECYZJA WYWIADU SPADŁA DO ${precision}% (PONIŻEJ PROGU ${minPrecision}%)`}</span>
                   </div>
                   <p className="text-xs text-gray-300 font-sans leading-relaxed">
-                    <strong className="text-red-300">BYTE_MASTER:</strong> Za dużo pomyłek i niesprawdzonych domysłów. W ten sposób narazimy się na dekonspirację przed rozpoczęciem kampanii spear-phishingu. Zacznijmy analizę od nowa.
+                    <strong className="text-red-300">BYTE_MASTER:</strong> Za dużo pomyłek i niesprawdzonych domysłów. Zacznijmy analizę od nowa.
                   </p>
                   <button
                     onClick={handleResetMinigame}
@@ -526,7 +451,6 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                 </div>
               )}
 
-              {/* Feedback Banner */}
               {feedback && (
                 <div
                   className={`p-2.5 rounded-lg border text-xs flex items-center space-x-2 animate-in fade-in ${
@@ -544,46 +468,176 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                   ) : (
                     <AlertTriangle size={16} className="shrink-0 text-red-400" />
                   )}
-                  <span className="font-bold text-[11px] leading-tight font-sans">
-                    {feedback.text}
-                  </span>
+                  <span className="font-bold text-[11px] leading-tight font-sans">{feedback.text}</span>
                 </div>
               )}
 
-              {/* Post Navigation Footer */}
-              <div className="pt-2 border-t border-gray-800 flex items-center justify-between">
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handlePrevPost}
-                    disabled={platformPosts.length <= 1}
-                    className="p-2 rounded border border-gray-800 bg-gray-900/60 hover:bg-gray-800 text-gray-300 disabled:opacity-40 cursor-pointer transition-colors"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button
-                    onClick={handleNextPost}
-                    disabled={platformPosts.length <= 1}
-                    className="p-2 rounded border border-gray-800 bg-gray-900/60 hover:bg-gray-800 text-gray-300 disabled:opacity-40 cursor-pointer transition-colors"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
+              {/* Postęp wpisów + dalej */}
+              <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
+                <div className="flex items-center space-x-1.5">
+                  {platformPosts.map((p, idx) => (
+                    <span
+                      key={p.id}
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{
+                        backgroundColor: solvedPostIds.includes(p.id)
+                          ? '#00ff66'
+                          : idx === postIdx
+                          ? platform.accentColor
+                          : '#1f2937'
+                      }}
+                    />
+                  ))}
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={handleResetMinigame}
-                    title="Zresetuj profilowanie i zacznij od nowa"
-                    className="px-2.5 py-1.5 rounded border border-gray-800 bg-gray-900/60 hover:bg-gray-800 text-gray-400 hover:text-gray-200 text-[10px] font-bold flex items-center space-x-1 cursor-pointer transition-all"
-                  >
-                    <RotateCcw size={11} />
-                    <span>RESET</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => (isLastPost ? handleBackToHub() : handleNextPost(platform.id))}
+                  disabled={!isPostSolved}
+                  className={`px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest flex items-center space-x-1.5 transition-all ${
+                    isPostSolved
+                      ? 'bg-[#00ff66] text-[#05090f] hover:bg-[#00ff66]/90 cursor-pointer shadow-[0_0_15px_rgba(0,255,102,0.35)] active:scale-95'
+                      : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  <span>{isLastPost ? `ZAKOŃCZ ${platform.name.toUpperCase()}` : 'NASTĘPNY WPIS'}</span>
+                  <ArrowRight size={14} />
+                </button>
               </div>
             </div>
           )}
         </div>
       </div>
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // HUB: trzy platformy po kolei + notatnik faktów
+  // ---------------------------------------------------------------------------
+  return (
+    <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
+      {header}
+
+      <p className="text-sm text-white font-bold">
+        {isComplete
+          ? 'Profil kompletny. Zatwierdź zebrane fakty.'
+          : 'Przejrzyj jej profile po kolei. W każdym wpisie wskaż, czego się o niej dowiadujesz.'}
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {platforms.map((platform, idx) => {
+          const Icon = PLATFORM_ICONS[platform.id];
+          const unlocked = isPlatformUnlocked(idx);
+          const done = isPlatformDone(platform.id);
+          const isNext = idx === nextPlatformIdx;
+          const platformPosts = postsOf(platform.id);
+          const solvedCount = platformPosts.filter((p) => solvedPostIds.includes(p.id)).length;
+
+          return (
+            <button
+              key={platform.id}
+              disabled={!unlocked}
+              onClick={() => handleOpenPlatform(platform.id)}
+              className={`rounded-xl border-2 overflow-hidden text-left transition-all flex flex-col ${
+                unlocked ? 'cursor-pointer hover:scale-[1.01]' : 'cursor-not-allowed opacity-40 grayscale'
+              } ${isNext ? 'animate-pulse' : ''}`}
+              style={{
+                borderColor: done ? '#00ff66' : unlocked ? platform.accentColor : '#1f2937',
+                boxShadow: isNext ? `0 0 20px ${platform.accentColor}66` : undefined
+              }}
+            >
+              <ImageSlot
+                name={platform.id}
+                label={platform.name}
+                className="w-full aspect-[4/3]"
+                fallback={
+                  <div
+                    className="w-full aspect-[4/3] flex items-center justify-center"
+                    style={{ backgroundColor: `${platform.accentColor}26`, color: platform.accentColor }}
+                  >
+                    <Icon size={48} />
+                  </div>
+                }
+              />
+              <div className="p-3 bg-[#08101a]/95 flex items-center justify-between">
+                <div>
+                  <span className="text-sm font-black text-white block">{platform.name}</span>
+                  <span className="text-[10px] text-gray-400">{platform.tagline}</span>
+                </div>
+                <span
+                  className="text-[10px] font-bold flex items-center space-x-1"
+                  style={{ color: done ? '#00ff66' : unlocked ? platform.accentColor : '#6b7280' }}
+                >
+                  {done ? (
+                    <>
+                      <CheckCircle2 size={13} />
+                      <span>PRZEJRZANE</span>
+                    </>
+                  ) : unlocked ? (
+                    <span>{solvedCount > 0 ? `WPISY ${solvedCount}/${platformPosts.length}` : 'OTWÓRZ'}</span>
+                  ) : (
+                    <>
+                      <Lock size={12} />
+                      <span>ZABLOKOWANE</span>
+                    </>
+                  )}
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Notatnik faktów */}
+      <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a]/95 space-y-2">
+        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+          NOTATNIK: CO O NIEJ WIEMY
+        </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+          {allFacts.map((fact, idx) => {
+            const isFound = discoveredFactIds.includes(fact.id);
+            return (
+              <div
+                key={fact.id || idx}
+                className={`p-2 rounded-lg border text-xs flex items-center space-x-2 transition-all ${
+                  isFound
+                    ? 'border-[#00ff66] bg-[#00ff66]/10 text-white animate-in fade-in zoom-in-95'
+                    : 'border-gray-800/80 bg-black/20 text-gray-600'
+                }`}
+              >
+                <span
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 font-bold ${
+                    isFound ? 'bg-[#00ff66] text-[#05090f]' : 'bg-gray-800 text-gray-500'
+                  }`}
+                >
+                  {isFound ? '✓' : idx + 1}
+                </span>
+                <span className={`text-[11px] leading-tight ${isFound ? 'text-emerald-200 font-bold' : ''}`}>
+                  {isFound ? fact.text : '[ ??? ]'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {isComplete && (
+        <div className="p-3 rounded-lg border-2 border-[#00ff66] bg-[#00ff66]/15 space-y-2 animate-in fade-in">
+          <div className="flex items-center space-x-2 text-[#00ff66] text-xs font-bold">
+            <CheckCircle2 size={16} />
+            <span>INFORMACJE WYWIADOWCZE SKOMPLETOWANE!</span>
+          </div>
+          <button
+            onClick={() => {
+              sounds.playSuccess();
+              onComplete();
+            }}
+            className="w-full py-2.5 bg-[#00ff66] text-[#05090f] font-black text-xs uppercase tracking-widest rounded hover:bg-[#00ff66]/90 transition-all flex items-center justify-center space-x-1.5 cursor-pointer shadow-[0_0_20px_rgba(0,255,102,0.4)] active:scale-95"
+          >
+            <span>ZATWIERDŹ PROFIL // PRZEJDŹ DALEJ</span>
+            <ArrowRight size={15} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
