@@ -188,7 +188,7 @@ export const Desktop: React.FC = () => {
                     const isChatActiveTile = tile.isChatFocus && (chatAvailableChoices.length > 0 || isChatAttentionActive);
                     const isHighlighted = !tile.isChatFocus && highlightedTileId === tile.id;
                     const badgeCount = tile.isChatFocus
-                      ? (chatAvailableChoices.length > 0 ? (notificationBadges['chat'] || 1) : notificationBadges['chat'])
+                      ? (chatAvailableChoices.length > 0 ? (notificationBadges['chat'] || 1) : 0)
                       : notificationBadges[tile.id];
 
                     return (

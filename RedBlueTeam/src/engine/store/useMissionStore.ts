@@ -82,6 +82,8 @@ export interface MissionState {
   // Boot Sequence
   bootStage: BootStage;
   introDialogIndex: number;
+  /** Odpowiedzi gracza wysłane w intrze (id kwestii → treść), by trafiły do historii czatu w HACKERS.OS. */
+  introReplies: Record<string, string>;
 
   // Desktop Focus & System
   activeApp: WindowId | null;
@@ -189,7 +191,7 @@ export interface MissionState {
 
   // Boot Actions
   acceptIncomingCall: () => void;
-  nextIntroDialog: () => void;
+  nextIntroDialog: (reply?: { dialogId: string; text: string }) => void;
   startBiosBoot: () => void;
   finishBiosBoot: () => void;
 
@@ -255,7 +257,7 @@ export interface MissionState {
  * (co odblokować po tej kwestii) — to pierwsza rozmowa mostkująca. Przy braku
  * `intro.firstChoice` używamy fallbacku zgodnego z Misją 3 (greeting + start_virus).
  */
-function resolveOpeningChat(mission: MissionDefinition): {
+function resolveOpeningChat(mission: MissionDefinition, introReplies: Record<string, string> = {}): {
   messages: ChatMessage[];
   startBadges: Record<string, number>;
   bridge: MissionState['pendingBridge'] | null;
@@ -267,7 +269,8 @@ function resolveOpeningChat(mission: MissionDefinition): {
   const history: ChatMessage[] = [];
   (intro.dialogue || []).forEach((d: any, i: number) => {
     if (d.text) history.push({ id: `intro_bm_${i}`, sender: 'BYTE_MASTER', text: d.text });
-    if (d.playerResponse) history.push({ id: `intro_pl_${i}`, sender: 'PLAYER', text: d.playerResponse });
+    const reply = introReplies[d.id] ?? d.playerResponse ?? d.playerOptions?.[0]?.label;
+    if (reply) history.push({ id: `intro_pl_${i}`, sender: 'PLAYER', text: reply });
   });
 
   // Wzorzec B: intro kończy się kwestią gracza (firstChoice), która odblokowuje pierwszą aplikację.
@@ -337,6 +340,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     activeMission: mission,
     bootStage: 'incoming_call' as BootStage,
     introDialogIndex: 0,
+    introReplies: {} as Record<string, string>,
 
     activeApp: null as WindowId | null,
     openedApps: [] as WindowId[],
@@ -482,7 +486,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     sounds.playSuccess();
     const currentMission = get().activeMission;
     const baseInitial = getInitialMissionState(currentMission);
-    const opening = resolveOpeningChat(currentMission);
+    const opening = resolveOpeningChat(currentMission, get().introReplies);
 
     set({
       ...baseInitial,
@@ -701,10 +705,11 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     set({ bootStage: 'intro_chat' });
   },
 
-  nextIntroDialog: () => {
+  nextIntroDialog: (reply) => {
     sounds.playClick();
-    const { introDialogIndex, activeMission } = get();
+    const { introDialogIndex, activeMission, introReplies } = get();
     const maxIndex = (activeMission.intro?.dialogue?.length || 1) - 1;
+    if (reply) set({ introReplies: { ...introReplies, [reply.dialogId]: reply.text } });
     if (introDialogIndex < maxIndex) {
       set({ introDialogIndex: introDialogIndex + 1 });
     }
@@ -719,7 +724,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     sounds.playSuccess();
     scorm2004.initialize(true);
     const { activeMission } = get();
-    const opening = resolveOpeningChat(activeMission);
+    const opening = resolveOpeningChat(activeMission, get().introReplies);
 
     set({
       bootStage: 'desktop',

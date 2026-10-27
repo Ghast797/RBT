@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { PhoneCall, ShieldAlert, Terminal, ChevronRight } from 'lucide-react';
+import { PhoneCall, ShieldAlert, Terminal } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
+import type { ChatMessage } from '../store/useMissionStore';
+import { ChatView } from '../apps/ChatView';
 import { sounds } from '../audio/soundEffects';
 
 export const BootSequence: React.FC = () => {
@@ -16,7 +18,8 @@ export const BootSequence: React.FC = () => {
 
   const [biosLineCount, setBiosLineCount] = useState<number>(0);
   const [bootProgress, setBootProgress] = useState<number>(0);
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const [sent, setSent] = useState<Record<string, string>>({});
+  const [typing, setTyping] = useState<boolean>(true);
 
   const introDialogue = activeMission.intro?.dialogue || [];
   const currentDialog = introDialogue[introDialogIndex] || { id: '', text: '', playerResponse: '' };
@@ -24,9 +27,15 @@ export const BootSequence: React.FC = () => {
   const callerName = activeMission.intro?.callerName || 'BYTE_MASTER';
   const callStatus = activeMission.intro?.callStatus || 'POŁĄCZENIE PRZYCHODZĄCE (TOR v3)';
 
+  // Pokazuje „BYTE_MASTER pisze” przed każdą nową wiadomością rozmówcy.
   useEffect(() => {
-    setSelectedOptionId(null);
-  }, [introDialogIndex]);
+    if (bootStage !== 'intro_chat') return;
+    setTyping(true);
+    const delay = Math.min(3200, 1400 + (introDialogue[introDialogIndex]?.text.length || 0) * 8);
+    const timer = setTimeout(() => setTyping(false), delay);
+    return () => clearTimeout(timer);
+  }, [bootStage, introDialogIndex]);
+
 
   // Handle BIOS typewriter effect & progress bar
   useEffect(() => {
@@ -87,124 +96,61 @@ export const BootSequence: React.FC = () => {
 
   if (bootStage === 'intro_chat') {
     const isLastDialog = introDialogIndex === introDialogue.length - 1;
+    const options = currentDialog.playerOptions || [];
+    const sendText = (currentDialog.playerResponse || '').trim();
+
+    // Rozmowa budowana z dialogu: dymek rozmówcy (po „pisze…”), potem wysłana odpowiedź gracza.
+    const messages: ChatMessage[] = [];
+    introDialogue.slice(0, introDialogIndex + 1).forEach((node, idx) => {
+      const isCurrent = idx === introDialogIndex;
+      if (!isCurrent || !typing) {
+        messages.push({ id: `m-${node.id}`, sender: 'BYTE_MASTER', text: node.text });
+      }
+      if (sent[node.id]) {
+        messages.push({ id: `p-${node.id}`, sender: 'PLAYER', text: sent[node.id] });
+      }
+    });
+
+    // Ostatnia kwestia też może mieć odpowiedź gracza — dopiero po jej wysłaniu pojawia się start systemu.
+    const needsReply = options.length > 0 || sendText !== '' || !isLastDialog;
+    const replied = sent[currentDialog.id] !== undefined;
+    const showStart = isLastDialog && (!needsReply || replied);
+
+    const choices = showStart || replied
+      ? []
+      : options.length > 0
+      ? options.map((o) => ({ id: o.id, label: o.label }))
+      : [{ id: 'send', label: sendText || '[WYŚLIJ]' }];
+
+    const choose = (id: string) => {
+      sounds.playClick();
+      const label = choices.find((c) => c.id === id)?.label || '';
+      const text = id === 'send' && !sendText ? '' : label;
+      setSent((prev) => ({ ...prev, [currentDialog.id]: text }));
+      nextIntroDialog({ dialogId: currentDialog.id, text });
+    };
 
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#05080c] p-4 font-mono select-none">
-        <div className="w-full max-w-2xl bg-[#091118]/95 border-2 border-[#00f0ff] rounded-xl p-6 shadow-[0_0_35px_rgba(0,240,255,0.25)] flex flex-col justify-between max-h-[92vh] overflow-y-auto relative">
-          <div className="absolute inset-0 crt-scanlines pointer-events-none opacity-30" />
-
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-[#00f0ff]/30 pb-3 mb-4">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-7 h-7 rounded bg-[#00f0ff]/20 border border-[#00f0ff] flex items-center justify-center text-[#00f0ff]">
-                <ShieldAlert size={16} />
-              </div>
-              <span className="font-bold text-sm tracking-wider text-[#00f0ff]">
-                {callerName} // POŁĄCZONO 00:0{introDialogIndex + 1}
-              </span>
-            </div>
-            <span className="text-[10px] text-[#00f0ff]/60">SZYFROWANIE AKTYWNE</span>
-          </div>
-
-          {/* Dialogue display */}
-          <div className="space-y-4 my-auto">
-            {/* Caller speech bubble */}
-            <div className="p-4 bg-[#061019] border border-[#00f0ff]/40 rounded-lg text-sm text-[#d1fae5] leading-relaxed shadow-inner">
-              <span className="text-[10px] text-[#00f0ff] font-bold block mb-1">
-                {callerName}:
-              </span>
-              {currentDialog.text}
-            </div>
-
-            {/* Player's Choice Options (if present) */}
-            {currentDialog.playerOptions && currentDialog.playerOptions.length > 0 && (
-              <div className="space-y-2 pt-2">
-                <span className="text-[10px] text-[#00f0ff] font-bold tracking-widest uppercase block">
-                  WYBIERZ SWOJĄ ODPOWIEDŹ:
-                </span>
-                <div className="grid grid-cols-1 gap-2.5">
-                  {currentDialog.playerOptions.map((opt) => {
-                    const isSelected = selectedOptionId === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        onClick={() => {
-                          sounds.playClick();
-                          setSelectedOptionId(opt.id);
-                        }}
-                        className={`p-3 rounded-lg border text-left text-xs transition-all flex items-start space-x-2.5 cursor-pointer ${
-                          isSelected
-                            ? 'bg-[#00f0ff]/20 border-[#00f0ff] text-white shadow-[0_0_15px_rgba(0,240,255,0.3)]'
-                            : 'bg-[#061019] border-[#00f0ff]/30 text-gray-300 hover:border-[#00f0ff]/70 hover:bg-[#00f0ff]/10'
-                        }`}
-                      >
-                        <span
-                          className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] shrink-0 mt-0.5 ${
-                            isSelected
-                              ? 'border-[#00f0ff] bg-[#00f0ff] text-[#05080c] font-bold'
-                              : 'border-gray-500 text-gray-400'
-                          }`}
-                        >
-                          {isSelected ? '✓' : '•'}
-                        </span>
-                        <span className="leading-snug">{opt.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Mentor's reaction to selected option */}
-                {selectedOptionId && (() => {
-                  const selectedOpt = currentDialog.playerOptions?.find((o) => o.id === selectedOptionId);
-                  if (!selectedOpt?.mentorReaction) return null;
-                  return (
-                    <div className="p-3 bg-[#061420] border border-[#00f0ff]/50 rounded-lg text-xs text-[#a7f3d0] leading-relaxed shadow-inner mt-2">
-                      <span className="text-[10px] text-[#00f0ff] font-bold block mb-1">
-                        {callerName}:
-                      </span>
-                      {selectedOpt.mentorReaction}
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-
-            {/* Player's Response / Thought (if present and no playerOptions) */}
-            {(!currentDialog.playerOptions || currentDialog.playerOptions.length === 0) &&
-              Boolean(currentDialog.playerResponse && currentDialog.playerResponse.trim()) && (
-              <div className="p-4 bg-[#00f0ff]/10 border border-[#00f0ff]/50 rounded-lg text-sm text-[#00f0ff] leading-relaxed">
-                <span className="text-[10px] text-[#d1fae5]/60 font-bold block mb-1">
-                  TWOJA ODPOWIEDŹ:
-                </span>
-                "{currentDialog.playerResponse}"
-              </div>
-            )}
-          </div>
-
-          {/* Action Button */}
-          <div className="pt-4 border-t border-[#00f0ff]/30 flex justify-end">
-            {!isLastDialog ? (
-              <button
-                onClick={() => {
-                  setSelectedOptionId(null);
-                  nextIntroDialog();
-                }}
-                disabled={Boolean(currentDialog.playerOptions?.length && !selectedOptionId)}
-                className="px-6 py-2.5 bg-[#00f0ff] text-[#05080c] font-bold text-xs uppercase tracking-wider rounded hover:bg-[#00f0ff]/90 transition-all flex items-center space-x-1.5 shadow-[0_0_15px_rgba(0,240,255,0.4)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              >
-                <span>DALEJ</span>
-                <ChevronRight size={15} />
-              </button>
-            ) : (
-              <button
-                onClick={startBiosBoot}
-                className="px-6 py-3 bg-[#00ff66] text-[#05080c] font-black text-xs uppercase tracking-widest rounded hover:bg-[#00ff66]/90 transition-all flex items-center space-x-2 shadow-[0_0_20px_rgba(0,255,102,0.5)]"
-              >
-                <Terminal size={16} />
-                <span>WŁĄCZ SYSTEM OPERACYJNY {activeMission.mission.systemOs || 'HACKERS.OS'}</span>
-              </button>
-            )}
-          </div>
+      <div className="flex items-stretch justify-center w-screen h-screen bg-[#05080c] p-3 font-mono select-none">
+        <div className="w-full max-w-3xl h-full relative">
+          <ChatView
+            messages={messages}
+            choices={choices}
+            isTyping={typing}
+            onChoose={choose}
+            title={callerName}
+            footer={
+              showStart ? (
+                <button
+                  onClick={startBiosBoot}
+                  className="px-6 py-3 bg-[#00ff66] text-[#05080c] font-black text-xs uppercase tracking-widest rounded hover:bg-[#00ff66]/90 transition-all flex items-center space-x-2 shadow-[0_0_20px_rgba(0,255,102,0.5)]"
+                >
+                  <Terminal size={16} />
+                  <span>WŁĄCZ SYSTEM OPERACYJNY {activeMission.mission.systemOs || 'HACKERS.OS'}</span>
+                </button>
+              ) : undefined
+            }
+          />
         </div>
       </div>
     );
