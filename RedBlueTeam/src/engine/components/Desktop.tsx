@@ -18,6 +18,7 @@ import { BootSequence } from './BootSequence';
 import { ChatApp } from '../apps/ChatApp';
 import { AppHost, renderAppIcon } from '../registry/appRegistry';
 import { sounds } from '../audio/soundEffects';
+import { isDevMode } from '../core/devMode';
 
 export const Desktop: React.FC = () => {
   const {
@@ -119,6 +120,15 @@ export const Desktop: React.FC = () => {
                 <HelpCircle size={12} />
                 <span>WSKAZÓWKA [?]</span>
               </button>
+
+              {isDevMode && (
+                <span
+                  className="ml-2 px-2 py-0.5 rounded border border-amber-400/60 bg-amber-400/15 text-amber-300 font-bold text-[10px] tracking-wider"
+                  title="Tryb deweloperski (?dev=1): wszystkie kafelki odblokowane"
+                >
+                  DEV
+                </span>
+              )}
 
             </div>
             <div className="flex items-center space-x-3 text-[11px]">

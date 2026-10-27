@@ -53,6 +53,7 @@
   - `http://localhost:5173/?mission=3`
   - `http://localhost:5173/?mission=4`
 - Możliwe jest też uruchomienie dev serwera z izolacją konkretnej misji: `VITE_MISSION_ID=4 npm run dev`.
+- Tryb deweloperski `?dev=1` (np. `http://localhost:5173/?mission=1&dev=1`) pomija intro i od razu odblokowuje wszystkie kafelki misji, więc dowolny etap można otworzyć bez przechodzenia gry od zera (`src/engine/core/devMode.ts`; w paczce SCORM ignorowany). Samo `?skipIntro=1` pomija tylko intro.
 
 ---
 
