@@ -605,20 +605,12 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
               disabled={!unlocked}
               onClick={() => handleOpenPlatform(platform.id)}
               className={`relative w-full max-w-[340px] rounded-xl border-2 overflow-hidden text-left transition-all flex flex-col ${
-                isNext
-                  ? 'cursor-pointer scale-[1.04] hover:scale-[1.06]'
-                  : unlocked
-                  ? 'cursor-pointer opacity-70 hover:opacity-100'
-                  : 'cursor-not-allowed opacity-40 grayscale'
+                unlocked ? 'cursor-pointer' : 'cursor-not-allowed'
               }`}
-              style={{
-                borderColor: done ? '#00ff66' : platform.accentColor,
-                boxShadow: isNext
-                  ? `0 0 0 3px ${platform.accentColor}, 0 0 30px ${platform.accentColor}cc, 0 0 70px ${platform.accentColor}66`
-                  : undefined
-              }}
+              style={{ borderColor: done ? '#00ff66' : platform.accentColor }}
             >
-              {/* Aktualna platforma: pulsująca ramka i etykieta nad grafiką (z-[70], bo grafiki leżą na z-[60]) */}
+              {/* Aktualna platforma: tylko pulsująca ramka i etykieta nad grafiką (z-[70], bo grafiki leżą na z-[60]).
+                  Pozostałe karty bez wygaszania i bez szarości — blokadę pokazuje napis ZABLOKOWANE. */}
               {isNext && (
                 <>
                   <span

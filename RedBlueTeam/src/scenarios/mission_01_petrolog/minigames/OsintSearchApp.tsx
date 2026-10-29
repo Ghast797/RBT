@@ -94,6 +94,8 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
       ) : (
         <div className="flex-1 flex flex-col space-y-4">
           {/* Search Input Bar */}
+          {/* Po zatwierdzeniu celu wyszukiwarka nie jest już potrzebna — zwalnia miejsce na komunikat */}
+          {!isConfirmed && (
           <form onSubmit={handleSearch} className="flex gap-2">
             <div className="relative flex-1">
               <Search
@@ -123,6 +125,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
               <span>SZUKAJ</span>
             </button>
           </form>
+          )}
 
           {/* Quick Query Suggestion Chip */}
           {!hasSearched && (
@@ -171,10 +174,6 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
           {/* Search Results Display */}
           {hasSearched && !errorMessage && (
             <div className="space-y-3">
-              <div className="text-xs text-gray-400 border-b border-gray-800 pb-2">
-                <span>WYNIKI WYSZUKIWANIA ({config.profiles.length}):</span>
-              </div>
-
               <ChoiceZone accent={blue} label="WYBIERZ CEL">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {config.profiles.map((profile) => {
@@ -193,7 +192,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                       <div className="flex gap-3">
                         {/* Zdjęcie pracowniczki: assets/osint/<id profilu>.*; brak pliku = zastępnik */}
                         <div
-                          className="relative w-[48%] shrink-0 self-start aspect-[4/5] rounded-lg overflow-hidden border-2 flex items-center justify-center"
+                          className="relative w-[44%] shrink-0 self-start aspect-[4/5] rounded-lg overflow-hidden border-2 flex items-center justify-center"
                           style={{
                             backgroundColor: profile.isPublic ? '#00ff6614' : '#ff336614',
                             borderColor: profile.isPublic ? '#00ff66' : '#ff3366',
@@ -229,7 +228,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                           </span>
                         </div>
 
-                        <div className="min-w-0 flex-1 space-y-2.5">
+                        <div className="min-w-0 flex-1 space-y-2.5 pr-6">
                           <div>
                             <h3 className="text-sm font-bold text-white tracking-wide">{profile.name}</h3>
                             <p className="text-xs text-gray-400">{profile.role}</p>
@@ -251,17 +250,6 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                         </div>
                       </div>
 
-                      <div className="pt-4 mt-2 border-t border-gray-800/60 flex items-center justify-between text-xs">
-                        <span className="text-gray-400 text-[0.6875rem]">
-                          {profile.isPublic ? 'DOSTĘPNY' : 'ZABLOKOWANY'}
-                        </span>
-                        <span
-                          className="font-bold text-[0.6875rem]"
-                          style={{ color: isChosen ? '#00ff66' : blue }}
-                        >
-                          {isChosen ? '✓ CEL ZATWIERDZONY' : isSelected ? '● ZAZNACZONO' : isConfirmed ? '' : 'KLIKNIJ ABY WYBRAĆ ▸'}
-                        </span>
-                      </div>
                       </div>
                     </ChoiceTile>
                   );
