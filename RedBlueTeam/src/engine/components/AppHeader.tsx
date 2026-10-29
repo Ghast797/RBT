@@ -60,7 +60,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ icon: Icon, accent, title,
         style={{ borderColor: accent, backgroundColor: `${accent}14`, boxShadow: `inset 0 0 20px ${accent}12` }}
       >
         <span
-          className="text-[11px] font-black tracking-widest px-2 py-1 rounded shrink-0 text-[#05090f]"
+          className="text-[0.6875rem] font-black tracking-widest px-2 py-1 rounded shrink-0 text-[#05090f]"
           style={{ backgroundColor: accent }}
         >
           ZADANIE

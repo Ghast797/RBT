@@ -2,6 +2,11 @@
 
 @layer base {
   :root {
+    /* GAŁKA SKALOWANIA UI: bazowy rozmiar czcionki = 1rem. Tekst i odstępy (rem/em)
+       rosną razem z tą wartością. Zwiększ/zmniejsz clamp, by powiększyć/pomniejszyć
+       cały interfejs. Większy ekran -> większy UI (człon vw). */
+    font-size: clamp(16px, 0.55vw + 8.5px, 20px);
+
     --bg-main: #070b0e;
     --hacker-green: #00ff66;
     --hacker-green-dim: rgba(0, 255, 102, 0.25);

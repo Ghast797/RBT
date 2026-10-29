@@ -66,7 +66,7 @@ export const ModuleLoader: React.FC<ModuleLoaderProps> = ({
           style={{ width: `${progress}%`, backgroundColor: accent, boxShadow: `0 0 10px ${accent}` }}
         />
       </div>
-      <div className="text-[10px] text-gray-500 font-mono">{progress}%</div>
+      <div className="text-[0.625rem] text-gray-500 font-mono">{progress}%</div>
     </div>
   );
 };

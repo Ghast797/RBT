@@ -56,7 +56,7 @@ export const PendriveApp: React.FC = () => {
           <div>
             <div className="flex items-center justify-between border-b border-[#00ff66]/30 pb-2 mb-3">
               <span className="font-bold text-xs text-[#00ff66] tracking-wider">//E: USB</span>
-              <span className="text-[10px] text-gray-400">Pojemność: 16 GB FAT32</span>
+              <span className="text-[0.625rem] text-gray-400">Pojemność: 16 GB FAT32</span>
             </div>
 
             {/* Empty state / Files on USB */}
@@ -72,10 +72,10 @@ export const PendriveApp: React.FC = () => {
                 </div>
 
                 <div className="p-3 bg-[#00f0ff]/10 border border-[#00f0ff] rounded-lg text-xs space-y-2">
-                  <div className="text-[10px] text-[#00f0ff] font-bold">
+                  <div className="text-[0.625rem] text-[#00f0ff] font-bold">
                     WYMAGANE: PODPIĘCIE ŁADUNKU WIRUSA
                   </div>
-                  <p className="text-[11px] text-gray-300 leading-tight">
+                  <p className="text-[0.6875rem] text-gray-300 leading-tight">
                     Wirus RAT musi zostać ukryty w archiwum ZIP razem z plikami przynęty, aby ominąć podstawowe skanery.
                   </p>
                   <button
@@ -115,7 +115,7 @@ export const PendriveApp: React.FC = () => {
             ) : !selectedEnvelopeName ? (
               /* Modal 2: WYBIERZ PODPIS NA KOPERCIE */
               <div className="space-y-2.5">
-                <div className="p-1.5 bg-[#050a0f] border border-[#00ff66]/30 rounded text-[11px] text-[#00ff66] text-center">
+                <div className="p-1.5 bg-[#050a0f] border border-[#00ff66]/30 rounded text-[0.6875rem] text-[#00ff66] text-center">
                   NAZWA WOLUMINU: {step3.volumeOptions.find((o: any) => o.id === selectedVolumeName)?.label}
                 </div>
 
@@ -148,7 +148,7 @@ export const PendriveApp: React.FC = () => {
                   {currentAttachment?.name.includes('JPG') ? 'FOTKI_AFTERPARTY.ZIP' : 'DANE_PRZYNĘTY.ZIP'}
                 </div>
 
-                <div className="p-2 bg-[#050b10] border border-[#00ff66]/40 rounded text-[11px] text-gray-300 space-y-0.5">
+                <div className="p-2 bg-[#050b10] border border-[#00ff66]/40 rounded text-[0.6875rem] text-gray-300 space-y-0.5">
                   <div>Wolumin: <strong className="text-[#00ff66]">{step3.volumeOptions.find((o: any) => o.id === selectedVolumeName)?.label}</strong></div>
                   <div>Koperta: <strong className="text-white">{step3.envelopeOptions.find((o: any) => o.id === selectedEnvelopeName)?.label}</strong></div>
                 </div>
@@ -169,7 +169,7 @@ export const PendriveApp: React.FC = () => {
         <div className="p-4 bg-[#081219] border-2 border-[#00ff66]/40 rounded-xl space-y-3">
           <div className="flex items-center justify-between border-b border-[#00ff66]/30 pb-2 mb-2">
             <span className="font-bold text-xs text-[#00ff66] tracking-wider">ZAŁĄCZNIKI OD BYTE_MASTERA</span>
-            <span className="text-[10px] text-gray-400">{attachments.length} POZYCJE</span>
+            <span className="text-[0.625rem] text-gray-400">{attachments.length} POZYCJE</span>
           </div>
 
           <div className="space-y-2">
@@ -205,7 +205,7 @@ export const PendriveApp: React.FC = () => {
             })}
           </div>
 
-          <div className="p-3 bg-[#050a0f] border border-slate-800 rounded-lg text-[10px] text-gray-400 leading-relaxed">
+          <div className="p-3 bg-[#050a0f] border border-slate-800 rounded-lg text-[0.625rem] text-gray-400 leading-relaxed">
             Wskazówka: Wybierz paczkę plików korespondującą z kontekstem imprezy integracyjnej O&L Company, by nie wzbudzić podejrzeń Mateusza.
           </div>
         </div>

@@ -67,9 +67,9 @@ export const Taskbar: React.FC = () => {
                 }`}
               >
                 <span>{renderAppIcon(app.icon, 15)}</span>
-                <span className="hidden md:inline text-[11px]">{app.label}</span>
+                <span className="hidden md:inline text-[0.6875rem]">{app.label}</span>
                 {notif > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#ff3366] text-[9px] font-bold text-white shadow-[0_0_6px_#ff3366]">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#ff3366] text-[0.5625rem] font-bold text-white shadow-[0_0_6px_#ff3366]">
                     {notif}
                   </span>
                 )}
@@ -82,19 +82,19 @@ export const Taskbar: React.FC = () => {
       {/* Right: Mission Stats, Wallet & Clock */}
       <div className="flex items-center space-x-3 text-[#00ff66]/90">
         {/* BTC Reward */}
-        <div className="hidden md:flex items-center space-x-1 px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[11px] text-[#ffaa00]">
+        <div className="hidden md:flex items-center space-x-1 px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.6875rem] text-[#ffaa00]">
           <Coins size={13} />
           <span>{btcReward.toFixed(2)} BTC</span>
         </div>
 
         {/* Mission Score */}
-        <div className="hidden sm:flex items-center space-x-1 px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[11px]">
+        <div className="hidden sm:flex items-center space-x-1 px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.6875rem]">
           <span className="text-[#00ff66]/60">WYNIK:</span>
           <span className={`font-bold ${score >= 80 ? 'text-[#00ff66]' : 'text-[#ff3366]'}`}>{score}%</span>
         </div>
 
         {/* Clock */}
-        <div className="px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[11px] tracking-widest text-[#00ff66]">
+        <div className="px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.6875rem] tracking-widest text-[#00ff66]">
           {time}
         </div>
 

@@ -118,7 +118,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
                 PETROLOG WEBMAIL // SKRZYNKA ODBIORCZA (ANITA KLIMEK)
               </span>
             </div>
-            <span className="text-[10px] text-emerald-400 font-bold animate-pulse">
+            <span className="text-[0.625rem] text-emerald-400 font-bold animate-pulse">
               ● NOWA WIADOMOŚĆ PRZYCHODZĄCA
             </span>
           </div>
@@ -128,11 +128,11 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
             <div className="border-b border-gray-800 pb-2 text-xs text-gray-300 space-y-1">
               <div>
                 <strong>OD:</strong> {senderName}{' '}
-                <span className="text-sky-400 font-mono text-[11px]">&lt;{senderEmail}&gt;</span>
+                <span className="text-sky-400 font-mono text-[0.6875rem]">&lt;{senderEmail}&gt;</span>
               </div>
               <div>
                 <strong>DO:</strong> Anita Klimek{' '}
-                <span className="text-gray-400 font-mono text-[11px]">&lt;a.klimek@petrolog.com&gt;</span>
+                <span className="text-gray-400 font-mono text-[0.6875rem]">&lt;a.klimek@petrolog.com&gt;</span>
               </div>
               <div>
                 <strong>TEMAT:</strong> Zobacz to!
@@ -185,13 +185,13 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
                 PRZEGLĄDARKA OFIARY // HTTPS://{targetDomain.toUpperCase()}
               </span>
             </div>
-            <span className="text-[10px] text-gray-400 font-mono">STATUS: 200 OK</span>
+            <span className="text-[0.625rem] text-gray-400 font-mono">STATUS: 200 OK</span>
           </div>
 
           {/* Browser Content */}
           <div className="p-6 rounded-lg bg-black/70 border border-gray-800 text-center space-y-4 my-auto">
             <span
-              className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded tracking-widest ${
+              className={`text-[0.625rem] font-black uppercase px-2.5 py-0.5 rounded tracking-widest ${
                 isMuffin
                   ? 'bg-violet-500/20 text-violet-300 border border-violet-500/40'
                   : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
@@ -264,7 +264,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
                 style={{ width: `${infectionProgress}%` }}
               />
             </div>
-            <div className="flex justify-between text-[10px] text-gray-400">
+            <div className="flex justify-between text-[0.625rem] text-gray-400">
               <span>WSTRZYKIWANIE PROCESU DO PAMIĘCI RAM</span>
               <span className="font-bold text-[#00ff66]">{infectionProgress}%</span>
             </div>
@@ -282,14 +282,14 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
                 UDAŁO SIĘ! UZYSKANO DOSTĘP DO SIECI FIRMY PETROLOG
               </h3>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500 font-black">
+            <span className="text-[0.625rem] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500 font-black">
               DOSTĘP DOMENOWY: ADMIN
             </span>
           </div>
 
           {/* Network Topology Visualization */}
           <div className="p-4 rounded-lg bg-black/60 border border-emerald-500/30 space-y-3">
-            <span className="text-[10px] text-gray-400 uppercase tracking-wider font-bold block">
+            <span className="text-[0.625rem] text-gray-400 uppercase tracking-wider font-bold block">
               PRZEJĘTE WĘZŁY SIECI WEWNĘTRZNEJ PETROLOG:
             </span>
 
@@ -322,7 +322,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
                     <Server size={16} className="text-[#00ff66]" />
                     <span className="text-xs font-bold text-white truncate">{node.label}</span>
                   </div>
-                  <div className="text-[10px] text-gray-300 pt-2 space-y-0.5">
+                  <div className="text-[0.625rem] text-gray-300 pt-2 space-y-0.5">
                     <div>IP: <span className="font-mono text-emerald-400">{node.ip}</span></div>
                     <div>ROLA: <span className="text-white">{node.role}</span></div>
                   </div>

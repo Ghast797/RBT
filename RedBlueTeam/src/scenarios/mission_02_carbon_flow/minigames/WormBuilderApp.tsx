@@ -66,13 +66,13 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
           </div>
           <div>
             <h2 className="text-sm font-bold text-white tracking-widest">//BAZA_WIRUSÓW // ROBOTYKA 0-DAY</h2>
-            <p className="text-[11px]" style={{ color: purple }}>
+            <p className="text-[0.6875rem]" style={{ color: purple }}>
               Konstrukcja i modyfikacja samoreplikującego robaka sieciowego
             </p>
           </div>
         </div>
         <span
-          className="text-[10px] px-2.5 py-1 rounded-md border font-mono font-bold"
+          className="text-[0.625rem] px-2.5 py-1 rounded-md border font-mono font-bold"
           style={{ backgroundColor: `${purple}1a`, borderColor: `${purple}66`, color: purple }}
         >
           {screen === 'virus_select' ? 'KROK 1/2' : 'KROK 2/2'}
@@ -85,7 +85,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
             <h3 className="text-xs font-bold text-white tracking-wide uppercase">
               {config.virus.question}
             </h3>
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[0.6875rem] text-gray-400">
               Wybierz rodzaj ładunku złośliwego oprogramowania pasujący do założeń operacji przeciwko CarbonFlow.
             </p>
           </div>
@@ -120,13 +120,13 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
                       <Bug size={18} />
                       <h4 className="text-xs font-bold text-white">{opt.label}</h4>
                     </div>
-                    {opt.desc && <p className="text-[11px] text-gray-400 leading-relaxed">{opt.desc}</p>}
+                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
                   </div>
 
                   {opt.tags && (
                     <div className="flex flex-wrap gap-1 mt-3">
                       {opt.tags.map((t) => (
-                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded bg-black/60 text-gray-400">
+                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-400">
                           {t}
                         </span>
                       ))}
@@ -167,19 +167,19 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
               </div>
               <button
                 onClick={addAllInstructions}
-                className="text-[10px] px-2.5 py-1 rounded border border-gray-700 hover:border-purple-500 text-gray-300 hover:text-white transition-all bg-black/40 cursor-pointer"
+                className="text-[0.625rem] px-2.5 py-1 rounded border border-gray-700 hover:border-purple-500 text-gray-300 hover:text-white transition-all bg-black/40 cursor-pointer"
               >
                 WSTRZYKNIJ WSZYSTKIE INSTRUKCJE
               </button>
             </div>
-            <p className="text-[11px] text-gray-400 leading-relaxed">
+            <p className="text-[0.6875rem] text-gray-400 leading-relaxed">
               Zaznacz kluczowe procedury wykonawcze, które zostaną skompilowane w ładunek robaka 0-day.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-2">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              <span className="text-[0.6875rem] font-bold text-gray-400 uppercase tracking-wider">
                 Dostępne segmenty kodu:
               </span>
               <div className="space-y-1.5">
@@ -198,7 +198,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
                     >
                       <div className="space-y-0.5">
                         <div className="text-xs font-mono font-bold" style={{ color: isChecked ? '#c084fc' : '#9ca3af' }}>{inst.code}</div>
-                        <div className="text-[10px] text-gray-400">{inst.desc}</div>
+                        <div className="text-[0.625rem] text-gray-400">{inst.desc}</div>
                       </div>
                       <div
                         className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
@@ -219,9 +219,9 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
               <div className="space-y-2">
                 <div className="flex items-center space-x-2 text-gray-400 border-b border-gray-800 pb-2">
                   <Terminal size={14} />
-                  <span className="text-[10px] uppercase tracking-widest">Podgląd assemblera / payload.asm</span>
+                  <span className="text-[0.625rem] uppercase tracking-widest">Podgląd assemblera / payload.asm</span>
                 </div>
-                <div className="text-[11px] text-emerald-400 space-y-1 overflow-y-auto max-h-48">
+                <div className="text-[0.6875rem] text-emerald-400 space-y-1 overflow-y-auto max-h-48">
                   <div>; --- WORM 0-DAY PAYLOAD ENTRYPOINT ---</div>
                   <div>BITS 64</div>
                   <div>SECTION .text</div>
@@ -242,7 +242,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-[11px]">
+              <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-[0.6875rem]">
                 <span className="text-gray-400">Wybrane procedury:</span>
                 <span className="font-bold text-white font-mono">
                   {enabledInstructions.length} / {config.instructions.length}

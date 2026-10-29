@@ -129,7 +129,7 @@ export const Desktop: React.FC = () => {
               {/* VR Style Blue Context Help Button */}
               <button
                 onClick={() => setIsHelpOpen((prev) => !prev)}
-                className={`ml-2 px-2 py-0.5 rounded flex items-center space-x-1 font-bold text-[10px] tracking-wider transition-all border ${
+                className={`ml-2 px-2 py-0.5 rounded flex items-center space-x-1 font-bold text-[0.625rem] tracking-wider transition-all border ${
                   isHelpOpen
                     ? 'bg-[#00f0ff] text-[#050b10] border-[#00f0ff] shadow-[0_0_10px_#00f0ff]'
                     : 'bg-[#00f0ff]/15 text-[#00f0ff] border-[#00f0ff]/50 hover:bg-[#00f0ff]/30'
@@ -142,7 +142,7 @@ export const Desktop: React.FC = () => {
 
               {isDevMode && (
                 <span
-                  className="ml-2 px-2 py-0.5 rounded border border-amber-400/60 bg-amber-400/15 text-amber-300 font-bold text-[10px] tracking-wider"
+                  className="ml-2 px-2 py-0.5 rounded border border-amber-400/60 bg-amber-400/15 text-amber-300 font-bold text-[0.625rem] tracking-wider"
                   title="Tryb deweloperski (?dev=1): wszystkie kafelki odblokowane"
                 >
                   DEV
@@ -150,7 +150,7 @@ export const Desktop: React.FC = () => {
               )}
 
             </div>
-            <div className="flex items-center space-x-3 text-[11px]">
+            <div className="flex items-center space-x-3 text-[0.6875rem]">
               <span className="text-[#00ff66]/70">CEL: {activeMission.mission.targetCompany?.toUpperCase()}</span>
               <span className="font-bold text-[#00ff66]">{systemTime !== '00:00' ? systemTime : systemDate}</span>
               <button
@@ -269,14 +269,14 @@ export const Desktop: React.FC = () => {
 
                           {/* Notification Badge */}
                           {badgeCount && badgeCount > 0 ? (
-                            <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#ff3366] text-white text-[10px] font-black flex items-center justify-center shadow-[0_0_8px_#ff3366] animate-bounce">
+                            <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#ff3366] text-white text-[0.625rem] font-black flex items-center justify-center shadow-[0_0_8px_#ff3366] animate-bounce">
                               {badgeCount}
                             </span>
                           ) : null}
                         </div>
 
                         {/* Monospace Label */}
-                        <span className="text-[11px] font-bold text-[#d1fae5] mt-2.5 text-center leading-tight tracking-wider group-hover:text-[#00ff66] transition-colors">
+                        <span className="text-[0.6875rem] font-bold text-[#d1fae5] mt-2.5 text-center leading-tight tracking-wider group-hover:text-[#00ff66] transition-colors">
                           {tile.label}
                         </span>
                       </div>
@@ -326,7 +326,7 @@ export const Desktop: React.FC = () => {
                 <MessageSquareCode size={22} className="text-[#00ff66] animate-pulse shrink-0" />
                 <div className="flex flex-col">
                   <span className="text-white text-glow-green">CZAT Z BYTE_MASTEREM</span>
-                  <span className="text-[11px] text-[#00ff66]">SPRAWDŹ PRAWY MONITOR ➔</span>
+                  <span className="text-[0.6875rem] text-[#00ff66]">SPRAWDŹ PRAWY MONITOR ➔</span>
                 </div>
                 <ArrowRight size={24} className="text-[#00ff66] animate-pulse shrink-0" />
               </div>
@@ -335,7 +335,7 @@ export const Desktop: React.FC = () => {
             {/* Physical USB Stick Icon on Desk */}
             {(hasUsbInserted || isUsbEjected) && (
               <div className="pt-2 border-t border-[#00ff66]/20 flex items-center justify-center relative z-10">
-                <div className="px-3 py-1 rounded bg-purple-950/60 border border-purple-500 text-purple-300 flex items-center space-x-2 text-[10px] font-bold animate-pulse">
+                <div className="px-3 py-1 rounded bg-purple-950/60 border border-purple-500 text-purple-300 flex items-center space-x-2 text-[0.625rem] font-bold animate-pulse">
                   <HardDrive size={13} />
                   <span>[USB PODŁĄCZONE DO STANOWISKA HAKERA]</span>
                 </div>
@@ -356,7 +356,7 @@ export const Desktop: React.FC = () => {
           }`}
         >
           {isChatAttentionActive && (
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 bg-[#00ff66] text-[#05080c] text-[10px] font-black px-3.5 py-0.5 rounded-full uppercase tracking-wider shadow-[0_0_20px_#00ff66] animate-pulse flex items-center space-x-1 whitespace-nowrap">
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 bg-[#00ff66] text-[#05080c] text-[0.625rem] font-black px-3.5 py-0.5 rounded-full uppercase tracking-wider shadow-[0_0_20px_#00ff66] animate-pulse flex items-center space-x-1 whitespace-nowrap">
               <span>▲ AKTYWNA SESJA CZATU ▲</span>
             </div>
           )}
@@ -366,7 +366,7 @@ export const Desktop: React.FC = () => {
 
       {/* OS Bottom Controls Bar */}
       <div className="h-9 px-3 bg-[#060e14] border border-[#00ff66]/30 rounded-lg flex items-center justify-between text-xs text-[#00ff66] relative z-20">
-        <div className="flex items-center space-x-3 text-[11px]">
+        <div className="flex items-center space-x-3 text-[0.6875rem]">
           <span className="font-bold text-[#00ff66]">{activeMission.mission.title}</span>
           <span className="text-gray-500">|</span>
           <span className="text-gray-400">{activeMission.mission.subTitle}</span>
@@ -409,7 +409,7 @@ export const Desktop: React.FC = () => {
             </div>
 
             <div className="p-4 bg-[#1f060b] border border-[#ff3366]/40 rounded-xl text-left text-xs text-red-200 leading-relaxed shadow-inner">
-              <div className="text-[10px] text-[#ff3366] font-bold uppercase mb-1">
+              <div className="text-[0.625rem] text-[#ff3366] font-bold uppercase mb-1">
                 SZCZEGÓŁY WPADKI:
               </div>
               <p>{detectionReason?.details || "Podjęte działanie zaalarmowało ochronę lub systemy IDS/IPS. Atak został zneutralizowany."}</p>
@@ -469,7 +469,7 @@ export const Desktop: React.FC = () => {
                   <RefreshCw size={15} className="group-hover:rotate-180 transition-transform duration-300" />
                   <span>OD POCZĄTKU</span>
                 </div>
-                <span className="text-[10px] text-gray-400 group-hover:text-gray-900 font-normal">Intro + BIOS + Fabuła</span>
+                <span className="text-[0.625rem] text-gray-400 group-hover:text-gray-900 font-normal">Intro + BIOS + Fabuła</span>
               </button>
 
               <button
@@ -480,7 +480,7 @@ export const Desktop: React.FC = () => {
                   <Play size={15} />
                   <span>OD WYBORÓW</span>
                 </div>
-                <span className="text-[10px] text-gray-900 font-normal">Pulpit + Baza Wirusów</span>
+                <span className="text-[0.625rem] text-gray-900 font-normal">Pulpit + Baza Wirusów</span>
               </button>
             </div>
           </div>

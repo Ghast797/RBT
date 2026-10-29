@@ -92,12 +92,12 @@ export const DroneApp: React.FC = () => {
             <div className="p-4 bg-[#081219] border-2 border-[#00ff66]/40 rounded-xl flex flex-col justify-between items-center text-center space-y-4">
               <div className="w-full flex items-center justify-between border-b border-[#00ff66]/30 pb-2">
                 <span className="font-bold text-xs text-[#00ff66]">STATUS DRONA</span>
-                <span className="text-[10px] text-gray-400">STOI W POKOJU HAKERA</span>
+                <span className="text-[0.625rem] text-gray-400">STOI W POKOJU HAKERA</span>
               </div>
               <div className="flex-1 flex flex-col items-center justify-center space-y-3 text-gray-400 text-xs px-2">
                 <Radio size={40} className="text-[#00ff66]/60 animate-pulse" />
                 <p className="text-gray-300">CONDOR MIT63 czeka na podłączenie fizycznego ładunku USB.</p>
-                <p className="text-[11px] text-[#00ff66]/80 leading-relaxed">
+                <p className="text-[0.6875rem] text-[#00ff66]/80 leading-relaxed">
                   Podepnij kopertę z pendrive'em, aby odblokować nawigację satelitarną i wskazać adres ofiary.
                 </p>
               </div>
@@ -110,11 +110,11 @@ export const DroneApp: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <span className="font-black text-[#00ff66]">{droneStats.model}</span>
                 <span className="text-gray-500">|</span>
-                <span className="px-2 py-0.5 rounded bg-[#00ff66]/15 text-[#00ff66] font-bold text-[10px]">
+                <span className="px-2 py-0.5 rounded bg-[#00ff66]/15 text-[#00ff66] font-bold text-[0.625rem]">
                   {droneFlightState === 'waiting_coords' ? 'CZEKA NA WSPÓŁRZĘDNE' : 'W LOCIE // 25 KM/H'}
                 </span>
               </div>
-              <div className="flex items-center space-x-3 text-[11px] text-gray-300">
+              <div className="flex items-center space-x-3 text-[0.6875rem] text-gray-300">
                 <span className="flex items-center space-x-1">
                   <Camera size={13} className="text-[#00ff66]" />
                   <span>WIDEO AKTYWNE</span>
@@ -283,7 +283,7 @@ export const DroneApp: React.FC = () => {
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
               <span className="font-bold">KAMERA AKTYWNA [48%]</span>
             </div>
-            <div className="text-[11px] text-gray-300">
+            <div className="text-[0.6875rem] text-gray-300">
               Wybierz miejsce na parkingu, gdzie ofiara znajdzie kopertę na samochodzie.
             </div>
           </div>

@@ -211,14 +211,14 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                             <div className="flex flex-col items-center justify-center text-center p-2 space-y-1">
                               <span className="font-black text-4xl">{profile.avatarText}</span>
                               {import.meta.env.DEV && (
-                                <span className="text-[10px] text-gray-500 leading-tight break-all">
+                                <span className="text-[0.625rem] text-gray-500 leading-tight break-all">
                                   {`${OSINT_ASSETS_DIR}/${profile.id}.png`}
                                 </span>
                               )}
                             </div>
                           )}
                           <span
-                            className="absolute top-2 right-2 text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider flex items-center space-x-1 backdrop-blur-sm"
+                            className="absolute top-2 right-2 text-[0.625rem] px-2 py-0.5 rounded font-black uppercase tracking-wider flex items-center space-x-1 backdrop-blur-sm"
                             style={{
                               backgroundColor: profile.isPublic ? '#00ff6633' : '#ff336633',
                               color: profile.isPublic ? '#00ff66' : '#ff3366'
@@ -241,7 +241,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                               {profile.tags.map((tag) => (
                                 <span
                                   key={tag}
-                                  className="text-[9px] px-2 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
+                                  className="text-[0.5625rem] px-2 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
                                 >
                                   {tag}
                                 </span>
@@ -252,11 +252,11 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                       </div>
 
                       <div className="pt-4 mt-2 border-t border-gray-800/60 flex items-center justify-between text-xs">
-                        <span className="text-gray-400 text-[11px]">
+                        <span className="text-gray-400 text-[0.6875rem]">
                           {profile.isPublic ? 'DOSTĘPNY' : 'ZABLOKOWANY'}
                         </span>
                         <span
-                          className="font-bold text-[11px]"
+                          className="font-bold text-[0.6875rem]"
                           style={{ color: isChosen ? '#00ff66' : blue }}
                         >
                           {isChosen ? '✓ CEL ZATWIERDZONY' : isSelected ? '● ZAZNACZONO' : isConfirmed ? '' : 'KLIKNIJ ABY WYBRAĆ ▸'}
@@ -282,7 +282,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                       <h4 className="text-xs font-bold text-white tracking-wider">
                         ZAZNACZONO: {selectedProfile.name.toUpperCase()} ({selectedProfile.department.toUpperCase()})
                       </h4>
-                      <p className="text-[11px]" style={{ color: blue }}>
+                      <p className="text-[0.6875rem]" style={{ color: blue }}>
                         Czy to właściwy cel ataku? Zatwierdź wybór albo zaznacz inny profil.
                       </p>
                     </div>
@@ -309,7 +309,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                       <h4 className="text-xs font-bold text-white tracking-wider">
                         CEL WYTYPOWANY: {selectedProfile.name.toUpperCase()} ({selectedProfile.department.toUpperCase()})
                       </h4>
-                      <p className="text-[11px] text-[#00ff66] leading-relaxed">
+                      <p className="text-[0.6875rem] text-[#00ff66] leading-relaxed">
                         {selectedProfile.selectionNotice ||
                           'DOBRY WYBÓR! Profil publiczny dostępny w 3 sieciach społecznościowych. Gotowy do analizy faktów.'}
                       </p>

@@ -58,7 +58,7 @@ export const TimeJump: React.FC<TimeJumpProps> = ({
       <div className="text-sm font-bold tracking-widest text-center animate-pulse" style={{ color: accent }}>
         {label}
       </div>
-      {sublabel && <div className="text-[11px] text-gray-400 text-center max-w-sm">{sublabel}</div>}
+      {sublabel && <div className="text-[0.6875rem] text-gray-400 text-center max-w-sm">{sublabel}</div>}
       <div className="w-56 h-1.5 bg-[#0a1610] border rounded overflow-hidden" style={{ borderColor: `${accent}66` }}>
         <div className="h-full transition-all duration-150" style={{ width: `${progress}%`, backgroundColor: accent }} />
       </div>

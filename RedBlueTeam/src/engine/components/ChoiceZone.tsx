@@ -16,7 +16,7 @@ export const ChoiceZone: React.FC<{
     style={{ borderColor: `${accent}73`, backgroundColor: `${accent}0a` }}
   >
     <span
-      className="absolute -top-3 left-4 px-3 py-0.5 rounded-full text-[11px] font-black tracking-widest whitespace-nowrap"
+      className="absolute -top-3 left-4 px-3 py-0.5 rounded-full text-[0.6875rem] font-black tracking-widest whitespace-nowrap"
       style={{ backgroundColor: accent, color: '#05090f', boxShadow: `0 0 12px ${accent}80` }}
     >
       {`▼ ${label}`}
@@ -84,7 +84,7 @@ export const ChoiceTile: React.FC<{
   const markerEl =
     marker === null ? null : (
       <span
-        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[11px] font-black shrink-0 transition-colors ${
+        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[0.6875rem] font-black shrink-0 transition-colors ${
           markerPosition === 'corner' ? 'absolute top-2.5 right-2.5 z-[70]' : 'mt-0.5'
         }`}
         style={{

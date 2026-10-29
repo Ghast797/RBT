@@ -70,8 +70,8 @@ const ImageSlot: React.FC<{
       className={`${className} border-2 border-dashed border-gray-700 bg-black/40 flex flex-col items-center justify-center text-center p-2 space-y-1`}
     >
       <ImageIcon size={22} className="text-gray-600" />
-      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{`GRAFIKA: ${label}`}</span>
-      <span className="text-[9px] text-gray-600">{`${SOCIAL_ASSETS_DIR}/${name}.png`}</span>
+      <span className="text-[0.625rem] font-bold text-gray-500 uppercase tracking-wider">{`GRAFIKA: ${label}`}</span>
+      <span className="text-[0.5625rem] text-gray-600">{`${SOCIAL_ASSETS_DIR}/${name}.png`}</span>
     </div>
   );
 };
@@ -271,7 +271,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
           //NOTATNIK: CO O NIEJ WIEMY
         </span>
         <span
-          className="text-[10px] px-2 py-0.5 rounded border font-mono tracking-wider font-bold"
+          className="text-[0.625rem] px-2 py-0.5 rounded border font-mono tracking-wider font-bold"
           style={{
             backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
             borderColor: isComplete ? '#00ff66' : `${purple}66`,
@@ -294,13 +294,13 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
               }`}
             >
               <span
-                className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 font-bold ${
+                className={`w-4 h-4 rounded-full flex items-center justify-center text-[0.625rem] shrink-0 font-bold ${
                   isFound ? 'bg-[#00ff66] text-[#05090f]' : 'bg-gray-800 text-gray-500'
                 }`}
               >
                 {isFound ? '✓' : idx + 1}
               </span>
-              <span className={`text-[11px] leading-tight ${isFound ? 'text-emerald-200 font-bold' : ''}`}>
+              <span className={`text-[0.6875rem] leading-tight ${isFound ? 'text-emerald-200 font-bold' : ''}`}>
                 {isFound ? fact.text : '[ ??? ]'}
               </span>
             </div>
@@ -322,7 +322,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
           <div className="px-3 py-1.5 rounded-lg border bg-black/40 border-gray-800 flex items-center space-x-2.5">
             <Gauge size={16} style={{ color: precisionColor }} />
             <div className="space-y-0.5">
-              <div className="flex justify-between items-center text-[10px] text-gray-400 space-x-2">
+              <div className="flex justify-between items-center text-[0.625rem] text-gray-400 space-x-2">
                 <span>PRECYZJA WYWIADU:</span>
                 <span className="font-black" style={{ color: precisionColor }}>
                   {`${precision}%`}
@@ -335,13 +335,13 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                 />
               </div>
             </div>
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">
+            <span className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">
               {`MIN ${minPrecision}%`}
             </span>
           </div>
 
           <span
-            className="text-[10px] px-2.5 py-2 rounded-lg border font-mono tracking-wider font-bold"
+            className="text-[0.625rem] px-2.5 py-2 rounded-lg border font-mono tracking-wider font-bold"
             style={{
               backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
               borderColor: isComplete ? '#00ff66' : `${purple}66`,
@@ -413,7 +413,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                   </div>
                   <button
                     onClick={handleBackToHub}
-                    className="px-2 py-1 rounded bg-black/25 hover:bg-black/40 text-white text-[10px] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
+                    className="px-2 py-1 rounded bg-black/25 hover:bg-black/40 text-white text-[0.625rem] font-bold flex items-center space-x-1 cursor-pointer transition-colors"
                   >
                     <ArrowLeft size={12} />
                     <span>PROFILE</span>
@@ -422,14 +422,14 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
 
                 <div className="px-3 py-2 flex items-center space-x-2.5">
                   <div
-                    className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-[11px] text-white shrink-0"
+                    className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-[0.6875rem] text-white shrink-0"
                     style={{ borderColor: platform.accentColor, backgroundColor: `${platform.accentColor}40` }}
                   >
                     {initials}
                   </div>
                   <div className="min-w-0">
                     <span className="text-xs font-bold text-white block truncate">{post.handle}</span>
-                    <span className="text-[10px] text-gray-500">{post.timestamp}</span>
+                    <span className="text-[0.625rem] text-gray-500">{post.timestamp}</span>
                   </div>
                 </div>
 
@@ -442,7 +442,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                   {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {post.tags.map((tag) => (
-                        <span key={tag} className="text-[11px]" style={{ color: platform.accentColor }}>
+                        <span key={tag} className="text-[0.6875rem]" style={{ color: platform.accentColor }}>
                           {tag}
                         </span>
                       ))}
@@ -456,8 +456,8 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
             <div className="flex items-center justify-center">
               <div className="rounded-xl border border-gray-800 bg-[#08101a]/95 p-4 space-y-3 w-full max-w-xl">
                 <div className="flex items-center justify-between border-b border-gray-800 pb-2">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">ANALIZA WPISU</span>
-                  <span className="text-[10px] text-gray-500 font-bold">{`WPIS ${postIdx + 1}/${platformPosts.length}`}</span>
+                  <span className="text-[0.6875rem] font-bold text-gray-400 uppercase tracking-wider">ANALIZA WPISU</span>
+                  <span className="text-[0.625rem] text-gray-500 font-bold">{`WPIS ${postIdx + 1}/${platformPosts.length}`}</span>
                 </div>
 
                 {/* Dedukcja */}
@@ -535,7 +535,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                     ) : (
                       <AlertTriangle size={16} className="shrink-0 text-red-400" />
                     )}
-                    <span className="font-bold text-[11px] leading-tight font-sans">{feedback.text}</span>
+                    <span className="font-bold text-[0.6875rem] leading-tight font-sans">{feedback.text}</span>
                   </div>
                 )}
 
@@ -626,7 +626,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                     style={{ borderColor: platform.accentColor, boxShadow: `inset 0 0 25px ${platform.accentColor}` }}
                   />
                   <span
-                    className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-white whitespace-nowrap pointer-events-none z-[70] flex items-center space-x-1.5"
+                    className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[0.6875rem] font-black uppercase tracking-widest text-white whitespace-nowrap pointer-events-none z-[70] flex items-center space-x-1.5"
                     style={{ backgroundColor: platform.accentColor, boxShadow: `0 0 15px ${platform.accentColor}` }}
                   >
                     <ArrowRight size={13} />
@@ -650,10 +650,10 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
               <div className="p-3 bg-[#08101a]/95 flex items-center justify-between">
                 <div>
                   <span className="text-sm font-black text-white block">{platform.name}</span>
-                  <span className="text-[10px] text-gray-400">{platform.tagline}</span>
+                  <span className="text-[0.625rem] text-gray-400">{platform.tagline}</span>
                 </div>
                 <span
-                  className="text-[10px] font-bold flex items-center space-x-1"
+                  className="text-[0.625rem] font-bold flex items-center space-x-1"
                   style={{ color: done ? '#00ff66' : platform.accentColor }}
                 >
                   {done ? (

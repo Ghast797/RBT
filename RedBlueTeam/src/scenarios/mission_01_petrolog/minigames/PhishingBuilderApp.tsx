@@ -92,13 +92,13 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
           >
             <div className="space-y-2 pr-7">
               <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
-              {opt.desc && <p className="text-[11px] text-gray-300 leading-relaxed">{opt.desc}</p>}
+              {opt.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed">{opt.desc}</p>}
               {opt.tags && opt.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {opt.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[9px] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
+                      className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
                     >
                       {tag}
                     </span>
@@ -173,7 +173,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
                 <h4 className="text-xs font-bold text-gray-200 tracking-wider uppercase font-mono">
                   KLIKNIJ JEDEN Z ADRESÓW STRONY POWYŻEJ, ABY ZOBACZYĆ PODGLĄD NA ŻYWO
                 </h4>
-                <p className="text-[11px] text-gray-400 max-w-lg mx-auto font-mono mt-1">
+                <p className="text-[0.6875rem] text-gray-400 max-w-lg mx-auto font-mono mt-1">
                   Po kliknięciu kafelka natychmiast wygeneruje się podgląd witryny w oknie przeglądarki, dzięki czemu zobaczysz, jak Twoją stronę-pułapkę zobaczy ofiara (Anita Klimek).
                 </p>
               </div>
@@ -258,7 +258,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
           <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
             {/* Left: Payload tile to drag */}
             <div className="md:col-span-4 p-4 rounded-xl border border-gray-800 bg-[#08101a] space-y-3">
-              <span className="text-[10px] text-gray-400 font-bold tracking-widest uppercase block font-mono">
+              <span className="text-[0.625rem] text-gray-400 font-bold tracking-widest uppercase block font-mono">
                 DOSTĘPNY MODUŁ MALWARE:
               </span>
               <div
@@ -278,12 +278,12 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-white">//PRZEKIEROWANIE</h4>
-                  <p className="text-[10px] text-emerald-300">
+                  <p className="text-[0.625rem] text-emerald-300">
                     {isPayloadInjected ? 'ZAINSTALOWANO WIRUSA ✓' : 'PRZECIĄGNIJ MODUŁ NA STRONĘ'}
                   </p>
                 </div>
               </div>
-              <p className="text-[11px] text-gray-400 leading-relaxed font-mono">
+              <p className="text-[0.6875rem] text-gray-400 leading-relaxed font-mono">
                 Przeciągnij kafelek modułu malware i upuść go na przycisk pobierania na stronie, aby wstrzyknąć exploit.
               </p>
             </div>
@@ -359,15 +359,15 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs pt-1">
               <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[10px] text-gray-400 block font-mono">DOMENA PUŁAPKI</span>
+                <span className="text-[0.625rem] text-gray-400 block font-mono">DOMENA PUŁAPKI</span>
                 <span className="font-bold text-pink-400 truncate block">{selectedDomain?.label}</span>
               </div>
               <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[10px] text-gray-400 block font-mono">PRZYNĘTA (PAYLOAD)</span>
+                <span className="text-[0.625rem] text-gray-400 block font-mono">PRZYNĘTA (PAYLOAD)</span>
                 <span className="font-bold text-sky-400 truncate block">{selectedPayload?.label}</span>
               </div>
               <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[10px] text-gray-400 block font-mono">STATUS EXPLOITA</span>
+                <span className="text-[0.625rem] text-gray-400 block font-mono">STATUS EXPLOITA</span>
                 <span className="font-bold text-emerald-400 truncate block">AKTYWNY W PRZYCISKU ✓</span>
               </div>
             </div>

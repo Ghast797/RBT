@@ -109,11 +109,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
         </div>
 
         {ready && choices.length > 0 ? (
-          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-[#00ff66]/20 border border-[#00ff66] text-[#00ff66] animate-pulse tracking-wide">
+          <span className="px-2 py-0.5 rounded text-[0.625rem] font-black bg-[#00ff66]/20 border border-[#00ff66] text-[#00ff66] animate-pulse tracking-wide">
             [TWOJA TURA]
           </span>
         ) : (
-          <span className="text-[10px] text-[#00f0ff]/60 tracking-widest">TOR SECURE LINK</span>
+          <span className="text-[0.625rem] text-[#00f0ff]/60 tracking-widest">TOR SECURE LINK</span>
         )}
       </div>
 
@@ -133,7 +133,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               }`}
             >
               {msg.sender === 'SYSTEM' ? (
-                <div className="px-3 py-1 rounded bg-[#091119] border border-[#00ff66]/30 text-[10px] text-[#00ff66] italic my-1">
+                <div className="px-3 py-1 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.625rem] text-[#00ff66] italic my-1">
                   {msg.text}
                 </div>
               ) : (
@@ -150,7 +150,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
                         : 'polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px)'
                   }}
                 >
-                  <div className="text-[10px] font-bold mb-1 flex items-center justify-between">
+                  <div className="text-[0.625rem] font-bold mb-1 flex items-center justify-between">
                     <span className={msg.sender === 'PLAYER' ? 'text-[#00f0ff]' : 'text-[#38bdf8]'}>
                       {msg.sender === 'PLAYER' ? 'TY (HAKER)' : 'BYTE_MASTER'}
                     </span>
@@ -211,7 +211,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
                           <polygon points="50,48 68,30 108,30 118,48" fill="#1e293b" />
                           <rect x="66" y="27" width="44" height="4" rx="2" fill="#ef4444" stroke="#b91c1c" strokeWidth="1" />
                         </svg>
-                        <div className="text-[10px] text-center font-bold text-white mt-1">
+                        <div className="text-[0.625rem] text-center font-bold text-white mt-1">
                           BIAŁY HATCHBACK // DACH: CZERWONY
                         </div>
                       </div>
@@ -233,7 +233,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               className="px-3 py-2 rounded-r-lg rounded-tl-lg bg-[#0b1724] border border-[#00f0ff]/50 text-[#00f0ff] flex items-center space-x-2 shadow-[0_0_12px_rgba(0,240,255,0.15)]"
               style={{ clipPath: 'polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px)' }}
             >
-              <span className="font-bold tracking-wider text-[11px]">BYTE_MASTER pisze</span>
+              <span className="font-bold tracking-wider text-[0.6875rem]">BYTE_MASTER pisze</span>
               <span className="flex space-x-1 items-center ml-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '0ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -257,11 +257,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
             : 'bg-[#08121a] border-t-2 border-[#00ff66]/50 shadow-[0_-3px_15px_rgba(0,255,102,0.15)]'
         } space-y-2`}>
           <div className="flex items-center justify-between">
-            <div className="text-[10px] text-[#00ff66] font-black uppercase tracking-wider flex items-center space-x-1.5">
+            <div className="text-[0.625rem] text-[#00ff66] font-black uppercase tracking-wider flex items-center space-x-1.5">
               <span className="w-2 h-2 rounded-full bg-[#00ff66] animate-ping shrink-0" />
               <span>WYBIERZ ODPOWIEDŹ DLA BYTE_MASTERA:</span>
             </div>
-            <span className="text-[9px] text-[#00ff66]/80 font-bold uppercase hidden sm:inline">[KLIKNIJ OPCJĘ]</span>
+            <span className="text-[0.5625rem] text-[#00ff66]/80 font-bold uppercase hidden sm:inline">[KLIKNIJ OPCJĘ]</span>
           </div>
 
           <div className="space-y-2">

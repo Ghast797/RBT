@@ -77,14 +77,14 @@ export const RatSessionApp: React.FC = () => {
 
           <div className="flex-1 relative p-4 flex">
             <div className="space-y-4 relative z-10 w-28">
-              <div className="flex flex-col items-center p-2 rounded hover:bg-white/10 cursor-pointer text-center text-[10px] text-white">
+              <div className="flex flex-col items-center p-2 rounded hover:bg-white/10 cursor-pointer text-center text-[0.625rem] text-white">
                 <div className="w-10 h-10 rounded bg-slate-800 border border-slate-600 flex items-center justify-center mb-1 text-slate-300">
                   <Trash2 size={20} />
                 </div>
                 <span className="font-bold">KOSZ</span>
               </div>
 
-              <div className="flex flex-col items-center p-2 rounded hover:bg-white/10 cursor-pointer text-center text-[10px] text-white">
+              <div className="flex flex-col items-center p-2 rounded hover:bg-white/10 cursor-pointer text-center text-[0.625rem] text-white">
                 <div className="w-10 h-10 rounded bg-blue-900/60 border border-blue-500 flex items-center justify-center mb-1 text-blue-300">
                   <Monitor size={20} />
                 </div>
@@ -93,7 +93,7 @@ export const RatSessionApp: React.FC = () => {
 
               <div 
                 onClick={openNetworkGraph}
-                className="flex flex-col items-center p-2 rounded bg-amber-500/20 border-2 border-amber-500 hover:bg-amber-500/30 cursor-pointer text-center text-[10px] text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all animate-pulse"
+                className="flex flex-col items-center p-2 rounded bg-amber-500/20 border-2 border-amber-500 hover:bg-amber-500/30 cursor-pointer text-center text-[0.625rem] text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all animate-pulse"
                 title="Kliknij, aby zinfiltrować sieć FREEVOLT"
               >
                 <div className="w-10 h-10 rounded bg-amber-600 flex items-center justify-center mb-1 text-white">
@@ -109,7 +109,7 @@ export const RatSessionApp: React.FC = () => {
                   <FolderOpen size={14} />
                   <span>E:\ ZDJĘCIA_AFTERPARTY</span>
                 </div>
-                <div className="text-[10px] bg-blue-900 px-1.5 py-0.5 rounded font-mono">FAT32</div>
+                <div className="text-[0.625rem] bg-blue-900 px-1.5 py-0.5 rounded font-mono">FAT32</div>
               </div>
               <div className="p-3 font-mono text-xs space-y-2">
                 <div 
@@ -119,10 +119,10 @@ export const RatSessionApp: React.FC = () => {
                   <FileArchive size={20} className="text-amber-400 shrink-0" />
                   <div className="flex-1">
                     <div className="font-bold">FOTKI_AFTERPARTY.ZIP</div>
-                    <div className="text-[10px] text-green-400">[STATUS: WYEKSTRAKTOWANO // RAT AKTYWNY]</div>
+                    <div className="text-[0.625rem] text-green-400">[STATUS: WYEKSTRAKTOWANO // RAT AKTYWNY]</div>
                   </div>
                 </div>
-                <div className="text-[10px] text-gray-400">
+                <div className="text-[0.625rem] text-gray-400">
                   Pracownik wypakował archiwum. Wirus RAT połączył się z serwerem C2 hakera.
                 </div>
               </div>
@@ -130,7 +130,7 @@ export const RatSessionApp: React.FC = () => {
           </div>
 
           <div className="p-2.5 bg-slate-950/90 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-2 z-20">
-            <div className="text-[11px] text-amber-300 flex items-center space-x-2">
+            <div className="text-[0.6875rem] text-amber-300 flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
               <span>Dostęp do stacji roboczej aktywny. Kliknij ikonę FREEVOLT lub przycisk obok, aby zinfiltrować sieć.</span>
             </div>
@@ -145,12 +145,12 @@ export const RatSessionApp: React.FC = () => {
 
           <div className="px-3 py-1.5 bg-[#0a121c]/90 border-t border-slate-700 flex items-center justify-between text-xs text-slate-300 z-10">
             <div className="flex items-center space-x-2">
-              <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white text-[10px] font-black">
+              <div className="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-white text-[0.625rem] font-black">
                 田
               </div>
-              <span className="text-[10px] text-gray-400">Wyszukaj pliki w O&L...</span>
+              <span className="text-[0.625rem] text-gray-400">Wyszukaj pliki w O&L...</span>
             </div>
-            <div className="text-[10px] font-mono text-[#00ff66] font-bold">
+            <div className="text-[0.625rem] font-mono text-[#00ff66] font-bold">
               08:12:28
             </div>
           </div>

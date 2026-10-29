@@ -68,13 +68,13 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
           >
             <div className="space-y-2 pr-7">
               <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
-              {opt.desc && <p className="text-[11px] text-gray-300 leading-relaxed">{opt.desc}</p>}
+              {opt.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed">{opt.desc}</p>}
               {showTags && opt.tags && opt.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {opt.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[9px] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
+                      className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
                     >
                       {tag}
                     </span>
@@ -291,20 +291,20 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
             {/* Attack components summary */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-2">
               <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[10px] text-gray-400 block font-mono">DOMENA PUŁAPKI</span>
+                <span className="text-[0.625rem] text-gray-400 block font-mono">DOMENA PUŁAPKI</span>
                 <span className="font-bold text-sky-400 truncate block">{targetDomain}</span>
               </div>
               <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[10px] text-gray-400 block font-mono">PRZYNĘTA (PAYLOAD)</span>
+                <span className="text-[0.625rem] text-gray-400 block font-mono">PRZYNĘTA (PAYLOAD)</span>
                 <span className="font-bold text-sky-400 truncate block">{targetPayload}</span>
               </div>
               <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[10px] text-gray-400 block font-mono">PODSZYTY NADAWCA</span>
+                <span className="text-[0.625rem] text-gray-400 block font-mono">PODSZYTY NADAWCA</span>
                 <span className="font-bold text-purple-400 truncate block">{selectedSender?.label}</span>
               </div>
               <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[10px] text-gray-400 block font-mono">SPOOFING EMAIL</span>
-                <span className="font-bold text-purple-400 font-mono text-[11px] truncate block">{selectedEmail?.label}</span>
+                <span className="text-[0.625rem] text-gray-400 block font-mono">SPOOFING EMAIL</span>
+                <span className="font-bold text-purple-400 font-mono text-[0.6875rem] truncate block">{selectedEmail?.label}</span>
               </div>
             </div>
           </div>

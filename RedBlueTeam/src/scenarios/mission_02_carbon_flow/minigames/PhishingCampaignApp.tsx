@@ -47,11 +47,11 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         </div>
         <div>
           <h2 className="text-sm font-bold text-white tracking-widest">{title}</h2>
-          <p className="text-[11px]" style={{ color: blue }}>{sub}</p>
+          <p className="text-[0.6875rem]" style={{ color: blue }}>{sub}</p>
         </div>
       </div>
       <span
-        className="text-[10px] px-2 py-0.5 rounded border font-mono"
+        className="text-[0.625rem] px-2 py-0.5 rounded border font-mono"
         style={{ backgroundColor: `${blue}1a`, borderColor: `${blue}66`, color: blue }}
       >
         {step}
@@ -192,12 +192,12 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                 >
                   <div className="space-y-2">
                     <h4 className="text-xs font-bold text-white leading-snug">{opt.label}</h4>
-                    {opt.desc && <p className="text-[11px] text-gray-400 leading-relaxed">{opt.desc}</p>}
+                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
                   </div>
                   {opt.tags && (
                     <div className="flex flex-wrap gap-1 mt-3">
                       {opt.tags.map((t) => (
-                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
+                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
                           {t}
                         </span>
                       ))}
@@ -257,12 +257,12 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                 >
                   <div className="space-y-2">
                     <h4 className="text-xs font-bold text-white leading-snug">{opt.label}</h4>
-                    {opt.desc && <p className="text-[11px] text-gray-400 leading-relaxed">{opt.desc}</p>}
+                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
                   </div>
                   {opt.tags && (
                     <div className="flex flex-wrap gap-1 mt-3">
                       {opt.tags.map((t) => (
-                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
+                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
                           {t}
                         </span>
                       ))}
@@ -322,12 +322,12 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                 >
                   <div className="space-y-2">
                     <h4 className="text-xs font-bold text-white leading-snug">{opt.label}</h4>
-                    {opt.desc && <p className="text-[11px] text-gray-400 leading-relaxed">{opt.desc}</p>}
+                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
                   </div>
                   {opt.tags && (
                     <div className="flex flex-wrap gap-1 mt-3">
                       {opt.tags.map((t) => (
-                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
+                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
                           {t}
                         </span>
                       ))}
@@ -387,14 +387,14 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                   <CheckCircle2 size={18} />
                   <span className="text-xs font-bold">ZAŁADOWANO BAZĘ: {config.mailingList.targetDomain} ({config.mailingList.employeesCount} REKORDÓW)</span>
                 </div>
-                <span className="text-[10px] text-gray-400 font-mono">STATUS: UZBROJONE</span>
+                <span className="text-[0.625rem] text-gray-400 font-mono">STATUS: UZBROJONE</span>
               </div>
 
               <div className="p-3 rounded-lg border border-gray-800 bg-black/40 space-y-2">
-                <div className="text-[11px] font-bold text-gray-300 uppercase tracking-wide">
+                <div className="text-[0.6875rem] font-bold text-gray-300 uppercase tracking-wide">
                   Przykładowi odbiorcy z bazy kontaktów:
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px] font-mono">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[0.625rem] font-mono">
                   {config.mailingList.sampleRecipients.map((r) => (
                     <div key={r.email} className="p-2 rounded bg-[#09111c] border border-gray-800 flex justify-between">
                       <span className="text-gray-300">{r.name} ({r.role})</span>
@@ -404,7 +404,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg border border-purple-900/50 bg-purple-950/20 text-[11px] space-y-1">
+              <div className="p-3 rounded-lg border border-purple-900/50 bg-purple-950/20 text-[0.6875rem] space-y-1">
                 <div className="font-bold text-purple-300 flex items-center space-x-1.5">
                   <ShieldAlert size={14} />
                   <span>BIAŁA LISTA NADAWCÓW (ALLOWLISTA IP CARBONFLOW):</span>
@@ -449,7 +449,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
           {header('//KREATOR_PHISHINGU // ADRES NADAWCY', config.sender.question, 'KROK 5/5')}
 
           <div className="space-y-1">
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[0.6875rem] text-gray-400">
               Wybierz adres e-mail, pod który podszyjesz się w nagłówku wiadomości. Domena powinna jak najbardziej przypominać prawdziwą domenę @carbonflow.com (technika typosquattingu).
             </p>
           </div>
@@ -476,12 +476,12 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                       <AtSign size={16} />
                       <h4 className="text-xs font-bold text-white font-mono">{opt.label}</h4>
                     </div>
-                    {opt.desc && <p className="text-[11px] text-gray-400 leading-relaxed">{opt.desc}</p>}
+                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
                   </div>
                   {opt.tags && (
                     <div className="flex flex-wrap gap-1 mt-3">
                       {opt.tags.map((t) => (
-                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
+                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
                           {t}
                         </span>
                       ))}
@@ -522,13 +522,13 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
               </div>
               <div>
                 <h2 className="text-sm font-bold text-white tracking-widest">//KREATOR_PHISHINGU // PODGLĄD I WYSYŁKA</h2>
-                <p className="text-[11px]" style={{ color: blue }}>
+                <p className="text-[0.6875rem]" style={{ color: blue }}>
                   Przegląd zmontowanej kampanii przed rozesłaniem
                 </p>
               </div>
             </div>
             <span
-              className="text-[10px] px-2 py-0.5 rounded border font-mono"
+              className="text-[0.625rem] px-2 py-0.5 rounded border font-mono"
               style={{ backgroundColor: `${blue}1a`, borderColor: `${blue}66`, color: blue }}
             >
               FINALIZACJA
@@ -542,7 +542,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                   <span className="text-gray-400">NADAWCA:</span>
                   <span className="font-mono text-cyan-400 font-bold">{selectedSender?.label || 'KADRY@CARDONFLOW.COM'}</span>
                 </div>
-                <div className="text-[11px] text-gray-400 font-mono">
+                <div className="text-[0.6875rem] text-gray-400 font-mono">
                   DO: <span className="text-white">pracownicy@carbonflow.com (12 odbiorców)</span>
                 </div>
               </div>
@@ -563,15 +563,15 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                     Czas na wypełnienie formularza upływa dzisiaj o godzinie 16:00. Link do formularza w serwisie {previewData.serviceName}:
                   </p>
                   <div className="p-3 rounded-lg border border-cyan-800/60 bg-cyan-950/30 flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-cyan-300 font-mono text-[11px] truncate max-w-[80%]">
+                    <div className="flex items-center space-x-2 text-cyan-300 font-mono text-[0.6875rem] truncate max-w-[80%]">
                       <ExternalLink size={14} className="shrink-0" />
                       <span className="truncate">{previewData.link}</span>
                     </div>
-                    <span className="text-[9px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono shrink-0">
+                    <span className="text-[0.5625rem] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono shrink-0">
                       ŁADUNEK WSTRZYKNIĘTY
                     </span>
                   </div>
-                  <p className="text-[11px] text-gray-400 pt-2">
+                  <p className="text-[0.6875rem] text-gray-400 pt-2">
                     Z poważaniem,<br />
                     {previewData.signoff}
                   </p>

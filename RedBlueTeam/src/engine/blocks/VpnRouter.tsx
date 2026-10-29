@@ -196,11 +196,11 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
         </div>
         <div>
           <h2 className="text-sm font-bold text-white tracking-widest">//VPN_ROUTING // MASKOWANIE TOŻSAMOŚCI</h2>
-          <p className="text-[11px]" style={{ color: accent }}>{sub}</p>
+          <p className="text-[0.6875rem]" style={{ color: accent }}>{sub}</p>
         </div>
       </div>
       <span
-        className="text-[10px] px-2.5 py-1 rounded-md border font-mono font-bold"
+        className="text-[0.625rem] px-2.5 py-1 rounded-md border font-mono font-bold"
         style={{ backgroundColor: `${accent}1a`, borderColor: `${accent}66`, color: accent }}
       >
         {stepBadge}
@@ -263,7 +263,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
                   <span className="text-xs font-bold font-mono text-white">{o.label}</span>
                   {isSelected && <CheckCircle2 size={16} style={{ color: accent }} />}
                 </div>
-                {o.desc && <p className="text-[11px] text-gray-400 mt-2 leading-relaxed">{o.desc}</p>}
+                {o.desc && <p className="text-[0.6875rem] text-gray-400 mt-2 leading-relaxed">{o.desc}</p>}
               </button>
             );
           })}
@@ -310,11 +310,11 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
                 className="px-3 py-1.5 rounded-lg bg-black/60 border border-gray-800 flex justify-between items-center text-xs"
               >
                 <span className="font-mono text-emerald-400 font-bold">{ip}</span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider">SERWER PROXY</span>
+                <span className="text-[0.625rem] text-gray-400 uppercase tracking-wider">SERWER PROXY</span>
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-gray-400 leading-relaxed pt-1">
+          <p className="text-[0.6875rem] text-gray-400 leading-relaxed pt-1">
             Filtry bezpieczeństwa celu natychmiast odrzucają ruch spoza zarejestrowanych węzłów sieci.
           </p>
         </div>
@@ -329,7 +329,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
               <Cpu size={16} />
               <span className="text-xs font-bold uppercase tracking-wide">Automatyczna synchronizacja AI</span>
             </div>
-            <p className="text-[11px] text-gray-300">
+            <p className="text-[0.6875rem] text-gray-300">
               Moduł heurystyczny AI automatycznie przelicza i dopasowuje octety do allowlisty celu.
             </p>
           </div>
@@ -360,14 +360,14 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
           </div>
           {isTargetMatched ? (
             <span
-              className="px-2.5 py-0.5 rounded text-[10px] font-bold border flex items-center space-x-1"
+              className="px-2.5 py-0.5 rounded text-[0.625rem] font-bold border flex items-center space-x-1"
               style={{ backgroundColor: '#10b98126', borderColor: '#10b981', color: '#10b981' }}
             >
               <Check size={12} />
               <span>PODSIEĆ ZGODNA</span>
             </span>
           ) : (
-            <span className="text-[10px] text-gray-500 font-mono">[DOPASUJ PRZYCISKAMI +/-]</span>
+            <span className="text-[0.625rem] text-gray-500 font-mono">[DOPASUJ PRZYCISKAMI +/-]</span>
           )}
         </div>
 

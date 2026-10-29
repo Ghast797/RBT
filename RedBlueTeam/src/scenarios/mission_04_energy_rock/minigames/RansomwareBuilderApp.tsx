@@ -107,10 +107,10 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
         <div className="p-1.5 rounded border" style={{ backgroundColor: `${accent}33`, borderColor: accent, color: accent }}><Lock size={20} /></div>
         <div>
           <h2 className="text-sm font-bold text-white tracking-widest">//RANSOMWARE_BUILDER // KONFIGURATOR ŁADUNKU</h2>
-          <p className="text-[11px]" style={{ color: accent }}>{sub}</p>
+          <p className="text-[0.6875rem]" style={{ color: accent }}>{sub}</p>
         </div>
       </div>
-      <span className="text-[10px] px-2 py-0.5 rounded border" style={{ backgroundColor: `${accent}26`, borderColor: `${accent}80`, color: '#c084fc' }}>{step}</span>
+      <span className="text-[0.625rem] px-2 py-0.5 rounded border" style={{ backgroundColor: `${accent}26`, borderColor: `${accent}80`, color: '#c084fc' }}>{step}</span>
     </div>
   );
 
@@ -124,7 +124,7 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
         {header('KROK 1/3 — KLUCZ SZYFRUJĄCY', 'HASŁO')}
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-white tracking-wider">{config.password.question}</span>
-          <span className="text-[10px]" style={{ color: accent }}>OCENA ENTROPII: {pwdEval.strength}/5</span>
+          <span className="text-[0.625rem]" style={{ color: accent }}>OCENA ENTROPII: {pwdEval.strength}/5</span>
         </div>
         <div className="p-3.5 rounded-xl bg-black/60 border flex items-center space-x-2 min-w-0" style={{ borderColor: `${accent}66` }}>
           <Key size={16} style={{ color: accent }} className="shrink-0" />
@@ -153,7 +153,7 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
               className="p-2.5 rounded-xl text-left border flex items-center justify-between text-xs transition-all cursor-pointer"
               style={item.val ? { backgroundColor: `${accent}33`, borderColor: accent, color: '#fff' } : { backgroundColor: '#08101a', borderColor: '#1f2937', color: '#9ca3af' }}>
               <span className="font-bold">{item.label}</span>
-              {item.val ? <Check size={14} style={{ color: accent }} /> : <span className="text-[10px] text-gray-600">NIE</span>}
+              {item.val ? <Check size={14} style={{ color: accent }} /> : <span className="text-[0.625rem] text-gray-600">NIE</span>}
             </button>
           ))}
         </div>
@@ -173,7 +173,7 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
         {header('KROK 2/3 — KOMUNIKAT ŻĄDANIA OKUPU', 'KOMUNIKAT')}
         <div className="text-xs font-bold text-white tracking-wider">{config.components.question}</div>
         <div className="space-y-2">
-          <div className="text-[11px] text-gray-400 font-bold">TYTUŁ KOMUNIKATU:</div>
+          <div className="text-[0.6875rem] text-gray-400 font-bold">TYTUŁ KOMUNIKATU:</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             {config.components.titleOptions.map((o) => (
               <button key={o.id} onClick={() => { sounds.playClick(); setTitleId(o.id); }}
@@ -185,7 +185,7 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
           </div>
         </div>
         <div className="space-y-2">
-          <div className="text-[11px] text-gray-400 font-bold">ZEGAR ODLICZAJĄCY:</div>
+          <div className="text-[0.6875rem] text-gray-400 font-bold">ZEGAR ODLICZAJĄCY:</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             {config.components.countdownOptions.map((o) => (
               <button key={o.id} onClick={() => { sounds.playClick(); setCountdownId(o.id); }}
@@ -196,7 +196,7 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
             ))}
           </div>
         </div>
-        <div className="p-3 rounded-xl bg-black/40 border border-gray-800 grid grid-cols-3 gap-3 text-[11px]">
+        <div className="p-3 rounded-xl bg-black/40 border border-gray-800 grid grid-cols-3 gap-3 text-[0.6875rem]">
           <div><div className="text-gray-500">KWOTA</div><div className="font-bold text-white">{config.components.staticParts.amount}</div></div>
           <div><div className="text-gray-500">PORTFEL</div><div className="font-bold text-white font-mono">{config.components.staticParts.wallet}</div></div>
           <div><div className="text-gray-500">KONTAKT</div><div className="font-bold text-white">{config.components.staticParts.contact}</div></div>
@@ -241,13 +241,13 @@ export const RansomwareBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ conf
         </div>
         <div className="grid grid-cols-3 gap-4 my-4">
           <div className="p-3 rounded-xl border border-current/40 bg-black/40 flex items-center space-x-3">
-            <DollarSign size={24} /><div><div className="text-[10px] opacity-70">KWOTA:</div><div className="text-base font-black">{config.components.staticParts.amount}</div></div>
+            <DollarSign size={24} /><div><div className="text-[0.625rem] opacity-70">KWOTA:</div><div className="text-base font-black">{config.components.staticParts.amount}</div></div>
           </div>
           <div className="p-3 rounded-xl border border-current/40 bg-black/40 flex items-center space-x-3">
-            <Clock size={24} className="animate-pulse" /><div><div className="text-[10px] opacity-70">CZAS:</div><div className="text-sm font-black font-mono">{(countdown?.label || '').replace('POZOSTAŁY CZAS: ', '')}</div></div>
+            <Clock size={24} className="animate-pulse" /><div><div className="text-[0.625rem] opacity-70">CZAS:</div><div className="text-sm font-black font-mono">{(countdown?.label || '').replace('POZOSTAŁY CZAS: ', '')}</div></div>
           </div>
           <div className="p-3 rounded-xl border border-current/40 bg-black/40 flex items-center space-x-3">
-            <Wallet size={24} /><div><div className="text-[10px] opacity-70">PORTFEL:</div><div className="text-xs font-mono font-bold">{config.components.staticParts.wallet}</div></div>
+            <Wallet size={24} /><div><div className="text-[0.625rem] opacity-70">PORTFEL:</div><div className="text-xs font-mono font-bold">{config.components.staticParts.wallet}</div></div>
           </div>
         </div>
       </div>

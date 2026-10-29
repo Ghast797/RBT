@@ -108,12 +108,12 @@ export const VirusDatabaseApp: React.FC = () => {
                       {v.name}
                     </div>
 
-                    <p className="text-[11px] text-[#d1fae5]/80 leading-relaxed">
+                    <p className="text-[0.6875rem] text-[#d1fae5]/80 leading-relaxed">
                       {v.description}
                     </p>
 
                     {isSelected && !v.isCorrect && (
-                      <div className="mt-2 text-[10px] text-[#ff3366] font-bold">
+                      <div className="mt-2 text-[0.625rem] text-[#ff3366] font-bold">
                         {v.id === 'keylogger' ? '[WYBÓR SUBOPTYMALNY - KARA BTC]' : '[BŁĄD KRYTYCZNY - ALARM]'}
                       </div>
                     )}
@@ -131,7 +131,7 @@ export const VirusDatabaseApp: React.FC = () => {
                 {selectedVirus === 'keylogger' && (
                   <button
                     onClick={() => setAllowSuboptimalBuilder(true)}
-                    className="ml-3 px-3 py-1 bg-amber-500/20 border border-amber-500 text-amber-300 hover:bg-amber-500/30 rounded font-bold text-[11px] flex items-center space-x-1 shrink-0"
+                    className="ml-3 px-3 py-1 bg-amber-500/20 border border-amber-500 text-amber-300 hover:bg-amber-500/30 rounded font-bold text-[0.6875rem] flex items-center space-x-1 shrink-0"
                   >
                     <span>KONTYNUUJ Z KEYLOGGEREM</span>
                     <ArrowRight size={12} />
@@ -152,7 +152,7 @@ export const VirusDatabaseApp: React.FC = () => {
                   <div className="font-bold text-xs text-[#00f0ff] tracking-wider">
                     {builderData.title}
                   </div>
-                  <div className="text-[10px] text-[#d1fae5]/60">
+                  <div className="text-[0.625rem] text-[#d1fae5]/60">
                     {builderData.subtitle}
                   </div>
                 </div>
@@ -164,12 +164,12 @@ export const VirusDatabaseApp: React.FC = () => {
                       setAllowSuboptimalBuilder(false);
                       selectVirusCard('rat');
                     }}
-                    className="text-[10px] text-[#00f0ff] underline hover:text-white"
+                    className="text-[0.625rem] text-[#00f0ff] underline hover:text-white"
                   >
                     [ZMIEŃ NA RAT]
                   </button>
                 )}
-                <span className="text-[10px] text-[#00ff66] font-bold">STATUS: KONFIGURACJA</span>
+                <span className="text-[0.625rem] text-[#00ff66] font-bold">STATUS: KONFIGURACJA</span>
               </div>
             </div>
 

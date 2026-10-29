@@ -172,7 +172,7 @@ const BriefingStep: React.FC<BriefingStepProps> = ({
                 <>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-bold tracking-wider text-emerald-400 uppercase">
+                      <span className="text-[0.625rem] font-mono font-bold tracking-wider text-emerald-400 uppercase">
                         ODSZYFROWANO
                       </span>
                       <CheckCircle2 size={20} className="text-[#00ff66]" />
@@ -184,7 +184,7 @@ const BriefingStep: React.FC<BriefingStepProps> = ({
                       {fact.explanation}
                     </p>
                   </div>
-                  <div className="pt-3 border-t border-gray-800/60 text-[10px] text-gray-500 font-mono">
+                  <div className="pt-3 border-t border-gray-800/60 text-[0.625rem] text-gray-500 font-mono">
                     STATUS: JAWNY
                   </div>
                 </>
@@ -193,7 +193,7 @@ const BriefingStep: React.FC<BriefingStepProps> = ({
                   <div className="text-emerald-400 font-mono text-base font-bold animate-pulse">
                     {scrambleTexts[fact.id] || 'ODSZYFROWYWANIE...'}
                   </div>
-                  <span className="text-[11px] font-mono text-gray-400 tracking-wider">
+                  <span className="text-[0.6875rem] font-mono text-gray-400 tracking-wider">
                     ŁAMANIE KLUCZA AES...
                   </span>
                 </div>
@@ -205,7 +205,7 @@ const BriefingStep: React.FC<BriefingStepProps> = ({
                   <span className="text-sm font-black tracking-widest text-emerald-400 uppercase">
                     ZASZYFROWANE
                   </span>
-                  <span className="text-[11px] text-gray-500 font-mono">
+                  <span className="text-[0.6875rem] text-gray-500 font-mono">
                     (KLIKNIJ, ABY ODSZYFROWAĆ)
                   </span>
                 </div>
@@ -349,7 +349,7 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
 
                     {isEvaluated && (
                       <span
-                        className={`text-[9px] font-black uppercase px-2 py-0.5 rounded border tracking-wider ${
+                        className={`text-[0.5625rem] font-black uppercase px-2 py-0.5 rounded border tracking-wider ${
                           place.correctAssessment === 'vulnerable'
                             ? 'bg-red-950/80 text-red-400 border-red-500/50'
                             : 'bg-emerald-950/80 text-emerald-400 border-emerald-500/50'
@@ -367,7 +367,7 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
                       {place.name}
                     </h4>
                     {!isEvaluated && (
-                      <span className="text-[10px] text-gray-500 font-mono block">
+                      <span className="text-[0.625rem] text-gray-500 font-mono block">
                         kliknij, aby sprawdzić
                       </span>
                     )}
@@ -390,7 +390,7 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
                     {selectedPlace.name}
                   </h3>
                 </div>
-                <span className="text-[10px] text-gray-500 font-mono">
+                <span className="text-[0.625rem] text-gray-500 font-mono">
                   OBSERWACJA_CELU
                 </span>
               </div>
@@ -455,7 +455,7 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
               <span className="text-xs font-bold text-white tracking-widest">
                 //NOTATNIK_ŚLEDCZY
               </span>
-              <span className="text-[10px] text-gray-500">USTALENIA</span>
+              <span className="text-[0.625rem] text-gray-500">USTALENIA</span>
             </div>
 
             {clues.length === 0 ? (
@@ -477,7 +477,7 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
                       ●
                     </span>
                     <div className="space-y-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider block text-gray-400">
+                      <span className="text-[0.625rem] font-bold uppercase tracking-wider block text-gray-400">
                         {clue.placeName}
                       </span>
                       <p className="font-sans text-xs leading-relaxed text-gray-200">
@@ -594,10 +594,10 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
         }}
       >
         <div className="flex items-center justify-between border-b border-gray-800 pb-1.5 mb-2.5">
-          <span className="text-[11px] font-bold text-gray-300 tracking-wider">
+          <span className="text-[0.6875rem] font-bold text-gray-300 tracking-wider">
             //DOWODY_OPERACYJNE: ZESTAWIENIE USTALEŃ
           </span>
-          <span className="text-[10px] text-gray-500 font-mono">
+          <span className="text-[0.625rem] text-gray-500 font-mono">
             {`${clues.length} TROPÓW`}
           </span>
         </div>
@@ -620,7 +620,7 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`text-[9px] font-black uppercase tracking-wider ${
+                      className={`text-[0.5625rem] font-black uppercase tracking-wider ${
                         clue.isWeakPoint ? 'text-red-400' : 'text-emerald-400'
                       }`}
                     >
@@ -630,10 +630,10 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
                       <AlertTriangle size={14} className="text-red-400" />
                     )}
                   </div>
-                  <h5 className="font-bold text-white text-[11px] truncate">
+                  <h5 className="font-bold text-white text-[0.6875rem] truncate">
                     {clue.placeName}
                   </h5>
-                  <p className="text-[11px] font-sans leading-relaxed mt-1 text-gray-300">
+                  <p className="text-[0.6875rem] font-sans leading-relaxed mt-1 text-gray-300">
                     {clue.text}
                   </p>
                 </div>
@@ -701,7 +701,7 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
               <ShieldAlert size={18} className="shrink-0 text-amber-400 mt-0.5" />
             )}
             <div className="space-y-1">
-              <span className="font-bold text-[11px] uppercase tracking-wider block">
+              <span className="font-bold text-[0.6875rem] uppercase tracking-wider block">
                 {decisionFeedback.type === 'success'
                   ? 'WEKTOR ZATWIERDZONY // SPEAR-PHISHING'
                   : 'OSTRZEŻENIE DARKSUN'}

@@ -68,7 +68,7 @@ export const RansomwareVirusApp: React.FC<BlockProps<VirusConfig>> = ({ config, 
       </div>
       <div>
         <h2 className="text-sm font-bold text-white tracking-widest">{title}</h2>
-        <p className="text-[11px]" style={{ color: accent }}>{subtitle}</p>
+        <p className="text-[0.6875rem]" style={{ color: accent }}>{subtitle}</p>
       </div>
     </div>
   );
@@ -108,7 +108,7 @@ export const RansomwareVirusApp: React.FC<BlockProps<VirusConfig>> = ({ config, 
             <span className="text-xs font-bold" style={{ color: accent }}>ODKRYCIE: {scanProgress}%</span>
             {scanProgress < 100 && (
               <button type="button" onClick={handleQuickScanAll}
-                className="text-[10px] px-2 py-0.5 rounded border cursor-pointer"
+                className="text-[0.625rem] px-2 py-0.5 rounded border cursor-pointer"
                 style={{ backgroundColor: `${accent}26`, borderColor: accent, color: accent }}>
                 SKANUJ WSZYSTKO
               </button>
@@ -123,7 +123,7 @@ export const RansomwareVirusApp: React.FC<BlockProps<VirusConfig>> = ({ config, 
             const isScanned = scannedCells.has(i) || scanProgress >= 100;
             return (
               <div key={i} onMouseEnter={() => handleCellHover(i)} onClick={() => handleCellHover(i)}
-                className="py-1 text-center text-[10px] font-mono rounded cursor-crosshair transition-all duration-150 border"
+                className="py-1 text-center text-[0.625rem] font-mono rounded cursor-crosshair transition-all duration-150 border"
                 style={isScanned
                   ? { backgroundColor: `${accent}4d`, color: '#e9d5ff', borderColor: `${accent}99` }
                   : { backgroundColor: '#0f1722', color: '#4b5563', borderColor: '#1f2937' }}>
@@ -162,18 +162,18 @@ export const RansomwareVirusApp: React.FC<BlockProps<VirusConfig>> = ({ config, 
               style={isSelected ? { borderColor: accent, backgroundColor: `${accent}26`, boxShadow: `0 0 20px ${accent}59` } : undefined}>
               <div>
                 <h3 className="text-xs font-bold text-white mb-1.5 leading-snug">{option.label}</h3>
-                {option.desc && <p className="text-[11px] text-gray-300 leading-relaxed mb-3">{option.desc}</p>}
+                {option.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed mb-3">{option.desc}</p>}
               </div>
               <div>
                 {option.tags && option.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-2">
                     {option.tags.map((t) => (
-                      <span key={t} className="text-[9px] px-1.5 py-0.5 rounded bg-black/50 text-gray-400">{t}</span>
+                      <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400">{t}</span>
                     ))}
                   </div>
                 )}
                 {isSelected && (
-                  <div className="mt-2 text-[10px] font-bold flex items-center space-x-1" style={{ color: accent }}>
+                  <div className="mt-2 text-[0.625rem] font-bold flex items-center space-x-1" style={{ color: accent }}>
                     <CheckCircle2 size={12} /><span>WYBRANO</span>
                   </div>
                 )}

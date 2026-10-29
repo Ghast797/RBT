@@ -68,10 +68,10 @@ export const WorkstationExfiltrationApp: React.FC<BlockProps<ExfiltrationConfig>
         <div className="p-1.5 rounded border" style={{ backgroundColor: `${red}33`, borderColor: red, color: red }}><Server size={20} /></div>
         <div>
           <h2 className="text-sm font-bold text-white tracking-widest">//STACJA OFIARY // {config.targetHost}</h2>
-          <p className="text-[11px]" style={{ color: red }}>{sub}</p>
+          <p className="text-[0.6875rem]" style={{ color: red }}>{sub}</p>
         </div>
       </div>
-      <span className="text-[10px] px-2 py-0.5 rounded border" style={{ backgroundColor: `${red}26`, borderColor: `${red}80`, color: '#fca5a5' }}>{step}</span>
+      <span className="text-[0.625rem] px-2 py-0.5 rounded border" style={{ backgroundColor: `${red}26`, borderColor: `${red}80`, color: '#fca5a5' }}>{step}</span>
     </div>
   );
 
@@ -112,7 +112,7 @@ export const WorkstationExfiltrationApp: React.FC<BlockProps<ExfiltrationConfig>
                 className="p-4 rounded-xl border-2 flex flex-col items-center space-y-1 transition-all cursor-pointer"
                 style={locked ? { borderColor: accent, backgroundColor: `${accent}26`, color: '#e9d5ff' } : { borderColor: '#10b98155', backgroundColor: '#04140c', color: '#10b981' }}>
                 {locked ? <Lock size={20} /> : <Network size={20} />}
-                <span className="text-[9px] font-mono">{i === NODES - 1 ? 'SERWER' : `PC-${i + 1}`}</span>
+                <span className="text-[0.5625rem] font-mono">{i === NODES - 1 ? 'SERWER' : `PC-${i + 1}`}</span>
               </button>
             );
           })}
@@ -145,7 +145,7 @@ export const WorkstationExfiltrationApp: React.FC<BlockProps<ExfiltrationConfig>
                 style={isSel ? { borderColor: accent, backgroundColor: `${accent}33`, color: '#fff' } : { borderColor: '#1f2937', backgroundColor: '#08101a', color: '#9ca3af' }}>
                 <div className="flex items-center space-x-2.5 min-w-0">
                   <FileText size={18} style={{ color: isSel ? accent : '#6b7280' }} />
-                  <div className="truncate"><span className="text-xs font-bold font-mono block truncate">{file.name}</span><span className="text-[10px] text-gray-500">{file.size}</span></div>
+                  <div className="truncate"><span className="text-xs font-bold font-mono block truncate">{file.name}</span><span className="text-[0.625rem] text-gray-500">{file.size}</span></div>
                 </div>
                 {isSel && <span className="w-5 h-5 rounded-full text-white flex items-center justify-center shrink-0" style={{ backgroundColor: accent }}><Check size={12} /></span>}
               </div>
@@ -172,7 +172,7 @@ export const WorkstationExfiltrationApp: React.FC<BlockProps<ExfiltrationConfig>
           <Flame size={32} style={{ color: red }} className="animate-pulse shrink-0" />
           <div>
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">ŁADUNEK RANSOMWARE AKTYWNY W PAMIĘCI STACJI ROBOCZEJ</h3>
-            <p className="text-[11px] text-gray-300 mt-1">Uruchom procedurę szyfrowania zasobów firmy, aby sparaliżować serwery i stworzyć zasłonę dymną.</p>
+            <p className="text-[0.6875rem] text-gray-300 mt-1">Uruchom procedurę szyfrowania zasobów firmy, aby sparaliżować serwery i stworzyć zasłonę dymną.</p>
           </div>
         </div>
         <button onClick={() => { sounds.playAlarm(); setScreen('load_net'); }}

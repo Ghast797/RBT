@@ -24,7 +24,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
           <Mail size={15} />
           <span className="font-bold tracking-wider">HACKERS.OS // SZABLON MAILA SPEAR-PHISHINGOWEGO</span>
         </div>
-        <span className="text-[10px] text-gray-500">KLIENT POCZTY (PODGLĄD NA ŻYWO)</span>
+        <span className="text-[0.625rem] text-gray-500">KLIENT POCZTY (PODGLĄD NA ŻYWO)</span>
       </div>
 
       {/* Email Envelope Header */}
@@ -38,7 +38,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
               )}
             </span>
             {step === 'sender' ? null : (
-              <span className="text-pink-400 font-mono text-[11px]">
+              <span className="text-pink-400 font-mono text-[0.6875rem]">
                 &lt;
                 {senderEmail ? (
                   <span className="font-bold underline text-pink-300">{senderEmail.toLowerCase()}</span>
@@ -79,7 +79,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
               https://{targetDomain.toLowerCase()}
             </span>
           </div>
-          <span className="text-[10px] text-sky-400 bg-sky-950/40 border border-sky-500/30 px-2 py-0.5 rounded uppercase font-bold font-mono">
+          <span className="text-[0.625rem] text-sky-400 bg-sky-950/40 border border-sky-500/30 px-2 py-0.5 rounded uppercase font-bold font-mono">
             LINK DOCELOWY
           </span>
         </div>

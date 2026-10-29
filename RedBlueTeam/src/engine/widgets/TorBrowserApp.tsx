@@ -31,11 +31,11 @@ export const TorBrowserApp: React.FC = () => {
       {/* Top Browser Bar */}
       <div className="flex items-center justify-between px-3 py-2 bg-[#09121c] border-b border-[#00ff66]/30 text-xs">
         <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-[#00ff66]/15 text-[#00ff66] font-bold text-[11px]">
+          <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-[#00ff66]/15 text-[#00ff66] font-bold text-[0.6875rem]">
             <Lock size={12} />
             <span>HTTPS://OLCOMPANY.CLOUD</span>
           </div>
-          <span className="text-[10px] text-[#00ff66]/60 hidden sm:inline">TOR ONION ROUTER // SSL VERIFIED</span>
+          <span className="text-[0.625rem] text-[#00ff66]/60 hidden sm:inline">TOR ONION ROUTER // SSL VERIFIED</span>
         </div>
 
         <button
@@ -83,7 +83,7 @@ export const TorBrowserApp: React.FC = () => {
           >
             <Camera size={15} className={isEventsHighlighted ? 'text-[#00ff66] animate-bounce' : 'text-[#00ff66]'} />
             <span>WYDARZENIA</span>
-            <span className={`px-1.5 py-0.5 rounded text-[10px] font-black border animate-pulse ${
+            <span className={`px-1.5 py-0.5 rounded text-[0.625rem] font-black border animate-pulse ${
               isEventsHighlighted
                 ? 'bg-[#00ff66] text-[#05080c] border-[#00ff66] shadow-[0_0_10px_#00ff66]'
                 : 'bg-[#00ff66]/20 border-[#00ff66]/70 text-[#00ff66]'
@@ -123,7 +123,7 @@ export const TorBrowserApp: React.FC = () => {
               <h3 className="font-black text-xs text-blue-200 tracking-wider">
                 {site.heroHeadline}
               </h3>
-              <p className="text-[11px] text-gray-400">
+              <p className="text-[0.6875rem] text-gray-400">
                 {site.heroSubheadline}
               </p>
             </div>
@@ -158,7 +158,7 @@ export const TorBrowserApp: React.FC = () => {
                             <div className="font-bold text-xs text-white tracking-wide">
                               {emp.name}
                             </div>
-                            <div className="text-[11px] text-gray-400 font-medium">
+                            <div className="text-[0.6875rem] text-gray-400 font-medium">
                               - {emp.role}
                             </div>
                           </div>
@@ -179,7 +179,7 @@ export const TorBrowserApp: React.FC = () => {
 
                       {/* Expanded Bio Details */}
                       {isExpanded && (
-                        <div className="mt-3 pt-2.5 border-t border-slate-800 text-[11px] text-gray-300 leading-relaxed space-y-1">
+                        <div className="mt-3 pt-2.5 border-t border-slate-800 text-[0.6875rem] text-gray-300 leading-relaxed space-y-1">
                           <p>{emp.bio}</p>
                         </div>
                       )}
@@ -190,7 +190,7 @@ export const TorBrowserApp: React.FC = () => {
             </div>
 
             {/* Contact Footer */}
-            <div className="p-3 bg-[#08101a] border border-slate-800 rounded-lg text-center space-y-1 text-[11px] text-gray-400">
+            <div className="p-3 bg-[#08101a] border border-slate-800 rounded-lg text-center space-y-1 text-[0.6875rem] text-gray-400">
               <div>W CELU OTRZYMANIA OFERTY PROSIMY O KONTAKT:</div>
               <div className="flex items-center justify-center space-x-4 text-blue-300 font-bold">
                 <span className="flex items-center space-x-1">
@@ -222,7 +222,7 @@ export const TorBrowserApp: React.FC = () => {
 
                 <div className="w-full h-32 bg-slate-900 rounded border border-slate-700 flex flex-col items-center justify-center p-2 text-center text-gray-400">
                   <div className="text-2xl mb-1">🍻 🎉</div>
-                  <span className="text-[11px] font-bold text-blue-200">
+                  <span className="text-[0.6875rem] font-bold text-blue-200">
                     FOTORELACJA: SPOTKANIE PRACOWNIKÓW DZIAŁU
                   </span>
                 </div>
@@ -239,7 +239,7 @@ export const TorBrowserApp: React.FC = () => {
                   {item.hashtags}
                 </div>
 
-                <div className="text-center text-[11px] text-gray-400 pt-1">
+                <div className="text-center text-[0.6875rem] text-gray-400 pt-1">
                   {item.galleryText}
                 </div>
 
@@ -247,7 +247,7 @@ export const TorBrowserApp: React.FC = () => {
                   {[1, 2, 3, 4].map((n) => (
                     <div
                       key={n}
-                      className="h-14 bg-slate-800 rounded border border-slate-700 flex items-center justify-center text-[10px] text-gray-400"
+                      className="h-14 bg-slate-800 rounded border border-slate-700 flex items-center justify-center text-[0.625rem] text-gray-400"
                     >
                       FOTO #{n}
                     </div>
@@ -260,7 +260,7 @@ export const TorBrowserApp: React.FC = () => {
       </div>
 
       {/* Bottom Footer Bar */}
-      <div className="px-3 py-1.5 bg-[#08101a] border-t border-[#00ff66]/20 flex items-center justify-between text-[10px] text-[#00ff66]/60">
+      <div className="px-3 py-1.5 bg-[#08101a] border-t border-[#00ff66]/20 flex items-center justify-between text-[0.625rem] text-[#00ff66]/60">
         <span className="flex items-center space-x-1">
           <Lock size={10} />
           <span>//OLCOMPANY.CLOUD</span>

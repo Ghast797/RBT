@@ -50,7 +50,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
       <div className="border-b pb-3" style={{ borderColor: `${accent}4d` }}>
         <h2 className="text-sm font-bold text-white tracking-widest">{config.question}</h2>
         {config.subtitle && (
-          <p className="text-[11px] mt-1" style={{ color: accent }}>
+          <p className="text-[0.6875rem] mt-1" style={{ color: accent }}>
             {config.subtitle}
           </p>
         )}
@@ -84,7 +84,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
               <div>
                 <h3 className="text-xs font-bold text-white mb-1.5 leading-snug">{option.label}</h3>
                 {option.desc && (
-                  <p className="text-[11px] text-gray-300 leading-relaxed mb-3">{option.desc}</p>
+                  <p className="text-[0.6875rem] text-gray-300 leading-relaxed mb-3">{option.desc}</p>
                 )}
               </div>
 
@@ -94,7 +94,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
                     {option.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[9px] px-1.5 py-0.5 rounded bg-black/50 text-gray-400"
+                        className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400"
                       >
                         {tag}
                       </span>
@@ -104,7 +104,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
 
                 {isSelected && (
                   <div
-                    className="mt-2 text-[10px] font-bold flex items-center space-x-1"
+                    className="mt-2 text-[0.625rem] font-bold flex items-center space-x-1"
                     style={{ color: accent }}
                   >
                     <CheckCircle2 size={12} />

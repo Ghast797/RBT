@@ -108,7 +108,7 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             <Download size={14} className="opacity-60" />
             <span>[ STREFA POBIERANIA PLIKÓW ]</span>
           </div>
-          <p className="text-[11px] text-gray-500 max-w-md mx-auto font-mono">
+          <p className="text-[0.6875rem] text-gray-500 max-w-md mx-auto font-mono">
             W kolejnym kroku wybierzesz, jaki plik-przynęta zostanie umieszczony na tej stronie dla Anity Klimek.
           </p>
         </div>
@@ -184,10 +184,10 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700 font-mono">
+                <span className="text-[0.625rem] font-black uppercase px-2 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700 font-mono">
                   {payloadData.badge}
                 </span>
-                <span className="text-[10px] text-gray-400">{payloadData.downloads}</span>
+                <span className="text-[0.625rem] text-gray-400">{payloadData.downloads}</span>
               </div>
               <h4 className="text-xs font-bold text-white mt-1">
                 {payloadData.title}
@@ -196,7 +196,7 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
           </div>
         </div>
 
-        <p className="text-[11px] text-gray-300 leading-relaxed">
+        <p className="text-[0.6875rem] text-gray-300 leading-relaxed">
           {payloadData.desc}
         </p>
 
@@ -209,7 +209,7 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     if (!isInteractiveTarget) {
       return (
         <div className="pt-1 flex items-center justify-between font-mono">
-          <span className="text-[10px] text-gray-400 flex items-center space-x-1">
+          <span className="text-[0.625rem] text-gray-400 flex items-center space-x-1">
             <CheckCircle2 size={12} className={domainCfg.accentText} />
             <span>Plik gotowy do udostępnienia</span>
           </span>
@@ -280,14 +280,14 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
           </div>
 
           {/* Active Tab */}
-          <div className="flex items-center space-x-1.5 px-3 py-1 rounded-t-md bg-[#060c14] border-t border-x border-gray-700/60 text-[11px] font-mono text-gray-200">
+          <div className="flex items-center space-x-1.5 px-3 py-1 rounded-t-md bg-[#060c14] border-t border-x border-gray-700/60 text-[0.6875rem] font-mono text-gray-200">
             {domainCfg.icon}
             <span className="font-bold truncate max-w-[180px]">{domainCfg.domainName}</span>
           </div>
         </div>
 
         {/* Browser Sandbox Tag */}
-        <span className="text-[10px] text-gray-500 font-mono hidden sm:inline-block">
+        <span className="text-[0.625rem] text-gray-500 font-mono hidden sm:inline-block">
           HACKERS.OS // CYBER SANDBOX WEB PREVIEW
         </span>
       </div>
@@ -310,14 +310,14 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         <div className="flex-1 flex items-center space-x-2 bg-black/60 border border-gray-700/80 rounded px-2.5 py-1 text-xs">
           <div className="flex items-center space-x-1 text-sky-400 shrink-0">
             <Lock size={12} />
-            <span className="font-bold text-[11px]">https://</span>
+            <span className="font-bold text-[0.6875rem]">https://</span>
           </div>
           <span className="text-white font-mono font-bold tracking-wide">
             {domainCfg.domainName}
           </span>
           <span className="text-gray-500 font-mono">/download</span>
 
-          <div className="ml-auto hidden sm:flex items-center space-x-1 text-[9px] px-1.5 py-0.5 rounded bg-sky-950/40 text-sky-400 border border-sky-500/30 font-mono">
+          <div className="ml-auto hidden sm:flex items-center space-x-1 text-[0.5625rem] px-1.5 py-0.5 rounded bg-sky-950/40 text-sky-400 border border-sky-500/30 font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
             <span>SSL SECURE 256-BIT</span>
           </div>
@@ -336,19 +336,19 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
               <h3 className="text-xs font-black tracking-wider text-white font-mono">
                 {domainCfg.siteTitle}
               </h3>
-              <p className="text-[10px] text-gray-400">{domainCfg.tagline}</p>
+              <p className="text-[0.625rem] text-gray-400">{domainCfg.tagline}</p>
             </div>
           </div>
 
           <span
-            className={`text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider font-mono ${domainCfg.accentBg} ${domainCfg.accentBorder} ${domainCfg.accentText}`}
+            className={`text-[0.5625rem] font-black px-2 py-0.5 rounded border uppercase tracking-wider font-mono ${domainCfg.accentBg} ${domainCfg.accentBorder} ${domainCfg.accentText}`}
           >
             {domainCfg.badgeText}
           </span>
         </div>
 
         {/* Website Navigation Bar */}
-        <div className="hidden sm:flex items-center space-x-4 text-[10px] text-gray-400 font-mono border-b border-gray-800/40 pb-2">
+        <div className="hidden sm:flex items-center space-x-4 text-[0.625rem] text-gray-400 font-mono border-b border-gray-800/40 pb-2">
           {domainCfg.navItems.map((item, idx) => (
             <span
               key={item}
@@ -367,14 +367,14 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         <div
           className={`p-3 rounded-lg border ${domainCfg.accentBorder} ${domainCfg.accentBg} space-y-1 text-left relative overflow-hidden`}
         >
-          <div className="flex items-center space-x-1.5 text-[10px] font-bold text-gray-300 uppercase tracking-wider font-mono">
+          <div className="flex items-center space-x-1.5 text-[0.625rem] font-bold text-gray-300 uppercase tracking-wider font-mono">
             <Sparkles size={12} className={domainCfg.accentText} />
             <span>STREFA POBIERANIA I AKTUALNOŚCI DLA SPOŁECZNOŚCI</span>
           </div>
           <h2 className="text-sm font-bold text-white leading-tight font-mono">
             {domainCfg.heroTitle}
           </h2>
-          <p className="text-[11px] text-gray-300 leading-relaxed max-w-xl">
+          <p className="text-[0.6875rem] text-gray-300 leading-relaxed max-w-xl">
             {domainCfg.heroSubtitle}
           </p>
         </div>

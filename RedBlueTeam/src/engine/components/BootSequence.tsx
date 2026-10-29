@@ -187,7 +187,7 @@ export const BootSequence: React.FC = () => {
                 />
               </div>
 
-              <div className="text-[10px] text-[#00ff66]/70">
+              <div className="text-[0.625rem] text-[#00ff66]/70">
                 ŁADOWANIE PAMIĘCI RAM & MODUŁÓW JĄDRA: {bootProgress}%
               </div>
             </div>

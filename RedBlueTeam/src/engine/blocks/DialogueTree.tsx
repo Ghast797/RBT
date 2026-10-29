@@ -152,13 +152,13 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
         {lines.map((line, i) => (
           <div key={i} className={`flex ${line.isPlayer ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-[85%] px-3 py-2 rounded-xl text-[11px] leading-relaxed ${
+              className={`max-w-[85%] px-3 py-2 rounded-xl text-[0.6875rem] leading-relaxed ${
                 line.isPlayer
                   ? 'bg-[#0b1a26] border border-gray-700 text-gray-200'
                   : 'bg-black/50 border border-gray-800 text-gray-300'
               }`}
             >
-              <div className="text-[9px] font-bold mb-1 opacity-70">{line.sender}</div>
+              <div className="text-[0.5625rem] font-bold mb-1 opacity-70">{line.sender}</div>
               {line.text}
             </div>
           </div>
@@ -166,9 +166,9 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
         {isRespondentTyping && (
           <div className="flex justify-start">
             <div className="max-w-[85%] px-3 py-2 rounded-xl bg-black/50 border border-gray-800">
-              <div className="text-[9px] font-bold mb-1 opacity-70">{config.respondent}</div>
+              <div className="text-[0.5625rem] font-bold mb-1 opacity-70">{config.respondent}</div>
               <div className="flex items-center space-x-1" style={{ color: accent }}>
-                <span className="text-[10px] opacity-80">pisze</span>
+                <span className="text-[0.625rem] opacity-80">pisze</span>
                 <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '0ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '150ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '300ms' }} />
@@ -177,7 +177,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
           </div>
         )}
         {isFinished && lastFeedback && pathTier === 'critical' && (
-          <div className="text-[10px] text-red-400 italic px-1">{lastFeedback}</div>
+          <div className="text-[0.625rem] text-red-400 italic px-1">{lastFeedback}</div>
         )}
       </div>
 
@@ -188,7 +188,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
               key={option.id}
               data-option-id={option.id}
               onClick={() => handleChoose(option.id)}
-              className="w-full text-left px-3 py-2 rounded-xl border border-gray-800 bg-[#08101a] hover:bg-[#0c1624] text-[11px] text-gray-200 transition-all flex items-center justify-between group cursor-pointer"
+              className="w-full text-left px-3 py-2 rounded-xl border border-gray-800 bg-[#08101a] hover:bg-[#0c1624] text-[0.6875rem] text-gray-200 transition-all flex items-center justify-between group cursor-pointer"
             >
               <span>{option.label}</span>
               <Send

@@ -124,7 +124,7 @@ export const DebriefApp: React.FC = () => {
       {/* Top Banner */}
       <div className="p-4 bg-gradient-to-r from-[#00ff66]/15 via-[#081219] to-[#00ff66]/15 border-2 border-[#00ff66] rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[0_0_25px_rgba(0,255,102,0.25)]">
         <div>
-          <div className="text-[10px] text-[#00ff66]/70 uppercase tracking-widest font-black">
+          <div className="text-[0.625rem] text-[#00ff66]/70 uppercase tracking-widest font-black">
             {summary.company} // RAPORT KOŃCOWY
           </div>
           <h1 className="text-lg font-black text-[#00ff66] tracking-wider text-glow-green">
@@ -140,7 +140,7 @@ export const DebriefApp: React.FC = () => {
               <CheckCircle size={13} />
               <span className="text-sm font-black">{perfectChoicesCount}</span>
             </div>
-            <div className="text-[9px] text-[#00ff66]/70 font-bold uppercase">IDEALNE</div>
+            <div className="text-[0.5625rem] text-[#00ff66]/70 font-bold uppercase">IDEALNE</div>
           </div>
 
           {/* Card 2: Dobre */}
@@ -149,7 +149,7 @@ export const DebriefApp: React.FC = () => {
               <AlertTriangle size={13} />
               <span className="text-sm font-black">{goodChoicesCount}</span>
             </div>
-            <div className="text-[9px] text-[#facc15]/70 font-bold uppercase">DOBRE</div>
+            <div className="text-[0.5625rem] text-[#facc15]/70 font-bold uppercase">DOBRE</div>
           </div>
 
           {/* Card 3: Błędy */}
@@ -158,7 +158,7 @@ export const DebriefApp: React.FC = () => {
               <XCircle size={13} />
               <span className="text-sm font-black">{criticalErrorsCount}</span>
             </div>
-            <div className="text-[9px] text-[#ff3366]/70 font-bold uppercase">BŁĘDY</div>
+            <div className="text-[0.5625rem] text-[#ff3366]/70 font-bold uppercase">BŁĘDY</div>
           </div>
 
           {/* Card 4: Odznaka */}
@@ -166,7 +166,7 @@ export const DebriefApp: React.FC = () => {
             <div className="flex items-center justify-center text-[#00f0ff]">
               <Trophy size={14} />
             </div>
-            <div className="text-[9px] text-[#00f0ff] font-bold uppercase">{score}%</div>
+            <div className="text-[0.5625rem] text-[#00f0ff] font-bold uppercase">{score}%</div>
           </div>
         </div>
       </div>
@@ -181,7 +181,7 @@ export const DebriefApp: React.FC = () => {
               style={{ width: `${score}%` }}
             />
           </div>
-          <span className="text-[10px] text-gray-400 uppercase">MAKSYMALNEGO WYNIKU</span>
+          <span className="text-[0.625rem] text-gray-400 uppercase">MAKSYMALNEGO WYNIKU</span>
         </div>
 
         <div className="flex items-center space-x-2 text-amber-300 font-black text-sm">
@@ -193,13 +193,13 @@ export const DebriefApp: React.FC = () => {
       </div>
 
       {/* xAPI & SCORM 2004 Delivery Status Banners */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[0.6875rem]">
         <div className="px-3 py-1.5 bg-[#050b10] border border-[#00ff66]/20 rounded text-[#00ff66] flex items-center justify-between">
           <span className="flex items-center space-x-1.5">
             <CheckCheck size={14} className="text-[#00ff66]" />
             <span>xAPI: "passed", score: {score}%</span>
           </span>
-          <span className="text-[10px] text-gray-500">IEEE xAPI</span>
+          <span className="text-[0.625rem] text-gray-500">IEEE xAPI</span>
         </div>
 
         <div className={`px-3 py-1.5 rounded flex items-center justify-between border ${
@@ -215,7 +215,7 @@ export const DebriefApp: React.FC = () => {
                 : 'SCORM 2004: Gotowy do zapisu w Moodle'}
             </span>
           </span>
-          <span className="text-[10px] text-gray-500 font-bold">4th EDITION</span>
+          <span className="text-[0.625rem] text-gray-500 font-bold">4th EDITION</span>
         </div>
       </div>
 
@@ -264,7 +264,7 @@ export const DebriefApp: React.FC = () => {
 
                     <div className="flex items-center space-x-2">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center space-x-1 ${
+                        className={`px-2 py-0.5 rounded text-[0.625rem] font-bold border flex items-center space-x-1 ${
                           isIdeal
                             ? 'bg-[#00ff66]/15 border-[#00ff66]/40 text-[#00ff66]'
                             : isSuboptimal
@@ -288,7 +288,7 @@ export const DebriefApp: React.FC = () => {
 
                       <button
                         onClick={() => toggleChoiceDetails(idx)}
-                        className="px-2.5 py-1 rounded bg-[#050a0f] border border-[#00ff66]/40 text-[#00ff66] text-[10px] font-bold flex items-center space-x-1 hover:bg-[#00ff66]/15 transition-all"
+                        className="px-2.5 py-1 rounded bg-[#050a0f] border border-[#00ff66]/40 text-[#00ff66] text-[0.625rem] font-bold flex items-center space-x-1 hover:bg-[#00ff66]/15 transition-all"
                       >
                         <span>SZCZEGÓŁY</span>
                         {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -313,7 +313,7 @@ export const DebriefApp: React.FC = () => {
 
                   {isExpanded && (
                     <div
-                      className={`p-2.5 rounded text-[11px] leading-relaxed mt-2 border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                      className={`p-2.5 rounded text-[0.6875rem] leading-relaxed mt-2 border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
                         isIdeal
                           ? 'bg-[#050a0f] border-slate-800 text-gray-300'
                           : isSuboptimal
@@ -325,7 +325,7 @@ export const DebriefApp: React.FC = () => {
                       {!c.isCorrect && (
                         <button
                           onClick={openRetryModal}
-                          className="self-start sm:self-auto px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500 text-yellow-300 rounded font-bold text-[10px] uppercase tracking-wider transition-all flex items-center space-x-1 shrink-0 shadow-sm"
+                          className="self-start sm:self-auto px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500 text-yellow-300 rounded font-bold text-[0.625rem] uppercase tracking-wider transition-all flex items-center space-x-1 shrink-0 shadow-sm"
                         >
                           <RotateCcw size={11} />
                           <span>POWTÓRZ ZADANIE</span>
@@ -340,7 +340,7 @@ export const DebriefApp: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => toggleTranscript(c.num)}
-                        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/30 text-cyan-300 hover:bg-cyan-900/40 text-[11px] font-bold flex items-center space-x-1.5 cursor-pointer transition-all shadow-sm"
+                        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/30 text-cyan-300 hover:bg-cyan-900/40 text-[0.6875rem] font-bold flex items-center space-x-1.5 cursor-pointer transition-all shadow-sm"
                       >
                         <MessageSquareQuote size={13} />
                         <span>
@@ -352,11 +352,11 @@ export const DebriefApp: React.FC = () => {
                       {isTranscriptOpen && (
                         <div className="mt-2.5 p-3.5 rounded-xl border border-cyan-500/40 bg-[#06131c] space-y-3 animate-in fade-in">
                           <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
-                            <span className="text-[11px] font-black uppercase tracking-wider text-cyan-400 flex items-center space-x-1.5">
+                            <span className="text-[0.6875rem] font-black uppercase tracking-wider text-cyan-400 flex items-center space-x-1.5">
                               <Terminal size={13} />
                               <span>//ZAPIS_AUDIO_I_CZATU: PRZEBIEG NEGOCJACJI Z SZEFEM IT (3 TURY)</span>
                             </span>
-                            <span className="text-[10px] text-gray-500 font-mono">D10 // TRANSCRIPT</span>
+                            <span className="text-[0.625rem] text-gray-500 font-mono">D10 // TRANSCRIPT</span>
                           </div>
 
                           <div className="space-y-2.5">
@@ -366,10 +366,10 @@ export const DebriefApp: React.FC = () => {
                                 className="p-3 rounded-lg border border-gray-800 bg-black/40 space-y-2"
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+                                  <span className="text-[0.625rem] font-black uppercase px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">
                                     {turn.title}
                                   </span>
-                                  <span className="text-[10px] text-gray-500 font-mono">
+                                  <span className="text-[0.625rem] text-gray-500 font-mono">
                                     TURA 0{turn.turn}
                                   </span>
                                 </div>
@@ -377,13 +377,13 @@ export const DebriefApp: React.FC = () => {
                                 {/* Wypowiedzi stron */}
                                 <div className="space-y-1.5 text-xs">
                                   <div className="p-2 rounded bg-red-950/20 border border-red-500/30 text-red-200">
-                                    <span className="text-[10px] uppercase font-bold text-red-400 block mb-0.5">
+                                    <span className="text-[0.625rem] uppercase font-bold text-red-400 block mb-0.5">
                                       SZEF IT:
                                     </span>
                                     <span className="font-sans leading-relaxed">{turn.opponent}</span>
                                   </div>
                                   <div className="p-2 rounded bg-emerald-950/20 border border-emerald-500/30 text-emerald-200">
-                                    <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5">
+                                    <span className="text-[0.625rem] uppercase font-bold text-emerald-400 block mb-0.5">
                                       TWOJA ODPOWIEDŹ:
                                     </span>
                                     <span className="font-sans leading-relaxed">{turn.player}</span>
@@ -391,7 +391,7 @@ export const DebriefApp: React.FC = () => {
                                 </div>
 
                                 {/* Komentarz psychologiczny */}
-                                <div className="p-2 rounded bg-purple-950/20 border border-purple-500/30 text-purple-200 text-[11px] flex items-start space-x-2">
+                                <div className="p-2 rounded bg-purple-950/20 border border-purple-500/30 text-purple-200 text-[0.6875rem] flex items-start space-x-2">
                                   <span className="text-purple-400 shrink-0 mt-0.5">🧠</span>
                                   <div className="font-sans leading-relaxed">
                                     <strong className="text-purple-300">
@@ -503,7 +503,7 @@ export const DebriefApp: React.FC = () => {
             </div>
 
             <div>
-              <div className="text-[10px] text-[#00f0ff] font-bold uppercase tracking-widest">
+              <div className="text-[0.625rem] text-[#00f0ff] font-bold uppercase tracking-widest">
                 SCORM 2004 (4th EDITION) // MOODLE LMS
               </div>
               <h2 className="text-base font-black text-white tracking-wide mt-1">
@@ -514,7 +514,7 @@ export const DebriefApp: React.FC = () => {
             <div className="p-3 bg-[#050a0f] border border-[#00ff66]/40 rounded-xl space-y-2 text-left text-xs">
               <div className="flex justify-between items-center pb-2 border-b border-gray-800">
                 <span className="text-gray-400">STATUS ZALICZENIA:</span>
-                <span className={`font-black px-2 py-0.5 rounded text-[10px] ${
+                <span className={`font-black px-2 py-0.5 rounded text-[0.625rem] ${
                   score >= 70 ? 'bg-[#00ff66]/20 text-[#00ff66] border border-[#00ff66]/50' : 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/50'
                 }`}>
                   {score >= 70 ? 'ZALICZONO (PASSED)' : 'NIEZALICZONO (FAILED)'}
@@ -540,11 +540,11 @@ export const DebriefApp: React.FC = () => {
                   <AlertTriangle size={18} className="shrink-0 text-amber-400" />
                   <span>PRZEGLĄDARKA ZABLOKOWAŁA AUTOMATYCZNE ZAMKNIĘCIE KARTY</span>
                 </div>
-                <p className="text-[11px] text-gray-300 leading-relaxed">
+                <p className="text-[0.6875rem] text-gray-300 leading-relaxed">
                   Zabezpieczenia przeglądarek (Chrome, Edge, Firefox) nie pozwalają skryptom na automatyczne zamykanie otwartych kart.
                 </p>
                 <div className="p-2.5 bg-[#050a0f] border border-amber-500/40 rounded text-center space-y-1.5 shadow-inner">
-                  <div className="text-[11px] font-bold text-[#00ff66]">
+                  <div className="text-[0.6875rem] font-bold text-[#00ff66]">
                     ✓ TWÓJ WYNIK ZOSTAŁ JUŻ W 100% ZAPISANY W MOODLE!
                   </div>
                   <div className="text-xs font-mono font-black text-white">
@@ -578,7 +578,7 @@ export const DebriefApp: React.FC = () => {
               </div>
             ) : (
               <>
-                <p className="text-[11px] text-gray-300 leading-relaxed">
+                <p className="text-[0.6875rem] text-gray-300 leading-relaxed">
                   Dane zostały pomyślnie utrwalone w bazie Moodle. Przeglądarka zarejestrowała Twoją próbę. Możesz bezpiecznie zamknąć tę kartę.
                 </p>
 

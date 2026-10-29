@@ -28,10 +28,10 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
         <div className="p-1.5 rounded border" style={{ backgroundColor: `${blue}33`, borderColor: blue, color: blue }}><Mail size={20} /></div>
         <div>
           <h2 className="text-sm font-bold text-white tracking-widest">//MAIL_CLIENT // KAMPANIA SPEAR-PHISHINGOWA</h2>
-          <p className="text-[11px]" style={{ color: blue }}>{sub}</p>
+          <p className="text-[0.6875rem]" style={{ color: blue }}>{sub}</p>
         </div>
       </div>
-      <span className="text-[10px] px-2 py-0.5 rounded border" style={{ backgroundColor: `${blue}26`, borderColor: `${blue}80`, color: '#7dd3fc' }}>{step}</span>
+      <span className="text-[0.625rem] px-2 py-0.5 rounded border" style={{ backgroundColor: `${blue}26`, borderColor: `${blue}80`, color: '#7dd3fc' }}>{step}</span>
     </div>
   );
 
@@ -40,7 +40,7 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
       <div className="flex items-center space-x-2" style={{ color: '#7dd3fc' }}>
         <AtSign size={16} /><span className="font-bold">ADRESAT:</span><span className="text-white font-mono">{config.recipient}</span>
       </div>
-      <span className="text-[11px] text-gray-400">STANOWISKO: <strong className="text-white">{config.position}</strong></span>
+      <span className="text-[0.6875rem] text-gray-400">STANOWISKO: <strong className="text-white">{config.position}</strong></span>
     </div>
   );
 
@@ -69,11 +69,11 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
           <div className="flex items-center space-x-2 text-gray-300">
             <Paperclip size={16} style={{ color: blue }} /><span>ZAŁĄCZNIK:</span><span className="font-bold text-white font-mono">{config.attachment}</span>
           </div>
-          <span className="text-[10px] px-1.5 py-0.5 rounded border flex items-center space-x-1" style={{ backgroundColor: `${accent}26`, borderColor: accent, color: '#c084fc' }}>
+          <span className="text-[0.625rem] px-1.5 py-0.5 rounded border flex items-center space-x-1" style={{ backgroundColor: `${accent}26`, borderColor: accent, color: '#c084fc' }}>
             <Lock size={10} /><span>ŁADUNEK UZBROJONY</span>
           </span>
         </div>
-        <p className="text-[11px] text-gray-400">Załącznik zaszyfrowany hasłem i uzbrojony ładunkiem. Teraz trzeba zamaskować nadawcę — otwórz klienta VPN.</p>
+        <p className="text-[0.6875rem] text-gray-400">Załącznik zaszyfrowany hasłem i uzbrojony ładunkiem. Teraz trzeba zamaskować nadawcę — otwórz klienta VPN.</p>
         <div className="pt-2 flex items-center justify-end">
           <button onClick={onComplete} className="px-6 py-2.5 rounded-xl font-bold text-xs text-white flex items-center space-x-2 cursor-pointer"
             style={{ backgroundColor: blue, boxShadow: `0 0 20px ${blue}80` }}>
@@ -99,7 +99,7 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold" style={{ color: '#7dd3fc' }}>{o.label}</span>{bodyId === o.id && <CheckCircle2 size={14} style={{ color: blue }} />}
                 </div>
-                <pre className="text-[10px] font-mono whitespace-pre-wrap leading-relaxed opacity-85">{o.text}</pre>
+                <pre className="text-[0.625rem] font-mono whitespace-pre-wrap leading-relaxed opacity-85">{o.text}</pre>
               </div>
             </button>
           ))}
