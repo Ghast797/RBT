@@ -19,6 +19,7 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
+import { SideMonitor } from '../../../engine/components/SideMonitor';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { SocialIntelConfig, SocialPost, SocialPlatformInfo, DeductionOption } from './types';
 import { resolveSocialImage, SOCIAL_ASSETS_DIR } from './socialAssets';
@@ -261,6 +262,54 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   // Precision color badge
   const precisionColor = precision >= 80 ? '#00ff66' : precision >= minPrecision ? '#facc15' : '#ff3366';
 
+  // Notatnik faktów — żyje na prawym monitorze przez cały etap (hub i feed), żeby ekran
+  // platform mieścił się bez przewijania. Prawy monitor jest wtedy zablokowany na notatniku.
+  const factsNotebook = (
+    <div className="flex flex-col h-full bg-[#060c14] border-2 rounded-xl p-4 space-y-3" style={{ borderColor: `${purple}66` }}>
+      <div className="flex items-center justify-between border-b pb-2 shrink-0" style={{ borderColor: `${purple}40` }}>
+        <span className="text-xs font-black tracking-widest" style={{ color: purple }}>
+          //NOTATNIK: CO O NIEJ WIEMY
+        </span>
+        <span
+          className="text-[10px] px-2 py-0.5 rounded border font-mono tracking-wider font-bold"
+          style={{
+            backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
+            borderColor: isComplete ? '#00ff66' : `${purple}66`,
+            color: isComplete ? '#00ff66' : purple
+          }}
+        >
+          {`${discoveredFactIds.length}/${totalRequired}`}
+        </span>
+      </div>
+      <div className="flex flex-col gap-1.5 overflow-y-auto flex-1 pr-1">
+        {allFacts.map((fact, idx) => {
+          const isFound = discoveredFactIds.includes(fact.id);
+          return (
+            <div
+              key={fact.id || idx}
+              className={`p-2 rounded-lg border text-xs flex items-center space-x-2 transition-all ${
+                isFound
+                  ? 'border-[#00ff66] bg-[#00ff66]/10 text-white animate-in fade-in zoom-in-95'
+                  : 'border-gray-800/80 bg-black/20 text-gray-600'
+              }`}
+            >
+              <span
+                className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 font-bold ${
+                  isFound ? 'bg-[#00ff66] text-[#05090f]' : 'bg-gray-800 text-gray-500'
+                }`}
+              >
+                {isFound ? '✓' : idx + 1}
+              </span>
+              <span className={`text-[11px] leading-tight ${isFound ? 'text-emerald-200 font-bold' : ''}`}>
+                {isFound ? fact.text : '[ ??? ]'}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   const header = (task: string) => (
     <AppHeader
       icon={Users}
@@ -335,6 +384,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
 
     return (
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
+        <SideMonitor>{factsNotebook}</SideMonitor>
         {header(
           isPrecisionFailed
             ? 'Za dużo pomyłek. Zacznij analizę od nowa.'
@@ -533,6 +583,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   // ---------------------------------------------------------------------------
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
+      <SideMonitor>{factsNotebook}</SideMonitor>
       {header(
         isComplete
           ? 'Profil kompletny. Zatwierdź zebrane fakty.'
@@ -628,39 +679,6 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
             </button>
           );
         })}
-      </div>
-
-      {/* Notatnik faktów */}
-      <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a]/95 space-y-2">
-        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
-          NOTATNIK: CO O NIEJ WIEMY
-        </span>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-          {allFacts.map((fact, idx) => {
-            const isFound = discoveredFactIds.includes(fact.id);
-            return (
-              <div
-                key={fact.id || idx}
-                className={`p-2 rounded-lg border text-xs flex items-center space-x-2 transition-all ${
-                  isFound
-                    ? 'border-[#00ff66] bg-[#00ff66]/10 text-white animate-in fade-in zoom-in-95'
-                    : 'border-gray-800/80 bg-black/20 text-gray-600'
-                }`}
-              >
-                <span
-                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] shrink-0 font-bold ${
-                    isFound ? 'bg-[#00ff66] text-[#05090f]' : 'bg-gray-800 text-gray-500'
-                  }`}
-                >
-                  {isFound ? '✓' : idx + 1}
-                </span>
-                <span className={`text-[11px] leading-tight ${isFound ? 'text-emerald-200 font-bold' : ''}`}>
-                  {isFound ? fact.text : '[ ??? ]'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
       </div>
 
       {isComplete && (

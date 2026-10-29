@@ -17,8 +17,26 @@ import { useMissionStore, type WindowId } from '../store/useMissionStore';
 import { BootSequence } from './BootSequence';
 import { ChatApp } from '../apps/ChatApp';
 import { AppHost, renderAppIcon } from '../registry/appRegistry';
+import { SideMonitorProvider, SideMonitorSlot, useSideMonitorActive } from './SideMonitor';
 import { sounds } from '../audio/soundEffects';
 import { isDevMode } from '../core/devMode';
+
+/**
+ * Zawartość prawego monitora: czat z BYTE_MASTEREM albo — gdy aktywna aplikacja przejęła
+ * monitor notatnikiem — slot notatnika. Czat zostaje zamontowany (persystentny), tylko
+ * schowany, więc jego stan i historia przetrwają.
+ */
+const RightMonitorView: React.FC = () => {
+  const sideActive = useSideMonitorActive();
+  return (
+    <>
+      <div className={sideActive ? 'hidden' : 'flex-1 flex flex-col min-h-0'} aria-hidden={sideActive}>
+        <ChatApp />
+      </div>
+      <SideMonitorSlot />
+    </>
+  );
+};
 
 export const Desktop: React.FC = () => {
   const {
@@ -92,6 +110,7 @@ export const Desktop: React.FC = () => {
   const desktopTiles = activeMission.desktopApps || [];
 
   return (
+    <SideMonitorProvider>
     <div className="relative w-screen h-screen overflow-hidden bg-[#03060a] select-none font-mono flex flex-col justify-between p-3">
       {/* Background Ambience & Scanlines */}
       <div className="absolute inset-0 crt-scanlines z-50 pointer-events-none opacity-25" />
@@ -341,7 +360,7 @@ export const Desktop: React.FC = () => {
               <span>▲ AKTYWNA SESJA CZATU ▲</span>
             </div>
           )}
-          <ChatApp />
+          <RightMonitorView />
         </div>
       </div>
 
@@ -468,5 +487,6 @@ export const Desktop: React.FC = () => {
         </div>
       )}
     </div>
+    </SideMonitorProvider>
   );
 };

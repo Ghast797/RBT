@@ -24,6 +24,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
+import { ActiveAppProvider } from '../components/SideMonitor';
 import { ChatApp } from '../apps/ChatApp';
 import { DebriefApp } from '../apps/DebriefApp';
 import {
@@ -155,7 +156,9 @@ export const AppHost: React.FC = () => {
           className={appKey === activeApp ? 'flex-1 flex flex-col min-h-0' : 'hidden'}
           aria-hidden={appKey !== activeApp}
         >
-          <AppRenderer componentId={appKey} />
+          <ActiveAppProvider value={appKey === activeApp}>
+            <AppRenderer componentId={appKey} />
+          </ActiveAppProvider>
         </div>
       ))}
     </React.Fragment>
