@@ -178,7 +178,13 @@ function buildAndPackageMission(missionInfo) {
 
   try {
     if (process.platform === 'win32') {
-      execSync(`powershell.exe -NoProfile -Command "Get-ChildItem -Path '${distDir}' -Exclude '*.zip' | Compress-Archive -DestinationPath '${zipFile}' -Force"`, {
+      // Compress-Archive z Windows PowerShell 5.1 zapisuje ścieżki z "\" (wbrew specyfikacji ZIP):
+      // Moodle na Linuksie rozpakowuje wtedy "assets\x.js" jako jeden plik i paczka pokazuje pusty ekran.
+      // Wbudowany tar.exe (bsdtar, Windows 10+) zapisuje poprawne "/"; format ZIP wybiera po rozszerzeniu (-a).
+      const entries = fs.readdirSync(distDir).filter(f => !f.endsWith('.zip'));
+      const winTar = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe');
+      execSync(`"${winTar}" -a -c -f "${zipFile}" ${entries.map(e => `"${e}"`).join(' ')}`, {
+        cwd: distDir,
         stdio: 'inherit'
       });
     } else {
