@@ -17,6 +17,7 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
+import { SideMonitor } from '../../../engine/components/SideMonitor';
 import type { BlockProps } from '../../../engine/types/mission';
 import type {
   TargetPetrologConfig,
@@ -51,6 +52,88 @@ interface NotebookClue {
   text: string;
   isWeakPoint: boolean;
 }
+
+// ---------------------------------------------------------------------------
+// NOTATNIK ŚLEDCZY: prawy monitor (SideMonitor) od kroku ZBADAJ do końca etapu.
+// W kroku ZDECYDUJ błędna odpowiedź podświetla trop, do którego odsyła feedback.
+// ---------------------------------------------------------------------------
+const InvestigationNotebook: React.FC<{
+  clues: NotebookClue[];
+  totalPlaces: number;
+  flashingPlaceId: string | null;
+  accent: string;
+}> = ({ clues, totalPlaces, flashingPlaceId, accent }) => {
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!flashingPlaceId || !listRef.current) return;
+    const el = listRef.current.querySelector(`[data-clue-place="${flashingPlaceId}"]`);
+    el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [flashingPlaceId]);
+
+  return (
+    <div
+      className="flex flex-col h-full bg-[#040810] border-2 rounded-xl p-4 space-y-3 font-mono"
+      style={{
+        borderColor: `${accent}66`,
+        backgroundImage:
+          'linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
+        backgroundSize: '16px 16px'
+      }}
+    >
+      <div className="flex items-center justify-between border-b pb-2 shrink-0" style={{ borderColor: `${accent}40` }}>
+        <span className="text-xs font-black tracking-widest" style={{ color: accent }}>
+          //NOTATNIK_ŚLEDCZY
+        </span>
+        <span
+          className="text-[0.625rem] px-2 py-0.5 rounded border font-mono tracking-wider font-bold"
+          style={{ backgroundColor: `${accent}1a`, borderColor: `${accent}66`, color: accent }}
+        >
+          {`USTALENIA ${clues.length}/${totalPlaces}`}
+        </span>
+      </div>
+
+      {clues.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center text-gray-600 text-xs italic text-center p-6">
+          Tu pojawią się Twoje ustalenia
+        </div>
+      ) : (
+        <div ref={listRef} className="space-y-2.5 overflow-y-auto flex-1 pr-1">
+          {clues.map((clue) => {
+            const isFlashing = flashingPlaceId === clue.placeId;
+            return (
+              <div
+                key={clue.id}
+                data-clue-place={clue.placeId}
+                className={`p-3 rounded-lg border text-xs transition-all duration-300 ${
+                  isFlashing
+                    ? 'border-amber-400 bg-amber-950/60 ring-2 ring-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.6)] animate-pulse'
+                    : clue.isWeakPoint
+                    ? 'border-red-500/70 bg-red-950/30 shadow-[0_0_12px_rgba(239,68,68,0.2)]'
+                    : 'border-gray-800/80 bg-black/60'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1 gap-2">
+                  <span className="text-[0.625rem] font-bold uppercase tracking-wider text-gray-300">
+                    {clue.placeName}
+                  </span>
+                  <span
+                    className={`text-[0.5625rem] font-black uppercase tracking-wider shrink-0 ${
+                      clue.isWeakPoint ? 'text-red-400' : 'text-emerald-400'
+                    }`}
+                  >
+                    {clue.isWeakPoint ? '● SŁABY PUNKT' : '● CHRONIONE'}
+                  </span>
+                </div>
+                <p className="font-sans text-xs leading-relaxed text-gray-200">{clue.text}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ---------------------------------------------------------------------------
 // KROK 1: POZNAJ CEL (BriefingStep)
@@ -247,7 +330,6 @@ const BriefingStep: React.FC<BriefingStepProps> = ({
 interface InvestigationStepProps {
   places: InvestigationPlace[];
   evaluatedPlaces: Record<string, { assessment: AssessmentType; isCorrect: boolean }>;
-  clues: NotebookClue[];
   accent: string;
   onEvaluate: (placeId: string, assessment: AssessmentType) => void;
   onNext: () => void;
@@ -256,7 +338,6 @@ interface InvestigationStepProps {
 const InvestigationStep: React.FC<InvestigationStepProps> = ({
   places,
   evaluatedPlaces,
-  clues,
   accent,
   onEvaluate,
   onNext
@@ -315,11 +396,11 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
 
   return (
     <div className="flex flex-col flex-1 space-y-4">
-      <div className="flex flex-col lg:flex-row gap-4 flex-1">
-        {/* Left column (~60%): Plan firmy & Details */}
-        <div className="w-full lg:w-[60%] flex flex-col space-y-3">
+      <div className="flex flex-col lg:flex-row gap-4 flex-1 lg:items-start">
+        {/* Notatnik jest na prawym monitorze, więc tu: miejsca (lewa) + obserwacja i ocena (prawa) */}
+        <div className="contents">
           {/* 2x2 Grid of Places */}
-          <ChoiceZone accent={accent} label="WYBIERZ MIEJSCE DO ZBADANIA">
+          <ChoiceZone accent={accent} label="WYBIERZ MIEJSCE DO ZBADANIA" className="w-full lg:w-[45%] shrink-0">
           <div className="grid grid-cols-2 gap-2.5">
             {places.map((place) => {
               const evalInfo = evaluatedPlaces[place.id];
@@ -380,7 +461,7 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
 
           {/* Place Detail & Assessment Panel */}
           {selectedPlace && (
-            <div className="p-4 rounded-xl border border-gray-800 bg-[#08121d]/95 flex flex-col space-y-3.5 shadow-xl relative flex-1">
+            <div className="p-4 rounded-xl border border-gray-800 bg-[#08121d]/95 flex flex-col space-y-3.5 shadow-xl relative flex-1 lg:mt-3">
               <div className="flex items-center justify-between border-b border-gray-800 pb-2">
                 <div className="flex items-center space-x-2">
                   <div className="text-emerald-400">
@@ -440,56 +521,6 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
             </div>
           )}
         </div>
-
-        {/* Right column (~40%): NOTATNIK */}
-        <div className="w-full lg:w-[40%] flex flex-col">
-          <div
-            className="flex-1 p-4 rounded-xl border border-gray-800 bg-[#040810] shadow-inner font-mono flex flex-col space-y-3 relative overflow-hidden"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
-              backgroundSize: '16px 16px'
-            }}
-          >
-            <div className="flex items-center justify-between border-b border-gray-800 pb-2">
-              <span className="text-xs font-bold text-white tracking-widest">
-                //NOTATNIK_ŚLEDCZY
-              </span>
-              <span className="text-[0.625rem] text-gray-500">USTALENIA</span>
-            </div>
-
-            {clues.length === 0 ? (
-              <div className="flex-1 flex items-center justify-center text-gray-600 text-xs italic text-center p-6">
-                Tu pojawią się Twoje ustalenia
-              </div>
-            ) : (
-              <div className="space-y-2.5 overflow-y-auto flex-1 pr-1">
-                {clues.map((clue) => (
-                  <div
-                    key={clue.id}
-                    className="p-3 rounded-lg border border-gray-800/80 bg-black/60 text-xs text-gray-200 flex items-start space-x-2.5 animate-in slide-in-from-left duration-300 shadow-sm"
-                  >
-                    <span
-                      className={`text-sm leading-none mt-0.5 font-bold ${
-                        clue.isWeakPoint ? 'text-red-400' : 'text-emerald-400'
-                      }`}
-                    >
-                      ●
-                    </span>
-                    <div className="space-y-1">
-                      <span className="text-[0.625rem] font-bold uppercase tracking-wider block text-gray-400">
-                        {clue.placeName}
-                      </span>
-                      <p className="font-sans text-xs leading-relaxed text-gray-200">
-                        {clue.text}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Bottom Bar */}
@@ -524,23 +555,24 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
 interface DecisionStepProps {
   question: string;
   options: AttackVectorDecision[];
-  clues: NotebookClue[];
   accent: string;
+  /** Podświetla trop w notatniku na prawym monitorze (null = zgaś). */
+  onFlashClue: (placeId: string | null) => void;
   onComplete: () => void;
 }
 
 const DecisionStep: React.FC<DecisionStepProps> = ({
   question,
   options,
-  clues,
   accent,
+  onFlashClue,
   onComplete
 }) => {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-  const [flashingCluePlaceId, setFlashingCluePlaceId] = useState<string | null>(null);
   const [decisionFeedback, setDecisionFeedback] = useState<{
     type: 'success' | 'error';
     message: string;
+    pointsToClue?: boolean;
   } | null>(null);
   const flashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -555,7 +587,7 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
 
     if (option.isCorrect) {
       sounds.playSuccess();
-      setFlashingCluePlaceId(null);
+      onFlashClue(null);
       setDecisionFeedback({
         type: 'success',
         message: option.feedback
@@ -564,14 +596,16 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
       sounds.playNotification();
       setDecisionFeedback({
         type: 'error',
-        message: option.feedback
+        message: option.feedback,
+        pointsToClue: !!option.relatedClueId
       });
 
       if (option.relatedClueId) {
-        setFlashingCluePlaceId(option.relatedClueId);
+        // Notatnik jest na prawym monitorze, dalej od wzroku gracza — miganie trwa dłużej.
+        onFlashClue(option.relatedClueId);
         flashTimeoutRef.current = setTimeout(() => {
-          setFlashingCluePlaceId(null);
-        }, 2500);
+          onFlashClue(null);
+        }, 4000);
       }
     }
   };
@@ -579,70 +613,12 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
   useEffect(() => {
     return () => {
       if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+      onFlashClue(null);
     };
-  }, []);
+  }, [onFlashClue]);
 
   return (
     <div className="flex flex-col flex-1 space-y-4">
-      {/* Top: Notebook carried over from Step 2 as Evidence */}
-      <div
-        className="p-3.5 rounded-xl border border-gray-800 bg-[#040810] shadow-inner font-mono relative overflow-hidden"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
-          backgroundSize: '16px 16px'
-        }}
-      >
-        <div className="flex items-center justify-between border-b border-gray-800 pb-1.5 mb-2.5">
-          <span className="text-[0.6875rem] font-bold text-gray-300 tracking-wider">
-            //DOWODY_OPERACYJNE: ZESTAWIENIE USTALEŃ
-          </span>
-          <span className="text-[0.625rem] text-gray-500 font-mono">
-            {`${clues.length} TROPÓW`}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-          {clues.map((clue) => {
-            const isFlashing = flashingCluePlaceId === clue.placeId;
-
-            return (
-              <div
-                key={clue.id}
-                className={`p-2.5 rounded-lg border text-xs transition-all duration-300 flex flex-col justify-between ${
-                  isFlashing
-                    ? 'border-amber-400 bg-amber-950/60 ring-2 ring-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.6)] animate-pulse'
-                    : clue.isWeakPoint
-                    ? 'border-red-500/70 bg-red-950/30 text-red-100 shadow-[0_0_12px_rgba(239,68,68,0.2)]'
-                    : 'border-gray-800/80 bg-black/40 text-gray-400 opacity-80'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span
-                      className={`text-[0.5625rem] font-black uppercase tracking-wider ${
-                        clue.isWeakPoint ? 'text-red-400' : 'text-emerald-400'
-                      }`}
-                    >
-                      {clue.isWeakPoint ? '● SŁABY PUNKT' : '● CHRONIONE'}
-                    </span>
-                    {clue.isWeakPoint && (
-                      <AlertTriangle size={14} className="text-red-400" />
-                    )}
-                  </div>
-                  <h5 className="font-bold text-white text-[0.6875rem] truncate">
-                    {clue.placeName}
-                  </h5>
-                  <p className="text-[0.6875rem] font-sans leading-relaxed mt-1 text-gray-300">
-                    {clue.text}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Attack Options Section */}
       <div className="p-4 rounded-xl border border-gray-800 bg-[#08121d]/95 flex flex-col space-y-3.5 shadow-xl flex-1">
         <div className="border-b border-gray-800 pb-2">
@@ -709,6 +685,11 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
               <p className="text-xs leading-relaxed font-sans text-gray-100">
                 {decisionFeedback.message}
               </p>
+              {decisionFeedback.pointsToClue && (
+                <p className="text-[0.6875rem] font-bold text-amber-300 tracking-wide">
+                  TROP JEST PODŚWIETLONY W NOTATNIKU PO PRAWEJ ➔
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -752,6 +733,8 @@ export const TargetPetrologApp: React.FC<BlockProps<TargetPetrologConfig>> = ({
     Record<string, { assessment: AssessmentType; isCorrect: boolean }>
   >({});
   const [clues, setClues] = useState<NotebookClue[]>([]);
+  // Trop podświetlony w notatniku (krok ZDECYDUJ, po błędnej odpowiedzi)
+  const [flashingCluePlaceId, setFlashingCluePlaceId] = useState<string | null>(null);
 
   const facts = config?.briefing?.facts || [];
   const places = config?.investigation?.places || [];
@@ -864,6 +847,18 @@ export const TargetPetrologApp: React.FC<BlockProps<TargetPetrologConfig>> = ({
         }
       />
 
+      {/* Notatnik śledczy na prawym monitorze — od kroku ZBADAJ do końca etapu */}
+      {phase !== 'briefing' && (
+        <SideMonitor>
+          <InvestigationNotebook
+            clues={clues}
+            totalPlaces={places.length}
+            flashingPlaceId={flashingCluePlaceId}
+            accent={accent}
+          />
+        </SideMonitor>
+      )}
+
       {/* Body Content based on Phase */}
       {phase === 'briefing' && (
         <BriefingStep
@@ -890,7 +885,6 @@ export const TargetPetrologApp: React.FC<BlockProps<TargetPetrologConfig>> = ({
         <InvestigationStep
           places={places}
           evaluatedPlaces={evaluatedPlaces}
-          clues={clues}
           accent={accent}
           onEvaluate={handleEvaluatePlace}
           onNext={() => setPhase('loader_decide')}
@@ -912,8 +906,8 @@ export const TargetPetrologApp: React.FC<BlockProps<TargetPetrologConfig>> = ({
         <DecisionStep
           question={question}
           options={decisionOptions}
-          clues={clues}
           accent={accent}
+          onFlashClue={setFlashingCluePlaceId}
           onComplete={onComplete}
         />
       )}

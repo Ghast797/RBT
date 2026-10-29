@@ -29,12 +29,12 @@ Klocek: NOWA MINIGRA (Rozpoznanie celu w 3 krokach: Poznaj → Zbadaj → Zdecyd
 Cel dydaktyczny: gracz sam sprawdza, które miejsca w firmie są dobrze chronione, a które słabe, i na tej podstawie wybiera drogę ataku (podstępny mail vs atak na serwery vs włamanie do budynku). Język prosty, bez żargonu — termin „spear-phishing” pada dopiero po trafnej decyzji, jako wyjaśnienie.
 Ekrany (kolejno, oddzielone ekranem ładowania, bez cofania):
 1. POZNAJ CEL — 3 zaszyfrowane karty z odprawy VR, odkrywane kliknięciem: „MAJĄ DOKUMENTY O FREEVOLT”, „PRACUJE TAM 150 OSÓB”, „PRACOWNICY DUŻO PUBLIKUJĄ W SIECI”. Dalej po odkryciu wszystkich trzech.
-2. ZBADAJ FIRMĘ — plan firmy z 4 miejscami: Budynek centrali, Serwerownia, Dział sprzedaży, Księgowość. Każde miejsce to 2 krótkie zdania obserwacji i pytanie „Słaby punkt czy dobrze chronione?”. Trafna ocena dopisuje trop do notatnika; nietrafna pokazuje naprowadzenie i pozwala ocenić ponownie. Dalej po ocenieniu wszystkich 4 miejsc. Bez imion pracowników (gracz pozna je w etapie 2).
+2. ZBADAJ FIRMĘ — plan firmy z 4 miejscami: Budynek centrali, Serwerownia, Dział sprzedaży, Księgowość. Każde miejsce to 2 krótkie zdania obserwacji i pytanie „Słaby punkt czy dobrze chronione?”. Trafna ocena dopisuje trop do notatnika (notatnik śledczy zajmuje prawy monitor od tego kroku do końca etapu, zamiast czatu); nietrafna pokazuje naprowadzenie i pozwala ocenić ponownie. Dalej po ocenieniu wszystkich 4 miejsc. Bez imion pracowników (gracz pozna je w etapie 2).
    - Budynek centrali: chronione (karty wejściowe, ochrona, kamery).
    - Serwerownia: chronione (zewnętrzna ochrona 24/7 widzi każdy atak na sieć).
    - Dział sprzedaży: chronione (sprawdzają każdego nowego klienta).
    - Księgowość: słaby punkt (pośpiech, dziesiątki faktur w załącznikach, nikt nie sprawdza nadawcy maila).
-3. ZDECYDUJ — notatnik z tropami gracza + 3 drogi ataku: „Zaatakować serwery firmy”, „Włamać się do budynku”, „Wysłać podstępnego maila do pracownika”. Nietrafny wybór odsyła do konkretnego tropu z notatnika.
+3. ZDECYDUJ — notatnik z tropami gracza + 3 drogi ataku: „Zaatakować serwery firmy”, „Włamać się do budynku”, „Wysłać podstępnego maila do pracownika”. Nietrafny wybór odsyła do konkretnego tropu z notatnika: trop miga w notatniku na prawym monitorze, a komunikat mówi, gdzie go szukać.
 Flavor (nieoceniane): trafny wybór (podstępny mail) odblokowuje przycisk przejścia do kolejnego etapu; pozostałe opcje pokazują ostrzeżenie DarkSun i pozwalają wybrać ponownie.
 
 Mostek (rozmowa do kolejnego etapu):
@@ -57,7 +57,7 @@ Mostek (rozmowa do kolejnego etapu):
 Klocek: NOWA MINIGRA (Symulator platform społecznościowych i aktywna dedukcja faktów)
 Cel dydaktyczny: OSINT na portalach społecznościowych, wyciąganie poprawnych wniosków wywiadowczych pod presją Wskaźnika Precyzji Wywiadu (Intel Precision Meter, min. 70%).
 Ekrany:
-1. PROFILE — 3 grafiki platform (Kneenook → Quickgram → Joinin), odblokowywane po kolei: następna dopiero po przejrzeniu wszystkich wpisów poprzedniej. Pod nimi notatnik z 8 polami na fakty.
+1. PROFILE — 3 grafiki platform (Kneenook → Quickgram → Joinin), odblokowywane po kolei: następna dopiero po przejrzeniu wszystkich wpisów poprzedniej. Notatnik z 8 polami na fakty zajmuje prawy monitor przez cały etap (zamiast czatu), więc ekran platform mieści się bez przewijania.
 2. Wejście w platformę (krótkie ładowanie) → wpisy jeden po drugim (11 wpisów łącznie), każdy z miejscem na grafikę. Pod wpisem aktywna dedukcja (pytanie: „Jaki fakt wywiadowczy wynika z tego wpisu?” + 3 kafle wyboru: 1 poprawny, 2 zmyłki; kolejność kafli losowana przy każdym podejściu, żeby przy powtórce trzeba było czytać). „Następny wpis” odblokowuje się po trafnej odpowiedzi; po ostatnim wpisie powrót do ekranu profili.
 Spadek precyzji poniżej 70% pokazuje ekran ostrzegawczy z przyciskiem resetu (powrót do ekranu profili, postęp od zera).
 Układ wpisu: po lewej wpis jak w aplikacji platformy (kwadratowe zdjęcie, format Instagrama), po prawej osobny panel analizy (pytanie, odpowiedzi, przejście dalej).
