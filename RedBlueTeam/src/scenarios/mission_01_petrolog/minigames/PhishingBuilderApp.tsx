@@ -5,11 +5,11 @@ import {
   Bug,
   Sparkles,
   CheckCircle2,
-  ShieldCheck,
 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
+import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingBuilderConfig } from './types';
 import { WebsitePreview } from './WebsitePreview';
@@ -76,42 +76,25 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
     selectedId: string | null,
     onSelect: (id: string) => void
   ) => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-      {options.map((opt) => {
-        const isSelected = selectedId === opt.id;
-        return (
-          <div
+    <ChoiceZone accent={pink} label="WYBIERZ JEDNO">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {options.map((opt) => (
+          <ChoiceTile
             key={opt.id}
+            accent={pink}
+            state={selectedId === opt.id ? 'selected' : 'idle'}
+            markerPosition="corner"
             onClick={() => {
               sounds.playClick();
               onSelect(opt.id);
             }}
-            className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
-              isSelected
-                ? 'scale-[1.01]'
-                : 'border-gray-800 bg-[#08101a]/90 hover:border-gray-600 hover:bg-[#0c1624]'
-            }`}
-            style={
-              isSelected
-                ? {
-                    borderColor: pink,
-                    backgroundColor: `${pink}20`,
-                    boxShadow: `0 0 20px ${pink}50`
-                  }
-                : undefined
-            }
+            className="p-3.5 h-full"
           >
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
-                {isSelected && <CheckCircle2 size={14} className="text-pink-400 shrink-0 ml-1" />}
-              </div>
-              {opt.desc && <p className="text-[11px] text-gray-300 leading-relaxed mb-2.5">{opt.desc}</p>}
-            </div>
-
-            <div>
+            <div className="space-y-2 pr-7">
+              <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
+              {opt.desc && <p className="text-[11px] text-gray-300 leading-relaxed">{opt.desc}</p>}
               {opt.tags && opt.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-2">
+                <div className="flex flex-wrap gap-1">
                   {opt.tags.map((tag) => (
                     <span
                       key={tag}
@@ -122,23 +105,11 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
                   ))}
                 </div>
               )}
-              <div className="flex items-center space-x-1.5 text-[11px] pt-1.5 border-t border-gray-800">
-                <div
-                  className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                    isSelected ? 'border-pink-400 bg-pink-500' : 'border-gray-600'
-                  }`}
-                >
-                  {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
-                </div>
-                <span style={{ color: isSelected ? pink : '#9ca3af' }}>
-                  {isSelected ? 'WYBRANO' : 'KLIKNIJ ABY WYBRAĆ'}
-                </span>
-              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          </ChoiceTile>
+        ))}
+      </div>
+    </ChoiceZone>
   );
 
   const handleDomainConfirm = () => {
@@ -194,7 +165,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
               />
             </div>
           ) : (
-            <div className="p-6 rounded-xl border border-dashed border-gray-800 bg-[#060c14]/70 text-center flex flex-col items-center justify-center space-y-2.5 animate-in fade-in duration-200">
+            <div className="p-6 rounded-xl border border-gray-800 bg-[#060c14]/70 text-center flex flex-col items-center justify-center space-y-2.5 animate-in fade-in duration-200">
               <div className="p-3 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400">
                 <Globe size={26} className="animate-pulse" />
               </div>

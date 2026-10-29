@@ -16,6 +16,7 @@ import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
+import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import type { BlockProps } from '../../../engine/types/mission';
 import type {
   TargetPetrologConfig,
@@ -318,6 +319,7 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
         {/* Left column (~60%): Plan firmy & Details */}
         <div className="w-full lg:w-[60%] flex flex-col space-y-3">
           {/* 2x2 Grid of Places */}
+          <ChoiceZone accent={accent} label="WYBIERZ MIEJSCE DO ZBADANIA">
           <div className="grid grid-cols-2 gap-2.5">
             {places.map((place) => {
               const evalInfo = evaluatedPlaces[place.id];
@@ -325,20 +327,13 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
               const isEvaluated = !!evalInfo;
 
               return (
-                <button
+                <ChoiceTile
                   key={place.id}
+                  accent={accent}
+                  state={isSelected ? 'selected' : 'idle'}
+                  marker={null}
                   onClick={() => handleSelectPlace(place.id)}
-                  className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[92px] relative ${
-                    isSelected
-                      ? 'bg-[#091a29] shadow-lg ring-1'
-                      : isEvaluated
-                      ? 'bg-black/40 border-gray-800 hover:border-gray-700'
-                      : 'bg-black/20 border-gray-800/80 hover:border-gray-700 hover:bg-white/5'
-                  }`}
-                  style={{
-                    borderColor: isSelected ? accent : undefined,
-                    boxShadow: isSelected ? `0 0 15px ${accent}33` : undefined
-                  }}
+                  className="p-3.5 min-h-[92px]"
                 >
                   <div className="flex items-center justify-between w-full">
                     <div
@@ -377,10 +372,11 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
                       </span>
                     )}
                   </div>
-                </button>
+                </ChoiceTile>
               );
             })}
           </div>
+          </ChoiceZone>
 
           {/* Place Detail & Assessment Panel */}
           {selectedPlace && (
@@ -404,36 +400,25 @@ const InvestigationStep: React.FC<InvestigationStepProps> = ({
                 {selectedPlace.observations}
               </p>
 
-              {/* Assessment Question & Buttons */}
-              <div className="pt-2 border-t border-gray-800/80 space-y-2.5">
-                <div className="text-xs font-mono font-bold text-gray-400 uppercase tracking-wider">
-                  JAK OCENIASZ TO MIEJSCE?
-                </div>
-
+              {/* Ocena miejsca: strefa wyboru */}
+              <ChoiceZone accent={accent} label="JAK OCENIASZ TO MIEJSCE?">
                 <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => handleAssessment('vulnerable')}
-                    className={`py-3 px-4 rounded-lg font-bold text-xs sm:text-sm transition-all flex items-center justify-center space-x-2 border cursor-pointer active:scale-95 ${
-                      isSelectedEvaluated && selectedPlace.correctAssessment === 'vulnerable'
-                        ? 'bg-red-950/80 border-red-500 text-red-300 ring-2 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]'
-                        : 'bg-black/50 border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-500'
-                    }`}
-                  >
-                    <span>🔴 SŁABY PUNKT</span>
-                  </button>
-
-                  <button
-                    onClick={() => handleAssessment('protected')}
-                    className={`py-3 px-4 rounded-lg font-bold text-xs sm:text-sm transition-all flex items-center justify-center space-x-2 border cursor-pointer active:scale-95 ${
-                      isSelectedEvaluated && selectedPlace.correctAssessment === 'protected'
-                        ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300 ring-2 ring-emerald-500 shadow-[0_0_15px_rgba(0,255,102,0.4)]'
-                        : 'bg-black/50 border-emerald-900/60 text-emerald-400 hover:bg-emerald-950/40 hover:border-emerald-500'
-                    }`}
-                  >
-                    <span>🟢 CHRONIONE</span>
-                  </button>
+                  {([
+                    { id: 'vulnerable', label: '🔴 SŁABY PUNKT', color: '#ff3366' },
+                    { id: 'protected', label: '🟢 CHRONIONE', color: '#00ff66' }
+                  ] as const).map((opt) => (
+                    <ChoiceTile
+                      key={opt.id}
+                      accent={opt.color}
+                      state={isSelectedEvaluated && selectedPlace.correctAssessment === opt.id ? 'selected' : 'idle'}
+                      onClick={() => handleAssessment(opt.id)}
+                      className="py-3 px-4 items-center"
+                    >
+                      <span className="font-bold text-xs sm:text-sm text-white">{opt.label}</span>
+                    </ChoiceTile>
+                  ))}
                 </div>
-              </div>
+              </ChoiceZone>
 
               {/* Feedback Banner */}
               {activeFeedback && (
@@ -666,71 +651,40 @@ const DecisionStep: React.FC<DecisionStepProps> = ({
           </h3>
         </div>
 
-        {/* 3 Large Attack Cards (No letters A/B/C, no jargon) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {options.map((option) => {
-            const isSelected = selectedOptionId === option.id;
-
-            return (
-              <button
-                key={option.id}
-                onClick={() => handleSelectOption(option)}
-                className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-3 relative active:scale-98 ${
-                  isSelected
-                    ? option.isCorrect
-                      ? 'border-[#00ff66] bg-[#00ff66]/15 shadow-[0_0_20px_rgba(0,255,102,0.3)] ring-1 ring-[#00ff66]'
-                      : 'border-red-500 bg-red-950/40 text-red-200 shadow-[0_0_15px_rgba(239,68,68,0.3)] ring-1 ring-red-500'
-                    : 'border-gray-800 bg-black/40 hover:border-gray-700 hover:bg-white/5'
-                }`}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div
-                      className={`p-2 rounded-lg border ${
-                        isSelected
-                          ? option.isCorrect
-                            ? 'bg-[#00ff66]/20 text-[#00ff66] border-[#00ff66]'
-                            : 'bg-red-950 text-red-400 border-red-500'
-                          : 'bg-gray-900 border-gray-800 text-gray-400'
-                      }`}
-                      style={
-                        isSelected && option.isCorrect
-                          ? { borderColor: accent }
-                          : undefined
-                      }
-                    >
+        {/* 3 duże karty drogi ataku (bez liter A/B/C, bez żargonu) */}
+        <ChoiceZone accent={accent} label="WYBIERZ DROGĘ ATAKU">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {options.map((option) => {
+              const isSelected = selectedOptionId === option.id;
+              return (
+                <ChoiceTile
+                  key={option.id}
+                  accent={accent}
+                  state={
+                    isSelected
+                      ? option.isCorrect
+                        ? 'correct'
+                        : 'wrong'
+                      : isCorrect
+                      ? 'dimmed'
+                      : 'idle'
+                  }
+                  markerPosition="corner"
+                  onClick={() => handleSelectOption(option)}
+                  className="p-4 h-full"
+                >
+                  <div className="space-y-2 pr-7">
+                    <div className="p-2 rounded-lg border bg-gray-900 border-gray-800 text-gray-300 inline-flex">
                       {renderIcon(option.iconName, 22)}
                     </div>
-
-                    {isSelected && (
-                      <span className="text-xs">
-                        {option.isCorrect ? (
-                          <CheckCircle2 size={20} className="text-[#00ff66]" />
-                        ) : (
-                          <AlertTriangle size={20} className="text-red-400" />
-                        )}
-                      </span>
-                    )}
+                    <h4 className="text-sm font-bold text-white leading-snug">{option.title}</h4>
+                    <p className="text-xs text-gray-300 leading-relaxed font-sans">{option.description}</p>
                   </div>
-
-                  <h4 className="text-sm font-bold text-white leading-snug">
-                    {option.title}
-                  </h4>
-                  <p className="text-xs text-gray-300 leading-relaxed font-sans">
-                    {option.description}
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-gray-800/60 text-[10px] text-gray-500 font-mono flex items-center justify-between">
-                  <span>DROGA ATAKU</span>
-                  <span className={isSelected && option.isCorrect ? 'text-[#00ff66] font-bold' : ''}>
-                    {isSelected ? (option.isCorrect ? 'WYBRANO' : 'ODRZUCONO') : 'WYBIERZ'}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+                </ChoiceTile>
+              );
+            })}
+          </div>
+        </ChoiceZone>
 
         {/* Feedback Banner */}
         {decisionFeedback && (

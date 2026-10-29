@@ -25,6 +25,8 @@ W grze 2D cały pulpit jest na ekranie naraz. Gracz nie ma przestrzeni, która w
 13. **Brak spoilerów w narracji (No Spoilers).** Dialogi w czacie (kwestie gracza i mentora) oraz wskazówki T1/T2 nie mogą zdradzać bezpośredniej odpowiedzi (np. gracz nie mówi: „podmienię jedną literę w domenie firmowej”, mentor nie podaje formatu poprawnej odpowiedzi). Gracz musi wywnioskować rozwiązanie samodzielnie w minigrze.
 14. **Zero-Clicker Agency (Aktywne zaangażowanie).** Wyklucza się ekrany będące wyłącznie pasywnym klikaniem przycisku „DALEJ”. Każdy krok wymaga aktywności intelektualnej gracza (wybór wariantu, dopasowanie cechy, analiza logów, decyzja taktyczna).
 15. **Wymóg kanonicznej specyfikacji (`scenario.md`).** Żadna misja nie może powstać w kodzie bez uprzedniego zatwierdzenia kanonicznego pliku `scenario.md` zgodnego z `docs/scenario-format.md`.
+16. **Zadanie jest najwyraźniejszym tekstem na ekranie.** Każdy ekran aplikacji ma `AppHeader` z paskiem **ZADANIE** — jedno zdanie, co gracz ma teraz zrobić; po każdym kroku zdanie się aktualizuje.
+17. **To, co się klika, wygląda inaczej niż to, co się czyta.** Opcje wyboru zawsze w `ChoiceZone`/`ChoiceTile`; karty informacyjne (fakty, podglądy, notatki) bez ramki-przycisku i bez hovera.
 
 ## Co scenariusz musi nieść, żeby to ustawić
 

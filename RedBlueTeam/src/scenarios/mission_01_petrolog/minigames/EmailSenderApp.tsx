@@ -4,13 +4,12 @@ import {
   ArrowRight,
   ArrowLeft,
   Send,
-  CheckCircle2,
   Sparkles,
-  ExternalLink,
 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
+import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { EmailSenderConfig } from './types';
@@ -53,42 +52,25 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     onSelect: (id: string) => void,
     showTags: boolean = true
   ) => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-      {options.map((opt) => {
-        const isSelected = selectedId === opt.id;
-        return (
-          <div
+    <ChoiceZone accent={accent} label="WYBIERZ JEDNO">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {options.map((opt) => (
+          <ChoiceTile
             key={opt.id}
+            accent={accent}
+            state={selectedId === opt.id ? 'selected' : 'idle'}
+            markerPosition="corner"
             onClick={() => {
               sounds.playClick();
               onSelect(opt.id);
             }}
-            className={`p-3.5 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
-              isSelected
-                ? 'scale-[1.01]'
-                : 'border-gray-800 bg-[#08101a]/90 hover:border-gray-600 hover:bg-[#0c1624]'
-            }`}
-            style={
-              isSelected
-                ? {
-                    borderColor: accent,
-                    backgroundColor: `${accent}20`,
-                    boxShadow: `0 0 20px ${accent}50`
-                  }
-                : undefined
-            }
+            className="p-3.5 h-full"
           >
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
-                {isSelected && <CheckCircle2 size={14} className="text-purple-400 shrink-0 ml-1" />}
-              </div>
-              {opt.desc && <p className="text-[11px] text-gray-300 leading-relaxed mb-2.5">{opt.desc}</p>}
-            </div>
-
-            <div>
+            <div className="space-y-2 pr-7">
+              <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
+              {opt.desc && <p className="text-[11px] text-gray-300 leading-relaxed">{opt.desc}</p>}
               {showTags && opt.tags && opt.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-2">
+                <div className="flex flex-wrap gap-1">
                   {opt.tags.map((tag) => (
                     <span
                       key={tag}
@@ -99,23 +81,11 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
                   ))}
                 </div>
               )}
-              <div className="flex items-center space-x-1.5 text-[11px] pt-1.5 border-t border-gray-800">
-                <div
-                  className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                    isSelected ? 'border-purple-400 bg-purple-500' : 'border-gray-600'
-                  }`}
-                >
-                  {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
-                </div>
-                <span style={{ color: isSelected ? accent : '#9ca3af' }}>
-                  {isSelected ? 'WYBRANO' : 'KLIKNIJ ABY WYBRAĆ'}
-                </span>
-              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          </ChoiceTile>
+        ))}
+      </div>
+    </ChoiceZone>
   );
 
   const renderEmailButtons = (
@@ -123,39 +93,24 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     selectedId: string | null,
     onSelect: (id: string) => void
   ) => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-      {options.map((opt) => {
-        const isSelected = selectedId === opt.id;
-        return (
-          <div
+    <ChoiceZone accent={accent} label="WYBIERZ ADRES">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {options.map((opt) => (
+          <ChoiceTile
             key={opt.id}
+            accent={accent}
+            state={selectedId === opt.id ? 'selected' : 'idle'}
             onClick={() => {
               sounds.playClick();
               onSelect(opt.id);
             }}
-            className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between font-mono ${
-              isSelected
-                ? 'scale-[1.01] border-purple-400 bg-purple-500/20 shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                : 'border-gray-800 bg-[#08101a]/90 hover:border-gray-600 hover:bg-[#0c1624]'
-            }`}
+            className="p-4 items-center font-mono"
           >
-            <div className="flex items-center space-x-2.5 min-w-0">
-              <div
-                className={`w-3.5 h-3.5 rounded-full border shrink-0 flex items-center justify-center ${
-                  isSelected ? 'border-purple-400 bg-purple-500' : 'border-gray-600'
-                }`}
-              >
-                {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
-              </div>
-              <span className="text-xs font-bold text-white tracking-wider truncate">
-                {opt.label}
-              </span>
-            </div>
-            {isSelected && <CheckCircle2 size={16} className="text-purple-400 shrink-0 ml-2" />}
-          </div>
-        );
-      })}
-    </div>
+            <span className="text-xs font-bold text-white tracking-wider break-all">{opt.label}</span>
+          </ChoiceTile>
+        ))}
+      </div>
+    </ChoiceZone>
   );
 
   const handleSenderConfirm = () => {

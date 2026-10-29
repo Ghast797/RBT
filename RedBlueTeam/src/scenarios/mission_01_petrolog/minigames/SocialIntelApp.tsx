@@ -18,6 +18,7 @@ import {
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
+import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { SocialIntelConfig, SocialPost, SocialPlatformInfo, DeductionOption } from './types';
 import { resolveSocialImage, SOCIAL_ASSETS_DIR } from './socialAssets';
@@ -411,47 +412,43 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
 
                 {/* Dedukcja */}
                 {!isPrecisionFailed ? (
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-amber-300 flex items-center space-x-1.5 uppercase tracking-wider">
-                      <HelpCircle size={14} />
-                      <span>JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?</span>
-                    </span>
-
-                    <div className="space-y-1.5">
+                  <ChoiceZone accent={purple} label="WYBIERZ ODPOWIEDŹ">
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-amber-300 flex items-center space-x-1.5 uppercase tracking-wider">
+                        <HelpCircle size={14} />
+                        <span>JAKI FAKT WYWIADOWCZY WYNIKA Z TEGO WPISU?</span>
+                      </span>
                       {orderedDeductionOptions(post).map((opt, optIdx) => {
                         const isOptFailed = failedOptionIds.includes(opt.id);
                         return (
-                          <button
+                          <ChoiceTile
                             key={opt.id || optIdx}
-                            disabled={isPostSolved || isOptFailed}
-                            onClick={() => handleChooseDeduction(post, opt)}
-                            className={`w-full p-3 rounded-lg border text-left text-xs transition-all flex items-center space-x-2.5 ${
+                            accent={purple}
+                            state={
                               isPostSolved
                                 ? opt.isCorrect
-                                  ? 'border-[#00ff66] bg-[#00ff66]/15 text-white font-bold'
-                                  : 'border-gray-800/40 bg-black/20 text-gray-600 opacity-50'
+                                  ? 'correct'
+                                  : 'dimmed'
                                 : isOptFailed
-                                ? 'border-red-500/50 bg-red-950/20 text-red-300 opacity-60 cursor-not-allowed'
-                                : 'border-gray-800 bg-black/40 hover:border-purple-500/60 hover:bg-purple-950/20 text-gray-200 cursor-pointer'
-                            }`}
+                                ? 'wrong'
+                                : 'idle'
+                            }
+                            marker={String.fromCharCode(65 + optIdx)}
+                            onClick={() => handleChooseDeduction(post, opt)}
+                            className="p-3 items-center"
                           >
                             <span
-                              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                                isPostSolved && opt.isCorrect
-                                  ? 'bg-[#00ff66] text-[#05090f]'
-                                  : isOptFailed
-                                  ? 'bg-red-500 text-white'
-                                  : 'bg-gray-800 text-gray-400'
+                              className={`font-sans text-xs leading-snug ${
+                                isPostSolved && opt.isCorrect ? 'text-white font-bold' : isOptFailed ? 'text-red-300' : 'text-gray-200'
                               }`}
                             >
-                              {isPostSolved && opt.isCorrect ? '✓' : isOptFailed ? '✗' : String.fromCharCode(65 + optIdx)}
+                              {opt.text}
                             </span>
-                            <span className="flex-1 font-sans text-xs leading-snug">{opt.text}</span>
-                          </button>
+                          </ChoiceTile>
                         );
                       })}
                     </div>
-                  </div>
+                  </ChoiceZone>
                 ) : (
                   <div className="p-4 rounded-lg border-2 border-red-500 bg-red-950/30 text-center space-y-3 animate-in fade-in">
                     <div className="flex items-center justify-center space-x-2 text-red-400 font-black text-xs uppercase tracking-wider">

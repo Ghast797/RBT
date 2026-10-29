@@ -64,6 +64,8 @@ Implementuje je silnik raz. Scenariusz ich nie opisuje — zakłada je.
 | Dźwięki | stały zestaw: klik, sukces, błąd, powiadomienie, alarm (`soundEffects.ts`) |
 | Układ ekranu | lewy monitor = pulpit i okna, prawy monitor = czat BYTE_MASTER |
 | Przeciąganie z VR | w webie: drag & drop **lub** klik kafelka (decyzja per klocek, nie per scenariusz) |
+| Nagłówek aplikacji | `AppHeader` (`engine/components/AppHeader.tsx`): duży tytuł aplikacji + pasek **ZADANIE** z bieżącym poleceniem; polecenie zmienia się z krokiem minigry |
+| Elementy do wyboru | `ChoiceZone` + `ChoiceTile` (`engine/components/ChoiceZone.tsx`): wszystko, co gracz wybiera, stoi w przerywanej ramce z etykietą „▼ WYBIERZ…”; kafel ma znacznik (kółko/litera) i stany `idle/selected/correct/wrong/dimmed`. Karty informacyjne nie mają ramki przerywanej ani reakcji na najechanie |
 
 ## 4. Trzy poziomy oceny
 

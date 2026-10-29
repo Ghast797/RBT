@@ -3,6 +3,7 @@ import { Search, Lock, Unlock, AlertTriangle, ArrowRight, UserCheck } from 'luci
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
+import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { OsintSearchConfig, EmployeeProfile } from './types';
 import { resolveOsintImage, OSINT_ASSETS_DIR } from './osintAssets';
@@ -125,7 +126,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
 
           {/* Quick Query Suggestion Chip */}
           {!hasSearched && (
-            <div className="p-4 rounded-xl border border-dashed border-gray-800 bg-[#08101a]/50 text-center space-y-2 my-auto">
+            <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a]/50 text-center space-y-2 my-auto">
               <p className="text-xs text-gray-400">
                 Wpisz frazę lub kliknij sugerowane zapytanie, aby przeskanować sieć:
               </p>
@@ -174,24 +175,21 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                 <span>WYNIKI WYSZUKIWANIA ({config.profiles.length}):</span>
               </div>
 
+              <ChoiceZone accent={blue} label="WYBIERZ CEL">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {config.profiles.map((profile) => {
                   const isSelected = selectedProfile?.id === profile.id;
                   const isChosen = isSelected && isConfirmed;
                   return (
-                    <div
+                    <ChoiceTile
                       key={profile.id}
+                      accent={blue}
+                      state={isChosen ? 'correct' : isSelected ? 'selected' : isConfirmed ? 'dimmed' : 'idle'}
+                      markerPosition="corner"
                       onClick={() => handleSelectProfile(profile)}
-                      className={`p-4 rounded-xl border-2 transition-all flex flex-col justify-between ${
-                        isChosen
-                          ? 'border-[#00ff66] bg-[#00ff66]/15 shadow-[0_0_20px_rgba(0,255,102,0.35)] scale-[1.01]'
-                          : isSelected
-                          ? 'border-[#38bdf8] bg-[#38bdf8]/10 shadow-[0_0_20px_rgba(56,189,248,0.35)] scale-[1.01] cursor-pointer'
-                          : isConfirmed
-                          ? 'border-gray-800 bg-[#08101a]/90 opacity-50'
-                          : 'border-gray-800 bg-[#08101a]/90 hover:border-gray-600 hover:bg-[#0c1624] cursor-pointer'
-                      }`}
+                      className="p-4 h-full"
                     >
+                      <div className="flex flex-col justify-between h-full">
                       <div className="flex gap-3">
                         {/* Zdjęcie pracowniczki: assets/osint/<id profilu>.*; brak pliku = zastępnik */}
                         <div
@@ -264,10 +262,12 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                           {isChosen ? '✓ CEL ZATWIERDZONY' : isSelected ? '● ZAZNACZONO' : isConfirmed ? '' : 'KLIKNIJ ABY WYBRAĆ ▸'}
                         </span>
                       </div>
-                    </div>
+                      </div>
+                    </ChoiceTile>
                   );
                 })}
               </div>
+              </ChoiceZone>
 
               {selectedProfile && !isConfirmed && (
                 <div
