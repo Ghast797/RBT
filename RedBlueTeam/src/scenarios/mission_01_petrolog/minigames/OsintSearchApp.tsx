@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Search, Lock, Unlock, AlertTriangle, ArrowRight, UserCheck } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { AppHeader } from '../../../engine/components/AppHeader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { OsintSearchConfig, EmployeeProfile } from './types';
+import { resolveOsintImage, OSINT_ASSETS_DIR } from './osintAssets';
 
 export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
   config,
@@ -14,7 +16,9 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
   const [query, setQuery] = useState(config.suggestedQuery || 'PETROLOG PRACOWNICY');
   const [hasSearched, setHasSearched] = useState(false);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
+  // Kliknięcie karty tylko zaznacza profil; ocena wyboru dopiero po zatwierdzeniu (tak samo dla każdego profilu).
   const [selectedProfile, setSelectedProfile] = useState<EmployeeProfile | null>(null);
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSearch = (e?: React.FormEvent) => {
@@ -31,20 +35,38 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
   };
 
   const handleSelectProfile = (profile: EmployeeProfile) => {
+    if (isConfirmed) return;
     sounds.playClick();
-    if (!profile.isPublic) {
+    setErrorMessage(null);
+    setSelectedProfile(profile);
+  };
+
+  const handleConfirmSelection = () => {
+    if (!selectedProfile) return;
+    if (!selectedProfile.isPublic) {
       sounds.playError();
       setSelectedProfile(null);
       setErrorMessage(
-        profile.privacyNotice ||
+        selectedProfile.privacyNotice ||
           "ERROR: MARCELINA SOJKA USTAWIŁA WSZYSTKIE SWOJE SOCIAL MEDIA NA 'PRYWATNE'. NIE MAMY JAK ZDOBYĆ O NIEJ INFORMACJI."
       );
     } else {
       sounds.playSuccess();
-      setErrorMessage(null);
-      setSelectedProfile(profile);
+      setIsConfirmed(true);
     }
   };
+
+  const task = isLoadingResults
+    ? 'Trwa skanowanie sieci…'
+    : !hasSearched
+    ? 'Wyszukaj pracowników PetroLog: wpisz frazę albo kliknij sugerowane zapytanie.'
+    : errorMessage
+    ? 'Tego profilu nie da się przeanalizować. Wróć do listy i wybierz inną osobę.'
+    : isConfirmed
+    ? 'Cel wybrany. Przejdź do analizy jej mediów społecznościowych.'
+    : selectedProfile
+    ? 'Zatwierdź wybór celu albo zaznacz inny profil.'
+    : 'Wybierz pracownika, którego profil przeanalizujesz, i zatwierdź wybór.';
 
   const handleProceed = () => {
     sounds.playSuccess();
@@ -53,32 +75,14 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {/* Header */}
-      <div
-        className="border-b pb-3 flex items-center justify-between"
-        style={{ borderColor: `${blue}4d` }}
-      >
-        <div className="flex items-center space-x-2.5">
-          <div
-            className="p-1.5 rounded border"
-            style={{ backgroundColor: `${blue}26`, borderColor: blue, color: blue }}
-          >
-            <Search size={20} />
-          </div>
-          <div>
-            <h2 className="text-sm font-bold text-white tracking-widest">//WYSZUKIWARKA: OSINT</h2>
-            <p className="text-[11px]" style={{ color: blue }}>
-              INDEKSACJA PERSONELU I WERYFIKACJA WIDOCZNOŚCI PROFILI
-            </p>
-          </div>
-        </div>
-        <span
-          className="text-[10px] px-2.5 py-1 rounded border font-mono tracking-wider"
-          style={{ backgroundColor: `${blue}1a`, borderColor: `${blue}66`, color: blue }}
-        >
-          SELEKCJA CELU
-        </span>
-      </div>
+      <AppHeader
+        icon={Search}
+        accent={blue}
+        title="//WYSZUKIWARKA: OSINT"
+        subtitle="INDEKSACJA PERSONELU I WERYFIKACJA WIDOCZNOŚCI PROFILI"
+        step="SELEKCJA CELU"
+        task={task}
+      />
 
       {isLoadingResults ? (
         <ModuleLoader
@@ -166,53 +170,59 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
           {/* Search Results Display */}
           {hasSearched && !errorMessage && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs text-gray-400 border-b border-gray-800 pb-2">
+              <div className="text-xs text-gray-400 border-b border-gray-800 pb-2">
                 <span>WYNIKI WYSZUKIWANIA ({config.profiles.length}):</span>
-                <span className="text-[11px] text-[#38bdf8]">
-                  WYBIERZ PROFIL DO PROFILOWANIA SOCJOTECHNICZNEGO
-                </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {config.profiles.map((profile) => {
                   const isSelected = selectedProfile?.id === profile.id;
+                  const isChosen = isSelected && isConfirmed;
                   return (
                     <div
                       key={profile.id}
                       onClick={() => handleSelectProfile(profile)}
-                      className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                        isSelected
+                      className={`p-4 rounded-xl border-2 transition-all flex flex-col justify-between ${
+                        isChosen
                           ? 'border-[#00ff66] bg-[#00ff66]/15 shadow-[0_0_20px_rgba(0,255,102,0.35)] scale-[1.01]'
-                          : 'border-gray-800 bg-[#08101a]/90 hover:border-gray-600 hover:bg-[#0c1624]'
+                          : isSelected
+                          ? 'border-[#38bdf8] bg-[#38bdf8]/10 shadow-[0_0_20px_rgba(56,189,248,0.35)] scale-[1.01] cursor-pointer'
+                          : isConfirmed
+                          ? 'border-gray-800 bg-[#08101a]/90 opacity-50'
+                          : 'border-gray-800 bg-[#08101a]/90 hover:border-gray-600 hover:bg-[#0c1624] cursor-pointer'
                       }`}
                     >
-                      <div className="space-y-2.5">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div
-                              className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-sm border"
-                              style={{
-                                backgroundColor: profile.isPublic ? '#00ff6626' : '#ff336626',
-                                borderColor: profile.isPublic ? '#00ff66' : '#ff3366',
-                                color: profile.isPublic ? '#00ff66' : '#ff3366'
-                              }}
-                            >
-                              {profile.avatarText}
+                      <div className="flex gap-3">
+                        {/* Zdjęcie pracowniczki: assets/osint/<id profilu>.*; brak pliku = zastępnik */}
+                        <div
+                          className="relative w-[48%] shrink-0 self-start aspect-[4/5] rounded-lg overflow-hidden border-2 flex items-center justify-center"
+                          style={{
+                            backgroundColor: profile.isPublic ? '#00ff6614' : '#ff336614',
+                            borderColor: profile.isPublic ? '#00ff66' : '#ff3366',
+                            color: profile.isPublic ? '#00ff66' : '#ff3366'
+                          }}
+                        >
+                          {resolveOsintImage(profile.id) ? (
+                            <img
+                              src={resolveOsintImage(profile.id)}
+                              alt={profile.name}
+                              className="w-full h-full object-cover relative z-[60]"
+                              draggable={false}
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center justify-center text-center p-2 space-y-1">
+                              <span className="font-black text-4xl">{profile.avatarText}</span>
+                              {import.meta.env.DEV && (
+                                <span className="text-[10px] text-gray-500 leading-tight break-all">
+                                  {`${OSINT_ASSETS_DIR}/${profile.id}.png`}
+                                </span>
+                              )}
                             </div>
-                            <div>
-                              <h3 className="text-sm font-bold text-white tracking-wide">
-                                {profile.name}
-                              </h3>
-                              <p className="text-xs text-gray-400">
-                                {profile.role} • {profile.department}
-                              </p>
-                            </div>
-                          </div>
-
+                          )}
                           <span
-                            className="text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider flex items-center space-x-1"
+                            className="absolute top-2 right-2 text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider flex items-center space-x-1 backdrop-blur-sm"
                             style={{
-                              backgroundColor: profile.isPublic ? '#00ff6620' : '#ff336620',
+                              backgroundColor: profile.isPublic ? '#00ff6633' : '#ff336633',
                               color: profile.isPublic ? '#00ff66' : '#ff3366'
                             }}
                           >
@@ -221,29 +231,37 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                           </span>
                         </div>
 
-                        {profile.tags && (
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            {profile.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-[9px] px-2 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
-                              >
-                                {tag}
-                              </span>
-                            ))}
+                        <div className="min-w-0 flex-1 space-y-2.5">
+                          <div>
+                            <h3 className="text-sm font-bold text-white tracking-wide">{profile.name}</h3>
+                            <p className="text-xs text-gray-400">{profile.role}</p>
+                            <p className="text-xs text-gray-500">{profile.department}</p>
                           </div>
-                        )}
+
+                          {profile.tags && (
+                            <div className="flex flex-wrap content-start items-start gap-1">
+                              {profile.tags.map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="text-[9px] px-2 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div className="pt-4 mt-2 border-t border-gray-800/60 flex items-center justify-between text-xs">
                         <span className="text-gray-400 text-[11px]">
-                          STATUS INTEL: {profile.isPublic ? 'DOSTĘPNY' : 'ZABLOKOWANY'}
+                          {profile.isPublic ? 'DOSTĘPNY' : 'ZABLOKOWANY'}
                         </span>
                         <span
                           className="font-bold text-[11px]"
-                          style={{ color: isSelected ? '#00ff66' : blue }}
+                          style={{ color: isChosen ? '#00ff66' : blue }}
                         >
-                          {isSelected ? '✓ WYBRANO CEL' : 'KLIKNIJ ABY SPRAWDZIĆ ▸'}
+                          {isChosen ? '✓ CEL ZATWIERDZONY' : isSelected ? '● ZAZNACZONO' : isConfirmed ? '' : 'KLIKNIJ ABY WYBRAĆ ▸'}
                         </span>
                       </div>
                     </div>
@@ -251,18 +269,49 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                 })}
               </div>
 
-              {selectedProfile && selectedProfile.isPublic && (
+              {selectedProfile && !isConfirmed && (
+                <div
+                  className="p-4 rounded-xl border-2 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in fade-in"
+                  style={{ borderColor: blue, backgroundColor: `${blue}14`, boxShadow: `0 0 20px ${blue}33` }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: blue, color: '#05090f' }}>
+                      <UserCheck size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white tracking-wider">
+                        ZAZNACZONO: {selectedProfile.name.toUpperCase()} ({selectedProfile.department.toUpperCase()})
+                      </h4>
+                      <p className="text-[11px]" style={{ color: blue }}>
+                        Czy to właściwy cel ataku? Zatwierdź wybór albo zaznacz inny profil.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleConfirmSelection}
+                    className="w-full sm:w-auto px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-1.5 cursor-pointer shrink-0 active:scale-95"
+                    style={{ backgroundColor: blue, color: '#05090f', boxShadow: `0 0 15px ${blue}80` }}
+                  >
+                    <span>ZATWIERDŹ WYBÓR CELU</span>
+                    <ArrowRight size={15} />
+                  </button>
+                </div>
+              )}
+
+              {selectedProfile && isConfirmed && (
                 <div className="p-4 rounded-xl border-2 border-[#00ff66] bg-[#00ff66]/10 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[0_0_20px_rgba(0,255,102,0.2)] animate-in fade-in">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-[#00ff66] text-[#05090f]">
+                    <div className="p-2 rounded-lg bg-[#00ff66] text-[#05090f] shrink-0">
                       <UserCheck size={20} />
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-white tracking-wider">
                         CEL WYTYPOWANY: {selectedProfile.name.toUpperCase()} ({selectedProfile.department.toUpperCase()})
                       </h4>
-                      <p className="text-[11px] text-[#00ff66]">
-                        Profil publiczny dostępny w 3 sieciach społecznościowych. Gotowy do analizy faktów.
+                      <p className="text-[11px] text-[#00ff66] leading-relaxed">
+                        {selectedProfile.selectionNotice ||
+                          'DOBRY WYBÓR! Profil publiczny dostępny w 3 sieciach społecznościowych. Gotowy do analizy faktów.'}
                       </p>
                     </div>
                   </div>

@@ -8,6 +8,7 @@ import type {
   OsintSearchConfig,
   SocialIntelConfig,
   PhishingBuilderConfig,
+  EmailSenderConfig,
   VictimMonitorConfig
 } from './minigames/types';
 
@@ -145,6 +146,8 @@ export const osintSearchConfig: OsintSearchConfig = {
       department: 'Dział Księgowy',
       avatarText: 'AK',
       isPublic: true,
+      selectionNotice:
+        'DOBRY WYBÓR! Anita Klimek pracuje w księgowości — dziale, który zidentyfikowaliśmy jako słaby punkt PetroLog — i ma publiczne profile w 3 sieciach społecznościowych. To idealny cel do dalszej analizy.',
       tags: ['KSIĘGOWOŚĆ', 'FAKTURY', 'BIEGANIE', 'PROFIL PUBLICZNY']
     }
   ]
@@ -329,7 +332,7 @@ export const socialIntelConfig: SocialIntelConfig = {
       handle: '@anita_k',
       timestamp: 'Wczoraj',
       content:
-        'Kawa i ciasteczka! ☕️ Poniedziałki potrafią być ciężkie, ale w tym zestawie zawsze dam radę! #work #coffee #magia',
+        'Kawa i ciasteczka! ☕️ Poniedziałki potrafią być ciężkie, ale z tym zestawem zawsze dam radę! #work #coffee #magia',
       tags: ['#Coffee', '#WorkLife'],
       distractorNotice:
         'BRAK PRZYDATNYCH INFORMACJI (Typowy post lifestylowy o kawie – brak precyzyjnego motywu socjotechnicznego)',
@@ -634,6 +637,75 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
       }
     ]
   },
+  payloadByDomain: {
+    dalekbieg_info: {
+      decisionNum: 2,
+      question: 'OSZUKAĆ OFIARĘ – WYBIERZ PLIK, KTÓRY OFIARA BĘDZIE MOGŁA POBRAĆ ZE STRONY. NIECH BĘDZIE ZACHĘCAJĄCY.',
+      subtitle: 'Decyzja D2: Wybór pliku-przynęty (payload) dla portalu biegowego',
+      options: [
+        {
+          id: 'guide_running',
+          label: 'PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK',
+          desc: 'Plik PDF zawierający merytoryczne wskazówki treningowe odpowiadające na zapytanie ofiary.',
+          tags: ['PDF', 'EBOOK', 'TRENING'],
+          tier: 'ideal',
+          feedback: 'Precyzyjna odpowiedź na publiczne zapytanie Anity z portalu Joinin.'
+        },
+        {
+          id: 'wallpapers_running',
+          label: 'TAPETY DLA BIEGACZY NA TELEFON',
+          desc: 'Zestaw grafik motywacyjnych dla biegaczy w formacie ZIP.',
+          tags: ['GRAFIKA', 'TAPETY', 'ZIP'],
+          tier: 'suboptimal',
+          feedback:
+            'Mało angażujący zasób, który nie odpowiada potrzebie zdobycia merytorycznej wiedzy.'
+        },
+        {
+          id: 'source_code',
+          label: 'KOD ŹRÓDŁOWY STRONY',
+          desc: 'Surowe pliki źródłowe HTML/JS skompresowane w archiwum.',
+          tags: ['KOD', 'DEV', 'ARCHIWUM'],
+          tier: 'critical',
+          feedback:
+            'Całkowity błąd profilowania – księgowa nigdy nie zainteresuje się pobieraniem surowego kodu.'
+        }
+      ]
+    },
+    mufina_org_pl: {
+      decisionNum: 2,
+      question: 'OSZUKAĆ OFIARĘ – WYBIERZ PLIK, KTÓRY OFIARA BĘDZIE MOGŁA POBRAĆ ZE STRONY. NIECH BĘDZIE ZACHĘCAJĄCY.',
+      subtitle: 'Decyzja D2: Wybór pliku-przynęty (payload) dla serwisu kulinarnego',
+      options: [
+        {
+          id: 'guide_muffins',
+          label: 'PORADNIK KULINARNY - 10 SPRAWDZONYCH PRZEPISÓW NA DOMOWE MUFFINKI',
+          desc: 'Plik PDF zawierający proste, sprawdzone receptury i sekrety udanych wypieków domowych babeczek.',
+          tags: ['PDF', 'EBOOK', 'PRZEPISY'],
+          tier: 'ideal',
+          feedback:
+            'Trafny dobór pliku dla serwisu kulinarnego – merytoryczny e-book z przepisami nawiązuje do pasji pieczenia ciast i wzbudza zaufanie.'
+        },
+        {
+          id: 'wallpapers_muffins',
+          label: 'TAPETY ZE SŁODKIMI MUFFINKAMI NA TELEFON',
+          desc: 'Zestaw grafik i zdjęć kolorowych babeczek w wysokiej rozdzielczości w formacie ZIP.',
+          tags: ['GRAFIKA', 'TAPETY', 'ZIP'],
+          tier: 'suboptimal',
+          feedback:
+            'Mało angażujący zasób – zdjęcia babeczek są ładne, ale nie dają żadnej praktycznej wartości kulinarnej ani przepisów.'
+        },
+        {
+          id: 'source_code_muffins',
+          label: 'KOD ŹRÓDŁOWY BLOGA KULINARNEGO',
+          desc: 'Surowe pliki szablonu bloga PHP/JS skompresowane w archiwum.',
+          tags: ['KOD', 'DEV', 'ARCHIWUM'],
+          tier: 'critical',
+          feedback:
+            'Całkowity błąd profilowania – miłośniczka domowych wypieków nigdy nie zainteresuje się pobieraniem surowego kodu strony.'
+        }
+      ]
+    }
+  },
   injection: {
     instruction: 'ZAWIRUSUJ PLIK – DODAJ WIRUSA DO STRONY INTERNETOWEJ',
     targetDomain: 'dalekbieg.info',
@@ -679,37 +751,40 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
     subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (spoofing)',
     options: [
       {
-        id: 'kwiatkowski_petrolog',
-        label: 'K.KWIATKOWSKI@PETROLOG.COM',
-        desc: 'Adres w domenie firmowej @petrolog.com. Serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika.',
-        tags: ['FIRMOWY', 'PODSZYWANIE', 'PETROLOG.COM'],
-        tier: 'ideal',
+        id: 'darksun_gmail',
+        label: 'DARKSUN.JAKUB@GMAIL.COM',
+        tier: 'critical',
         feedback:
-          'Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary bez podejrzeń.'
+          'Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.'
       },
       {
-        id: 'kwiatkowski_hach',
-        label: 'K.KWIATKOWSKI@HACH.COM',
-        desc: 'Adres w obcej domenie zewnętrznej hach.com.',
-        tags: ['ZEWNĘTRZNY', 'HACH.COM'],
+        id: 'kwiatkowski_hack',
+        label: 'K.KWIATKOWSKI@HACK.COM',
         tier: 'suboptimal',
         feedback:
           'Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.'
       },
       {
-        id: 'darksun_gmail',
-        label: 'DARKSUN.JAKUB@GMAIL.COM',
-        desc: 'Adres publiczny na serwerze Gmail z nazwą grupy hakerskiej.',
-        tags: ['PUBLICZNY', 'DARKSUN', 'GMAIL'],
-        tier: 'critical',
+        id: 'kwiatkowski_petrolog',
+        label: 'K.KWIATKOWSKI@PETROLOG.COM',
+        tier: 'ideal',
         feedback:
-          'Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.'
+          'Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary bez podejrzeń.'
       }
     ]
   }
 };
 
 /** S05: Egzekucja ataku i monitoring reakcji ofiary. */
+
+/** S05: Wysyłanie maila spear-phishingowego (D3–D4). */
+export const emailSenderConfig: EmailSenderConfig = {
+  senderName: phishingBuilderConfig.senderName!,
+  senderEmail: phishingBuilderConfig.senderEmail!,
+  defaultDomain: 'dalekbieg.info',
+  defaultPayload: 'PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK'
+};
+
 export const victimMonitorConfig: VictimMonitorConfig = {
   senderName: 'Jakub Kwiatkowski',
   senderEmail: 'k.kwiatkowski@petrolog.com',
@@ -753,6 +828,7 @@ export const mission1Blocks: Record<string, unknown> = {
   app_osint_search: osintSearchConfig,
   app_social_intel: socialIntelConfig,
   app_phishing_builder: phishingBuilderConfig,
+  app_email_sender: emailSenderConfig,
   app_victim_monitor: victimMonitorConfig
 };
 
@@ -813,12 +889,12 @@ export const mission1Stages: StageDefinition[] = [
       conversation: [
         {
           from: 'byte_master',
-          text: 'MAMY KOMPLET INFORMACJI O OFIERZE. ANITA JEST ZAPALONĄ BIEGACZKĄ DŁUGODYSTANSOWĄ I SZUKA PORAD TRENINGOWYCH. CZAS NA PRZYGOTOWANIE STRONY-PUŁAPKI I MAILA.'
+          text: 'MAMY KOMPLET INFORMACJI O OFIERZE. ANITA JEST ZAPALONĄ BIEGACZKĄ DŁUGODYSTANSOWĄ I SZUKA PORAD TRENINGOWYCH. CZAS NA PRZYGOTOWANIE STRONY-PUŁAPKI.'
         },
         {
           from: 'player',
           id: 'm1_reply_social',
-          label: 'STWORZĘ KAMPANIĘ SPEAR-PHISHINGOWĄ SKROJONĄ IDEALNIE POD JEJ ZAINTERESOWANIA.'
+          label: 'STWORZĘ STRONĘ-PUŁAPKĘ SKROJONĄ IDEALNIE POD JEJ ZAINTERESOWANIA.'
         }
       ],
       unlockIcons: ['phishing_builder_unlocked', 'app_phishing_builder'],
@@ -830,7 +906,29 @@ export const mission1Stages: StageDefinition[] = [
   {
     id: 'app_phishing_builder',
     appId: 'app_phishing_builder',
-    decisions: [1, 2, 3, 4],
+    decisions: [1, 2],
+    completion: {
+      conversation: [
+        {
+          from: 'byte_master',
+          text: 'STRONA-PUŁAPKA JEST GOTOWA I ZAWIRUSOWANA. TERAZ MUSISZ PRZYGOTOWAĆ MAILA DO ANITY I WYBRAĆ TOŻSAMOŚĆ NADAWCY.'
+        },
+        {
+          from: 'player',
+          id: 'm1_reply_website',
+          label: 'OTWIERAM KLIENTA POCZTY I PRZYGOTOWUJĘ KAMPANIĘ SPEAR-PHISHINGOWĄ.'
+        }
+      ],
+      unlockIcons: ['email_sender_unlocked', 'app_email_sender'],
+      badges: { app_email_sender: 1, chat: 1 },
+      highlightTile: 'app_email_sender',
+      sound: 'notification'
+    }
+  },
+  {
+    id: 'app_email_sender',
+    appId: 'app_email_sender',
+    decisions: [3, 4],
     completion: {
       conversation: [
         {

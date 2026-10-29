@@ -12,6 +12,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { AppHeader } from '../../../engine/components/AppHeader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VictimMonitorConfig } from './types';
 
@@ -26,12 +28,28 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
   const [step, setStep] = useState<MonitorStep>('email_inbox');
   const [infectionProgress, setInfectionProgress] = useState<number>(0);
 
-  const senderName = config?.senderName || 'Jakub Kwiatkowski';
-  const senderEmail = config?.senderEmail || 'k.kwiatkowski@petrolog.com';
-  const targetDomain = config?.targetDomain || 'dalekbieg.info';
+  const domainChoice = useMissionStore(
+    (s) => s.playerChoices.find((c) => c.num === 1)?.answer
+  );
+  const payloadChoice = useMissionStore(
+    (s) => s.playerChoices.find((c) => c.num === 2)?.answer
+  );
+  const senderChoice = useMissionStore(
+    (s) => s.playerChoices.find((c) => c.num === 3)?.answer
+  );
+  const senderEmailChoice = useMissionStore(
+    (s) => s.playerChoices.find((c) => c.num === 4)?.answer
+  );
+
+  const senderName = senderChoice || config?.senderName || 'Jakub Kwiatkowski';
+  const senderEmail = senderEmailChoice || config?.senderEmail || 'k.kwiatkowski@petrolog.com';
+  const targetDomain = domainChoice || config?.targetDomain || 'dalekbieg.info';
   const payloadTitle =
+    payloadChoice ||
     config?.payloadFileName ||
     'PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK';
+
+  const isMuffin = targetDomain.toLowerCase().includes('muf');
 
   const handleOpenLink = () => {
     sounds.playClick();
@@ -65,35 +83,30 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {/* Header */}
-      <div
-        className="border-b pb-3 flex items-center justify-between"
-        style={{ borderColor: `${blue}4d` }}
-      >
-        <div className="flex items-center space-x-2.5">
-          <div
-            className="p-1.5 rounded border"
-            style={{ backgroundColor: `${blue}26`, borderColor: blue, color: blue }}
-          >
-            <Monitor size={20} />
-          </div>
-          <div>
-            <h2 className="text-sm font-bold text-white tracking-widest">//MONITOR_OFIARY</h2>
-            <p className="text-[11px]" style={{ color: blue }}>
-              TELEMETRIA STACJI ROBOCZEJ: ANITA KLIMEK (PETROLOG LOGISTICS)
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
+      <AppHeader
+        icon={Monitor}
+        accent={blue}
+        title="//MONITOR_OFIARY"
+        subtitle="TELEMETRIA STACJI ROBOCZEJ: ANITA KLIMEK (PETROLOG LOGISTICS)"
+        task={
+          step === 'email_inbox'
+            ? 'Anita dostała Twojego maila. Zobacz, czy kliknie w link.'
+            : step === 'browser_page'
+            ? 'Anita jest na Twojej stronie-pułapce. Zobacz, czy pobierze plik.'
+            : step === 'infection'
+            ? 'Plik został pobrany. Poczekaj, aż wirus przejmie komputer.'
+            : 'Masz dostęp do sieci PetroLog. Przejdź do podsumowania zadania.'
+        }
+        aside={
           <span
-            className="text-[10px] px-2.5 py-1 rounded border font-mono tracking-wider font-bold flex items-center space-x-1"
+            className="text-xs px-3 py-1.5 rounded-lg border font-mono tracking-wider font-black flex items-center space-x-1.5"
             style={{ backgroundColor: `${blue}1a`, borderColor: `${blue}66`, color: blue }}
           >
-            <Activity size={12} className="animate-pulse" />
+            <Activity size={14} className="animate-pulse" />
             <span>SESJA PODSŁUCHOWA NA ŻYWO</span>
           </span>
-        </div>
-      </div>
+        }
+      />
 
       {/* STEP 1: VICTIM WEBMAIL INBOX */}
       {step === 'email_inbox' && (
@@ -133,9 +146,15 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
                 onClick={handleOpenLink}
                 className="inline-block p-2 rounded bg-sky-950/40 border border-sky-500/50 text-sky-300 font-mono text-xs font-bold hover:bg-sky-900/50 cursor-pointer transition-all shadow-[0_0_10px_rgba(56,189,248,0.3)] animate-pulse"
               >
-                🔗 https://{targetDomain} (KLIKNIJ ABY OTWORZYĆ)
+                🔗 https://{targetDomain.toLowerCase()} (KLIKNIJ ABY OTWORZYĆ)
               </div>
-              <p>Mają super poradnik dla biegaczy długodystansowych!</p>
+              <p>
+                {isMuffin
+                  ? (payloadTitle.toLowerCase().includes('tapety')
+                      ? 'Mają super tapety ze słodkimi muffinkami!'
+                      : 'Mają super przepisy na pyszne domowe muffinki!')
+                  : 'Mają super poradnik dla biegaczy długodystansowych!'}
+              </p>
               <p>Coś, czego szukałaś!</p>
               <p className="text-gray-400 pt-2 font-mono text-xs">{senderName}</p>
             </div>
@@ -171,14 +190,22 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
 
           {/* Browser Content */}
           <div className="p-6 rounded-lg bg-black/70 border border-gray-800 text-center space-y-4 my-auto">
-            <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded tracking-widest bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-              PORTAL BIEGOWY // DALEKOBIEŻNI
+            <span
+              className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded tracking-widest ${
+                isMuffin
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/40'
+                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+              }`}
+            >
+              {isMuffin ? 'SERWIS KULINARNY // MUFINA.ORG.PL' : 'PORTAL BIEGOWY // DALEKOBIEŻNI'}
             </span>
             <h3 className="text-base sm:text-lg font-bold text-white max-w-lg mx-auto">
               {payloadTitle}
             </h3>
             <p className="text-xs text-gray-300 max-w-md mx-auto leading-relaxed">
-              Zdobądź przewagę na trasie maratonu. 10 sprawdzonych technik regeneracji, planów interwałowych i doboru sprzętu biegowego.
+              {isMuffin
+                ? 'Sprawdzone receptury na puszyste babeczki i domowe wypieki. Wskazówki krok po kroku od składników po idealną temperaturę pieczenia.'
+                : 'Zdobądź przewagę na trasie maratonu. 10 sprawdzonych technik regeneracji, planów interwałowych i doboru sprzętu biegowego.'}
             </p>
 
             <div className="pt-3">
@@ -187,14 +214,20 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
                 className="px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest bg-[#00ff66] text-[#05090f] hover:bg-[#00ff66]/90 transition-all flex items-center space-x-2 mx-auto cursor-pointer shadow-[0_0_25px_rgba(0,255,102,0.5)] active:scale-95 animate-bounce"
               >
                 <Download size={18} />
-                <span>POBIERZ DARMOWY PORADNIK (PDF)</span>
+                <span>
+                  {payloadTitle.toLowerCase().includes('tapety')
+                    ? 'POBIERZ PAKIET TAPET (.ZIP)'
+                    : isMuffin
+                    ? 'POBIERZ PRZEPIS (PDF)'
+                    : 'POBIERZ DARMOWY PORADNIK (PDF)'}
+                </span>
               </button>
             </div>
           </div>
 
           <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
             <span className="text-xs text-gray-400">
-              Anita zdecydowała się pobrać poradnik biegowy na dysk służbowego komputera.
+              Anita zdecydowała się pobrać {isMuffin ? 'plik z przepisami' : 'poradnik biegowy'} na dysk służbowego komputera.
             </span>
             <button
               onClick={handleVictimDownload}

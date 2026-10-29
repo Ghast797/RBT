@@ -44,11 +44,12 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
     expect(getMission('mission1')?.mission.id).toBe('mission-1-petrolog');
   });
 
-  it('registers all 5 custom minigames in appRegistry', () => {
+  it('registers all 6 custom minigames in appRegistry', () => {
     expect(appComponentRegistry['target_petrolog']).toBeDefined();
     expect(appComponentRegistry['osint_search']).toBeDefined();
     expect(appComponentRegistry['social_intel']).toBeDefined();
     expect(appComponentRegistry['phishing_builder']).toBeDefined();
+    expect(appComponentRegistry['email_sender']).toBeDefined();
     expect(appComponentRegistry['victim_monitor']).toBeDefined();
   });
 
@@ -120,7 +121,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(useMissionStore.getState().unlockedIcons).toContain('phishing_builder_unlocked');
       expect(useMissionStore.getState().highlightedTileId).toBe('app_phishing_builder');
 
-      // ETAP 4: Kreator phishingu (D1, D2, D3, D4)
+      // ETAP 4: Kreator strony (D1, D2)
       store.reportDecision({
         num: 1,
         question: 'Wybór strony WWW',
@@ -135,6 +136,14 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
         tier: 'ideal',
         feedback: 'Precyzyjna odpowiedź na publiczne zapytanie Anity.'
       });
+      store.completeStage('app_phishing_builder');
+
+      // Mostek: strona gotowa -> odblokowanie Wysyłania Maila
+      driveBridge();
+      expect(useMissionStore.getState().unlockedIcons).toContain('email_sender_unlocked');
+      expect(useMissionStore.getState().highlightedTileId).toBe('app_email_sender');
+
+      // ETAP 5: Wysyłanie maila (D3, D4)
       store.reportDecision({
         num: 3,
         question: 'Wybór nadawcy wiadomości',
@@ -149,14 +158,14 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
         tier: 'ideal',
         feedback: 'Domena firmowa PetroLog – pełne uwiarygodnienie.'
       });
-      store.completeStage('app_phishing_builder');
+      store.completeStage('app_email_sender');
 
       // Mostek: mail wysłany -> odblokowanie Monitora Ofiary
       driveBridge();
       expect(useMissionStore.getState().unlockedIcons).toContain('victim_monitor_unlocked');
       expect(useMissionStore.getState().highlightedTileId).toBe('app_victim_monitor');
 
-      // ETAP 5: Monitor ofiary (Infekcja i eksfiltracja)
+      // ETAP 6: Monitor ofiary (Infekcja i eksfiltracja)
       store.completeStage('app_victim_monitor');
 
       // Mostek końcowy: gratulacje BYTE_MASTERA -> odblokowanie podsumowania
@@ -279,7 +288,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
         })
       );
 
-      expect(html).toContain('//INTEL_SOCIAL_MEDIA');
+      expect(html).toContain('//SOCIAL_MEDIA');
       expect(html).toContain('PRECYZJA WYWIADU');
       expect(html).toContain('100%');
       expect(html).toContain('MIN 70%');
@@ -318,8 +327,116 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
           onComplete: vi.fn()
         })
       );
-      expect(htmlSocial).toContain('//INTEL_SOCIAL_MEDIA');
+      expect(htmlSocial).toContain('//SOCIAL_MEDIA');
       expect(htmlSocial).toContain('PRECYZJA WYWIADU');
+    });
+
+    it('posiada drzewo decyzyjne w PhishingBuilder: mufina.org.pl oferuje opcje wypieku muffinek a dalekbieg.info opcje biegowe', async () => {
+      const { phishingBuilderConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+      expect(phishingBuilderConfig.payloadByDomain).toBeDefined();
+
+      const runningPayload = phishingBuilderConfig.payloadByDomain?.['dalekbieg_info'];
+      expect(runningPayload).toBeDefined();
+      expect(runningPayload?.options.some((o) => o.id === 'guide_running')).toBe(true);
+      expect(runningPayload?.options.some((o) => o.id === 'wallpapers_running')).toBe(true);
+
+      const muffinPayload = phishingBuilderConfig.payloadByDomain?.['mufina_org_pl'];
+      expect(muffinPayload).toBeDefined();
+      expect(muffinPayload?.options.some((o) => o.id === 'guide_muffins')).toBe(true);
+      expect(muffinPayload?.options.some((o) => o.id === 'wallpapers_muffins')).toBe(true);
+      expect(muffinPayload?.options.some((o) => o.id === 'source_code_muffins')).toBe(true);
+
+      const idealMuffin = muffinPayload?.options.find((o) => o.id === 'guide_muffins');
+      expect(idealMuffin?.tier).toBe('ideal');
+      expect(idealMuffin?.label).toContain('MUFFINKI');
+      expect(idealMuffin?.tags).toContain('PRZEPISY');
+
+      const subMuffin = muffinPayload?.options.find((o) => o.id === 'wallpapers_muffins');
+      expect(subMuffin?.tier).toBe('suboptimal');
+      expect(subMuffin?.label).toContain('TAPETY');
+
+      const critMuffin = muffinPayload?.options.find((o) => o.id === 'source_code_muffins');
+      expect(critMuffin?.tier).toBe('critical');
+      expect(critMuffin?.label).toContain('KOD ŹRÓDŁOWY');
+    });
+
+    it('renderuje WebsitePreview z podglądem muffinek dla mufina_org_pl', async () => {
+      const React = await import('react');
+      const { renderToString } = await import('react-dom/server');
+      const { WebsitePreview } = await import('../src/scenarios/mission_01_petrolog/minigames/WebsitePreview');
+
+      const htmlMuffin = renderToString(
+        React.createElement(WebsitePreview, {
+          domainId: 'mufina_org_pl',
+          domainLabel: 'MUFINA.ORG.PL',
+          payloadId: 'guide_muffins',
+          payloadLabel: 'PORADNIK KULINARNY - 10 SPRAWDZONYCH PRZEPISÓW NA DOMOWE MUFFINKI'
+        })
+      );
+
+      expect(htmlMuffin).toContain('MUFINA.ORG.PL');
+      expect(htmlMuffin).toContain('BLOG KULINARNY');
+      expect(htmlMuffin).toContain('PORADNIK KULINARNY');
+      expect(htmlMuffin).toContain('POBIERZ DARMOWY PRZEPIS');
+    });
+
+    it('nie wyświetla adresu e-mail w podglądzie poczty w Kroku 1 (wybór osoby), dopóki gracz nie przejdzie do Kroku 2 (wybór maila)', async () => {
+      const React = await import('react');
+      const { renderToString } = await import('react-dom/server');
+      const { EmailPreview } = await import('../src/scenarios/mission_01_petrolog/minigames/EmailPreview');
+
+      // Krok 1 (step === 'sender'): gracz wybiera tożsamość nadawcy - adres mailowy NIE może być widoczny
+      const htmlStep1 = renderToString(
+        React.createElement(EmailPreview, {
+          senderName: 'Jakub Kwiatkowski',
+          senderEmail: null,
+          targetDomain: 'dalekbieg.info',
+          payloadName: 'Poradnik biegowy',
+          step: 'sender'
+        })
+      );
+
+      expect(htmlStep1).toContain('Jakub Kwiatkowski');
+      expect(htmlStep1).not.toContain('k.kwiatkowski@petrolog.com');
+      expect(htmlStep1).not.toContain('wybierz_adres');
+
+      // Krok 2 (step === 'email'): gracz przechodzi do wyboru adresu, przed wyborem jest placeholder
+      const htmlStep2Empty = renderToString(
+        React.createElement(EmailPreview, {
+          senderName: 'Jakub Kwiatkowski',
+          senderEmail: null,
+          targetDomain: 'dalekbieg.info',
+          payloadName: 'Poradnik biegowy',
+          step: 'email'
+        })
+      );
+      expect(htmlStep2Empty).toContain('Jakub Kwiatkowski');
+      expect(htmlStep2Empty).toContain('wybierz adres e-mail powyżej');
+      expect(htmlStep2Empty).not.toContain('k.kwiatkowski@petrolog.com');
+
+      // Krok 2 po zaznaczeniu opcji maila: wybrany adres pojawia się w mailu
+      const htmlStep2Selected = renderToString(
+        React.createElement(EmailPreview, {
+          senderName: 'Jakub Kwiatkowski',
+          senderEmail: 'K.KWIATKOWSKI@PETROLOG.COM',
+          targetDomain: 'dalekbieg.info',
+          payloadName: 'Poradnik biegowy',
+          step: 'email'
+        })
+      );
+      expect(htmlStep2Selected).toContain('Jakub Kwiatkowski');
+      expect(htmlStep2Selected).toContain('k.kwiatkowski@petrolog.com');
+    });
+
+    it('posiada w emailSenderConfig opcje zgodne z VR: same adresy email bez podpowiedzi, tagów i opisów', async () => {
+      const { emailSenderConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+      expect(emailSenderConfig.senderEmail.options.some((o) => o.label === 'K.KWIATKOWSKI@HACK.COM')).toBe(true);
+      expect(emailSenderConfig.senderEmail.options.some((o) => o.label === 'K.KWIATKOWSKI@PETROLOG.COM')).toBe(true);
+      expect(emailSenderConfig.senderEmail.options.some((o) => o.label === 'DARKSUN.JAKUB@GMAIL.COM')).toBe(true);
+      for (const opt of emailSenderConfig.senderEmail.options) {
+        expect(opt.tags || []).toHaveLength(0);
+        expect(opt.desc || '').toBe('');
+      }
     });
   });
 });

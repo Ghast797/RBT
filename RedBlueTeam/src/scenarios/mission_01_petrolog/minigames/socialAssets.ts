@@ -1,4 +1,4 @@
-// Grafiki do //INTEL_SOCIAL_MEDIA.
+// Grafiki do //SOCIAL_MEDIA.
 // Wrzuć obrazek do src/scenarios/mission_01_petrolog/assets/social/ — nazwa pliku to id platformy
 // (kneenook, quickgram, joinin) albo id wpisu ze stages.ts (kn_1, qg_2, ji_3, …), rozszerzenie dowolne.
 // Brak pliku = zastępnik (w dev z podpisem, jakiego pliku brakuje).

@@ -99,8 +99,14 @@
       "label": "ZACZYNAM OD ZAPOZNANIA SIĘ Z BAZĄ INFORMACJI O FIRMIE PETROLOG."
     },
     "firstUnlock": {
-      "unlockIcons": ["target_petrolog_unlocked", "app_target_petrolog"],
-      "badges": { "app_target_petrolog": 1, "chat": 1 },
+      "unlockIcons": [
+        "target_petrolog_unlocked",
+        "app_target_petrolog"
+      ],
+      "badges": {
+        "app_target_petrolog": 1,
+        "chat": 1
+      },
       "highlightTile": "app_target_petrolog"
     },
     "startBadges": {
@@ -136,7 +142,7 @@
     },
     {
       "id": "app_social_intel",
-      "label": "//INTEL_SOCIAL_MEDIA",
+      "label": "//SOCIAL_MEDIA",
       "color": "#a855f7",
       "icon": "Users",
       "componentId": "social_intel",
@@ -145,12 +151,21 @@
     },
     {
       "id": "app_phishing_builder",
-      "label": "//KREATOR_PHISHINGU",
+      "label": "//KREATOR_STRONY",
       "color": "#ec4899",
-      "icon": "Mail",
+      "icon": "Globe",
       "componentId": "phishing_builder",
       "unlockedOnly": true,
       "requiredUnlockId": "phishing_builder_unlocked"
+    },
+    {
+      "id": "app_email_sender",
+      "label": "//WYSYŁANIE_MAILA",
+      "color": "#a855f7",
+      "icon": "Mail",
+      "componentId": "email_sender",
+      "unlockedOnly": true,
+      "requiredUnlockId": "email_sender_unlocked"
     },
     {
       "id": "app_victim_monitor",

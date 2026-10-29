@@ -7,6 +7,7 @@ import {
   OsintSearchApp,
   SocialIntelApp,
   PhishingBuilderApp,
+  EmailSenderApp,
   VictimMonitorApp
 } from './minigames';
 
@@ -25,6 +26,7 @@ export const mission1Apps: Record<string, React.ComponentType<any>> = {
   osint_search: OsintSearchApp,
   social_intel: SocialIntelApp,
   phishing_builder: PhishingBuilderApp,
+  email_sender: EmailSenderApp,
   victim_monitor: VictimMonitorApp
 };
 
@@ -38,6 +40,7 @@ export {
   OsintSearchApp,
   SocialIntelApp,
   PhishingBuilderApp,
+  EmailSenderApp,
   VictimMonitorApp
 };
 

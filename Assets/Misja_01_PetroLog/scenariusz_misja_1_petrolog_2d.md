@@ -21,7 +21,7 @@
 | `app_chat_bm` | `//KOMUNIKATOR: BYTE_MASTER` | 1 | Dostępny od początku (przychodzące połączenie Darknet) |
 | `app_target_petrolog` | `//BAZA_CELU: PETROLOG` | 2 | Zakończenie dialogu wprowadzającego i uruchomienie systemu |
 | `app_osint_search` | `//WYSZUKIWARKA: OSINT` | 3 | Zapoznanie się z kartami wywiadowczymi o firmie PetroLog (S01) |
-| `app_social_intel` | `//INTEL_SOCIAL_MEDIA` | 4 | Wytypowanie pracownika z profilem publicznym (S02) |
+| `app_social_intel` | `//SOCIAL_MEDIA` | 4 | Wytypowanie pracownika z profilem publicznym (S02) |
 | `app_phishing_builder` | `//KREATOR_PHISHINGU` | 5 | Skompletowanie 8 faktów o ofierze w panelu analizy (S03) |
 | `app_victim_monitor` | `//MONITOR_OFIARY` | 6 | Zatwierdzenie parametrów wiadomości i wysłanie phishingu (S04) |
 
@@ -95,7 +95,7 @@
 
 ---
 
-### Scena S03: Eksploracja mediów społecznościowych i profilowanie (`//INTEL_SOCIAL_MEDIA`)
+### Scena S03: Eksploracja mediów społecznościowych i profilowanie (`//SOCIAL_MEDIA`)
 * **Typ węzła:** Minigra analityczna (OSINT / zbieranie faktów)
 * **Komponent 2D:** `PoolSelect` / Widok split-screen:
   * **Lewy panel:** Profil Anity Klimek + licznik skompletowanych cech (0/8).
@@ -114,7 +114,7 @@
   * *Akcja:* Skanuj -> **BRAK PRZYDATNYCH INFORMACJI** (zmyłka).
 
 #### 2. Platforma `Quickgram` (odpowiednik Instagrama)
-* **Wpis 1:** Kubek kawy i ciastka: „Kawa i ciasteczka! ☕️ Poniedziałki potrafią być ciężkie, ale w tym zestawie zawsze dam radę! #work #coffee #magia”
+* **Wpis 1:** Kubek kawy i ciastka: „Kawa i ciasteczka! ☕️ Poniedziałki potrafią być ciężkie, ale z tym zestawem zawsze dam radę! #work #coffee #magia”
   * *Akcja:* Skanuj -> **BRAK PRZYDATNYCH INFORMACJI** (zmyłka).
 * **Wpis 2:** Domowy wypiek z owocami: „Sobota - no to ciasto! 🍰 #bake #wypieki #rodzinnie”
   * *Akcja:* Skanuj -> **ZNALEZIONO INFORMACJĘ** -> pobrany kafelek: `LUBI PIEC CIASTA`.

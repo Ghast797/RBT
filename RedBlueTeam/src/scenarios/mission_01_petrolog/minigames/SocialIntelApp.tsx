@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { AppHeader } from '../../../engine/components/AppHeader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { SocialIntelConfig, SocialPost, SocialPlatformInfo, DeductionOption } from './types';
 import { resolveSocialImage, SOCIAL_ASSETS_DIR } from './socialAssets';
@@ -41,6 +42,15 @@ const DEFAULT_PLATFORMS: SocialPlatformInfo[] = [
   { id: 'joinin', name: 'Joinin', handlePrefix: '', accentColor: '#06b6d4', tagline: 'Sieć kontaktów zawodowych' }
 ];
 
+const shuffle = <T,>(items: T[]): T[] => {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+};
+
 /** Miejsce na grafikę: plik z assets/social/<name>.*, w dev zastępnik z nazwą brakującego pliku. */
 const ImageSlot: React.FC<{
   name: string;
@@ -50,7 +60,7 @@ const ImageSlot: React.FC<{
 }> = ({ name, label, className, fallback = null }) => {
   const url = resolveSocialImage(name);
   if (url) {
-    return <img src={url} alt={label} className={`${className} object-cover`} draggable={false} />;
+    return <img src={url} alt={label} className={`${className} object-cover relative z-[60]`} draggable={false} />;
   }
   if (!import.meta.env.DEV) return <>{fallback}</>;
   return (
@@ -155,6 +165,15 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     ];
   };
 
+  // Kolejność odpowiedzi losowana przy każdym podejściu (i po resecie), żeby przy powtórce trzeba było czytać.
+  const shuffleOptionOrder = () =>
+    Object.fromEntries(posts.map((p) => [p.id, shuffle(getDeductionOptions(p).map((o) => o.id))]));
+  const [optionOrder, setOptionOrder] = useState<Record<string, string[]>>(shuffleOptionOrder);
+  const orderedDeductionOptions = (post: SocialPost) => {
+    const order = optionOrder[post.id] || [];
+    return [...getDeductionOptions(post)].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  };
+
   const handleOpenPlatform = (pid: PlatformId) => {
     sounds.playClick();
     setFeedback(null);
@@ -225,6 +244,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     setFailedOptionIds([]);
     setFeedback(null);
     setPostIndexByPlatform({});
+    setOptionOrder(shuffleOptionOrder());
     setPhase({ kind: 'hub' });
   };
 
@@ -240,60 +260,49 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   // Precision color badge
   const precisionColor = precision >= 80 ? '#00ff66' : precision >= minPrecision ? '#facc15' : '#ff3366';
 
-  const header = (
-    <div
-      className="border-b pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-      style={{ borderColor: `${purple}4d` }}
-    >
-      <div className="flex items-center space-x-2.5">
-        <div
-          className="p-1.5 rounded border"
-          style={{ backgroundColor: `${purple}26`, borderColor: purple, color: purple }}
-        >
-          <Users size={20} />
-        </div>
-        <div>
-          <h2 className="text-sm font-bold text-white tracking-widest">//INTEL_SOCIAL_MEDIA</h2>
-          <p className="text-[11px]" style={{ color: purple }}>
-            {`PROFILOWANIE OFIARY: ${target.name.toUpperCase()} (${target.company.toUpperCase()})`}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-3">
-        <div className="px-3 py-1.5 rounded-lg border bg-black/40 border-gray-800 flex items-center space-x-2.5">
-          <Gauge size={16} style={{ color: precisionColor }} />
-          <div className="space-y-0.5">
-            <div className="flex justify-between items-center text-[10px] text-gray-400 space-x-2">
-              <span>PRECYZJA WYWIADU:</span>
-              <span className="font-black" style={{ color: precisionColor }}>
-                {`${precision}%`}
-              </span>
+  const header = (task: string) => (
+    <AppHeader
+      icon={Users}
+      accent={purple}
+      title="//SOCIAL_MEDIA"
+      subtitle={`PROFILOWANIE OFIARY: ${target.name.toUpperCase()} (${target.company.toUpperCase()})`}
+      task={task}
+      aside={
+        <div className="flex items-center space-x-3">
+          <div className="px-3 py-1.5 rounded-lg border bg-black/40 border-gray-800 flex items-center space-x-2.5">
+            <Gauge size={16} style={{ color: precisionColor }} />
+            <div className="space-y-0.5">
+              <div className="flex justify-between items-center text-[10px] text-gray-400 space-x-2">
+                <span>PRECYZJA WYWIADU:</span>
+                <span className="font-black" style={{ color: precisionColor }}>
+                  {`${precision}%`}
+                </span>
+              </div>
+              <div className="w-24 h-1.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
+                <div
+                  className="h-full transition-all duration-300"
+                  style={{ width: `${precision}%`, backgroundColor: precisionColor, boxShadow: `0 0 8px ${precisionColor}` }}
+                />
+              </div>
             </div>
-            <div className="w-24 h-1.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
-              <div
-                className="h-full transition-all duration-300"
-                style={{ width: `${precision}%`, backgroundColor: precisionColor, boxShadow: `0 0 8px ${precisionColor}` }}
-              />
-            </div>
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">
+              {`MIN ${minPrecision}%`}
+            </span>
           </div>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">
-            {`MIN ${minPrecision}%`}
+
+          <span
+            className="text-[10px] px-2.5 py-2 rounded-lg border font-mono tracking-wider font-bold"
+            style={{
+              backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
+              borderColor: isComplete ? '#00ff66' : `${purple}66`,
+              color: isComplete ? '#00ff66' : purple
+            }}
+          >
+            {`FAKTY: ${discoveredFactIds.length}/${totalRequired}`}
           </span>
         </div>
-
-        <span
-          className="text-[10px] px-2.5 py-2 rounded-lg border font-mono tracking-wider font-bold"
-          style={{
-            backgroundColor: isComplete ? '#00ff6620' : `${purple}1a`,
-            borderColor: isComplete ? '#00ff66' : `${purple}66`,
-            color: isComplete ? '#00ff66' : purple
-          }}
-        >
-          {`FAKTY: ${discoveredFactIds.length}/${totalRequired}`}
-        </span>
-      </div>
-    </div>
+      }
+    />
   );
 
   // ---------------------------------------------------------------------------
@@ -325,14 +334,22 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
 
     return (
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-        {header}
+        {header(
+          isPrecisionFailed
+            ? 'Za dużo pomyłek. Zacznij analizę od nowa.'
+            : !isPostSolved
+            ? 'Przeczytaj wpis i wskaż, jaki fakt wywiadowczy z niego wynika.'
+            : isLastPost
+            ? `${platform.name} przejrzany. Wróć do profili.`
+            : 'Dobrze. Przejdź do następnego wpisu.'
+        )}
 
         {post && (
           <div className="flex-1 lg:min-h-0 grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-1 gap-6">
-            {/* LEWA POŁOWA: wpis jak w aplikacji platformy, kwadratowe zdjęcie dopasowane do wolnego miejsca */}
+            {/* LEWA POŁOWA: wpis jak w aplikacji platformy, zdjęcie 4:5 dopasowane do wolnego miejsca */}
             <div className="flex items-center justify-center lg:min-h-0 lg:[container-type:size]">
               <div
-                className="rounded-xl border overflow-hidden bg-[#08101a]/95 flex flex-col w-full max-w-sm lg:max-w-none lg:max-h-full lg:w-[min(100cqw,calc(100cqh-12rem))]"
+                className="rounded-xl border overflow-hidden bg-[#08101a]/95 flex flex-col w-full max-w-sm lg:max-w-none lg:max-h-full lg:w-[min(100cqw,calc(80cqh-10rem))]"
                 style={{ borderColor: `${platform.accentColor}80` }}
               >
                 <div
@@ -365,9 +382,11 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                   </div>
                 </div>
 
-                <ImageSlot name={post.id} label={`wpis ${post.id}`} className="w-full aspect-square shrink-0" />
+                <div className="px-2 py-1 shrink-0">
+                  <ImageSlot name={post.id} label={`wpis ${post.id}`} className="w-full aspect-[4/5] shrink-0" />
+                </div>
 
-                <div className="px-3 py-2 space-y-1.5 min-h-0 overflow-y-auto">
+                <div className="px-3 py-2 space-y-1.5 h-28 shrink-0 overflow-y-auto">
                   <p className="text-sm text-gray-100 leading-snug font-sans">{post.content}</p>
                   {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
@@ -399,7 +418,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                     </span>
 
                     <div className="space-y-1.5">
-                      {getDeductionOptions(post).map((opt, optIdx) => {
+                      {orderedDeductionOptions(post).map((opt, optIdx) => {
                         const isOptFailed = failedOptionIds.includes(opt.id);
                         return (
                           <button
@@ -517,15 +536,13 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   // ---------------------------------------------------------------------------
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {header}
-
-      <p className="text-sm text-white font-bold">
-        {isComplete
+      {header(
+        isComplete
           ? 'Profil kompletny. Zatwierdź zebrane fakty.'
-          : 'Przejrzyj jej profile po kolei. W każdym wpisie wskaż, czego się o niej dowiadujesz.'}
-      </p>
+          : 'Przejrzyj jej profile po kolei. W każdym wpisie wskaż, czego się o niej dowiadujesz.'
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="flex flex-col md:flex-row md:justify-evenly items-center gap-4 w-full">
         {platforms.map((platform, idx) => {
           const Icon = PLATFORM_ICONS[platform.id];
           const unlocked = isPlatformUnlocked(idx);
@@ -539,21 +556,43 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
               key={platform.id}
               disabled={!unlocked}
               onClick={() => handleOpenPlatform(platform.id)}
-              className={`rounded-xl border-2 overflow-hidden text-left transition-all flex flex-col ${
-                unlocked ? 'cursor-pointer hover:scale-[1.01]' : 'cursor-not-allowed opacity-40 grayscale'
-              } ${isNext ? 'animate-pulse' : ''}`}
+              className={`relative w-full max-w-[340px] rounded-xl border-2 overflow-hidden text-left transition-all flex flex-col ${
+                isNext
+                  ? 'cursor-pointer scale-[1.04] hover:scale-[1.06]'
+                  : unlocked
+                  ? 'cursor-pointer opacity-70 hover:opacity-100'
+                  : 'cursor-not-allowed opacity-40 grayscale'
+              }`}
               style={{
-                borderColor: done ? '#00ff66' : unlocked ? platform.accentColor : '#1f2937',
-                boxShadow: isNext ? `0 0 20px ${platform.accentColor}66` : undefined
+                borderColor: done ? '#00ff66' : platform.accentColor,
+                boxShadow: isNext
+                  ? `0 0 0 3px ${platform.accentColor}, 0 0 30px ${platform.accentColor}cc, 0 0 70px ${platform.accentColor}66`
+                  : undefined
               }}
             >
+              {/* Aktualna platforma: pulsująca ramka i etykieta nad grafiką (z-[70], bo grafiki leżą na z-[60]) */}
+              {isNext && (
+                <>
+                  <span
+                    className="absolute inset-0 rounded-[10px] border-[6px] pointer-events-none animate-pulse z-[70]"
+                    style={{ borderColor: platform.accentColor, boxShadow: `inset 0 0 25px ${platform.accentColor}` }}
+                  />
+                  <span
+                    className="absolute top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest text-white whitespace-nowrap pointer-events-none z-[70] flex items-center space-x-1.5"
+                    style={{ backgroundColor: platform.accentColor, boxShadow: `0 0 15px ${platform.accentColor}` }}
+                  >
+                    <ArrowRight size={13} />
+                    <span>TERAZ TUTAJ</span>
+                  </span>
+                </>
+              )}
               <ImageSlot
                 name={platform.id}
                 label={platform.name}
-                className="w-full aspect-[4/3]"
+                className="w-full aspect-square"
                 fallback={
                   <div
-                    className="w-full aspect-[4/3] flex items-center justify-center"
+                    className="w-full aspect-square flex items-center justify-center"
                     style={{ backgroundColor: `${platform.accentColor}26`, color: platform.accentColor }}
                   >
                     <Icon size={48} />
@@ -567,7 +606,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                 </div>
                 <span
                   className="text-[10px] font-bold flex items-center space-x-1"
-                  style={{ color: done ? '#00ff66' : unlocked ? platform.accentColor : '#6b7280' }}
+                  style={{ color: done ? '#00ff66' : platform.accentColor }}
                 >
                   {done ? (
                     <>
@@ -575,7 +614,12 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                       <span>PRZEJRZANE</span>
                     </>
                   ) : unlocked ? (
-                    <span>{solvedCount > 0 ? `WPISY ${solvedCount}/${platformPosts.length}` : 'OTWÓRZ'}</span>
+                    <span
+                      className={isNext ? 'px-2.5 py-1 rounded text-white font-black' : undefined}
+                      style={isNext ? { backgroundColor: platform.accentColor } : undefined}
+                    >
+                      {solvedCount > 0 ? `WPISY ${solvedCount}/${platformPosts.length}` : 'OTWÓRZ'}
+                    </span>
                   ) : (
                     <>
                       <Lock size={12} />

@@ -58,6 +58,8 @@ export interface EmployeeProfile {
   avatarText: string;
   isPublic: boolean;
   privacyNotice?: string;
+  /** Komunikat po zatwierdzeniu trafnego wyboru (profil publiczny). */
+  selectionNotice?: string;
   tags: string[];
 }
 
@@ -123,14 +125,22 @@ export interface PhishingStepChoice {
 export interface PhishingBuilderConfig {
   domain: PhishingStepChoice;
   payload: PhishingStepChoice;
+  payloadByDomain?: Record<string, PhishingStepChoice>;
   injection: {
     instruction: string;
     targetDomain: string;
     payloadModuleLabel: string;
     downloadButtonText: string;
   };
+  senderName?: PhishingStepChoice;
+  senderEmail?: PhishingStepChoice;
+}
+
+export interface EmailSenderConfig {
   senderName: PhishingStepChoice;
   senderEmail: PhishingStepChoice;
+  defaultDomain?: string;
+  defaultPayload?: string;
 }
 
 export interface VictimMonitorConfig {

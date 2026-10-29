@@ -15,6 +15,7 @@ import {
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { AppHeader } from '../../../engine/components/AppHeader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type {
   TargetPetrologConfig,
@@ -863,73 +864,51 @@ export const TargetPetrologApp: React.FC<BlockProps<TargetPetrologConfig>> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {/* Top Header */}
-      <div
-        className="border-b pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
-        style={{ borderColor: `${accent}4d` }}
-      >
-        <div className="flex items-center space-x-2.5">
-          <div
-            className="p-1.5 rounded border"
-            style={{ backgroundColor: `${accent}26`, borderColor: accent, color: accent }}
-          >
-            <Building size={20} />
+      <AppHeader
+        icon={Building}
+        accent={accent}
+        title={`//BAZA_CELU: ${companyName.toUpperCase()}`}
+        subtitle="ROZPOZNANIE OPERACYJNE CELU"
+        task={commandText}
+        // Postęp w 3 krokach: 1 POZNAJ · 2 ZBADAJ · 3 ZDECYDUJ
+        aside={
+          <div className="flex items-center space-x-2 text-xs font-mono pointer-events-none">
+            {steps.map((st, i) => {
+              const isCompleted = stepIndex > i;
+              const isCurrent = stepIndex === i;
+
+              return (
+                <React.Fragment key={st.label}>
+                  {i > 0 && <span className="text-gray-600 select-none">·</span>}
+                  <span
+                    className={`px-2.5 py-1 rounded font-bold transition-all ${
+                      isCurrent
+                        ? 'text-white border shadow-md'
+                        : isCompleted
+                        ? 'text-[#00ff66] bg-[#00ff66]/10'
+                        : 'text-gray-600 bg-gray-900/40'
+                    }`}
+                    style={
+                      isCurrent
+                        ? {
+                            borderColor: accent,
+                            color: '#ffffff',
+                            backgroundColor: `${accent}33`,
+                            boxShadow: `0 0 10px ${accent}40`
+                          }
+                        : isCompleted
+                        ? { color: accent }
+                        : undefined
+                    }
+                  >
+                    {isCompleted ? `✓ ${st.label}` : `${i + 1} ${st.label}`}
+                  </span>
+                </React.Fragment>
+              );
+            })}
           </div>
-          <div>
-            <h2
-              className="text-sm font-black tracking-widest uppercase"
-              style={{ color: accent }}
-            >
-              {`//BAZA_CELU: ${companyName.toUpperCase()}`}
-            </h2>
-            <p className="text-[10px] text-gray-400">
-              ROZPOZNANIE OPERACYJNE CELU
-            </p>
-          </div>
-        </div>
-
-        {/* Progress Bar with 3 Steps: 1 POZNAJ · 2 ZBADAJ · 3 ZDECYDUJ */}
-        <div className="flex items-center space-x-2 text-xs font-mono pointer-events-none">
-          {steps.map((st, i) => {
-            const isCompleted = stepIndex > i;
-            const isCurrent = stepIndex === i;
-
-            return (
-              <React.Fragment key={st.label}>
-                {i > 0 && <span className="text-gray-600 select-none">·</span>}
-                <span
-                  className={`px-2.5 py-1 rounded font-bold transition-all ${
-                    isCurrent
-                      ? 'text-white border shadow-md'
-                      : isCompleted
-                      ? 'text-[#00ff66] bg-[#00ff66]/10'
-                      : 'text-gray-600 bg-gray-900/40'
-                  }`}
-                  style={
-                    isCurrent
-                      ? {
-                          borderColor: accent,
-                          color: '#ffffff',
-                          backgroundColor: `${accent}33`,
-                          boxShadow: `0 0 10px ${accent}40`
-                        }
-                      : isCompleted
-                      ? { color: accent }
-                      : undefined
-                  }
-                >
-                  {isCompleted ? `✓ ${st.label}` : `${i + 1} ${st.label}`}
-                </span>
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Prominent Command: larger font, most important information on screen */}
-      <div className="text-sm sm:text-base font-bold text-white tracking-wide">
-        {commandText}
-      </div>
+        }
+      />
 
       {/* Body Content based on Phase */}
       {phase === 'briefing' && (

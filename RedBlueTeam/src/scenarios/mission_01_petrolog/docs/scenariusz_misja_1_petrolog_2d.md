@@ -21,7 +21,7 @@
 | `app_chat_bm` | `//KOMUNIKATOR: BYTE_MASTER` | 1 | Dostępny od początku (przychodzące połączenie Darknet) |
 | `app_target_petrolog` | `//BAZA_CELU: PETROLOG` | 2 | Zakończenie dialogu wprowadzającego i uruchomienie systemu |
 | `app_osint_search` | `//WYSZUKIWARKA: OSINT` | 3 | Zapoznanie się z kartami wywiadowczymi o firmie PetroLog (S01) |
-| `app_social_intel` | `//INTEL_SOCIAL_MEDIA` | 4 | Wytypowanie pracownika z profilem publicznym (S02) |
+| `app_social_intel` | `//SOCIAL_MEDIA` | 4 | Wytypowanie pracownika z profilem publicznym (S02) |
 | `app_phishing_builder` | `//KREATOR_PHISHINGU` | 5 | Skompletowanie 8 faktów o ofierze w panelu analizy (S03) |
 | `app_victim_monitor` | `//MONITOR_OFIARY` | 6 | Zatwierdzenie parametrów wiadomości i wysłanie phishingu (S04) |
 
@@ -95,7 +95,7 @@
 
 ---
 
-### Scena S03: Eksploracja mediów społecznościowych i profilowanie (`//INTEL_SOCIAL_MEDIA`)
+### Scena S03: Eksploracja mediów społecznościowych i profilowanie (`//SOCIAL_MEDIA`)
 * **Typ węzła:** Minigra analityczna (OSINT / zbieranie faktów)
 * **Komponent 2D:** `PoolSelect` / Widok split-screen:
   * **Lewy panel:** Profil Anity Klimek + licznik skompletowanych cech (0/8).
@@ -114,7 +114,7 @@
   * *Akcja:* Skanuj -> **BRAK PRZYDATNYCH INFORMACJI** (zmyłka).
 
 #### 2. Platforma `Quickgram` (odpowiednik Instagrama)
-* **Wpis 1:** Kubek kawy i ciastka: „Kawa i ciasteczka! ☕️ Poniedziałki potrafią być ciężkie, ale w tym zestawie zawsze dam radę! #work #coffee #magia”
+* **Wpis 1:** Kubek kawy i ciastka: „Kawa i ciasteczka! ☕️ Poniedziałki potrafią być ciężkie, ale z tym zestawem zawsze dam radę! #work #coffee #magia”
   * *Akcja:* Skanuj -> **BRAK PRZYDATNYCH INFORMACJI** (zmyłka).
 * **Wpis 2:** Domowy wypiek z owocami: „Sobota - no to ciasto! 🍰 #bake #wypieki #rodzinnie”
   * *Akcja:* Skanuj -> **ZNALEZIONO INFORMACJĘ** -> pobrany kafelek: `LUBI PIEC CIASTA`.
@@ -154,7 +154,8 @@
 
 #### Krok 2: Wybór pliku-przynęty (Decyzja D2)
 * **Nagłówek:** „OSZUKAĆ OFIARĘ – WYBIERZ PLIK, KTÓRY OFIARA BĘDZIE MOGŁA POBRAĆ ZE STRONY. NIECH BĘDZIE ZACHĘCAJĄCY.”
-* **Warianty:**
+* **Drzewo decyzyjne:** Zestaw wariantów dynamicznie zależy od domeny wybranej w Kroku 1 (D1):
+* **Warianty dla DALEKBIEG.INFO (portal biegowy):**
   * **Opcja A:** `PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK`  
     * *Ocena:* **ideal** (100 pkt)  
     * *Uzasadnienie:* Precyzyjna odpowiedź na publiczne zapytanie Anity z portalu Joinin.
@@ -164,6 +165,16 @@
   * **Opcja C:** `KOD ŹRÓDŁOWY STRONY`  
     * *Ocena:* **critical** (0 pkt)  
     * *Uzasadnienie:* Całkowity błąd profilowania – księgowa nigdy nie zainteresuje się pobieraniem surowego kodu.
+* **Warianty dla MUFINA.ORG.PL (serwis kulinarny):**
+  * **Opcja A:** `PORADNIK KULINARNY - 10 SPRAWDZONYCH PRZEPISÓW NA DOMOWE MUFFINKI`  
+    * *Ocena:* **ideal** (100 pkt)  
+    * *Uzasadnienie:* Trafny dobór pliku dla serwisu kulinarnego – merytoryczny e-book z przepisami nawiązuje do pasji pieczenia ciast i wzbudza zaufanie.
+  * **Opcja B:** `TAPETY ZE SŁODKIMI MUFFINKAMI NA TELEFON`  
+    * *Ocena:* **suboptimal** (50 pkt)  
+    * *Uzasadnienie:* Mało angażujący zasób – zdjęcia babeczek są ładne, ale nie dają żadnej praktycznej wartości kulinarnej ani przepisów.
+  * **Opcja C:** `KOD ŹRÓDŁOWY BLOGA KULINARNEGO`  
+    * *Ocena:* **critical** (0 pkt)  
+    * *Uzasadnienie:* Całkowity błąd profilowania – miłośniczka domowych wypieków nigdy nie zainteresuje się pobieraniem surowego kodu strony.
 
 #### Krok 3: Implementacja ładunku (Payload Injection – Flavor)
 * **Nagłówek:** „ZAWIRUSUJ PLIK – DODAJ WIRUSA DO STRONY INTERNETOWEJ”
@@ -189,7 +200,7 @@
   * **Opcja A:** `K.KWIATKOWSKI@PETROLOG.COM`  
     * *Ocena:* **ideal** (100 pkt)  
     * *Uzasadnienie:* Domena firmowa PetroLog – pełne uwiarygodnienie wewnętrznej korespondencji służbowej.
-  * **Opcja B:** `K.KWIATKOWSKI@HACH.COM`  
+  * **Opcja B:** `K.KWIATKOWSKI@HACK.COM`  
     * *Ocena:* **suboptimal** (50 pkt)  
     * *Uzasadnienie:* Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.
   * **Opcja C:** `DARKSUN.JAKUB@GMAIL.COM`  

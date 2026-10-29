@@ -45,35 +45,35 @@ Mostek (rozmowa do kolejnego etapu):
 ## Etap 2: //WYSZUKIWARKA: OSINT
 Klocek: NOWA MINIGRA (Wyszukiwarka OSINT i selekcja celu)
 Cel dydaktyczny: weryfikacja dostępności profili pracowników i wybór ofiary z publicznym profilem (bramka logiczna).
-Ekrany: wyszukiwanie frazy "PETROLOG PRACOWNICY" → wyniki (Marcelina Sojka vs Anita Klimek). Wybór Marceliny Sojki wyzwala komunikat błędu z wyraźną wskazówką edukacyjną T2 (dlaczego profil prywatny stanowi skuteczną barierę przed białym wywiadem OSINT).
+Ekrany: wyszukiwanie frazy "PETROLOG PRACOWNICY" → wyniki (Marcelina Sojka vs Anita Klimek). Kliknięcie karty tylko ją zaznacza; wybór zatwierdza osobny przycisk „ZATWIERDŹ WYBÓR CELU” (tak samo dla obu profili). Zatwierdzenie Anity Klimek pokazuje komunikat „DOBRY WYBÓR!” z uzasadnieniem i przycisk przejścia dalej. Zatwierdzenie Marceliny Sojki wyzwala komunikat błędu z wyraźną wskazówką edukacyjną T2 (dlaczego profil prywatny stanowi skuteczną barierę przed białym wywiadem OSINT).
 Flavor (nieoceniane): selekcja celu z publicznym profilem (bramka OSINT)
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "ANITA KLIMEK Z DZIAŁU KSIĘGOWOŚCI. JEJ PROFIL JEST CAŁKOWICIE PUBLICZNY. PRZEŚWIETL JEJ MEDIA SPOŁECZNOŚCIOWE."
 - GRACZ: "PRZEANALIZUJĘ JEJ WPISY I ZBIORĘ INFORMACJE POTRZEBNE DO ATAKU."
-- odblokuj: //INTEL_SOCIAL_MEDIA
+- odblokuj: //SOCIAL_MEDIA
 
-## Etap 3: //INTEL_SOCIAL_MEDIA
+## Etap 3: //SOCIAL_MEDIA
 Klocek: NOWA MINIGRA (Symulator platform społecznościowych i aktywna dedukcja faktów)
 Cel dydaktyczny: OSINT na portalach społecznościowych, wyciąganie poprawnych wniosków wywiadowczych pod presją Wskaźnika Precyzji Wywiadu (Intel Precision Meter, min. 70%).
 Ekrany:
 1. PROFILE — 3 grafiki platform (Kneenook → Quickgram → Joinin), odblokowywane po kolei: następna dopiero po przejrzeniu wszystkich wpisów poprzedniej. Pod nimi notatnik z 8 polami na fakty.
-2. Wejście w platformę (krótkie ładowanie) → wpisy jeden po drugim (11 wpisów łącznie), każdy z miejscem na grafikę. Pod wpisem aktywna dedukcja (pytanie: „Jaki fakt wywiadowczy wynika z tego wpisu?” + 3 kafle wyboru: 1 poprawny, 2 zmyłki). „Następny wpis” odblokowuje się po trafnej odpowiedzi; po ostatnim wpisie powrót do ekranu profili.
+2. Wejście w platformę (krótkie ładowanie) → wpisy jeden po drugim (11 wpisów łącznie), każdy z miejscem na grafikę. Pod wpisem aktywna dedukcja (pytanie: „Jaki fakt wywiadowczy wynika z tego wpisu?” + 3 kafle wyboru: 1 poprawny, 2 zmyłki; kolejność kafli losowana przy każdym podejściu, żeby przy powtórce trzeba było czytać). „Następny wpis” odblokowuje się po trafnej odpowiedzi; po ostatnim wpisie powrót do ekranu profili.
 Spadek precyzji poniżej 70% pokazuje ekran ostrzegawczy z przyciskiem resetu (powrót do ekranu profili, postęp od zera).
 Układ wpisu: po lewej wpis jak w aplikacji platformy (kwadratowe zdjęcie, format Instagrama), po prawej osobny panel analizy (pytanie, odpowiedzi, przejście dalej).
 Grafiki: `assets/social/<id>.png` — id platformy (kneenook, quickgram, joinin) albo id wpisu (kn_1…ji_3); grafiki wpisów kwadratowe (1:1).
 Flavor (nieoceniane): zebranie wszystkich 8 wymaganych faktów przy precyzji ≥ 70% odblokowuje przycisk przejścia do kreatora spear-phishingu.
 
 Mostek (rozmowa do kolejnego etapu):
-- BM: "MAMY KOMPLET INFORMACJI O OFIERZE. ANITA JEST ZAPALONĄ BIEGACZKĄ DŁUGODYSTANSOWĄ I SZUKA PORAD TRENINGOWYCH. CZAS NA PRZYGOTOWANIE STRONY-PUŁAPKI I MAILA."
-- GRACZ: "STWORZĘ KAMPANIĘ SPEAR-PHISHINGOWĄ SKROJONĄ IDEALNIE POD JEJ ZAINTERESOWANIA."
-- odblokuj: //KREATOR_PHISHINGU
+- BM: "MAMY KOMPLET INFORMACJI O OFIERZE. ANITA JEST ZAPALONĄ BIEGACZKĄ DŁUGODYSTANSOWĄ I SZUKA PORAD TRENINGOWYCH. CZAS NA PRZYGOTOWANIE STRONY-PUŁAPKI."
+- GRACZ: "STWORZĘ STRONĘ-PUŁAPKĘ SKROJONĄ IDEALNIE POD JEJ ZAINTERESOWANIA."
+- odblokuj: //KREATOR_STRONY
 
-## Etap 4: //KREATOR_PHISHINGU
-Klocek: NOWA MINIGRA (Kreator spear-phishingu)
-Cel dydaktyczny: dobór domeny pułapki, wiarygodnego załącznika, tożsamości współpracownika i spoofingu domeny.
-Ekrany: D1 (domena) → D2 (przynęta) → Flavor (wstrzyknięcie wirusa do przycisku pobierz) → D3 (tożsamość nadawcy) → D4 (adres spoofing) → podsumowanie kampanii
-Oceniane: D1, D2, D3, D4  |  Flavor (nieoceniane): wstrzyknięcie ładunku
+## Etap 4: //KREATOR_STRONY
+Klocek: NOWA MINIGRA (Kreator fałszywej witryny z podglądem na żywo)
+Cel dydaktyczny: dobór domeny pułapki, wiarygodnego załącznika oraz wstrzyknięcie złośliwego kodu do przycisku pobierania z podglądem na żywo.
+Ekrany: D1 (domena) → D2 (przynęta) → Flavor (wstrzyknięcie wirusa metodą drag-and-drop do przycisku na podglądzie strony) → podsumowanie strony
+Oceniane: D1, D2  |  Flavor (nieoceniane): przeciągnięcie ładunku malware
 
 Decyzja D1: "OSZUKAĆ OFIARĘ – WYBIERZ ADRES STRONY, KTÓRY MOŻE JĄ ZAINTERESOWAĆ"
 - DALEKBIEG.INFO | ideal | Bezpośrednie odwołanie do pasji do biegów długodystansowych i poszukiwania porad przez ofiarę.
@@ -81,9 +81,28 @@ Decyzja D1: "OSZUKAĆ OFIARĘ – WYBIERZ ADRES STRONY, KTÓRY MOŻE JĄ ZAINTER
 - MEDIKARZ.IQ | critical | Tematyka medyczna jest całkowicie oderwana od zainteresowań ofiary i wzbudzi natychmiastową nieufność.
 
 Decyzja D2: "OSZUKAĆ OFIARĘ – WYBIERZ PLIK, KTÓRY OFIARA BĘDZIE MOGŁA POBRAĆ ZE STRONY. NIECH BĘDZIE ZACHĘCAJĄCY."
+(Drzewo decyzyjne – zestaw opcji dopasowany do domeny wybranej w D1)
+
+Wariant dla DALEKBIEG.INFO (portal biegowy):
 - PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK | ideal | Precyzyjna odpowiedź na publiczne zapytanie Anity z portalu Joinin.
 - TAPETY DLA BIEGACZY NA TELEFON | suboptimal | Mało angażujący zasób, który nie odpowiada potrzebie zdobycia merytorycznej wiedzy.
 - KOD ŹRÓDŁOWY STRONY | critical | Całkowity błąd profilowania – księgowa nigdy nie zainteresuje się pobieraniem surowego kodu.
+
+Wariant dla MUFINA.ORG.PL (serwis kulinarny z muffinkami):
+- PORADNIK KULINARNY - 10 SPRAWDZONYCH PRZEPISÓW NA DOMOWE MUFFINKI | ideal | Trafny dobór pliku dla serwisu kulinarnego – merytoryczny e-book z przepisami nawiązuje do pasji pieczenia ciast i wzbudza zaufanie.
+- TAPETY ZE SŁODKIMI MUFFINKAMI NA TELEFON | suboptimal | Mało angażujący zasób – zdjęcia babeczek są ładne, ale nie dają żadnej praktycznej wartości kulinarnej ani przepisów.
+- KOD ŹRÓDŁOWY BLOGA KULINARNEGO | critical | Całkowity błąd profilowania – miłośniczka domowych wypieków nigdy nie zainteresuje się pobieraniem surowego kodu strony.
+
+Mostek (rozmowa do kolejnego etapu):
+- BM: "STRONA-PUŁAPKA JEST GOTOWA I ZAWIRUSOWANA. TERAZ MUSISZ PRZYGOTOWAĆ MAILA DO ANITY I WYBRAĆ TOŻSAMOŚĆ NADAWCY."
+- GRACZ: "OTWIERAM KLIENTA POCZTY I PRZYGOTOWUJĘ KAMPANIĘ SPEAR-PHISHINGOWĄ."
+- odblokuj: //WYSYŁANIE_MAILA
+
+## Etap 5: //WYSYŁANIE_MAILA
+Klocek: NOWA MINIGRA (Konfigurator i wysyłka wiadomości spear-phishing)
+Cel dydaktyczny: dobór tożsamości współpracownika oraz spoofing domeny firmowej z podglądem wiadomości e-mail na żywo.
+Ekrany: D3 (tożsamość nadawcy) → D4 (adres spoofing) → podgląd i wysyłka maila
+Oceniane: D3, D4
 
 Decyzja D3: "WYSŁAĆ MAILA – WYŚLIJ MAILA DO SWOJEJ OFIARY. PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ."
 - JAKUB KWIATKOWSKI | ideal | Zaufany współpracownik z tego samego pokoju oraz partner z wieczornych biegów.
@@ -92,7 +111,7 @@ Decyzja D3: "WYSŁAĆ MAILA – WYŚLIJ MAILA DO SWOJEJ OFIARY. PODSZYJ SIĘ POD
 
 Decyzja D4: "WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ."
 - K.KWIATKOWSKI@PETROLOG.COM | ideal | Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary.
-- K.KWIATKOWSKI@HACH.COM | suboptimal | Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.
+- K.KWIATKOWSKI@HACK.COM | suboptimal | Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.
 - DARKSUN.JAKUB@GMAIL.COM | critical | Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.
 
 Mostek (rozmowa do kolejnego etapu):
@@ -100,7 +119,7 @@ Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "PODGLĄDAM JEJ SKRZYNKĘ I RUCH W SIECI."
 - odblokuj: //MONITOR_OFIARY
 
-## Etap 5: //MONITOR_OFIARY
+## Etap 6: //MONITOR_OFIARY
 Klocek: NOWA MINIGRA (Symulacja reakcji ofiary i eksfiltracja)
 Cel dydaktyczny: obserwacja łańcucha infekcji (klikanie w link, pobranie złośliwego pliku, przejęcie sieci).
 Ekrany: poczta Anity → przeglądarka dalekbieg.info → infekcja i mapa sieci PetroLog

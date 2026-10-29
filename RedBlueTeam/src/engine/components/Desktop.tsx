@@ -98,7 +98,7 @@ export const Desktop: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(#00ff6610_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
       {/* Main Dual-Screen Workspace (Left Monitor + Right Chat Monitor) */}
-      <div className="flex-1 flex flex-col md:flex-row gap-3 lg:gap-4 min-h-0 relative z-10 pb-2">
+      <div className="flex-1 flex flex-col md:flex-row gap-3 lg:gap-4 min-h-0 relative pb-2">
         {/* LEFT / CENTER MONITOR: Curved Main Terminal (Single-Window Focus) */}
         <div className="flex-1 min-h-0 relative flex flex-col bg-[#050b10]/95 border-2 border-[#00ff66] rounded-2xl overflow-hidden shadow-[0_0_35px_rgba(0,255,102,0.25)]">
           {/* Top Header of Curved Terminal */}
@@ -174,7 +174,7 @@ export const Desktop: React.FC = () => {
           )}
 
           {/* Terminal Screen Body */}
-          <div className="flex-1 p-4 overflow-hidden relative flex flex-col justify-between">
+          <div className="flex-1 px-4 py-1 overflow-hidden relative flex flex-col justify-between">
             {/* Faint //HACKERS watermark in background */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none opacity-5">
               <ShieldAlert size={260} className="text-[#00ff66]" />
@@ -184,11 +184,11 @@ export const Desktop: React.FC = () => {
             </div>
 
             {/* Content: Either Active Tool OR Desktop Icon Grid */}
-            <div className="flex-1 relative z-10 flex flex-col min-h-0">
+            <div className="flex-1 relative flex flex-col min-h-0">
               <AppHost />
               {activeApp === null && (
                 /* Dynamic Desktop Icon Grid */
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 my-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-10 p-4 my-auto">
                   {desktopTiles.map((tile) => {
                     const unlockKey = tile.requiredUnlockId || tile.id;
                     if (tile.unlockedOnly && !unlockedIcons.includes(unlockKey)) {
@@ -313,25 +313,15 @@ export const Desktop: React.FC = () => {
               </div>
             )}
 
-            {/* Bottom Monitor Frame Status & USB Desk Plug */}
-            <div className="pt-2 border-t border-[#00ff66]/20 flex items-center justify-between text-[11px] text-[#00ff66]/70 relative z-10">
-              <div className="flex items-center space-x-2">
-                <span className="w-2 h-2 rounded-full bg-[#00ff66] animate-pulse" />
-                <span className="font-bold">{activeMission.mission.systemOs || '//HACKERS.OS'}</span>
-              </div>
-
-              {/* Physical USB Stick Icon on Desk */}
-              {(hasUsbInserted || isUsbEjected) && (
+            {/* Physical USB Stick Icon on Desk */}
+            {(hasUsbInserted || isUsbEjected) && (
+              <div className="pt-2 border-t border-[#00ff66]/20 flex items-center justify-center relative z-10">
                 <div className="px-3 py-1 rounded bg-purple-950/60 border border-purple-500 text-purple-300 flex items-center space-x-2 text-[10px] font-bold animate-pulse">
                   <HardDrive size={13} />
                   <span>[USB PODŁĄCZONE DO STANOWISKA HAKERA]</span>
                 </div>
-              )}
-
-              <div className="tracking-widest font-bold text-[#00ff66]">
-                {systemDate}
               </div>
-            </div>
+            )}
           </div>
         </div>
 
