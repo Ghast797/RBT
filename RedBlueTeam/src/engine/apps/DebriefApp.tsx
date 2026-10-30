@@ -89,17 +89,17 @@ export const DebriefApp: React.FC = () => {
       if (window.top && window.top !== window) {
         window.top.close();
       }
-    } catch (e) {}
+    } catch (e) { }
 
     // 3. Try standard window.close()
     try {
       window.close();
-    } catch (e) {}
+    } catch (e) { }
 
     // 4. Try self window trick
     try {
       window.open('', '_self')?.close();
-    } catch (e) {}
+    } catch (e) { }
 
     // 5. Update UI if browser security blocked closing
     setIsCloseAttempted(true);
@@ -192,33 +192,6 @@ export const DebriefApp: React.FC = () => {
         </div>
       </div>
 
-      {/* xAPI & SCORM 2004 Delivery Status Banners */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[0.6875rem]">
-        <div className="px-3 py-1.5 bg-[#050b10] border border-[#00ff66]/20 rounded text-[#00ff66] flex items-center justify-between">
-          <span className="flex items-center space-x-1.5">
-            <CheckCheck size={14} className="text-[#00ff66]" />
-            <span>xAPI: "passed", score: {score}%</span>
-          </span>
-          <span className="text-[0.625rem] text-gray-500">IEEE xAPI</span>
-        </div>
-
-        <div className={`px-3 py-1.5 rounded flex items-center justify-between border ${
-          isScormSubmitted
-            ? 'bg-[#00f0ff]/10 border-[#00f0ff]/40 text-[#00f0ff]'
-            : 'bg-[#081219] border-blue-900/40 text-blue-300'
-        }`}>
-          <span className="flex items-center space-x-1.5">
-            <ShieldCheck size={14} className={isScormSubmitted ? 'text-[#00f0ff]' : 'text-blue-400'} />
-            <span>
-              {isScormSubmitted
-                ? `SCORM 2004: Zapisano (${score} pkt, ${score >= 70 ? 'passed' : 'failed'})`
-                : 'SCORM 2004: Gotowy do zapisu w Moodle'}
-            </span>
-          </span>
-          <span className="text-[0.625rem] text-gray-500 font-bold">4th EDITION</span>
-        </div>
-      </div>
-
       {/* Main Container: 8 Choice Reviews or Knowledge Base */}
       <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2.5">
         {!isKnowledgeBaseOpen ? (
@@ -244,19 +217,17 @@ export const DebriefApp: React.FC = () => {
               return (
                 <div
                   key={c.num}
-                  className={`p-3 rounded-lg space-y-2 transition-all border ${
-                    isIdeal
+                  className={`p-3 rounded-lg space-y-2 transition-all border ${isIdeal
                       ? 'bg-[#081219] border-[#00ff66]/40 shadow-sm'
                       : isSuboptimal
-                      ? 'bg-[#141208] border-[#facc15]/50 shadow-[0_0_10px_rgba(250,204,21,0.15)]'
-                      : 'bg-[#14080e] border-[#ff3366]/50 shadow-[0_0_10px_rgba(255,51,102,0.15)]'
-                  }`}
+                        ? 'bg-[#141208] border-[#facc15]/50 shadow-[0_0_10px_rgba(250,204,21,0.15)]'
+                        : 'bg-[#14080e] border-[#ff3366]/50 shadow-[0_0_10px_rgba(255,51,102,0.15)]'
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 text-xs">
-                      <span className={`font-bold ${
-                        isIdeal ? 'text-[#00ff66]' : isSuboptimal ? 'text-[#facc15]' : 'text-[#ff3366]'
-                      }`}>
+                      <span className={`font-bold ${isIdeal ? 'text-[#00ff66]' : isSuboptimal ? 'text-[#facc15]' : 'text-[#ff3366]'
+                        }`}>
                         WYBÓR {c.num}:
                       </span>
                       <span className="text-gray-300">{c.question}</span>
@@ -264,20 +235,19 @@ export const DebriefApp: React.FC = () => {
 
                     <div className="flex items-center space-x-2">
                       <span
-                        className={`px-2 py-0.5 rounded text-[0.625rem] font-bold border flex items-center space-x-1 ${
-                          isIdeal
+                        className={`px-2 py-0.5 rounded text-[0.625rem] font-bold border flex items-center space-x-1 ${isIdeal
                             ? 'bg-[#00ff66]/15 border-[#00ff66]/40 text-[#00ff66]'
                             : isSuboptimal
-                            ? 'bg-[#facc15]/15 border-[#facc15]/40 text-[#facc15]'
-                            : 'bg-[#ff3366]/15 border-[#ff3366]/40 text-[#ff3366]'
-                        }`}
+                              ? 'bg-[#facc15]/15 border-[#facc15]/40 text-[#facc15]'
+                              : 'bg-[#ff3366]/15 border-[#ff3366]/40 text-[#ff3366]'
+                          }`}
                       >
                         <span>
                           {isIdeal
                             ? '[IDEALNY WYBÓR]'
                             : isSuboptimal
-                            ? '[DOBRY, ALE NIEIDEALNY WYBÓR]'
-                            : '[BŁĄD KRYTYCZNY]'}
+                              ? '[DOBRY, ALE NIEIDEALNY WYBÓR]'
+                              : '[BŁĄD KRYTYCZNY]'}
                         </span>
                         {c.btcPenalty && (
                           <span className="text-amber-300 ml-1 font-black">
@@ -297,13 +267,12 @@ export const DebriefApp: React.FC = () => {
                   </div>
 
                   <div
-                    className={`text-xs font-bold pl-4 border-l-2 ${
-                      isIdeal
+                    className={`text-xs font-bold pl-4 border-l-2 ${isIdeal
                         ? 'text-white border-[#00ff66]'
                         : isSuboptimal
-                        ? 'text-amber-100 border-[#facc15]'
-                        : 'text-red-200 border-[#ff3366]'
-                    }`}
+                          ? 'text-amber-100 border-[#facc15]'
+                          : 'text-red-200 border-[#ff3366]'
+                      }`}
                   >
                     TWOJA ODPOWIEDŹ:{' '}
                     <span className={isIdeal ? 'text-[#00ff66]' : isSuboptimal ? 'text-[#facc15]' : 'text-[#ff3366]'}>
@@ -313,13 +282,12 @@ export const DebriefApp: React.FC = () => {
 
                   {isExpanded && (
                     <div
-                      className={`p-2.5 rounded text-[0.6875rem] leading-relaxed mt-2 border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
-                        isIdeal
+                      className={`p-2.5 rounded text-[0.6875rem] leading-relaxed mt-2 border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${isIdeal
                           ? 'bg-[#050a0f] border-slate-800 text-gray-300'
                           : isSuboptimal
-                          ? 'bg-[#1b1708] border-[#facc15]/30 text-amber-100'
-                          : 'bg-[#1b080f] border-[#ff3366]/30 text-red-100'
-                      }`}
+                            ? 'bg-[#1b1708] border-[#facc15]/30 text-amber-100'
+                            : 'bg-[#1b080f] border-[#ff3366]/30 text-red-100'
+                        }`}
                     >
                       <div className="flex-1">{c.details}</div>
                       {!c.isCorrect && (
@@ -514,9 +482,8 @@ export const DebriefApp: React.FC = () => {
             <div className="p-3 bg-[#050a0f] border border-[#00ff66]/40 rounded-xl space-y-2 text-left text-xs">
               <div className="flex justify-between items-center pb-2 border-b border-gray-800">
                 <span className="text-gray-400">STATUS ZALICZENIA:</span>
-                <span className={`font-black px-2 py-0.5 rounded text-[0.625rem] ${
-                  score >= 70 ? 'bg-[#00ff66]/20 text-[#00ff66] border border-[#00ff66]/50' : 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/50'
-                }`}>
+                <span className={`font-black px-2 py-0.5 rounded text-[0.625rem] ${score >= 70 ? 'bg-[#00ff66]/20 text-[#00ff66] border border-[#00ff66]/50' : 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/50'
+                  }`}>
                   {score >= 70 ? 'ZALICZONO (PASSED)' : 'NIEZALICZONO (FAILED)'}
                 </span>
               </div>
@@ -558,7 +525,7 @@ export const DebriefApp: React.FC = () => {
                         if (window.opener && !window.opener.closed) {
                           window.opener.focus();
                         }
-                      } catch (e) {}
+                      } catch (e) { }
                     }}
                     className="px-4 py-2 bg-[#00f0ff] text-[#05080c] font-black text-xs uppercase tracking-wider rounded hover:bg-[#00f0ff]/90 transition-all flex items-center justify-center space-x-1.5 shadow-[0_0_15px_rgba(0,240,255,0.4)]"
                   >

@@ -65,7 +65,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ icon: Icon, accent, title,
         >
           ZADANIE
         </span>
-        <span className="text-base sm:text-lg font-bold text-white leading-snug font-sans">{task}</span>
+        <span className="text-sm sm:text-base font-bold text-white leading-snug font-sans">{task}</span>
       </div>
     )}
   </div>

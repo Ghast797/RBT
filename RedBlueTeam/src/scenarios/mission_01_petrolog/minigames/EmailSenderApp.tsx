@@ -10,6 +10,7 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
+import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { EmailSenderConfig } from './types';
@@ -42,6 +43,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
   const selectedSender = config.senderName?.options.find((o) => o.id === selectedSenderId);
   const selectedEmail = config.senderEmail?.options.find((o) => o.id === selectedEmailId);
 
+
   const header = (title: string, subtitle: string, task: string, step: string) => (
     <AppHeader icon={Mail} accent={accent} title={title} subtitle={subtitle} task={task} step={step} />
   );
@@ -53,7 +55,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     showTags: boolean = true
   ) => (
     <ChoiceZone accent={accent} label="WYBIERZ JEDNO">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="flex flex-col gap-3">
         {options.map((opt) => (
           <ChoiceTile
             key={opt.id}
@@ -94,7 +96,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     onSelect: (id: string) => void
   ) => (
     <ChoiceZone accent={accent} label="WYBIERZ ADRES">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="flex flex-col gap-3">
         {options.map((opt) => (
           <ChoiceTile
             key={opt.id}
@@ -143,18 +145,138 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     }
   };
 
+  // Prawy monitor jest zajęty przez //POCZTA przez cały etap (także w trakcie ładowania), żeby
+  // nie migał czat. Wybory i przyciski żyją tam, a lewy ekran w całości pokazuje wiadomość.
+  const confirmButton = (label: string, enabled: boolean, onClick: () => void) => (
+    <button
+      onClick={onClick}
+      disabled={!enabled}
+      className="w-full shrink-0 px-4 py-2.5 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 disabled:opacity-40 cursor-pointer shadow-lg active:scale-95"
+      style={{
+        backgroundColor: accent,
+        color: '#05090f',
+        boxShadow: enabled ? `0 0 15px ${accent}66` : undefined
+      }}
+    >
+      <span>{label}</span>
+      <ArrowRight size={15} />
+    </button>
+  );
+
+  const sidePanel = (heading: string, sub: React.ReactNode, body: React.ReactNode, footer?: React.ReactNode) => (
+    <div
+      className="flex flex-col h-full bg-[#060c14] border-2 rounded-xl p-4 space-y-3 font-mono text-gray-200 select-none"
+      style={{ borderColor: `${accent}66` }}
+    >
+      <div className="border-b pb-2 shrink-0 space-y-1" style={{ borderColor: `${accent}40` }}>
+        <span className="text-xs font-black tracking-widest block" style={{ color: accent }}>
+          {heading}
+        </span>
+        <p className="text-[0.6875rem] text-gray-300 leading-snug">{sub}</p>
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 pt-3">{body}</div>
+      {footer}
+    </div>
+  );
+
+  // Lista elementów kampanii — pokazywana w trakcie ładowania i w podsumowaniu.
+  const progressPanel = (heading: string, sub: string, footer?: React.ReactNode) => {
+    const steps = [
+      { label: 'DOMENA PUŁAPKI', value: targetDomain, done: true },
+      { label: 'PRZYNĘTA (PAYLOAD)', value: targetPayload, done: true },
+      { label: 'PODSZYTY NADAWCA', value: selectedSender?.label, done: screen !== 'sender' },
+      { label: 'SPOOFING EMAIL', value: selectedEmail?.label, done: screen === 'summary' }
+    ];
+    return sidePanel(
+      heading,
+      sub,
+      <div className="flex flex-col gap-2">
+        {steps.map((s, idx) => (
+          <div
+            key={s.label}
+            className={`p-3 rounded-lg border text-xs flex items-center space-x-2.5 ${
+              s.done ? 'border-[#00ff66]/70 bg-[#00ff66]/10' : 'border-gray-800 bg-black/20 text-gray-500'
+            }`}
+          >
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center text-[0.625rem] shrink-0 font-bold ${
+                s.done ? 'bg-[#00ff66] text-[#05090f]' : 'bg-gray-800 text-gray-500'
+              }`}
+            >
+              {s.done ? '✓' : idx + 1}
+            </span>
+            <div className="min-w-0">
+              <span className="text-[0.625rem] text-gray-400 block tracking-wider">{s.label}</span>
+              <span className={`font-bold truncate block ${s.done ? 'text-emerald-200' : ''}`}>
+                {s.done ? s.value : '…'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>,
+      footer
+    );
+  };
+
+  const sideContent =
+    screen === 'sender'
+      ? sidePanel(
+          '//POCZTA: WYBÓR',
+          config.senderName?.question || 'Wybierz tożsamość nadawcy',
+          renderOptionCards(config.senderName?.options || [], selectedSenderId, setSelectedSenderId),
+          confirmButton('ZATWIERDŹ TOŻSAMOŚĆ NADAWCY', !!selectedSender, handleSenderConfirm)
+        )
+      : screen === 'email'
+      ? sidePanel(
+          '//POCZTA: WYBÓR',
+          config.senderEmail?.question || 'Wybierz adres e-mail nadawcy',
+          renderEmailButtons(config.senderEmail?.options || [], selectedEmailId, setSelectedEmailId),
+          <div className="shrink-0 flex gap-2">
+            <button
+              onClick={() => {
+                sounds.playClick();
+                setSelectedEmailId(null);
+                setScreen('sender');
+              }}
+              className="px-4 py-2.5 rounded font-bold text-xs uppercase tracking-wider text-gray-400 hover:text-white hover:bg-gray-800 border border-gray-800 transition-all flex items-center space-x-1.5 cursor-pointer"
+            >
+              <ArrowLeft size={14} />
+              <span>WRÓĆ</span>
+            </button>
+            <div className="flex-1">{confirmButton('ZATWIERDŹ ADRES EMAIL', !!selectedEmail, handleEmailConfirm)}</div>
+          </div>
+        )
+      : screen === 'summary'
+      ? progressPanel(
+          '//POCZTA: GOTOWE',
+          'Wyślij maila do Anity Klimek i obserwuj jej reakcję w aplikacji monitora.',
+          <button
+            onClick={() => {
+              sounds.playSuccess();
+              onComplete();
+            }}
+            className="w-full shrink-0 px-4 py-2.5 rounded font-black text-xs uppercase tracking-widest bg-[#00ff66] text-[#05090f] hover:bg-[#00ff66]/90 transition-all flex items-center justify-center space-x-2 cursor-pointer shadow-[0_0_20px_rgba(0,255,102,0.4)] active:scale-95"
+          >
+            <Send size={15} />
+            <span>WYŚLIJ MAILA</span>
+          </button>
+        )
+      : // Ładowanie między ekranami: prawy monitor zostaje zajęty (bez czatu), ale pusty.
+        <div className="h-full" />;
+
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
+      <SideMonitor>{sideContent}</SideMonitor>
+
       {/* 1. SENDER IDENTITY SCREEN (D3) */}
       {screen === 'sender' && (
-        <div className="flex flex-col justify-between h-full space-y-4">
+        <div className="flex flex-col h-full space-y-4">
           {header(
             '//POCZTA',
             'WYBÓR TOŻSAMOŚCI NADAWCY',
             config.senderName?.question || 'Wybierz tożsamość nadawcy',
             'KROK 1/2 (D3)'
           )}
-          {renderOptionCards(config.senderName?.options || [], selectedSenderId, setSelectedSenderId)}
 
           {/* Email Preview with dynamic sender */}
           <div className="animate-in fade-in duration-300">
@@ -165,22 +287,6 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               payloadName={targetPayload}
               step="sender"
             />
-          </div>
-
-          <div className="pt-3 border-t border-gray-800 flex justify-end">
-            <button
-              onClick={handleSenderConfirm}
-              disabled={!selectedSender}
-              className="px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 disabled:opacity-40 cursor-pointer shadow-lg active:scale-95"
-              style={{
-                backgroundColor: accent,
-                color: '#05090f',
-                boxShadow: selectedSender ? `0 0 15px ${accent}66` : undefined
-              }}
-            >
-              <span>ZATWIERDŹ TOŻSAMOŚĆ NADAWCY</span>
-              <ArrowRight size={15} />
-            </button>
           </div>
         </div>
       )}
@@ -196,14 +302,13 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
 
       {/* 2. SENDER EMAIL SCREEN (D4) */}
       {screen === 'email' && (
-        <div className="flex flex-col justify-between h-full space-y-4">
+        <div className="flex flex-col h-full space-y-4">
           {header(
             '//POCZTA',
             'WYBÓR ADRESU E-MAIL NADAWCY',
             config.senderEmail?.question || 'Wybierz adres e-mail nadawcy',
             'KROK 2/2 (D4)'
           )}
-          {renderEmailButtons(config.senderEmail?.options || [], selectedEmailId, setSelectedEmailId)}
 
           {/* Email Preview with dynamic sender address */}
           <div className="animate-in fade-in duration-300">
@@ -215,40 +320,12 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               step="email"
             />
           </div>
-
-          <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
-            <button
-              onClick={() => {
-                sounds.playClick();
-                setSelectedEmailId(null);
-                setScreen('sender');
-              }}
-              className="px-4 py-2.5 rounded font-bold text-xs uppercase tracking-wider text-gray-400 hover:text-white hover:bg-gray-800 border border-gray-800 transition-all flex items-center space-x-1.5 cursor-pointer"
-            >
-              <ArrowLeft size={14} />
-              <span>WRÓĆ</span>
-            </button>
-
-            <button
-              onClick={handleEmailConfirm}
-              disabled={!selectedEmail}
-              className="px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 disabled:opacity-40 cursor-pointer shadow-lg active:scale-95"
-              style={{
-                backgroundColor: accent,
-                color: '#05090f',
-                boxShadow: selectedEmail ? `0 0 15px ${accent}66` : undefined
-              }}
-            >
-              <span>ZATWIERDŹ ADRES EMAIL</span>
-              <ArrowRight size={15} />
-            </button>
-          </div>
         </div>
       )}
 
       {/* 3. SUMMARY SCREEN */}
       {screen === 'summary' && (
-        <div className="flex flex-col justify-between h-full space-y-4 animate-in fade-in">
+        <div className="flex flex-col h-full space-y-4 animate-in fade-in">
           {header('//POCZTA', 'PODSUMOWANIE KAMPANII', 'WIADOMOŚĆ JEST GOTOWA. WYŚLIJ MAILA I OBSERWUJ REAKCJĘ ANITY W MONITORZE OFIARY.', 'FINALIZACJA')}
 
           <div className="p-5 rounded-xl border border-gray-800 bg-[#08101a] space-y-4 shadow-xl">
@@ -287,42 +364,6 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
                 <span className="text-gray-400 mt-2 block">{selectedSender?.label || 'Jakub Kwiatkowski'}</span>
               </div>
             </div>
-
-            {/* Attack components summary */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-2">
-              <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[0.625rem] text-gray-400 block font-mono">DOMENA PUŁAPKI</span>
-                <span className="font-bold text-sky-400 truncate block">{targetDomain}</span>
-              </div>
-              <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[0.625rem] text-gray-400 block font-mono">PRZYNĘTA (PAYLOAD)</span>
-                <span className="font-bold text-sky-400 truncate block">{targetPayload}</span>
-              </div>
-              <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[0.625rem] text-gray-400 block font-mono">PODSZYTY NADAWCA</span>
-                <span className="font-bold text-purple-400 truncate block">{selectedSender?.label}</span>
-              </div>
-              <div className="p-2.5 rounded bg-black/40 border border-gray-800">
-                <span className="text-[0.625rem] text-gray-400 block font-mono">SPOOFING EMAIL</span>
-                <span className="font-bold text-purple-400 font-mono text-[0.6875rem] truncate block">{selectedEmail?.label}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
-            <span className="text-xs text-gray-400">
-              Wyślij maila do Anity Klimek i obserwuj jej reakcję w aplikacji monitora.
-            </span>
-            <button
-              onClick={() => {
-                sounds.playSuccess();
-                onComplete();
-              }}
-              className="px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest bg-[#00ff66] text-[#05090f] hover:bg-[#00ff66]/90 transition-all flex items-center space-x-2 cursor-pointer shadow-[0_0_20px_rgba(0,255,102,0.4)] active:scale-95"
-            >
-              <Send size={15} />
-              <span>WYŚLIJ MAILA I PRZEJDŹ DO MONITORA OFIARY</span>
-            </button>
           </div>
         </div>
       )}

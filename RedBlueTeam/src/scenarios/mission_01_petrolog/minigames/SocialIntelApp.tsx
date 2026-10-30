@@ -398,13 +398,13 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
         {post && (
           <div className="flex-1 lg:min-h-0 grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-1 gap-6">
             {/* LEWA POŁOWA: wpis jak w aplikacji platformy, zdjęcie 4:5 dopasowane do wolnego miejsca */}
-            <div className="flex items-center justify-center lg:min-h-0 lg:[container-type:size]">
+            <div className="flex items-center justify-center lg:min-h-0">
               <div
-                className="rounded-xl border overflow-hidden bg-[#08101a]/95 flex flex-col w-full max-w-sm lg:max-w-none lg:max-h-full lg:w-[min(100cqw,calc(80cqh-10rem))]"
+                className="rounded-xl border overflow-hidden bg-[#08101a]/95 flex flex-col w-full max-w-[20rem] h-[32rem] lg:h-full lg:max-h-[40rem]"
                 style={{ borderColor: `${platform.accentColor}80` }}
               >
                 <div
-                  className="px-3 py-1.5 flex items-center justify-between"
+                  className="px-3 py-1.5 flex items-center justify-between shrink-0"
                   style={{ backgroundColor: platform.accentColor }}
                 >
                   <div className="flex items-center space-x-2 text-white font-black text-sm tracking-wide">
@@ -420,6 +420,8 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                   </button>
                 </div>
 
+                {/* Cały ekran telefonu przewijany jak feed: autor, zdjęcie i treść razem */}
+                <div className="flex-1 min-h-0 overflow-y-auto">
                 <div className="px-3 py-2 flex items-center space-x-2.5">
                   <div
                     className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-black text-[0.6875rem] text-white shrink-0"
@@ -437,7 +439,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                   <ImageSlot name={post.id} label={`wpis ${post.id}`} className="w-full aspect-[4/5] shrink-0" />
                 </div>
 
-                <div className="px-3 py-2 space-y-1.5 h-28 shrink-0 overflow-y-auto">
+                <div className="px-3 py-2 space-y-1.5">
                   <p className="text-sm text-gray-100 leading-snug font-sans">{post.content}</p>
                   {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
@@ -449,12 +451,13 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                     </div>
                   )}
                 </div>
+                </div>
               </div>
             </div>
 
             {/* PRAWA POŁOWA: analiza wpisu */}
-            <div className="flex items-center justify-center">
-              <div className="rounded-xl border border-gray-800 bg-[#08101a]/95 p-4 space-y-3 w-full max-w-xl">
+            <div className="flex items-center justify-center lg:min-h-0">
+              <div className="rounded-xl border border-gray-800 bg-[#08101a]/95 p-3 space-y-2.5 w-full max-w-[22rem] flex flex-col overflow-y-auto h-[32rem] lg:h-full lg:max-h-[40rem]">
                 <div className="flex items-center justify-between border-b border-gray-800 pb-2">
                   <span className="text-[0.6875rem] font-bold text-gray-400 uppercase tracking-wider">ANALIZA WPISU</span>
                   <span className="text-[0.625rem] text-gray-500 font-bold">{`WPIS ${postIdx + 1}/${platformPosts.length}`}</span>
@@ -540,7 +543,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
                 )}
 
                 {/* Postęp wpisów + dalej */}
-                <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
+                <div className="pt-3 mt-auto border-t border-gray-800 flex items-center justify-between shrink-0">
                   <div className="flex items-center space-x-1.5">
                     {platformPosts.map((p, idx) => (
                       <span
