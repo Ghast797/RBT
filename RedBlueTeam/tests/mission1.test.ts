@@ -456,7 +456,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
         })
       );
       expect(htmlStep2Empty).toContain('Jakub Kwiatkowski');
-      expect(htmlStep2Empty).toContain('wybierz adres e-mail powyżej');
+      expect(htmlStep2Empty).toContain('wybierz adres e-mail po prawej');
       expect(htmlStep2Empty).not.toContain('k.kwiatkowski@petrolog.com');
 
       // Krok 2 po zaznaczeniu opcji maila: wybrany adres pojawia się w mailu

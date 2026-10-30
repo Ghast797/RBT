@@ -34,7 +34,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
             <span className="text-gray-400 font-bold w-12 shrink-0">OD:</span>
             <span className="text-white font-bold">
               {senderName || (
-                <span className="text-gray-500 italic">[Wybierz tożsamość nadawcy powyżej...]</span>
+                <span className="text-gray-500 italic">[Wybierz nadawcę po prawej…]</span>
               )}
             </span>
             {step === 'sender' ? null : (
@@ -43,7 +43,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
                 {senderEmail ? (
                   <span className="font-bold underline text-pink-300">{senderEmail.toLowerCase()}</span>
                 ) : (
-                  <span className="text-purple-400/60 italic">[wybierz adres e-mail powyżej...]</span>
+                  <span className="text-purple-400/60 italic">[wybierz adres e-mail po prawej…]</span>
                 )}
                 &gt;
               </span>

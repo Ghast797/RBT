@@ -559,7 +559,7 @@ export const socialIntelConfig: SocialIntelConfig = {
         },
         {
           id: 'ji3_opt_3',
-          text: 'Sprzedaje używany sprzęt do biegania i buty maratońskie',
+          text: 'Sprzedaje używany sprzęt sportowy i buty do biegania',
           isCorrect: false,
           feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — post to prośba o wskazówki treningowe.'
         }
@@ -714,7 +714,8 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
   },
   senderName: {
     decisionNum: 3,
-    question: 'WYSŁAĆ MAILA – WYŚLIJ MAILA DO SWOJEJ OFIARY. PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ.',
+    question:
+      'WYBIERZ, KTO BĘDZIE NADAWCĄ WIADOMOŚCI. ANITA ZOBACZY TO IMIĘ W POLU „OD:”, WIĘC PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ.',
     subtitle: 'Decyzja D3: Wybór tożsamości nadawcy',
     options: [
       {

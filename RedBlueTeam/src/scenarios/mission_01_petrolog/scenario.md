@@ -104,7 +104,7 @@ Cel dydaktyczny: dobór tożsamości współpracownika oraz spoofing domeny firm
 Ekrany: D3 (tożsamość nadawcy) → D4 (adres spoofing) → podgląd i wysyłka maila
 Oceniane: D3, D4
 
-Decyzja D3: "WYSŁAĆ MAILA – WYŚLIJ MAILA DO SWOJEJ OFIARY. PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ."
+Decyzja D3: "WYBIERZ, KTO BĘDZIE NADAWCĄ WIADOMOŚCI. ANITA ZOBACZY TO IMIĘ W POLU „OD:”, WIĘC PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ."
 - JAKUB KWIATKOWSKI | ideal | Zaufany współpracownik z tego samego pokoju oraz partner z wieczornych biegów.
 - PREZES BUCZEK | suboptimal | Wiadomość o tematyce sportowej od zarządu firmy wyda się ofierze wysoce podejrzana.
 - TWÓJ SYNEK | critical | Małe dzieci nie wysyłają maili ze skrzynki korporacyjnej PetroLog.
@@ -150,3 +150,6 @@ D4:
 - Obrona: Sygnały: ostrzeżenie programu pocztowego („nie można zweryfikować nadawcy”), adres w polu „Odpowiedz do” inny niż nadawca. Co zrobić: zgłoś podejrzany mail do działu IT. Firma powinna włączyć SPF, DKIM i DMARC — wtedy serwer odrzuca maile podszywające się pod jej domenę.
 
 Baza wiedzy (kurs Moodle, poza paczką SCORM): `docs/moodle-baza-wiedzy.md`.
+
+## Odchylenia od VR
+- D3: polecenie przeredagowane (w VR: „WYSŁAĆ MAILA – WYŚLIJ MAILA DO SWOJEJ OFIARY. PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ.”), bo nie mówiło wprost, że gracz wybiera nadawcę wiadomości.
