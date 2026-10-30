@@ -310,6 +310,11 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     </div>
   );
 
+  // Każda faza zwraca fragment z notatnikiem jako PIERWSZYM dzieckiem, więc React zachowuje ten
+  // sam element między hubem, ładowaniem i feedem — notatnik nie znika (czat nie mignie) ani nie
+  // traci przewinięcia.
+  const notebookMonitor = <SideMonitor>{factsNotebook}</SideMonitor>;
+
   const header = (task: string) => (
     <AppHeader
       icon={Users}
@@ -361,12 +366,15 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   if (phase.kind === 'loading') {
     const platform = platforms.find((p) => p.id === phase.platformId)!;
     return (
-      <ModuleLoader
-        label={`ŁĄCZENIE Z ${platform.name.toUpperCase()}…`}
-        accent={platform.accentColor}
-        durationMs={900}
-        onDone={() => setPhase({ kind: 'feed', platformId: phase.platformId })}
-      />
+      <>
+        {notebookMonitor}
+        <ModuleLoader
+          label={`ŁĄCZENIE Z ${platform.name.toUpperCase()}…`}
+          accent={platform.accentColor}
+          durationMs={900}
+          onDone={() => setPhase({ kind: 'feed', platformId: phase.platformId })}
+        />
+      </>
     );
   }
 
@@ -383,8 +391,9 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
     const isLastPost = postIdx >= platformPosts.length - 1;
 
     return (
+      <>
+      {notebookMonitor}
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-        <SideMonitor>{factsNotebook}</SideMonitor>
         {header(
           isPrecisionFailed
             ? 'Za dużo pomyłek. Zacznij analizę od nowa.'
@@ -578,6 +587,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
           </div>
         )}
       </div>
+      </>
     );
   }
 
@@ -585,8 +595,9 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
   // HUB: trzy platformy po kolei + notatnik faktów
   // ---------------------------------------------------------------------------
   return (
+    <>
+    {notebookMonitor}
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      <SideMonitor>{factsNotebook}</SideMonitor>
       {header(
         isComplete
           ? 'Profil kompletny. Zatwierdź zebrane fakty.'
@@ -695,5 +706,6 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
         </div>
       )}
     </div>
+    </>
   );
 };
