@@ -41,11 +41,13 @@ RedBlueTeam/
 │           ├── scenario.md     # źródło prawdy (format: scenario-format.md)
 │           ├── mission.ts      # meta, intro, etapy, dane klocków, debrief
 │           ├── minigames/      # minigry tylko tej misji
-│           ├── assets/
-│           └── docs/           # materiały źródłowe (PDF, notatki z nagrania VR)
+│           ├── assets/         # grafiki (PNG/JPG prosto z generatora — patrz niżej)
+│           └── docs/           # materiały źródłowe (PDF, notatki z nagrania VR), baza wiedzy Moodle
 ```
 
 Nowa misja zmienia **tylko swój folder**. Jedyny wyjątek: promocja minigry do `blocks/` (sekcja 7).
+
+**Grafiki:** wrzucaj do `assets/` oryginały PNG/JPG bez ręcznej optymalizacji. Ładuj je przez `import.meta.glob` z zapytaniem `{ w: '1024', withoutEnlargement: 'true', format: 'webp' }` (wzór: `mission_01_petrolog/minigames/socialAssets.ts`) — `vite-imagetools` skaluje je i konwertuje do WebP podczas budowania. Bez tego zapytania plik trafia do paczki SCORM w pełnym rozmiarze (PNG z generatora to ~2 MB na obrazek).
 
 ## 3. Konwencje (wspólne dla wszystkich misji)
 

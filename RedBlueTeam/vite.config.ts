@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { imagetools } from 'vite-imagetools';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -165,6 +166,9 @@ export default defineConfig({
     scenarioIsolationPlugin(),
     react(),
     tailwindcss(),
+    // Grafiki misji importowane z zapytaniem `?w=…&format=webp` są skalowane i konwertowane
+    // podczas budowania — w repo zostają oryginały PNG/JPG z generatora.
+    imagetools(),
   ],
   server: {
     host: true,
