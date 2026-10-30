@@ -131,8 +131,22 @@ Mostek (rozmowa do kolejnego etapu):
 - odblokuj: //PODSUMOWANIE
 
 ## Debrief
-Slajdy edukacyjne:
-1. OSINT – Biały wywiad w mediach społecznościowych — Cyberprzestępcy nie potrzebują łamać skomplikowanych zabezpieczeń, gdy sami publikujemy kluczowe informacje. Posty z biura, relacje z urlopu czy zapytania o hobby pozwalają stworzyć dokładny profil psychologiczny pracownika. Ogranicz widoczność swoich postów w mediach społecznościowych wyłącznie do zaufanego kręgu znajomych.
-2. Spear-phishing – Atak spersonalizowany — W przeciwieństwie do masowego spamu, spear-phishing jest precyzyjnie wymierzony w konkretną osobę. Wykorzystuje autentyczne relacje biurowe, imiona kolegów z zespołu oraz aktualne zainteresowania ofiary, aby uśpić jej czujność i nakłonić do wykonania niebezpiecznej akcji.
-3. Weryfikacja nadawcy i spoofing domeny — Atakujący potrafią podrobić nagłówek wiadomości lub zarejestrować domenę łudząco podobną do firmowej (typosquatting). Jeśli otrzymujesz nieoczekiwany link lub załącznik od współpracownika – zweryfikuj to z nim innym kanałem (np. zadzwoń lub zapytaj osobiście przy biurku).
-4. Higiena cyfrowa i bezpieczne odnośniki — Przed kliknięciem w link zawsze najedź kursorem myszy i sprawdź rzeczywisty adres docelowy w lewym dolnym rogu przeglądarki. Stosuj menedżer haseł, regularnie aktualizuj system oraz bezwzględnie włącz uwierzytelnianie dwuskładnikowe (2FA) na wszystkich kontach firmowych i prywatnych.
+Lekcje przy decyzjach (rozwijane w raporcie pooperacyjnym):
+
+D1:
+- Atak: Strona-pułapka trafia w temat, którego ofiara sama szuka w sieci. Adres pasujący do jej pasji (bieganie) wygląda jak zwykły blog z poradami, więc nie budzi podejrzeń.
+- Obrona: Sygnały: nieznana strona podsunięta w mailu, nietypowa końcówka adresu (.info, .iq), serwis bez historii. Co zrobić: przed kliknięciem najedź kursorem na link i sprawdź adres, a porad szukaj sam w wyszukiwarce lub na znanych serwisach — nie przez link z wiadomości.
+
+D2:
+- Atak: Przynęta odpowiada na pytanie, które ofiara sama zadała publicznie na portalu Joinin. Kto dostaje dokładnie to, czego szukał, rzadko zastanawia się, skąd plik się wziął.
+- Obrona: Sygnały: plik „za dobry, żeby był prawdziwy”, idealnie dopasowany do Twojego niedawnego wpisu; poradnik do pobrania zamiast zwykłej strony. Co zrobić: nie pobieraj plików z nieznanych stron na komputer służbowy i pamiętaj, że Twoje publiczne wpisy czyta też atakujący.
+
+D3:
+- Atak: Podszycie się pod osobę, której ofiara ufa: kolegę z pokoju, z którym biega po pracy. Zaufanie do nadawcy usypia czujność — wiadomości od „swoich” zwykle się nie sprawdza.
+- Obrona: Sygnały: znajoma osoba pisze nietypowo — link do nieznanej strony, inny styl, pośpiech. Co zrobić: zapytaj nadawcę innym kanałem (telefon, rozmowa przy biurku), czy naprawdę to wysłał. Nie odpisuj na podejrzany mail, bo odpowiedź trafi do atakującego.
+
+D4:
+- Atak: Spoofing: podrobiony adres w firmowej domenie. Serwer poczty PetroLog nie sprawdzał, czy nadawca naprawdę wysyła z firmy, więc fałszywa wiadomość wyglądała jak wewnętrzna.
+- Obrona: Sygnały: ostrzeżenie programu pocztowego („nie można zweryfikować nadawcy”), adres w polu „Odpowiedz do” inny niż nadawca. Co zrobić: zgłoś podejrzany mail do działu IT. Firma powinna włączyć SPF, DKIM i DMARC — wtedy serwer odrzuca maile podszywające się pod jej domenę.
+
+Baza wiedzy (kurs Moodle, poza paczką SCORM): `docs/moodle-baza-wiedzy.md`.

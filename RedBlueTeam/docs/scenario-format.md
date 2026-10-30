@@ -66,12 +66,16 @@ Reguły:
 
 ```
 ## Debrief
-Slajdy edukacyjne:
-1. <tytuł> — <treść do zapamiętania>
-2. ...
+Lekcje przy decyzjach (rozwijane w raporcie pooperacyjnym):
+
+D<k>:
+- Atak: <jaka to technika i dlaczego zadziałała na tę ofiarę — 1–2 zdania>
+- Obrona: <po czym ofiara mogła to rozpoznać i co powinna zrobić — 1–2 zdania>
 ```
 
-Tabela wyborów do debriefu powstaje automatycznie z decyzji etapów — nie przepisuje się jej.
+Tabela wyborów do debriefu powstaje automatycznie z decyzji etapów — nie przepisuje się jej. Lekcje trafiają do `step6.choices[].attack` / `.defense` i pojawiają się po rozwinięciu decyzji obok feedbacku wybranej opcji.
+
+Ogólna baza wiedzy (pojęcia, checklisty, pytania kontrolne) **nie trafia do gry** — powstaje jako `docs/moodle-baza-wiedzy.md` w folderze misji i prowadzący wkleja ją do kursu Moodle pod aktywnością SCORM. Student w Moodle widzi tylko ocenę, nie swoje decyzje, więc wszystko, co odnosi się do wyborów gracza, zostaje w debriefie.
 
 ### Odchylenia od VR
 

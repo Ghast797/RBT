@@ -182,12 +182,21 @@ class Scorm2004Manager {
       this.isConnected = res === 'true';
       if (this.isConnected) {
         console.log('[SCORM 2004] Initialized successfully. Mode:', this.isMock ? 'MOCK' : 'LIVE LMS');
+        this.terminateOnPageHide();
       }
       return this.isConnected;
     } catch (err) {
       console.error('[SCORM 2004] Exception during Initialize:', err);
       return false;
     }
+  }
+
+  /** Zamknięcie karty kończy sesję, żeby Moodle domknął próbę z ostatnim zapisanym wynikiem. */
+  private pageHideHooked = false;
+  private terminateOnPageHide(): void {
+    if (this.pageHideHooked || typeof window === 'undefined') return;
+    this.pageHideHooked = true;
+    window.addEventListener('pagehide', () => this.terminate());
   }
 
   public getApi(): SCORM2004API | null {
@@ -253,9 +262,22 @@ class Scorm2004Manager {
   }
 
   /**
-   * Submit complete final results, scoring, time and interactions to Moodle
+   * Submit complete final results, scoring, time and interactions to Moodle,
+   * then terminate the session.
    */
   public submitFinalScore(data: ScormSubmissionData): { success: boolean; message: string } {
+    const result = this.saveResult(data);
+    if (result.success) this.terminate();
+    return result;
+  }
+
+  /**
+   * Zapisuje wynik, czas i interakcje do Moodle (Commit) BEZ kończenia sesji.
+   * Można wołać wielokrotnie — kolejny zapis nadpisuje poprzedni. Silnik woła to
+   * zaraz po ostatniej decyzji misji, żeby wynik był w dzienniku ocen, nawet gdy
+   * gracz zamknie kartę przed raportem pooperacyjnym.
+   */
+  public saveResult(data: ScormSubmissionData): { success: boolean; message: string } {
     if (!this.api || !this.isConnected) {
       this.initialize(true);
     }
@@ -308,9 +330,6 @@ class Scorm2004Manager {
       // 6. Commit to LMS database
       this.commit();
 
-      // 7. Terminate session
-      this.terminate();
-
       return {
         success: true,
         message: isPassed
@@ -318,7 +337,7 @@ class Scorm2004Manager {
           : `Wynik ${data.scoreRaw}/100 pkt został zapisany w Moodle jako NIEZALICZONY (failed, próg: ${passingScore}%).`
       };
     } catch (err: any) {
-      console.error('[SCORM 2004] Error during submitFinalScore:', err);
+      console.error('[SCORM 2004] Error during saveResult:', err);
       return { success: false, message: `Błąd zapisu w SCORM: ${err?.message || err}` };
     }
   }

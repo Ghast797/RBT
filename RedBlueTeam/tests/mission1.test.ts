@@ -35,7 +35,12 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
     expect(mission?.mission.decisionCount).toBe(4);
     expect(mission?.mission.passingScore).toBe(75);
     expect(mission?.step6.choices.length).toBe(4);
-    expect(mission?.step6.educationalSlides.length).toBe(4);
+    // Ogólna baza wiedzy jest w Moodle; debrief niesie lekcje atak/obrona przy każdej decyzji.
+    expect(mission?.step6.educationalSlides).toBeUndefined();
+    for (const choice of mission!.step6.choices) {
+      expect(choice.attack?.length).toBeGreaterThan(40);
+      expect(choice.defense?.length).toBeGreaterThan(40);
+    }
   });
 
   it('resolves mission by alternative keys: "1", "petrolog", "mission1"', () => {
@@ -151,6 +156,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
         tier: 'ideal',
         feedback: 'Zaufany współpracownik z tego samego pokoju.'
       });
+      expect(useMissionStore.getState().isScormSubmitted).toBe(false);
       store.reportDecision({
         num: 4,
         question: 'Wybór adresu e-mail nadawcy',
@@ -158,6 +164,15 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
         tier: 'ideal',
         feedback: 'Domena firmowa PetroLog – pełne uwiarygodnienie.'
       });
+
+      // Ostatnia decyzja = wynik ostateczny: zapis do Moodle przed finałem, sesja dalej otwarta
+      const api = scorm2004.getApi() as MockSCORM2004;
+      expect(useMissionStore.getState().isScormSubmitted).toBe(true);
+      expect(api.GetValue('cmi.completion_status')).toBe('completed');
+      expect(api.GetValue('cmi.score.raw')).toBe('100');
+      expect(api.GetValue('cmi.interactions.3.learner_response')).toBe('K.KWIATKOWSKI@PETROLOG.COM');
+      expect(api.isTerminated).toBe(false);
+
       store.completeStage('app_email_sender');
 
       // Mostek: mail wysłany -> odblokowanie Monitora Ofiary
@@ -180,6 +195,36 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(finalState.btcReward).toBe(2.52);
       expect(finalState.perfectChoicesCount).toBe(4);
       expect(finalState.criticalErrorsCount).toBe(0);
+
+      // Wyjście z raportu kończy sesję SCORM
+      store.submitScormAndExit();
+      expect(api.isTerminated).toBe(true);
+      expect(useMissionStore.getState().isExitModalOpen).toBe(true);
+    });
+
+    it('nie zapisuje wyniku, gdy ostatnia decyzja jest krytyczna; zapisuje po powtórce', () => {
+      const store = useMissionStore.getState();
+      driveBridge();
+      const decide = (num: number, tier: 'ideal' | 'suboptimal' | 'critical') =>
+        useMissionStore.getState().reportDecision({ num, question: `D${num}`, answer: `A${num}`, tier, feedback: '-' });
+
+      decide(1, 'suboptimal');
+      decide(2, 'ideal');
+      decide(3, 'ideal');
+      decide(4, 'critical');
+      expect(useMissionStore.getState().isScormSubmitted).toBe(false);
+
+      store.retryFromChoices();
+      expect(useMissionStore.getState().reportedDecisions).toEqual([]);
+      decide(1, 'suboptimal');
+      decide(2, 'ideal');
+      decide(3, 'ideal');
+      decide(4, 'ideal');
+
+      const api = scorm2004.getApi() as MockSCORM2004;
+      expect(useMissionStore.getState().isScormSubmitted).toBe(true);
+      expect(api.GetValue('cmi.score.raw')).toBe('87.5');
+      expect(api.GetValue('cmi.success_status')).toBe('passed');
     });
 
     it('reaguje na błąd krytyczny wyzwalając modal dekonspiracji', () => {

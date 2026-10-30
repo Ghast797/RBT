@@ -114,6 +114,10 @@ export interface DebriefChoiceItem {
   outcome?: ChoiceOutcome;
   btcPenalty?: number;
   negotiationTranscript?: NegotiationTurn[];
+  /** Lekcja (red team): jaka to technika i dlaczego zadziałała na ofiarę. */
+  attack?: string;
+  /** Lekcja (blue team): po czym ofiara mogła rozpoznać atak i co powinna zrobić. */
+  defense?: string;
 }
 
 export interface EducationalSlide {
@@ -124,7 +128,11 @@ export interface EducationalSlide {
 export interface DebriefData {
   summary: DebriefSummaryConfig;
   choices: DebriefChoiceItem[];
-  educationalSlides: EducationalSlide[];
+  /**
+   * @deprecated Ogólna baza wiedzy przeszła do kursu Moodle (`docs/moodle-baza-wiedzy.md`
+   * w folderze misji). Debrief w grze pokazuje lekcje przy decyzjach (`attack` / `defense`).
+   */
+  educationalSlides?: EducationalSlide[];
 }
 
 // Step / Phase abstractions

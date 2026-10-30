@@ -162,8 +162,9 @@ export interface MissionState {
   criticalErrorsCount: number;
   xapiSent: boolean;
   expandedChoiceIndex: number | null;
-  isKnowledgeBaseOpen: boolean;
   playerChoices: PlayerChoiceRecord[];
+  /** Numery decyzji zgłoszonych w tym podejściu (bez `critical`) — podstawa autozapisu SCORM. */
+  reportedDecisions: number[];
   recordChoice: (choice: PlayerChoiceRecord, penalty?: number) => void;
   /**
    * Kontrakt klocka/minigry: zgłoszenie ocenianej decyzji.
@@ -238,13 +239,18 @@ export interface MissionState {
 
   // Step 6 Actions
   toggleChoiceDetails: (index: number) => void;
-  toggleKnowledgeBase: () => void;
   resetGame: () => void;
 
   // Generic Scenario Transitions
   runScenarioTransition: (transitionId: string) => void;
 
   // SCORM Actions
+  /**
+   * Zapis wyniku do Moodle bez kończenia sesji. Silnik woła go sam po ostatniej
+   * ocenianej decyzji misji; ponowne wywołanie nadpisuje wynik.
+   */
+  saveMissionResult: () => { success: boolean; message: string };
+  /** Zapis wyniku i zakończenie sesji SCORM (przycisk wyjścia w raporcie). */
   submitScormAndExit: () => { success: boolean; message: string };
   closeExitModal: () => void;
   openExitModal: () => void;
@@ -402,8 +408,8 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     criticalErrorsCount: 0,
     xapiSent: false,
     expandedChoiceIndex: null as number | null,
-    isKnowledgeBaseOpen: false,
     playerChoices: choices,
+    reportedDecisions: [] as number[],
 
     // Detection & Retry Modals
     isDetectedModalOpen: false,
@@ -577,6 +583,16 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     // Nagroda BTC wynika liniowo z wyniku — nie z osobnych kar w widgetach.
     set((s) => ({ btcReward: btcForScore(s.score, rewardBtc) }));
+
+    // Ostatnia decyzja misji = wynik ostateczny. Zapisujemy go od razu, zanim gracz
+    // zobaczy finał i raport — zamknięcie karty w tym miejscu nie gubi oceny.
+    if (report.tier !== 'critical') {
+      const reported = get().reportedDecisions.includes(report.num)
+        ? get().reportedDecisions
+        : [...get().reportedDecisions, report.num];
+      set({ reportedDecisions: reported });
+      if (reported.length >= decisionCount) get().saveMissionResult();
+    }
 
     // Błąd krytyczny przerywa operację. recordChoice policzył już licznik wpadek,
     // więc otwieramy modal bez ponownego inkrementowania.
@@ -1863,11 +1879,6 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     }));
   },
 
-  toggleKnowledgeBase: () => {
-    sounds.playClick();
-    set((s) => ({ isKnowledgeBaseOpen: !s.isKnowledgeBaseOpen }));
-  },
-
   resetGame: () => {
     sounds.playClick();
     const currentMission = get().activeMission;
@@ -1944,8 +1955,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   },
 
   // ----------------- SCORM 2004 ACTIONS -----------------
-  submitScormAndExit: () => {
-    sounds.playSuccess();
+  saveMissionResult: () => {
     const { score, playerChoices, criticalErrorsCount, btcReward, activeMission } = get();
     const sessionSeconds = scorm2004.getElapsedTimeSeconds();
 
@@ -1964,7 +1974,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       completedAt: new Date().toISOString()
     });
 
-    const result = scorm2004.submitFinalScore({
+    const result = scorm2004.saveResult({
       missionId: activeMission.mission.id,
       scoreRaw: score,
       passingScore: activeMission.mission.passingScore ?? 70,
@@ -1974,11 +1984,20 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     });
 
     set({
-      isScormSubmitted: true,
-      scormSubmitMessage: result.message,
-      isExitModalOpen: true
+      isScormSubmitted: result.success,
+      scormSubmitMessage: result.message
     });
 
+    return result;
+  },
+
+  submitScormAndExit: () => {
+    sounds.playSuccess();
+    // Zapis jeszcze raz: misje bez etapów (legacy) nie mają autozapisu, a wynik
+    // mógł się zmienić po powtórce zadania.
+    const result = get().saveMissionResult();
+    if (result.success) scorm2004.terminate();
+    set({ isExitModalOpen: true });
     return result;
   },
 
