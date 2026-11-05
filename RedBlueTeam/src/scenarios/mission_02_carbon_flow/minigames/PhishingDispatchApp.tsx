@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, AtSign, ArrowRight, ExternalLink } from 'lucide-react';
+import { Send, AtSign, ArrowRight, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
@@ -7,7 +7,7 @@ import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { PhishingDispatchConfig } from './types';
 
-type Screen = 'sender_select' | 'preview' | 'dispatching';
+type Screen = 'sender_select' | 'preview' | 'dispatching' | 'sent';
 
 export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> = ({
   config,
@@ -202,8 +202,38 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           label="Rozsyłanie pakietów SMTP przez tunel VPN do serwera CarbonFlow Inc..."
           durationMs={1300}
           accent={blue}
-          onDone={onComplete}
+          onDone={() => {
+            sounds.playSuccess();
+            setScreen('sent');
+          }}
         />
+      )}
+
+      {screen === 'sent' && (
+        <div className="flex flex-col justify-between h-full space-y-4 my-auto">
+          <div className="p-6 rounded-xl border border-cyan-500/50 bg-[#081524] space-y-3 text-center">
+            <div className="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-400 mx-auto flex items-center justify-center text-cyan-400">
+              <CheckCircle2 size={28} />
+            </div>
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              KAMPANIA PHISHINGOWA ZOSTAŁA WYSŁANA
+            </h3>
+            <p className="text-xs text-gray-300 max-w-lg mx-auto leading-relaxed">
+              Pakiety SMTP zostały dostarczone do skrzynek {config.recipientsCount} pracowników w domenie {config.targetDomain}.
+              Oczekujemy na otwarcie linku i aktywację ładunku w sieci LAN.
+            </p>
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={onComplete}
+              className="flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg transition-all cursor-pointer"
+            >
+              <span>POWRÓT DO PULPITU</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

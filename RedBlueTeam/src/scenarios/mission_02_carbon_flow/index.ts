@@ -4,7 +4,6 @@ import { registerApp, registerScenarioApps } from '../../engine/registry/appRegi
 import { mission2Stages, mission2Blocks } from './stages';
 import {
   PhishingCampaignApp,
-  VpnApp,
   WormBuilderApp,
   PhishingDispatchApp,
   BotnetMonitorApp
@@ -32,7 +31,6 @@ export const mission2Definition: MissionDefinition = {
 // Minigry misji rejestrowane w silniku pod swoimi componentId.
 export const mission2Apps: Record<string, React.ComponentType<any>> = {
   phishing_campaign: PhishingCampaignApp,
-  vpn_app: VpnApp,
   worm_builder: WormBuilderApp,
   phishing_dispatch: PhishingDispatchApp,
   botnet_monitor: BotnetMonitorApp
@@ -45,7 +43,6 @@ Object.entries(mission2Apps).forEach(([componentId, component]) => registerApp(c
 
 export {
   PhishingCampaignApp,
-  VpnApp,
   WormBuilderApp,
   PhishingDispatchApp,
   BotnetMonitorApp
