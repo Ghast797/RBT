@@ -5,6 +5,12 @@ import { appComponentRegistry } from '../src/engine/registry/appRegistry';
 import { mission2Definition, mission2Apps } from '../src/scenarios/mission_02_carbon_flow';
 import { scorm2004, MockSCORM2004 } from '../src/engine/scorm/scorm2004';
 import { createMissionCompletionStatement, MockLRS } from '../src/engine/scorm/xapi';
+import {
+  phishingCampaignConfig,
+  vpnConfig,
+  wormBuilderConfig,
+  phishingDispatchConfig
+} from '../src/scenarios/mission_02_carbon_flow/stages';
 
 /** Przegrywa rozmowę mostkującą do końca: flushuje kwestie BYTE_MASTERA i klika kwestie gracza. */
 function driveBridge() {
@@ -42,6 +48,111 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     expect(getMission('2')?.mission.id).toBe('mission-2-carbonflow');
     expect(getMission('carbonflow')?.mission.id).toBe('mission-2-carbonflow');
     expect(getMission('mission2')?.mission.id).toBe('mission-2-carbonflow');
+  });
+
+  describe('spójność danych', () => {
+    const def = mission2Definition;
+    const stages = def.stages ?? [];
+    const tileIds = def.desktopApps.map((t) => t.id);
+
+    it('każdy appId etapu istnieje w desktopApps, a komponent kafelka jest zarejestrowany', () => {
+      stages.forEach((st) => expect(tileIds).toContain(st.appId));
+      def.desktopApps.forEach((t) =>
+        expect(appComponentRegistry[t.componentId] ?? mission2Apps[t.componentId]).toBeDefined()
+      );
+    });
+
+    it('kolejność etapów to VR: phishing -> VPN -> wirus -> wysyłka -> botnet', () => {
+      expect(stages.map((s) => s.appId)).toEqual([
+        'phishing_app',
+        'vpn_app',
+        'virus_database',
+        'phishing_dispatch',
+        'botnet_monitor'
+      ]);
+      expect(stages.map((s) => s.decisions)).toEqual([[1, 2, 3], [], [4], [5], []]);
+    });
+
+    it('każda decyzja 1..N jest w dokładnie jednym etapie i w step6.choices', () => {
+      const n = def.mission.decisionCount;
+      expect(n).toBe(5);
+      for (let k = 1; k <= n; k++) {
+        expect(stages.filter((s) => s.decisions.includes(k)).length).toBe(1);
+        expect(def.step6.choices.filter((c) => c.num === k).length).toBe(1);
+      }
+      expect(def.step6.choices.length).toBe(n);
+      expect(def.step6.summary.perfectChoices).toBe(n);
+    });
+
+    it('raport: pytania identyczne z ekranem, każda decyzja ma lekcje atak/obrona', () => {
+      const questions: Record<number, string> = {
+        1: phishingCampaignConfig.action.question,
+        2: phishingCampaignConfig.template.question,
+        3: phishingCampaignConfig.topic.question,
+        4: wormBuilderConfig.virus.question,
+        5: phishingDispatchConfig.sender.question
+      };
+      def.step6.choices.forEach((c) => {
+        expect(c.question).toBe(questions[c.num]);
+        expect((c.attack ?? '').length).toBeGreaterThan(40);
+        expect((c.defense ?? '').length).toBeGreaterThan(40);
+      });
+    });
+
+    it('numery decyzji w danych klocków zgadzają się z etapami, jedna opcja ideal/suboptimal/critical', () => {
+      const decisions = [
+        phishingCampaignConfig.action,
+        phishingCampaignConfig.template,
+        phishingCampaignConfig.topic,
+        wormBuilderConfig.virus,
+        phishingDispatchConfig.sender
+      ];
+      expect(decisions.map((d) => d.decisionNum)).toEqual([1, 2, 3, 4, 5]);
+      decisions.forEach((d) => {
+        expect(d.options.map((o) => o.tier).sort()).toEqual(['critical', 'ideal', 'suboptimal']);
+        const ideal = d.options.find((o) => o.tier === 'ideal')!;
+        expect(def.step6.choices.find((c) => c.num === d.decisionNum)!.answer).toBe(ideal.label);
+      });
+      expect(vpnConfig.allowedIps).toContain(vpnConfig.targetIp);
+    });
+
+    it('opcje nie mają opisów ani tagów spoza VR (poza podtytułami szablonów)', () => {
+      const all = [
+        ...phishingCampaignConfig.action.options,
+        ...phishingCampaignConfig.topic.options,
+        ...wormBuilderConfig.virus.options,
+        ...phishingDispatchConfig.sender.options
+      ];
+      all.forEach((o) => {
+        expect(o.desc).toBeUndefined();
+        expect(o.tags).toBeUndefined();
+      });
+      phishingCampaignConfig.template.options.forEach((o) => expect(o.desc).toContain('|'));
+    });
+
+    it('podgląd maila ma wariant dla każdej opcji tematu, szablonu i nadawcy', () => {
+      const cfg = phishingDispatchConfig;
+      phishingCampaignConfig.topic.options.forEach((o) =>
+        expect(cfg.topics.some((t) => t.label === o.label)).toBe(true)
+      );
+      phishingCampaignConfig.template.options.forEach((o) =>
+        expect(cfg.templates.some((t) => t.label === o.label)).toBe(true)
+      );
+      cfg.sender.options.forEach((o) => expect(cfg.signoffs[o.id]).toBeTruthy());
+    });
+
+    it('intro jest 1:1 z VR (węzły, kwestie gracza, mostek po wysyłce bez BM)', () => {
+      const intro = def.intro;
+      expect(intro.dialogue.length).toBe(8);
+      expect(intro.dialogue[0].text).toBe('MAM DLA CIEBIE KOLEJNE ZADANIE');
+      expect(intro.dialogue[6].text).toContain('LISTĘ MAILINGOWĄ PRACOWNIKÓW CARBONFLOW');
+      expect(intro.dialogue[6].playerResponse).toBe(
+        'CZYLI OD POCZĄTKU WIEDZIAŁEŚ, ŻE BĘDĘ PLANOWAĆ ATAK PHISHINGOWY?'
+      );
+      expect(intro.dialogue[7].playerResponse).toBeUndefined();
+      const bridge = stages.find((s) => s.id === 'phishing_dispatch')!.completion.conversation!;
+      expect(bridge.map((b) => b.from)).toEqual(['player']);
+    });
   });
 
   it('registers custom minigames in appRegistry', () => {
@@ -210,6 +321,78 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       expect(state.score).toBe(90);
       expect(state.btcReward).toBeCloseTo(2.96 * 0.9, 2);
       expect(state.goodChoicesCount).toBe(1);
+    });
+
+    it('suboptimal w D2 i D5 odejmuje po 10 pkt, a BTC liczy silnik', () => {
+      const store = useMissionStore.getState();
+      store.reportDecision({
+        num: 2,
+        question: 'WYBIERZ SZABLON FORMULARZA:',
+        answer: 'Quickgram',
+        tier: 'suboptimal',
+        feedback: 'Szablon sieci społecznościowej wzbudza podejrzenia.'
+      });
+      store.reportDecision({
+        num: 5,
+        question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
+        answer: 'MARKETING@CARBON.COM',
+        tier: 'suboptimal',
+        feedback: 'Skrócona domena jest podejrzana.'
+      });
+      const state = useMissionStore.getState();
+      expect(state.score).toBe(80);
+      expect(state.btcReward).toBeCloseTo(2.96 * 0.8, 2);
+      expect(state.goodChoicesCount).toBe(2);
+      expect(state.isDetectedModalOpen).toBe(false);
+      expect(state.playerChoices.find((c) => c.num === 5)?.outcome).toBe('suboptimal');
+    });
+
+    it('critical w D3 (temat) i D5 (nadawca) uruchamia wykrycie z numerem decyzji', () => {
+      const store = useMissionStore.getState();
+      store.reportDecision({
+        num: 3,
+        question: 'WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:',
+        answer: 'ULUBIONE OWOCE Z OWOCOWEGO CZWARTKU',
+        tier: 'critical',
+        feedback: 'Błahy temat zostanie zignorowany.'
+      });
+      let state = useMissionStore.getState();
+      expect(state.isDetectedModalOpen).toBe(true);
+      expect(state.detectionReason?.choiceNum).toBe(3);
+      expect(state.score).toBe(80);
+      expect(state.criticalErrorsCount).toBe(1);
+
+      store.reportDecision({
+        num: 5,
+        question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
+        answer: 'KATERING@OILFLOW.COM',
+        tier: 'critical',
+        feedback: 'Obca domena zostanie zablokowana.'
+      });
+      state = useMissionStore.getState();
+      expect(state.detectionReason?.choiceNum).toBe(5);
+      expect(state.criticalErrorsCount).toBe(2);
+      expect(state.score).toBe(60);
+    });
+
+    it('mostki odblokowują kafelki dopiero po kwestii gracza', () => {
+      const store = useMissionStore.getState();
+      driveBridge();
+      store.completeStage('phishing_app');
+      vi.runAllTimers();
+      expect(useMissionStore.getState().unlockedIcons).not.toContain('vpn_unlocked');
+      driveBridge();
+      expect(useMissionStore.getState().unlockedIcons).toContain('vpn_unlocked');
+      store.completeStage('vpn_app');
+      driveBridge();
+      expect(useMissionStore.getState().unlockedIcons).toContain('virus_database_unlocked');
+      expect(useMissionStore.getState().unlockedIcons).not.toContain('phishing_dispatch_unlocked');
+      store.completeStage('virus_database');
+      driveBridge();
+      expect(useMissionStore.getState().unlockedIcons).toContain('phishing_dispatch_unlocked');
+      store.completeStage('phishing_dispatch');
+      driveBridge();
+      expect(useMissionStore.getState().unlockedIcons).toContain('botnet_monitor_unlocked');
     });
   });
 });
