@@ -19,6 +19,10 @@ function driveBridge() {
   for (let i = 0; i < 40; i++) {
     vi.runAllTimers();
     const st = useMissionStore.getState();
+    if (st.timeJump) {
+      st.endTimeJump();
+      continue;
+    }
     if (!st.pendingBridge) return;
     const beat = st.chatAvailableChoices.find((c) => c.bridgeBeat);
     if (beat) useMissionStore.getState().chooseChatOption(beat.id);
@@ -148,7 +152,7 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       cfg.sender.options.forEach((o) => expect(cfg.signoffs[o.id]).toBeTruthy());
     });
 
-    it('intro jest 1:1 z VR (węzły, kwestie gracza, mostek po wysyłce bez BM)', () => {
+    it('intro jest 1:1 z VR (węzły, kwestie gracza, mostek po wysyłce: kwestia gracza i przeskok czasu)', () => {
       const intro = def.intro;
       expect(intro.dialogue.length).toBe(8);
       expect(intro.dialogue[0].text).toBe('MAM DLA CIEBIE KOLEJNE ZADANIE');
@@ -158,7 +162,7 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       );
       expect(intro.dialogue[7].playerResponse).toBeUndefined();
       const bridge = stages.find((s) => s.id === 'phishing_dispatch')!.completion.conversation!;
-      expect(bridge.map((b) => b.from)).toEqual(['player']);
+      expect(bridge.map((b) => b.from)).toEqual(['player', 'time_jump']);
     });
   });
 

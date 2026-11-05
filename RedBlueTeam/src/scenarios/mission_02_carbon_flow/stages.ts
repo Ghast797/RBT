@@ -330,6 +330,12 @@ export const mission2Stages: StageDefinition[] = [
           from: 'player',
           id: 'm2_reply_dispatch',
           label: 'GOTOWE. TERAZ MUSIMY POCZEKAĆ, AŻ RYBKA CHWYCI HACZYK'
+        },
+        // „Czekanie” z VR pokazane jako przeskok czasu; kafelek monitora podświetla się 3 s po nim.
+        {
+          from: 'time_jump',
+          label: 'MIJA KILKA GODZIN…',
+          sublabel: 'CZEKAMY, AŻ PRACOWNICY OTWORZĄ ANKIETĘ I AKTYWUJĄ ŁADUNEK.'
         }
       ],
       unlockIcons: ['botnet_monitor_unlocked', 'botnet_monitor'],
