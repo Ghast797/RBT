@@ -9,7 +9,7 @@ import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingCampaignConfig } from './types';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { SidePanel } from '../../../engine/components/SidePanel';
-import { InfoCard, OptionCards } from './ui';
+import { InfoCard, OptionCards, ImageOptionCards } from './ui';
 
 type Screen =
   | 'start'
@@ -57,11 +57,16 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
     onSelect: (id: string) => void,
     confirmLabel: string,
     enabled: boolean,
-    onConfirm: () => void
+    onConfirm: () => void,
+    withImages = false
   ) => (
     <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
       {header(subtitle, task, step)}
-      <OptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} />
+      {withImages ? (
+        <ImageOptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} />
+      ) : (
+        <OptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} />
+      )}
       <div className="flex justify-end">
         <ConfirmButton
           accent={accent}
@@ -188,7 +193,8 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
           setSelectedTemplateId,
           'ZATWIERDŹ SZABLON',
           !!selectedTemplate,
-          handleTemplateConfirm
+          handleTemplateConfirm,
+          true
         )}
 
       {screen === 'load_topic' && (

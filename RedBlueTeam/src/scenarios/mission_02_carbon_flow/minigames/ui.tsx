@@ -1,4 +1,6 @@
 import React from 'react';
+import { Image as ImageIcon } from 'lucide-react';
+import { resolveFormImage, FORM_ASSETS_DIR } from './formAssets';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { ChoiceOption } from '../../../engine/types/mission';
@@ -69,4 +71,58 @@ export const InfoCard: React.FC<{ accent: string; children: React.ReactNode; cla
   >
     {children}
   </div>
+);
+
+/** Miejsce na grafikę: plik z assets/forms/<name>.*, w dev zastępnik z nazwą brakującego pliku. */
+const ImageSlot: React.FC<{ name: string; label: string }> = ({ name, label }) => {
+  const url = resolveFormImage(name);
+  if (url) {
+    return <img src={url} alt={label} className="w-full h-full object-cover" draggable={false} />;
+  }
+  return (
+    <div className="w-full h-full bg-black/40 flex flex-col items-center justify-center text-center p-2 space-y-1">
+      <ImageIcon size={26} className="text-gray-600" />
+      {import.meta.env.DEV && (
+        <>
+          <span className="text-[0.625rem] font-bold text-gray-500 uppercase tracking-wider">{`GRAFIKA: ${label}`}</span>
+          <span className="text-[0.5625rem] text-gray-600">{`${FORM_ASSETS_DIR}/${name}.png`}</span>
+        </>
+      )}
+    </div>
+  );
+};
+
+/** Karty wyboru z grafiką u góry i nazwą z podtytułem pod spodem (grafika wg `opt.id`). */
+export const ImageOptionCards: React.FC<{
+  accent: string;
+  options: ChoiceOption[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  label?: string;
+}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO' }) => (
+  <ChoiceZone accent={accent} label={label}>
+    <div className="grid grid-cols-3 gap-3">
+      {options.map((opt) => (
+        <ChoiceTile
+          key={opt.id}
+          accent={accent}
+          state={selectedId === opt.id ? 'selected' : 'idle'}
+          markerPosition="corner"
+          onClick={() => {
+            sounds.playClick();
+            onSelect(opt.id);
+          }}
+          className="overflow-hidden !block"
+        >
+          <div className="aspect-[4/3] w-full overflow-hidden rounded-t-[10px] border-b border-gray-800">
+            <ImageSlot name={opt.id} label={opt.label} />
+          </div>
+          <div className="p-3 space-y-1 text-center">
+            <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
+            {opt.desc && <p className="text-[0.625rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
+          </div>
+        </ChoiceTile>
+      ))}
+    </div>
+  </ChoiceZone>
 );
