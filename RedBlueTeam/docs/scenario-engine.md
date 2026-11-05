@@ -70,6 +70,7 @@ Implementuje je silnik raz. Scenariusz ich nie opisuje — zakłada je.
 | Przeciąganie z VR | w webie: drag & drop **lub** klik kafelka (decyzja per klocek, nie per scenariusz) |
 | Nagłówek aplikacji | `AppHeader` (`engine/components/AppHeader.tsx`): duży tytuł aplikacji + pasek **ZADANIE** z bieżącym poleceniem; polecenie zmienia się z krokiem minigry |
 | Elementy do wyboru | `ChoiceZone` + `ChoiceTile` (`engine/components/ChoiceZone.tsx`): wszystko, co gracz wybiera, stoi w przerywanej ramce z etykietą „▼ WYBIERZ…”; kafel ma znacznik (kółko/litera) i stany `idle/selected/correct/wrong/dimmed`. Karty informacyjne nie mają ramki przerywanej ani reakcji na najechanie |
+| Przycisk i panel prawego monitora | `ConfirmButton` i `SidePanel` (`engine/components/`): przycisk „dalej/zatwierdź” w kolorze akcentu (wyszarzony, gdy krok niekompletny) oraz panel prawego monitora (nagłówek, przewijalna treść, stopka) z propsem `accent`. Używane w `SideMonitor` przez minigry M1 i M2 |
 
 ## 4. Trzy poziomy oceny
 

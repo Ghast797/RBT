@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Globe,
-  ArrowRight,
   Bug,
   Sparkles,
   CheckCircle2,
@@ -15,6 +14,8 @@ import { shuffled } from '../../../engine/core/shuffle';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingBuilderConfig } from './types';
 import { WebsitePreview } from './WebsitePreview';
+import { ConfirmButton } from '../../../engine/components/ConfirmButton';
+import { SidePanel } from '../../../engine/components/SidePanel';
 
 type BuilderScreen =
   | 'domain'
@@ -109,35 +110,13 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
   // nie migał czat. Wybory, moduł do przeciągnięcia i przyciski żyją tam, a lewy ekran w całości
   // pokazuje budowaną stronę.
   const confirmButton = (label: string, enabled: boolean, onClick: () => void) => (
-    <button
-      onClick={onClick}
-      disabled={!enabled}
-      className="w-full shrink-0 px-4 py-2.5 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center space-x-2 disabled:opacity-40 cursor-pointer shadow-lg active:scale-95"
-      style={{
-        backgroundColor: pink,
-        color: '#05090f',
-        boxShadow: enabled ? `0 0 15px ${pink}66` : undefined
-      }}
-    >
-      <span>{label}</span>
-      <ArrowRight size={15} />
-    </button>
+    <ConfirmButton accent={pink} label={label} enabled={enabled} onClick={onClick} />
   );
 
   const sidePanel = (heading: string, sub: React.ReactNode, body: React.ReactNode, footer?: React.ReactNode) => (
-    <div
-      className="flex flex-col h-full bg-[#060c14] border-2 rounded-xl p-4 space-y-3 font-mono text-gray-200 select-none"
-      style={{ borderColor: `${pink}66` }}
-    >
-      <div className="border-b pb-2 shrink-0 space-y-1" style={{ borderColor: `${pink}40` }}>
-        <span className="text-xs font-black tracking-widest block" style={{ color: pink }}>
-          {heading}
-        </span>
-        <p className="text-[0.6875rem] text-gray-300 leading-snug">{sub}</p>
-      </div>
-      <div className="flex-1 min-h-0 overflow-y-auto pr-1 pt-3">{body}</div>
-      {footer}
-    </div>
+    <SidePanel accent={pink} heading={heading} sub={sub} footer={footer}>
+      {body}
+    </SidePanel>
   );
 
   const choicePanel = (

@@ -8,7 +8,9 @@ import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { WormBuilderConfig } from './types';
-import { ConfirmButton, InfoCard, OptionCards, SidePanel } from './ui';
+import { ConfirmButton } from '../../../engine/components/ConfirmButton';
+import { SidePanel } from '../../../engine/components/SidePanel';
+import { InfoCard, OptionCards } from './ui';
 
 type Screen = 'virus_select' | 'code_edit' | 'compiling' | 'ready';
 

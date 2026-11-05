@@ -8,7 +8,9 @@ import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { PhishingDispatchConfig } from './types';
-import { ConfirmButton, InfoCard, OptionCards, SidePanel } from './ui';
+import { ConfirmButton } from '../../../engine/components/ConfirmButton';
+import { SidePanel } from '../../../engine/components/SidePanel';
+import { InfoCard, OptionCards } from './ui';
 
 type Screen = 'sender_select' | 'preview' | 'dispatching' | 'sent';
 

@@ -7,7 +7,9 @@ import { AppHeader } from '../../../engine/components/AppHeader';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingCampaignConfig } from './types';
-import { ConfirmButton, InfoCard, OptionCards, SidePanel } from './ui';
+import { ConfirmButton } from '../../../engine/components/ConfirmButton';
+import { SidePanel } from '../../../engine/components/SidePanel';
+import { InfoCard, OptionCards } from './ui';
 
 type Screen =
   | 'action'

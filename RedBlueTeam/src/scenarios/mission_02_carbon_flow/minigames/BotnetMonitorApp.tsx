@@ -3,7 +3,7 @@ import { Radio, AlertOctagon, CheckCircle2 } from 'lucide-react';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';
-import { ConfirmButton } from './ui';
+import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import type { BotnetMonitorConfig } from './types';
 
 interface NodeStatus {
