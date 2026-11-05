@@ -218,6 +218,9 @@ Każda generowana paczka SCORM 2004 (`dist/scorm-mission-X.zip`) jest **fizyczni
 3. **Tryb deweloperski i testy:**
    - W trybie dev (`npm run dev`) oraz testach (`npm test`), gdy `VITE_MISSION_ID` nie jest ustawiony, wirtualny moduł udostępnia wszystkie wykryte scenariusze, umożliwiając przełączanie w przeglądarce (`?mission=2`, `?mission=3`, `?mission=4`).
    - W devie można też odpalić izolację konkretnej misji: `VITE_MISSION_ID=4 npm run dev`.
+4. **Wyświetlanie w Moodle (pełne okno):**
+   - Zalecane ustawienia aktywności SCORM, sekcja „Wygląd”: *Wyświetl pakiet* = **Nowe okno**, szerokość i wysokość = **100%**, *Wyświetl strukturę kursu w odtwarzaczu* (Display course structure in player) = **Ukryty**, *Pokaż nawigację* (Show Navigation) = **Nie**.
+   - Silnik dodatkowo sam rozciąga swój iframe na całe okno odtwarzacza i przyciemnia jego tło (`engine/scorm/lmsFrame.ts`, wołane w `main.tsx`), więc białe marginesy i przycisk „>” odtwarzacza znikają nawet przy domyślnych ustawieniach. Działa tylko w trybie **Nowe okno** (`display=popup`) i tylko gdy paczka jest serwowana z tej samej domeny co Moodle (standard dla `mod_scorm`); w trybie osadzonym strona Moodle zostaje nietknięta.
 
 ## 12. Backlog audio (TODO dla agentów)
 
