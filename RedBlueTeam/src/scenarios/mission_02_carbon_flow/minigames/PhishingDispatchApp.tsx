@@ -245,6 +245,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           selectedId={selectedSenderId}
           onSelect={setSelectedSenderId}
           label="WYBIERZ ADRES"
+          layout="rows"
           mono
         />
       </SidePanel>

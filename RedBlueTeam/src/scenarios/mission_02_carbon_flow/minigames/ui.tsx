@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image as ImageIcon } from 'lucide-react';
 import { resolveFormImage, FORM_ASSETS_DIR } from './formAssets';
-import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
+import { ChoiceZone, ChoiceTile, ChoiceCardGrid, ChoiceRows } from '../../../engine/components/ChoiceZone';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { ChoiceOption } from '../../../engine/types/mission';
 
@@ -12,7 +12,10 @@ import type { ChoiceOption } from '../../../engine/types/mission';
  * oceny wyboru.
  */
 
-/** Lista opcji w ramce wyboru (kafelki z rogowym znacznikiem, jak w M1). */
+/**
+ * Wybór na lewym, dużym ekranie: karty w siatce (`layout="cards"`, domyślnie) albo wiersze (`layout="rows"`)
+ * dla wyboru na prawym monitorze. Zasada: duży ekran = karty, prawy monitor = wiersze.
+ */
 export const OptionCards: React.FC<{
   accent: string;
   options: ChoiceOption[];
@@ -20,44 +23,25 @@ export const OptionCards: React.FC<{
   onSelect: (id: string) => void;
   label?: string;
   mono?: boolean;
-}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false }) => (
-  <ChoiceZone accent={accent} label={label}>
-    <div className="flex flex-col gap-3">
-      {options.map((opt) => (
-        <ChoiceTile
-          key={opt.id}
-          accent={accent}
-          state={selectedId === opt.id ? 'selected' : 'idle'}
-          markerPosition="corner"
-          onClick={() => {
-            sounds.playClick();
-            onSelect(opt.id);
-          }}
-          className="p-3.5"
-        >
-          <div className="space-y-2 pr-7">
-            <h3 className={`text-xs font-bold text-white leading-snug ${mono ? 'font-mono break-all' : ''}`}>
-              {opt.label}
-            </h3>
-            {opt.desc && <p className="text-sm text-gray-300 leading-relaxed">{opt.desc}</p>}
-            {opt.tags && opt.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {opt.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-[0.6875rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </ChoiceTile>
-      ))}
-    </div>
-  </ChoiceZone>
-);
+  layout?: 'cards' | 'rows';
+}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false, layout = 'cards' }) => {
+  const handle = (id: string) => {
+    sounds.playClick();
+    onSelect(id);
+  };
+  return layout === 'rows' ? (
+    <ChoiceRows accent={accent} options={options} selectedId={selectedId} onSelect={handle} label={label} mono={mono} />
+  ) : (
+    <ChoiceCardGrid
+      accent={accent}
+      options={options}
+      selectedId={selectedId}
+      onSelect={handle}
+      label={label}
+      mono={mono}
+    />
+  );
+};
 
 /** Karta informacyjna (bez przerywanej ramki — to nie jest wybór). */
 export const InfoCard: React.FC<{ accent: string; children: React.ReactNode; className?: string }> = ({
@@ -118,8 +102,8 @@ export const ImageOptionCards: React.FC<{
             <ImageSlot name={opt.id} label={opt.label} />
           </div>
           <div className="p-3 space-y-1 text-center">
-            <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
-            {opt.desc && <p className="text-xs text-gray-300 leading-relaxed">{opt.desc}</p>}
+            <h3 className="text-base font-bold text-white leading-snug">{opt.label}</h3>
+            {opt.desc && <p className="text-sm text-gray-300 leading-relaxed">{opt.desc}</p>}
           </div>
         </ChoiceTile>
       ))}
@@ -135,26 +119,15 @@ export const NameCards: React.FC<{
   onSelect: (id: string) => void;
   label?: string;
 }> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO' }) => (
-  <ChoiceZone accent={accent} label={label}>
-    <div className="grid grid-cols-3 gap-3">
-      {options.map((opt) => (
-        <ChoiceTile
-          key={opt.id}
-          accent={accent}
-          state={selectedId === opt.id ? 'selected' : 'idle'}
-          markerPosition="corner"
-          onClick={() => {
-            sounds.playClick();
-            onSelect(opt.id);
-          }}
-          className="p-4 min-h-[11rem]"
-        >
-          <div className="flex flex-col items-center justify-center text-center h-full min-h-[8.5rem] space-y-3">
-            <h3 className="text-lg font-black text-white tracking-wider leading-tight">{opt.label}</h3>
-            {opt.desc && <p className="text-base text-gray-200 leading-snug">{opt.desc}</p>}
-          </div>
-        </ChoiceTile>
-      ))}
-    </div>
-  </ChoiceZone>
+  <ChoiceCardGrid
+    accent={accent}
+    options={options}
+    selectedId={selectedId}
+    onSelect={(id) => {
+      sounds.playClick();
+      onSelect(id);
+    }}
+    label={label}
+    size="lg"
+  />
 );

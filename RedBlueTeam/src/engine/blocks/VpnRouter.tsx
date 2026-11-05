@@ -10,7 +10,7 @@ import {
   Check
 } from 'lucide-react';
 import { AppHeader } from '../components/AppHeader';
-import { ChoiceZone, ChoiceTile } from '../components/ChoiceZone';
+import { ChoiceCardGrid } from '../components/ChoiceZone';
 import { ConfirmButton } from '../components/ConfirmButton';
 import { useShuffled } from '../core/shuffle';
 import { useMissionStore } from '../store/useMissionStore';
@@ -289,28 +289,17 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
     return (
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
         {header('KROK 2/2 — WYBÓR ADRESU NADAWCY', 'NADAWCA', config.sender.question)}
-        <ChoiceZone accent={accent} label="WYBIERZ ADRES">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {senderOptions.map((o) => (
-              <ChoiceTile
-                key={o.id}
-                accent={accent}
-                state={senderId === o.id ? 'selected' : 'idle'}
-                markerPosition="corner"
-                onClick={() => {
-                  sounds.playClick();
-                  setSenderId(o.id);
-                }}
-                className="p-3.5 h-full"
-              >
-                <div className="space-y-2 pr-7">
-                  <span className="text-xs font-bold font-mono text-white break-all">{o.label}</span>
-                  {o.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed">{o.desc}</p>}
-                </div>
-              </ChoiceTile>
-            ))}
-          </div>
-        </ChoiceZone>
+        <ChoiceCardGrid
+          accent={accent}
+          label="WYBIERZ ADRES"
+          mono
+          options={senderOptions}
+          selectedId={senderId}
+          onSelect={(id) => {
+            sounds.playClick();
+            setSenderId(id);
+          }}
+        />
         <div className="pt-2 flex items-center justify-end">
           <button
             disabled={!senderId}

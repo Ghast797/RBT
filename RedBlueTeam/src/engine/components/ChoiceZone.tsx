@@ -115,3 +115,111 @@ export const ChoiceTile: React.FC<{
     </button>
   );
 };
+
+/** Opcja w gotowych układach `ChoiceCardGrid` / `ChoiceRows` (zgodna z `ChoiceOption` i opcjami klocków). */
+export interface ChoiceLayoutOption {
+  id: string;
+  label: string;
+  desc?: string;
+  tags?: string[];
+}
+
+interface ChoiceLayoutProps {
+  accent: string;
+  options: ChoiceLayoutOption[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  /** Etykieta ramki (`ChoiceZone`). */
+  label?: string;
+  /** Tekst etykiet zapisany czcionką monospace (adresy, kod). */
+  mono?: boolean;
+}
+
+/**
+ * Układ „karty”: wybór na DUŻYM (lewym) ekranie. Karty w siatce, tytuł wyśrodkowany i wyraźny, opis pod spodem.
+ * Zasada spójności UI: duży ekran = karty, prawy monitor = wiersze (`ChoiceRows`). Zob. docs/scenario-engine.md, sekcja 3.
+ */
+export const ChoiceCardGrid: React.FC<
+  ChoiceLayoutProps & { columns?: 1 | 2 | 3; size?: 'md' | 'lg'; className?: string }
+> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false, columns = 3, size = 'md', className = '' }) => {
+  const cols = columns === 1 ? 'grid-cols-1' : columns === 2 ? 'grid-cols-2' : 'grid-cols-3';
+  const big = size === 'lg';
+  return (
+    <ChoiceZone accent={accent} label={label} className={className}>
+      <div className={`grid ${cols} gap-3`}>
+        {options.map((opt) => (
+          <ChoiceTile
+            key={opt.id}
+            accent={accent}
+            state={selectedId === opt.id ? 'selected' : 'idle'}
+            markerPosition="corner"
+            onClick={() => onSelect(opt.id)}
+            className={big ? 'p-4 min-h-[11rem]' : 'p-4 min-h-[7rem]'}
+          >
+            <div
+              className={`flex flex-col items-center justify-center text-center h-full space-y-2.5 px-5 ${
+                big ? 'min-h-[8.5rem]' : 'min-h-[5rem]'
+              }`}
+            >
+              <h3
+                className={`${big ? 'text-lg font-black tracking-wider' : 'text-base font-bold'} text-white leading-snug ${
+                  mono ? 'font-mono break-all' : ''
+                }`}
+              >
+                {opt.label}
+              </h3>
+              {opt.desc && <p className={`${big ? 'text-base' : 'text-sm'} text-gray-200 leading-snug`}>{opt.desc}</p>}
+              {opt.tags && opt.tags.length > 0 && (
+                <div className="flex flex-wrap justify-center gap-1">
+                  {opt.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[0.6875rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </ChoiceTile>
+        ))}
+      </div>
+    </ChoiceZone>
+  );
+};
+
+/**
+ * Układ „wiersze”: wybór na PRAWYM monitorze. Kolumna kafli ze znacznikiem po lewej,
+ * tekst w jednej linii (opcjonalnie krótki opis pod spodem).
+ */
+export const ChoiceRows: React.FC<ChoiceLayoutProps> = ({
+  accent,
+  options,
+  selectedId,
+  onSelect,
+  label = 'WYBIERZ JEDNO',
+  mono = false
+}) => (
+  <ChoiceZone accent={accent} label={label}>
+    <div className="flex flex-col gap-2.5">
+      {options.map((opt) => (
+        <ChoiceTile
+          key={opt.id}
+          accent={accent}
+          state={selectedId === opt.id ? 'selected' : 'idle'}
+          markerPosition="left"
+          onClick={() => onSelect(opt.id)}
+          className="px-3 py-2.5 items-center"
+        >
+          <div className="min-w-0">
+            <span className={`block text-xs font-bold text-white leading-snug ${mono ? 'font-mono break-all' : ''}`}>
+              {opt.label}
+            </span>
+            {opt.desc && <span className="block text-xs text-gray-300 leading-snug pt-0.5">{opt.desc}</span>}
+          </div>
+        </ChoiceTile>
+      ))}
+    </div>
+  </ChoiceZone>
+);
