@@ -122,12 +122,17 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       const all = [
         ...phishingCampaignConfig.action.options,
         ...phishingCampaignConfig.topic.options,
-        ...wormBuilderConfig.virus.options,
         ...phishingDispatchConfig.sender.options
       ];
       all.forEach((o) => {
         expect(o.desc).toBeUndefined();
         expect(o.tags).toBeUndefined();
+      });
+      // Typy wirusów mają neutralną definicję (dodatek spoza VR, zob. scenario.md), która nie ocenia dopasowania do celu.
+      wormBuilderConfig.virus.options.forEach((o) => {
+        expect(o.desc).toBeTruthy();
+        expect(o.tags).toBeUndefined();
+        expect(o.desc!.toLowerCase()).not.toMatch(/botnet|zombie|cel|misj/);
       });
       phishingCampaignConfig.template.options.forEach((o) => expect(o.desc).toContain('|'));
     });
