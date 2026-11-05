@@ -79,7 +79,8 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     it('przechodzi wzorcem B przez 5 decyzji w kolejności z VR, odblokowuje etapy i składa paczkę SCORM', () => {
       const store = useMissionStore.getState();
 
-      // Start: po BIOSie kafelek //PHISHING odblokowuje się od razu (po intro)
+      // Start: po BIOSie kwestia gracza (spójnik) w czacie odblokowuje //PHISHING
+      driveBridge();
       expect(useMissionStore.getState().unlockedIcons).toContain('phishing_unlocked');
       expect(useMissionStore.getState().highlightedTileId).toBe('phishing_app');
       expect(useMissionStore.getState().chatAvailableChoices.length).toBe(0);
