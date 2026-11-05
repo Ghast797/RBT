@@ -39,13 +39,13 @@ export const OptionCards: React.FC<{
             <h3 className={`text-xs font-bold text-white leading-snug ${mono ? 'font-mono break-all' : ''}`}>
               {opt.label}
             </h3>
-            {opt.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed">{opt.desc}</p>}
+            {opt.desc && <p className="text-sm text-gray-300 leading-relaxed">{opt.desc}</p>}
             {opt.tags && opt.tags.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {opt.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
+                    className="text-[0.6875rem] px-1.5 py-0.5 rounded bg-black/50 text-gray-400 border border-gray-800"
                   >
                     {tag}
                   </span>
@@ -119,7 +119,7 @@ export const ImageOptionCards: React.FC<{
           </div>
           <div className="p-3 space-y-1 text-center">
             <h3 className="text-xs font-bold text-white leading-snug">{opt.label}</h3>
-            {opt.desc && <p className="text-[0.625rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
+            {opt.desc && <p className="text-xs text-gray-300 leading-relaxed">{opt.desc}</p>}
           </div>
         </ChoiceTile>
       ))}
@@ -151,7 +151,7 @@ export const NameCards: React.FC<{
         >
           <div className="flex flex-col items-center justify-center text-center h-full min-h-[8.5rem] space-y-3">
             <h3 className="text-lg font-black text-white tracking-wider leading-tight">{opt.label}</h3>
-            {opt.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed">{opt.desc}</p>}
+            {opt.desc && <p className="text-base text-gray-200 leading-snug">{opt.desc}</p>}
           </div>
         </ChoiceTile>
       ))}

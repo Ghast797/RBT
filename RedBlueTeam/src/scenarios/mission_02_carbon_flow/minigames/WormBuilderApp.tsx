@@ -138,10 +138,10 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
                   <GripVertical size={14} className="mt-0.5 shrink-0 text-gray-500" />
                   <div className="space-y-0.5 min-w-0">
                     <div className="text-xs font-mono font-bold text-white break-all">{inst.code}</div>
-                    <div className="text-[0.6875rem] text-gray-300 leading-snug">{inst.desc}</div>
+                    <div className="text-xs text-gray-300 leading-snug">{inst.desc}</div>
                   </div>
                   {used && (
-                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[0.5625rem] font-black text-emerald-400">
+                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[0.6875rem] font-black text-emerald-400">
                       <CheckCircle2 size={12} />
                       UŻYTY
                     </span>

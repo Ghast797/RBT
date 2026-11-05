@@ -287,10 +287,10 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
           >
             <div className="space-y-4">
               <div className="space-y-2">
-                <div className="text-[0.6875rem] font-bold text-gray-300 uppercase tracking-wide">
+                <div className="text-xs font-bold text-gray-300 uppercase tracking-wide">
                   Przykładowi odbiorcy z bazy kontaktów:
                 </div>
-                <div className="flex flex-col gap-2 text-[0.6875rem] font-mono">
+                <div className="flex flex-col gap-2 text-xs font-mono">
                   {config.mailingList.sampleRecipients.map((r) => (
                     <div key={r.email} className="p-2.5 rounded bg-[#09111c] border border-gray-800 space-y-0.5">
                       <div className="text-gray-200">
@@ -302,7 +302,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg border border-gray-800 bg-black/30 text-[0.6875rem] space-y-2">
+              <div className="p-3 rounded-lg border border-gray-800 bg-black/30 text-xs space-y-2">
                 <div className="font-bold text-gray-200 flex items-center space-x-1.5">
                   <ShieldAlert size={14} style={{ color: accent }} />
                   <span>BIAŁA LISTA NADAWCÓW (ALLOWLISTA IP CARBONFLOW):</span>

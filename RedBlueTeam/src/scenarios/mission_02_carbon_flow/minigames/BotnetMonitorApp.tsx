@@ -84,7 +84,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
         <div className="flex flex-col justify-between h-full space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
-              <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Stopień penetracji sieci:</span>
+              <span className="text-xs text-gray-400 uppercase tracking-widest">Stopień penetracji sieci:</span>
               <div className="text-2xl font-bold font-mono text-white flex items-center space-x-2">
                 <span>{percentage}%</span>
                 {percentage === targetPercentage && <CheckCircle2 size={18} className="text-white" />}
@@ -98,17 +98,17 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
             </div>
 
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
-              <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Aktywne maszyny zombie:</span>
+              <span className="text-xs text-gray-400 uppercase tracking-widest">Aktywne maszyny zombie:</span>
               <div className="text-2xl font-bold font-mono text-white">
                 {Math.round((percentage / 100) * totalWorkstations)} / {totalWorkstations}
               </div>
-              <span className="text-[0.625rem] text-gray-400">POD KONTROLĄ C&amp;C</span>
+              <span className="text-xs text-gray-400">POD KONTROLĄ C&amp;C</span>
             </div>
 
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
-              <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Reakcja systemów IDS:</span>
+              <span className="text-xs text-gray-400 uppercase tracking-widest">Reakcja systemów IDS:</span>
               <div className="text-2xl font-bold font-mono text-white">0 ALARMÓW</div>
-              <span className="text-[0.625rem] text-white">ŁADUNEK 0-DAY NIEWYKRYTY</span>
+              <span className="text-xs text-white">ŁADUNEK 0-DAY NIEWYKRYTY</span>
             </div>
           </div>
 
@@ -132,7 +132,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
                   >
                     <div className="space-y-0.5 overflow-hidden">
                       <div className="font-mono font-bold truncate">{node.name}</div>
-                      <div className="text-[0.5625rem] text-gray-400 truncate">{node.role}</div>
+                      <div className="text-[0.6875rem] text-gray-400 truncate">{node.role}</div>
                     </div>
                     <div
                       className={`w-2.5 h-2.5 rounded-full shrink-0 ml-1.5 ${
