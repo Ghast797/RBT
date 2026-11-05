@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   ShieldCheck,
   ArrowRight,
-  RefreshCw,
   Cpu,
   AlertTriangle,
   Send,
@@ -328,63 +327,6 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
           : config.task || 'Wpisz w kratki (lub ustaw przyciskami +/-) adres z białej listy i połącz się z tunelem VPN.'
       )}
 
-      {/* Górny panel 2-kolumnowy (Biała lista + moduł AI) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* Kolumna 1: Biała lista / Wymagany adres */}
-        <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-2">
-          <div className="flex items-center space-x-2 text-cyan-400">
-            <Globe size={16} />
-            <span className="text-xs font-bold uppercase tracking-wide">Dozwolone IP (Biała lista)</span>
-          </div>
-          <div className="space-y-1.5">
-            {allowedIps.map((ip) => (
-              <div
-                key={ip}
-                className="px-3 py-1.5 rounded-lg bg-black/60 border border-gray-800 flex justify-between items-center text-xs"
-              >
-                <span className="font-mono text-emerald-400 font-bold">{ip}</span>
-                <span className="text-[0.625rem] text-gray-400 uppercase tracking-wider">SERWER PROXY</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-[0.6875rem] text-gray-400 leading-relaxed pt-1">
-            Filtry bezpieczeństwa celu natychmiast odrzucają ruch spoza zarejestrowanych węzłów sieci.
-          </p>
-        </div>
-
-        {/* Kolumna 2: Automatyczna synchronizacja AI */}
-        <div
-          className="p-3.5 rounded-xl border space-y-3 flex flex-col justify-between"
-          style={{ borderColor: `${accent}40`, backgroundColor: `${accent}10` }}
-        >
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2" style={{ color: accent }}>
-              <Cpu size={16} />
-              <span className="text-xs font-bold uppercase tracking-wide">Automatyczna synchronizacja AI</span>
-            </div>
-            <p className="text-[0.6875rem] text-gray-300">
-              Moduł heurystyczny AI automatycznie przelicza i dopasowuje octety do allowlisty celu.
-            </p>
-          </div>
-
-          {allowAiSync && (
-            <button
-              disabled={isSyncingAi || isConnected}
-              onClick={handleAiSync}
-              className="flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-bold text-xs border transition-all cursor-pointer text-white disabled:opacity-50"
-              style={{
-                backgroundColor: `${accent}33`,
-                borderColor: `${accent}80`,
-                boxShadow: `0 0 15px ${accent}40`
-              }}
-            >
-              <RefreshCw size={14} className={isSyncingAi ? 'animate-spin' : ''} />
-              <span>{isSyncingAi ? 'SYNCHRONIZACJA...' : 'DOPASUJ W AI'}</span>
-            </button>
-          )}
-        </div>
-      </div>
-
       {/* Środkowy panel: Bieżący adres IP + Pionowe przyciski oktetów */}
       <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a] space-y-4">
         <div className="flex items-center justify-between border-b border-gray-800 pb-2">
@@ -402,6 +344,28 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
           ) : (
             <span className="text-[0.625rem] text-gray-500 font-mono">[WPISZ LUB +/-]</span>
           )}
+        </div>
+
+        {/* Biała lista: główny, wyśrodkowany element, tuż nad polami adresu */}
+        <div className="max-w-md mx-auto p-3.5 rounded-xl border border-cyan-500/30 bg-black/40 space-y-2">
+          <div className="flex items-center justify-center space-x-2 text-cyan-400">
+            <Globe size={16} />
+            <span className="text-xs font-bold uppercase tracking-wide">Dozwolone IP (Biała lista)</span>
+          </div>
+          <div className="space-y-1.5">
+            {allowedIps.map((ip) => (
+              <div
+                key={ip}
+                className="px-3 py-1.5 rounded-lg bg-black/60 border border-gray-800 flex justify-between items-center text-xs"
+              >
+                <span className="font-mono text-emerald-400 font-bold text-sm">{ip}</span>
+                <span className="text-[0.625rem] text-gray-400 uppercase tracking-wider">SERWER PROXY</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[0.6875rem] text-gray-400 leading-relaxed text-center">
+            Filtry bezpieczeństwa celu natychmiast odrzucają ruch spoza zarejestrowanych węzłów sieci.
+          </p>
         </div>
 
         <div className="text-center">
@@ -478,7 +442,22 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
       </div>
 
       {/* Dolny przycisk akcji */}
-      <div className="flex justify-end pt-2">
+      <div className="flex items-center justify-between pt-2">
+        {/* Asysta AI: mały, mało widoczny link w rogu (nie jest oczywistą ścieżką) */}
+        {allowAiSync && !isConnected ? (
+          <button
+            type="button"
+            disabled={isSyncingAi}
+            onClick={handleAiSync}
+            title="Asysta AI: dopasuj oktety do allowlisty"
+            className="flex items-center space-x-1 text-[0.625rem] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <Cpu size={10} className={isSyncingAi ? 'animate-pulse' : ''} />
+            <span>{isSyncingAi ? 'synchronizacja…' : 'asysta AI'}</span>
+          </button>
+        ) : (
+          <span />
+        )}
         {!isConnected ? (
           <button
             onClick={handleConnect}
