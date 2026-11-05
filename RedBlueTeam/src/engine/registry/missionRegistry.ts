@@ -65,7 +65,8 @@ export function shouldShowMissionSelect(): boolean {
 }
 
 /**
- * Resolve initial mission based on isolated build, URL params (?mission=X), environment variable, or default (mission 3)
+ * Resolve initial mission based on isolated build, URL params (?mission=X), environment variable,
+ * or default (first mission in the catalog).
  */
 export function resolveInitialMission(): MissionDefinition {
   // 1. In isolated single-mission build, always use activeMission directly
@@ -106,6 +107,7 @@ export function resolveInitialMission(): MissionDefinition {
     // Ignore in non-vite / test environments
   }
 
-  // 4. Fallback (Mission 3 or first available mission)
-  return missions['mission-3-ol-company'] || missions['3'] || Object.values(missions)[0];
+  // 4. Fallback: pierwsza misja z katalogu (kolejność numerów katalogów scenariuszy).
+  //    W paczce izolowanej katalog ma jedną misję, więc to zawsze ona.
+  return missionList[0]?.definition || Object.values(missions)[0];
 }

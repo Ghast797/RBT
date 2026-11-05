@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useMissionStore } from '../src/engine/store/useMissionStore';
-import { registerMission, getMission, resolveInitialMission } from '../src/engine/registry/missionRegistry';
+import { registerMission, getMission, getMissionList, resolveInitialMission } from '../src/engine/registry/missionRegistry';
 import { appComponentRegistry, registerApp, renderAppIcon } from '../src/engine/registry/appRegistry';
 import { createMissionCompletionStatement, MockLRS } from '../src/engine/scorm/xapi';
 import { scorm2004, MockSCORM2004 } from '../src/engine/scorm/scorm2004';
@@ -107,9 +107,10 @@ describe('Generic SCORM Scenario Engine', () => {
     MockLRS.clear();
   });
 
-  it('resolves and loads default mission correctly', () => {
+  it('resolves the default mission neutrally: first mission in the catalog', () => {
     const mission = resolveInitialMission();
-    expect(mission.mission.id).toBe('mission-3-ol-company');
+    expect(mission).toBe(getMissionList()[0].definition);
+    expect(mission.mission.id).toBe('mission-1-petrolog');
     expect(mission.desktopApps.length).toBeGreaterThan(0);
   });
 

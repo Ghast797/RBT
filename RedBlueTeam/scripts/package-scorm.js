@@ -55,12 +55,17 @@ function resolveMissionInfo(missionArg) {
     }
   }
 
-  // Fallback for custom or future mission numbers
-  const candidateFiles = [
-    path.resolve(rootDir, 'src', 'scenarios', `mission_0${cleanArg}_energy_rock`, 'data', `mission${cleanArg}.json`),
-    path.resolve(rootDir, 'src', 'scenarios', `mission_0${cleanArg}_ol_company`, 'data', `mission${cleanArg}.json`),
-    path.resolve(rootDir, 'src', 'data', `mission${cleanArg}.json`)
-  ];
+  // Misja spoza katalogu: szukamy katalogu `src/scenarios/mission_0N_*` i jego `data/*.json`
+  // (ta sama konwencja, którą wykrywa vite.config.ts).
+  const scenariosDir = path.resolve(rootDir, 'src', 'scenarios');
+  const dirPattern = new RegExp(`^mission_0*${cleanArg.replace(/[^a-z0-9]/g, '')}_`);
+  const candidateFiles = (fs.existsSync(scenariosDir) ? fs.readdirSync(scenariosDir) : [])
+    .filter((dir) => dirPattern.test(dir))
+    .flatMap((dir) => {
+      const dataDir = path.resolve(scenariosDir, dir, 'data');
+      if (!fs.existsSync(dataDir)) return [];
+      return fs.readdirSync(dataDir).filter((f) => f.endsWith('.json')).map((f) => path.resolve(dataDir, f));
+    });
 
   for (const f of candidateFiles) {
     if (fs.existsSync(f)) {
@@ -232,7 +237,8 @@ if (isAll) {
   console.log('======================================================================\n');
 } else {
   if (selectedMissions.length === 0) {
-    selectedMissions.push(process.env.MISSION_ID || '3');
+    // Bez --mission/--all: MISSION_ID z env albo pierwsza misja z katalogu.
+    selectedMissions.push(process.env.MISSION_ID || MISSION_CATALOG[0].num);
   }
   for (const m of selectedMissions) {
     const info = resolveMissionInfo(m);
