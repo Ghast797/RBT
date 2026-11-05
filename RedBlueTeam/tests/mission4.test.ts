@@ -148,13 +148,17 @@ describe('Mission 4: Energy Rock Scenario & SCORM Engine', () => {
       store.completeStage('vpn_app'); driveBridge();
       expect(useMissionStore.getState().unlockedIcons).toContain('victim_workstation');
 
+      expect(useMissionStore.getState().incomingCall).toBeNull();
       ideal(9, 'Pliki:', '3 Freevolt');
       store.completeStage('victim_workstation'); driveBridge();
       expect(useMissionStore.getState().unlockedIcons).toContain('negotiation');
+      // Baner połączenia przychodzącego pochodzi z danych etapu, nie z kodu pulpitu.
+      expect(useMissionStore.getState().incomingCall).toEqual({ appId: 'negotiation', label: 'SZEF IT ENERGY ROCK' });
 
       ideal(10, 'Negocjacje:', 'Limit 3h + BTC');
       store.completeStage('negotiation'); driveBridge();
       const finalState = useMissionStore.getState();
+      expect(finalState.incomingCall).toBeNull();
       expect(finalState.unlockedIcons).toContain('mission_completed');
       expect(finalState.unlockedIcons).toContain('debrief_app');
       expect(finalState.score).toBe(100);

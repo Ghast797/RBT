@@ -427,6 +427,7 @@ export const mission4Stages: StageDefinition[] = [
       unlockIcons: ['negotiation_unlocked', 'negotiation'],
       badges: { negotiation: 1, chat: 1 },
       highlightTile: 'negotiation',
+      incomingCall: { appId: 'negotiation', label: 'SZEF IT ENERGY ROCK' },
       sound: 'alarm'
     }
   },

@@ -105,6 +105,7 @@ Stan między etapami (co wybrano wcześniej) element czyta z `customState`, nie 
   - `{ from: 'byte_master', text }` — kwestia mentora: pojawia się po jednej, z animacją „pisze" i delayem (2 s);
   - `{ from: 'player', id, label }` — kwestia gracza: przycisk w czacie; klik wysyła echo i przesuwa rozmowę, **nic nie otwiera**.
 - `unlockIcons` + `badges` + `highlightTile` — stosowane **dopiero po ostatnim beacie** rozmowy. Kafelek odblokowuje się więc wtedy, gdy gracz napisze do mentora, co ma zrobić.
+- `incomingCall: { appId, label }` — baner „POŁĄCZENIE PRZYCHODZĄCE: …” na pulpicie (np. telefon od szefa IT ofiary w M4). Klik otwiera aplikację `appId`; baner gaśnie, gdy jej etap zostanie zaliczony. Pulpit nie zna żadnej misji — tekst pochodzi wyłącznie z danych etapu.
 - `sound` — dźwięk na koniec mostka.
 
 Zasady: BYTE_MASTER nie ma dostępu do komputera gracza, więc **nie podaje aplikacji do otwarcia** — mówi, co zrobić, a gracz sam klika podświetlony kafelek. Mostek bez dialogu w scenariuszu dostaje krótką kwestię spójnikową gracza (to ona odblokowuje kolejny kafelek). Rozmowa wielobeatowa (np. meldunek: gracz→mentor→gracz→mentor) odwzorowuje scenariusz 1:1.

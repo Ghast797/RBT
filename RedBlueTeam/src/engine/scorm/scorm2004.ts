@@ -304,7 +304,7 @@ class Scorm2004Manager {
       this.setValue('cmi.score.max', (data.scoreMax ?? 100).toString());
 
       // 3. Location and Session Time
-      const finalLocation = data.location || (data.missionId ? `${data.missionId}_debriefing_completed` : 'mission3_debriefing_completed');
+      const finalLocation = data.location || (data.missionId ? `${data.missionId}_debriefing_completed` : 'debriefing_completed');
       this.setValue('cmi.location', finalLocation);
       this.setValue('cmi.session_time', durationIso);
 

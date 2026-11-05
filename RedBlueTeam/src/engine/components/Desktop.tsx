@@ -48,6 +48,7 @@ export const Desktop: React.FC = () => {
     unlockedIcons,
     notificationBadges,
     highlightedTileId,
+    incomingCall,
     chatAvailableChoices,
     isChatAttentionActive,
     triggerChatAttention,
@@ -285,15 +286,15 @@ export const Desktop: React.FC = () => {
                 </div>
               )}
 
-              {/* Incoming emergency call banner from IT Chief when negotiation is unlocked */}
-              {activeApp === null && unlockedIcons.includes('negotiation_unlocked') && !unlockedIcons.includes('mission_completed') && (
+              {/* Baner połączenia przychodzącego — deklarowany w danych etapu (StageCompletion.incomingCall) */}
+              {activeApp === null && incomingCall && (
                 <div
-                  onClick={() => openApp('negotiation')}
+                  onClick={() => openApp(incomingCall.appId as WindowId)}
                   className="mx-auto mb-2 max-w-lg px-4 py-3 rounded-xl bg-red-950/40 border-2 border-red-500 hover:border-red-400 hover:bg-red-900/50 text-red-200 cursor-pointer transition-all shadow-[0_0_30px_rgba(239,68,68,0.5)] animate-bounce flex items-center justify-between group"
                 >
                   <div className="flex items-center space-x-2.5 text-xs font-black tracking-wider text-amber-300">
                     <ShieldAlert size={20} className="text-red-500 animate-pulse shrink-0" />
-                    <span>⚠️ POŁĄCZENIE PRZYCHODZĄCE: SZEF IT ENERGY ROCK</span>
+                    <span>⚠️ POŁĄCZENIE PRZYCHODZĄCE: {incomingCall.label}</span>
                   </div>
                   <div className="flex items-center space-x-1 text-xs font-black text-white px-2.5 py-1 rounded bg-red-600 hover:bg-red-500 shrink-0 ml-2 shadow-[0_0_10px_#ef4444]">
                     <span>ODBIERZ</span>

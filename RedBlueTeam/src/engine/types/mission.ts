@@ -320,6 +320,11 @@ export interface StageCompletion {
   badges?: Record<string, number>;
   /** Kafelek pulpitu do podświetlenia jako następny krok (po zakończeniu rozmowy). */
   highlightTile?: string;
+  /**
+   * Baner „POŁĄCZENIE PRZYCHODZĄCE: <label>” na pulpicie (po zakończeniu rozmowy).
+   * Klik otwiera aplikację `appId`; baner znika, gdy etap tej aplikacji zostanie zaliczony.
+   */
+  incomingCall?: { appId: string; label: string };
   /** Czy zamknąć otwarte okno i wrócić na pulpit (domyślnie tak). */
   closeActiveApp?: boolean;
   /** Dźwięk na koniec mostka. */

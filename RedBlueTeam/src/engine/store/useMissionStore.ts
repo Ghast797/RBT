@@ -126,11 +126,18 @@ export interface MissionState {
   hasViewedEvents: boolean;
   /** Kafelek pulpitu do podświetlenia (świeżo odblokowany następny krok). */
   highlightedTileId: string | null;
+  /** Baner połączenia przychodzącego na pulpicie (`StageCompletion.incomingCall`). */
+  incomingCall: { appId: string; label: string } | null;
   /** Trwająca rozmowa mostkująca etapy (skrypt + pozycja + odblokowania na końcu). */
   pendingBridge: {
     beats: ConversationBeat[];
     index: number;
-    unlock: { unlockIcons?: string[]; badges?: Record<string, number>; highlightTile?: string };
+    unlock: {
+      unlockIcons?: string[];
+      badges?: Record<string, number>;
+      highlightTile?: string;
+      incomingCall?: { appId: string; label: string };
+    };
     sound?: 'notification' | 'alarm' | 'success';
   } | null;
 
@@ -378,6 +385,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     isChatAttentionActive: false,
     hasViewedEvents: false,
     highlightedTileId: null as string | null,
+    incomingCall: null as { appId: string; label: string } | null,
     pendingBridge: null as MissionState['pendingBridge'],
 
     // Step 3
@@ -630,6 +638,8 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     set((s) => ({
       activeApp: completion.closeActiveApp === false ? s.activeApp : null,
       completedStages: [...s.completedStages, stageId],
+      // Zaliczony etap aplikacji, do której prowadził baner połączenia, gasi baner.
+      incomingCall: s.incomingCall && s.incomingCall.appId === stage.appId ? null : s.incomingCall,
       chatAvailableChoices: [],
       isByteMasterTyping: false,
       pendingBridge: {
@@ -638,7 +648,8 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         unlock: {
           unlockIcons: completion.unlockIcons,
           badges: completion.badges,
-          highlightTile: completion.highlightTile
+          highlightTile: completion.highlightTile,
+          incomingCall: completion.incomingCall
         },
         sound: completion.sound
       }
@@ -666,6 +677,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
           unlockedIcons: unlocked,
           notificationBadges: { ...s.notificationBadges, ...(pb.unlock.badges || {}) },
           highlightedTileId: pb.unlock.highlightTile ?? s.highlightedTileId,
+          incomingCall: pb.unlock.incomingCall ?? s.incomingCall,
           isByteMasterTyping: false,
           pendingBridge: null
         };
