@@ -1,32 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Radio, AlertOctagon, CheckCircle2 } from 'lucide-react';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
+import { summarizeBotnet } from './botnet';
 import type { BotnetMonitorConfig } from './types';
-
-interface NodeStatus {
-  id: string;
-  name: string;
-  role: string;
-  infected: boolean;
-}
-
-const DEFAULT_NODES: NodeStatus[] = [
-  { id: '1', name: 'CF-WRK-HR01', role: 'Kadry (Ofiara 0)', infected: true },
-  { id: '2', name: 'CF-WRK-HR02', role: 'Kadry', infected: true },
-  { id: '3', name: 'CF-WRK-ACC01', role: 'Księgowość', infected: true },
-  { id: '4', name: 'CF-WRK-LOG01', role: 'Dyspozytornia', infected: true },
-  { id: '5', name: 'CF-SRV-MAIL', role: 'Serwer Pocztowy', infected: true },
-  { id: '6', name: 'CF-SRV-APP01', role: 'Baza Danych', infected: true },
-  { id: '7', name: 'CF-WRK-ENG01', role: 'Inżynieria Rurociągów', infected: true },
-  { id: '8', name: 'CF-WRK-ENG02', role: 'Inżynieria Przesyłu', infected: true },
-  { id: '9', name: 'CF-GW-MAIN', role: 'Brama Główna', infected: true },
-  { id: '10', name: 'CF-SCADA-CTRL', role: 'Kontroler SCADA', infected: true },
-  { id: '11', name: 'CF-SEC-SOC', role: 'Stacja Bezpieczeństwa', infected: false },
-  { id: '12', name: 'CF-SRV-BACKUP', role: 'Izolowany Backup', infected: false }
-];
 
 export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
   config,
@@ -34,6 +13,9 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
 }) => {
   // Akcent = kolor kafelka //MONITOR_BOTNETU na pulpicie (jak w Misji 1).
   const accent = '#3b82f6';
+
+  const { targetPercentage, totalWorkstations } = config;
+  const { infectedCount, secureCount, nodes } = useMemo(() => summarizeBotnet(config), [config]);
 
   const [percentage, setPercentage] = useState(0);
   const [activeStep, setActiveStep] = useState<'alert' | 'telemetry'>('alert');
@@ -44,8 +26,8 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
     let current = 0;
     const interval = setInterval(() => {
       current += 2;
-      if (current >= 82) {
-        current = 82;
+      if (current >= targetPercentage) {
+        current = targetPercentage;
         clearInterval(interval);
         sounds.playSuccess();
       }
@@ -53,7 +35,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
     }, 45);
 
     return () => clearInterval(interval);
-  }, [activeStep]);
+  }, [activeStep, targetPercentage]);
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
@@ -106,7 +88,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
               <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Stopień penetracji sieci:</span>
               <div className="text-2xl font-bold font-mono text-white flex items-center space-x-2">
                 <span>{percentage}%</span>
-                {percentage === 82 && <CheckCircle2 size={18} className="text-white" />}
+                {percentage === targetPercentage && <CheckCircle2 size={18} className="text-white" />}
               </div>
               <div className="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden mt-1">
                 <div
@@ -119,7 +101,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
               <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Aktywne maszyny zombie:</span>
               <div className="text-2xl font-bold font-mono text-white">
-                {Math.round((percentage / 100) * 12)} / 12
+                {Math.round((percentage / 100) * totalWorkstations)} / {totalWorkstations}
               </div>
               <span className="text-[0.625rem] text-gray-400">POD KONTROLĄ C&amp;C</span>
             </div>
@@ -134,12 +116,12 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs text-gray-400">
               <span className="font-bold text-gray-300 uppercase tracking-wide">Topologia węzłów sieciowych:</span>
-              <span>10 ZAINFEKOWANYCH | 2 ZABEZPIECZONE</span>
+              <span>{infectedCount} ZAINFEKOWANYCH | {secureCount} ZABEZPIECZONE</span>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {DEFAULT_NODES.map((node, index) => {
-                const isNodeInfected = node.infected && percentage >= (index + 1) * 7;
+              {nodes.map((node) => {
+                const isNodeInfected = node.infected && percentage >= node.litAt;
                 return (
                   <div
                     key={node.id}
@@ -168,7 +150,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
             <ConfirmButton
               accent={accent}
               label="ZAKOŃCZ OPERACJĘ I ZAMELDUJ MENTOROWI"
-              enabled={percentage >= 82}
+              enabled={percentage >= targetPercentage}
               onClick={() => {
                 sounds.playSuccess();
                 onComplete();

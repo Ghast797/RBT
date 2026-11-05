@@ -12,6 +12,17 @@ import type {
 } from './minigames/types';
 
 // ---------------------------------------------------------------------------
+// WSPÓLNE STAŁE (jedno źródło prawdy dla danych powtarzanych w kilku klockach)
+// ---------------------------------------------------------------------------
+
+/** Domena ofiary i liczba adresów na liście mailingowej (//PHISHING i podgląd wysyłki). */
+const TARGET_DOMAIN = 'carbonflow.com';
+const MAILING_LIST_SIZE = 12;
+
+/** Adresy IP z białej listy nadawców CarbonFlow (lista w //PHISHING, cel w //TUNEL_VPN). */
+const ALLOWED_SENDER_IPS = ['82.123.192.116', '77.141.195.139'];
+
+// ---------------------------------------------------------------------------
 // DANE KLOCKÓW / MINIGIER
 // ---------------------------------------------------------------------------
 
@@ -53,8 +64,8 @@ export const wormBuilderConfig: WormBuilderConfig = {
 /** S03: Konfiguracja VPN (dopasowanie IP do allowlisty antyspamowej CarbonFlow - Flavor). */
 export const vpnConfig: VpnConfig = {
   initialIp: '192.168.1.45',
-  targetIp: '82.123.192.116',
-  allowedIps: ['82.123.192.116', '77.141.195.139'],
+  targetIp: ALLOWED_SENDER_IPS[0],
+  allowedIps: ALLOWED_SENDER_IPS,
   feedback: {
     ideal: 'Pomyślnie dopasowano adres IP! Ruch zamaskowany i dopuszczony przez filtry CarbonFlow.',
     critical: 'Błąd: Adres IP nie znajduje się na białej liście CarbonFlow. Wiadomość zostanie odrzucona przez filtry antyspamowe!'
@@ -148,9 +159,9 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
     ]
   },
   mailingList: {
-    targetDomain: 'carbonflow.com',
-    employeesCount: 12,
-    whitelistedIps: ['82.123.192.116', '77.141.195.139'],
+    targetDomain: TARGET_DOMAIN,
+    employeesCount: MAILING_LIST_SIZE,
+    whitelistedIps: ALLOWED_SENDER_IPS,
     sampleRecipients: [
       { name: 'Anna Kowalska', email: 'a.kowalska@carbonflow.com', role: 'Dyrektor HR' },
       { name: 'Tomasz Nowak', email: 't.nowak@carbonflow.com', role: 'Główny Księgowy' },
@@ -186,10 +197,10 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
       }
     ]
   },
-  targetDomain: 'carbonflow.com',
-  recipientsCount: 12,
-  topicDecisionNum: 3,
-  templateDecisionNum: 2,
+  targetDomain: TARGET_DOMAIN,
+  recipientsCount: MAILING_LIST_SIZE,
+  topicDecisionNum: phishingCampaignConfig.topic.decisionNum,
+  templateDecisionNum: phishingCampaignConfig.template.decisionNum,
   topics: [
     {
       label: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO',

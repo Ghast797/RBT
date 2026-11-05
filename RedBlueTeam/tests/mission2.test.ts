@@ -9,8 +9,10 @@ import {
   phishingCampaignConfig,
   vpnConfig,
   wormBuilderConfig,
-  phishingDispatchConfig
+  phishingDispatchConfig,
+  botnetMonitorConfig
 } from '../src/scenarios/mission_02_carbon_flow/stages';
+import { summarizeBotnet } from '../src/scenarios/mission_02_carbon_flow/minigames/botnet';
 
 /** Przegrywa rozmowę mostkującą do końca: flushuje kwestie BYTE_MASTERA i klika kwestie gracza. */
 function driveBridge() {
@@ -155,10 +157,45 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     });
   });
 
+  describe('dane współdzielone i monitor botnetu', () => {
+    it('lista mailingowa i podgląd wysyłki oraz VPN i allowlista mają jedno źródło danych', () => {
+      expect(phishingDispatchConfig.targetDomain).toBe(phishingCampaignConfig.mailingList.targetDomain);
+      expect(phishingDispatchConfig.recipientsCount).toBe(phishingCampaignConfig.mailingList.employeesCount);
+      expect(vpnConfig.allowedIps).toEqual(phishingCampaignConfig.mailingList.whitelistedIps);
+      expect(phishingDispatchConfig.topicDecisionNum).toBe(phishingCampaignConfig.topic.decisionNum);
+      expect(phishingDispatchConfig.templateDecisionNum).toBe(phishingCampaignConfig.template.decisionNum);
+    });
+
+    it('summarizeBotnet liczy infekcje z konfiguracji (82% z 12 stacji = 10 + 2)', () => {
+      const r = summarizeBotnet(botnetMonitorConfig);
+      expect(r.infectedCount).toBe(10);
+      expect(r.secureCount).toBe(2);
+      expect(r.nodes.length).toBe(12);
+      expect(r.nodes.filter((n) => n.infected).length).toBe(10);
+      expect(r.nodes.slice(10).every((n) => !n.infected)).toBe(true);
+      // każdy zainfekowany węzeł zapala się przed końcem animacji, rosnąco
+      const lit = r.nodes.filter((n) => n.infected).map((n) => n.litAt);
+      expect(lit[lit.length - 1]).toBeLessThanOrEqual(botnetMonitorConfig.targetPercentage);
+      expect([...lit].sort((a, b) => a - b)).toEqual(lit);
+    });
+
+    it('summarizeBotnet reaguje na zmianę konfiguracji i generuje węzły z totalWorkstations', () => {
+      const r = summarizeBotnet({ targetPercentage: 50, totalWorkstations: 20 });
+      expect(r.nodes.length).toBe(20);
+      expect(r.infectedCount).toBe(10);
+      expect(r.secureCount).toBe(10);
+      expect(new Set(r.nodes.map((n) => n.name)).size).toBe(20);
+      const all = summarizeBotnet({ targetPercentage: 100, totalWorkstations: 5 });
+      expect(all.infectedCount).toBe(5);
+      expect(all.secureCount).toBe(0);
+    });
+  });
+
   it('registers custom minigames in appRegistry', () => {
     expect(appComponentRegistry['phishing_campaign']).toBeDefined();
     expect(appComponentRegistry['vpn_app']).toBeDefined();
     expect(appComponentRegistry['worm_builder']).toBeDefined();
+    expect(appComponentRegistry['phishing_dispatch']).toBeDefined();
     expect(appComponentRegistry['botnet_monitor']).toBeDefined();
   });
 
