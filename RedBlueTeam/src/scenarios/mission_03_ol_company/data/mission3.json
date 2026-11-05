@@ -13,6 +13,13 @@
   "intro": {
     "callerName": "BYTE_MASTER",
     "callStatus": "POŁĄCZENIE PRZYCHODZĄCE",
+    "startBadges": { "chat": 1 },
+    "firstChoice": { "id": "m3_reply_intro", "label": "NAJPIERW STWORZĘ WIRUSA." },
+    "firstUnlock": {
+      "unlockIcons": ["virus_database_unlocked", "virus_database"],
+      "badges": { "virus_database": 1 },
+      "highlightTile": "virus_database"
+    },
     "dialogue": [
       {
         "id": "intro_1",
@@ -65,8 +72,10 @@
       "id": "virus_database",
       "label": "//BAZA_WIRUSÓW",
       "color": "#ec4899",
-      "icon": "Terminal",
-      "componentId": "virus_database"
+      "icon": "Bug",
+      "componentId": "ol_virus_lab",
+      "unlockedOnly": true,
+      "requiredUnlockId": "virus_database_unlocked"
     },
     {
       "id": "chat_shortcut",
@@ -77,41 +86,49 @@
       "isChatFocus": true
     },
     {
-      "id": "rat_virus",
-      "label": "//WIRUS: RAT",
-      "color": "#00f0ff",
-      "icon": "Radio",
-      "componentId": "rat_virus",
+      "id": "browser",
+      "label": "//TOR: PRZEGLĄDARKA",
+      "color": "#3b82f6",
+      "icon": "Globe",
+      "componentId": "ol_osint_browser",
       "unlockedOnly": true,
-      "requiredUnlockId": "rat_virus"
+      "requiredUnlockId": "browser_unlocked"
     },
     {
       "id": "pendrive_app",
       "label": "//DYSK E: PENDRIVE",
       "color": "#f59e0b",
       "icon": "HardDrive",
-      "componentId": "pendrive_app"
+      "componentId": "ol_pendrive",
+      "unlockedOnly": true,
+      "requiredUnlockId": "pendrive_unlocked"
     },
     {
       "id": "drone_app",
       "label": "//DRON: CONDOR MIT63",
       "color": "#ef4444",
       "icon": "Crosshair",
-      "componentId": "drone_app"
+      "componentId": "ol_drone",
+      "unlockedOnly": true,
+      "requiredUnlockId": "drone_unlocked"
     },
     {
-      "id": "mail",
-      "label": "//MAIL",
-      "color": "#38bdf8",
-      "icon": "Mail",
-      "componentId": "mail"
+      "id": "rat_session",
+      "label": "//WIRUS: RAT — SESJA",
+      "color": "#00f0ff",
+      "icon": "Radio",
+      "componentId": "ol_rat_session",
+      "unlockedOnly": true,
+      "requiredUnlockId": "rat_session_unlocked"
     },
     {
-      "id": "browser",
-      "label": "//TOR: PRZEGLĄDARKA",
-      "color": "#3b82f6",
-      "icon": "Globe",
-      "componentId": "browser"
+      "id": "debrief_app",
+      "label": "//RAPORT POOPERACYJNY",
+      "color": "#facc15",
+      "icon": "Award",
+      "componentId": "debrief_app",
+      "unlockedOnly": true,
+      "requiredUnlockId": "mission_completed"
     }
   ],
   "step1": {

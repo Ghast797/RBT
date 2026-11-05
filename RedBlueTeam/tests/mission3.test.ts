@@ -119,7 +119,7 @@ describe('Misja 3 — dane, które przetrwają migrację', () => {
 // ---------------------------------------------------------------------------
 // STRUKTURA ETAPÓW — włączana przez commit ze szkieletem `stages.ts` / `blocks`.
 // ---------------------------------------------------------------------------
-describe.skip('Misja 3 — struktura etapów (wzorzec B)', () => {
+describe('Misja 3 — struktura etapów (wzorzec B)', () => {
   it('kolejność etapów: wirus -> OSINT -> pendrive -> dron -> sesja RAT', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;
     const stages = def.stages ?? [];
@@ -130,13 +130,11 @@ describe.skip('Misja 3 — struktura etapów (wzorzec B)', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;
     const stages = def.stages ?? [];
     const tiles = def.desktopApps;
-    const scenarioApps = (def as any).__scenarioAppsForTest as Record<string, unknown> | undefined;
     stages.forEach((s) => {
       const tile = tiles.find((t) => t.id === s.appId);
       expect(tile, `kafelek dla etapu ${s.appId}`).toBeDefined();
-      const componentId = tile!.componentId;
-      const registered = appComponentRegistry[componentId] ?? scenarioApps?.[componentId];
-      expect(registered, `komponent ${componentId}`).toBeDefined();
+      // index.ts rejestruje componentId minigier globalnie przez registerApp.
+      expect(appComponentRegistry[tile!.componentId], `komponent ${tile!.componentId}`).toBeDefined();
     });
   });
 
@@ -161,12 +159,12 @@ describe.skip('Misja 3 — struktura etapów (wzorzec B)', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;
     const tiles = def.desktopApps;
     const byId = Object.fromEntries(tiles.map((t) => [t.id, t]));
-    // Na starcie odblokowane są tylko baza wirusów i czat.
+    // Na starcie odblokowany jest tylko czat; bazę wirusów odblokowuje intro.firstUnlock.
     const baseUnlocked = tiles.filter((t) => !t.unlockedOnly).map((t) => t.id);
-    expect(baseUnlocked).toContain('virus_database');
-    expect(baseUnlocked).not.toContain('browser');
-    // Kolejne aplikacje przebiegu są zablokowane do odblokowania przez mostek.
-    ['browser', 'pendrive_app', 'drone_app', 'rat_session'].forEach((id) => {
+    expect(baseUnlocked).toEqual(['chat_shortcut']);
+    expect((def.intro as any).firstUnlock?.unlockIcons).toContain('virus_database');
+    // Każdy etap przebiegu jest zablokowany do odblokowania przez mostek.
+    ['virus_database', 'browser', 'pendrive_app', 'drone_app', 'rat_session'].forEach((id) => {
       expect(byId[id]?.unlockedOnly, id).toBe(true);
       expect(byId[id]?.requiredUnlockId, id).toBeTruthy();
     });
@@ -220,7 +218,7 @@ function collectOptionsByDecision(blocks: Record<string, any>): Record<number, A
 // PRZEPŁYW WZORCA B — włączany przez commit ze szkieletem (silnik: completeStage
 // + reportDecision + rozmowy mostkujące). Niezależny od wewnętrznej UI minigier.
 // ---------------------------------------------------------------------------
-describe.skip('Misja 3 — przepływ wzorca B przez silnik', () => {
+describe('Misja 3 — przepływ wzorca B przez silnik', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     __setBridgeDelayForTests(0);
