@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, AtSign, ArrowRight, ExternalLink } from 'lucide-react';
+import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
@@ -18,6 +19,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
   const [screen, setScreen] = useState<Screen>('sender_select');
   const [selectedSenderId, setSelectedSenderId] = useState<string | null>(null);
 
+  const senderOptions = useShuffled(config.sender.options);
   const selectedSender = config.sender.options.find((o) => o.id === selectedSenderId);
 
   // Treść maila zależy od wcześniejszych wyborów (temat, szablon) zapisanych w silniku.
@@ -61,7 +63,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           <div>
             <h2 className="text-sm font-bold text-white tracking-widest">//PHISHING // WYSYŁKA KAMPANII</h2>
             <p className="text-[0.6875rem]" style={{ color: blue }}>
-              Dobór fałszywej domeny (typosquatting) oraz egzekucja wysyłki
+              Wybór nadawcy i wysyłka kampanii
             </p>
           </div>
         </div>
@@ -85,7 +87,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {config.sender.options.map((opt) => {
+            {senderOptions.map((opt) => {
               const isSelected = selectedSenderId === opt.id;
               return (
                 <div

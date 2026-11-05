@@ -24,24 +24,18 @@ export const wormBuilderConfig: WormBuilderConfig = {
       {
         id: 'worm',
         label: 'ROBAK – AUTOMATYCZNIE SIĘ POWIELA I TWORZY KOMPUTERY ZOMBIE',
-        desc: 'Samoreplikujący się kod infekujący stacje robocze w lokalnej podsieci.',
-        tags: ['AUTOMAT', 'SAMOREPLIKACJA'],
         tier: 'ideal',
         feedback: 'Robak samodzielnie powiela się w sieci i formuje botnet.'
       },
       {
         id: 'keylogger',
         label: 'KEYLOGGER – POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE',
-        desc: 'Rejestrator wprowadzanych znaków klawiatury na pojedynczej stacji.',
-        tags: ['MONITORING', 'LOKALNY'],
         tier: 'suboptimal',
         feedback: 'Przechwytuje dane na jednej stacji, nie tworzy botnetu.'
       },
       {
         id: 'ransomware',
         label: 'RANSOMWARE – MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ',
-        desc: 'Szyfruje zasoby dyskowe i żąda okupu za przywrócenie dostępu.',
-        tags: ['SZYFROWANIE', 'EXTORTION'],
         tier: 'critical',
         feedback: 'Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.'
       }
@@ -76,8 +70,6 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'zero_day_worm',
         label: 'WIRUS 0-DAY',
-        desc: 'Infekcja złośliwym oprogramowaniem wykorzystującym nieznane podatności systemowe.',
-        tags: ['EXPLOIT', 'MALWARE', 'AUTORUN'],
         tier: 'ideal',
         feedback:
           'Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary.'
@@ -85,8 +77,6 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'security_training',
         label: 'SZKOLENIE Z BEZPIECZEŃSTWA IT',
-        desc: 'Pozorowana kampania edukacyjna sprawdzająca czujność pracowników firmy.',
-        tags: ['AUDYT', 'AWARENESS', 'SECURITY'],
         tier: 'suboptimal',
         feedback:
           'Pozorowane szkolenie nie instaluje złośliwego oprogramowania i nie paraliżuje infrastruktury zgodnie z ustaleniami z mentorem.'
@@ -94,8 +84,6 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'data_harvesting',
         label: 'ZBIERANIE WRAŻLIWYCH DANYCH',
-        desc: 'Formularz przechwytujący poświadczenia domenowe i hasła użytkowników.',
-        tags: ['CREDENTIALS', 'LOGOWANIE', 'HARVESTING'],
         tier: 'critical',
         feedback:
           'Phishing nakierowany wyłącznie na kradzież poświadczeń nie infekuje maszyn robakiem i nie tworzy zasłony dymnej.'
@@ -109,8 +97,7 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'poodle_forms',
         label: 'POODLE FORMS',
-        desc: 'Szablon formularza ankietowego (TWOJA ANKIETA | WYPEŁNIJ FORMULARZ).',
-        tags: ['FORMULARZ', 'ANKIETA'],
+        desc: 'TWOJA ANKIETA | WYPEŁNIJ FORMULARZ',
         tier: 'ideal',
         feedback:
           'Profesjonalny szablon formularza ankietowego idealnie pasuje do planu wysłania fałszywej ankiety pracowniczej.'
@@ -118,8 +105,7 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'quickgram',
         label: 'Quickgram',
-        desc: 'Szablon platformy społecznościowej (OBSERWUJ | SPRAWDŹ TO).',
-        tags: ['SOCIAL', 'PROFIL'],
+        desc: 'OBSERWUJ | SPRAWDŹ TO',
         tier: 'suboptimal',
         feedback:
           'Szablon sieci społecznościowej wzbudza podejrzenia w środowisku korporacyjnym.'
@@ -127,8 +113,7 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'kneenook',
         label: 'Kneenook',
-        desc: 'Szablon otwartego forum dyskusyjnego (TWÓJ POST | ZOBACZ NA KNEENOOK).',
-        tags: ['FORUM', 'DYSKUSJA'],
+        desc: 'TWÓJ POST | ZOBACZ NA KNEENOOK',
         tier: 'critical',
         feedback:
           'Szablon postu na forum jest niespójny z formatem ankiety.'
@@ -142,8 +127,6 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'mandatory_integration',
         label: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO',
-        desc: 'Formularz organizacyjny wyjazdu integracyjnego oznaczony jako wymagany.',
-        tags: ['HR', 'WYJAZD', 'FORMULARZ'],
         tier: 'ideal',
         feedback:
           'Przymus w połączeniu z tematem integracji tworzy idealną presję socjotechniczną.'
@@ -151,8 +134,6 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'fire_drill',
         label: 'ANKIETA DOTYCZĄCA ĆWICZEŃ PRZECIWPOŻAROWYCH',
-        desc: 'Kwestionariusz weryfikujący znajomość procedur przeciwpożarowych.',
-        tags: ['BHP', 'EWAKUACJA', 'BEZPIECZEŃSTWO'],
         tier: 'suboptimal',
         feedback:
           'Temat formalny i nudny, część pracowników odłoży wypełnienie na później.'
@@ -160,8 +141,6 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       {
         id: 'fruit_thursday',
         label: 'ULUBIONE OWOCE Z OWOCOWEGO CZWARTKU',
-        desc: 'Głosowanie nad asortymentem owocowym w firmowej kantynie.',
-        tags: ['BIURO', 'ŻYWNOŚĆ', 'PLEBISCYT'],
         tier: 'critical',
         feedback:
           'Błahy temat zostanie zignorowany przez większość personelu.'
@@ -190,24 +169,18 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
       {
         id: 'typosquatting_kadry',
         label: 'KADRY@CARDONFLOW.COM',
-        desc: 'Wiadomość z adresu kadry@cardonflow.com.',
-        tags: ['KADRY', 'DOMENA'],
         tier: 'ideal',
         feedback: "Typosquatting (podmiana 'b' na 'd' w nazwie domeny) połączony z wiarygodnym działem kadr."
       },
       {
         id: 'marketing_carbon',
         label: 'MARKETING@CARBON.COM',
-        desc: 'Wiadomość z adresu marketing@carbon.com.',
-        tags: ['MARKETING', 'DOMENA'],
         tier: 'suboptimal',
         feedback: 'Skrócona domena jest podejrzana w kontekście spraw kadrowych.'
       },
       {
         id: 'catering_oilflow',
         label: 'KATERING@OILFLOW.COM',
-        desc: 'Wiadomość z adresu katering@oilflow.com.',
-        tags: ['CATERING', 'DOMENA'],
         tier: 'critical',
         feedback: 'Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.'
       }

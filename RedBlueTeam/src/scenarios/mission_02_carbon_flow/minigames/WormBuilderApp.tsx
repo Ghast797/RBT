@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ShieldAlert, Bug, CheckCircle2, ArrowRight, Code, Terminal, Cpu } from 'lucide-react';
+import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
@@ -18,6 +19,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
   const [selectedVirusId, setSelectedVirusId] = useState<string | null>(null);
   const [enabledInstructions, setEnabledInstructions] = useState<string[]>([]);
 
+  const virusOptions = useShuffled(config.virus.options);
   const selectedVirus = config.virus.options.find((o) => o.id === selectedVirusId);
 
   const toggleInstruction = (id: string) => {
@@ -65,9 +67,9 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
             <ShieldAlert size={20} />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-white tracking-widest">//BAZA_WIRUSÓW // ROBOTYKA 0-DAY</h2>
+            <h2 className="text-sm font-bold text-white tracking-widest">//BAZA_WIRUSÓW</h2>
             <p className="text-[0.6875rem]" style={{ color: purple }}>
-              Konstrukcja i modyfikacja samoreplikującego robaka sieciowego
+              Dobór i modyfikacja ładunku złośliwego oprogramowania
             </p>
           </div>
         </div>
@@ -91,7 +93,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {config.virus.options.map((opt) => {
+            {virusOptions.map((opt) => {
               const isSelected = selectedVirusId === opt.id;
               return (
                 <div
@@ -287,7 +289,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
               WIRUS GOTOWY! ŁADUNEK 0-DAY SKOMPILOWANY
             </h3>
             <p className="text-xs text-gray-300 max-w-lg mx-auto leading-relaxed">
-              Ładunek robaka 0-day został pomyślnie skompilowany i zaciemniony. Jest gotowy do wstrzyknięcia w wektor dostarczenia po zamaskowaniu połączenia sieciowego.
+              Ładunek robaka 0-day został pomyślnie skompilowany i zaciemniony. Jest gotowy do wstrzyknięcia w wektor dostarczenia.
             </p>
           </div>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, CheckCircle2, ArrowRight, Users, ShieldAlert } from 'lucide-react';
+import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
@@ -25,6 +26,11 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [isImported, setIsImported] = useState(false);
+
+  // Opcje w losowej kolejności (raz przy zamontowaniu aplikacji; od nowa przy powtórce misji).
+  const actionOptions = useShuffled(config.action.options);
+  const templateOptions = useShuffled(config.template.options);
+  const topicOptions = useShuffled(config.topic.options);
 
   const selectedAction = config.action.options.find((o) => o.id === selectedActionId);
   const selectedTemplate = config.template.options.find((o) => o.id === selectedTemplateId);
@@ -109,7 +115,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         <div className="flex flex-col justify-between h-full space-y-4">
           {header('//KREATOR_PHISHINGU // RODZAJ AKCJI', config.action.question, 'KROK 1/4')}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {config.action.options.map((opt) => {
+            {actionOptions.map((opt) => {
               const isSelected = selectedActionId === opt.id;
               return (
                 <div
@@ -174,7 +180,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         <div className="flex flex-col justify-between h-full space-y-4">
           {header('//KREATOR_PHISHINGU // SZABLON FORMULARZA', config.template.question, 'KROK 2/4')}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {config.template.options.map((opt) => {
+            {templateOptions.map((opt) => {
               const isSelected = selectedTemplateId === opt.id;
               return (
                 <div
@@ -239,7 +245,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         <div className="flex flex-col justify-between h-full space-y-4">
           {header('//KREATOR_PHISHINGU // TEMAT I PRZYNĘTA', config.topic.question, 'KROK 3/4')}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {config.topic.options.map((opt) => {
+            {topicOptions.map((opt) => {
               const isSelected = selectedTopicId === opt.id;
               return (
                 <div
