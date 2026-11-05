@@ -180,38 +180,48 @@
     "choices": [
       {
         "num": 1,
-        "question": "WYBIERZ RODZAJ AKCJI",
+        "question": "WYBIERZ RODZAJ AKCJI:",
         "answer": "WIRUS 0-DAY",
         "correct": true,
-        "details": "Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary."
+        "details": "Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary.",
+        "attack": "Atak nie kradnie jednego hasła, tylko wprowadza do firmy złośliwy kod wykorzystujący jeszcze nieznaną lukę. Antywirus oparty na znanych sygnaturach go nie rozpozna, a nieaktualizowany serwer pocztowy CarbonFlow ułatwia wejście.",
+        "defense": "Sygnały: nieoczekiwana ankieta z linkiem, pilna prośba o kliknięcie, brak wcześniejszej zapowiedzi od działu, którego rzekomo dotyczy. Co zrobić: aktualizuj systemy i serwer pocztowy, trzymaj antywirus włączony i zgłaszaj dziwne wiadomości administratorowi zamiast klikać."
       },
       {
         "num": 2,
-        "question": "WYBIERZ SZABLON MAILA",
-        "answer": "POODLE (POODLE FORMS)",
+        "question": "WYBIERZ SZABLON FORMULARZA:",
+        "answer": "POODLE FORMS",
         "correct": true,
-        "details": "Profesjonalny szablon formularza ankietowego idealnie pasuje do planu wysłania fałszywej ankiety pracowniczej."
+        "details": "Profesjonalny szablon formularza ankietowego idealnie pasuje do planu wysłania fałszywej ankiety pracowniczej.",
+        "attack": "Szablon udający serwis do ankiet pasuje do pretekstu: pracownicy dostają ankiety od działów i przywykli do linków do formularzy. Dzięki temu strona-pułapka wygląda zwyczajnie.",
+        "defense": "Sygnały: formularz hostowany w zewnętrznym serwisie, a nie w firmowym systemie; adres strony nie należy do firmy. Co zrobić: sprawdź, czy dana ankieta naprawdę została rozesłana (zapytaj dział lub administratora) i nie wypełniaj formularzy z nieznanych serwisów w pracy."
       },
       {
         "num": 3,
-        "question": "WYBIERZ TEMAT ANKIETY",
+        "question": "WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:",
         "answer": "OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO",
         "correct": true,
-        "details": "Przymus w połączeniu z tematem integracji tworzy idealną presję socjotechniczną."
+        "details": "Przymus w połączeniu z tematem integracji tworzy idealną presję socjotechniczną.",
+        "attack": "Przynęta łączy dwa bodźce: temat, który ludzi obchodzi (wspólny wyjazd), i słowo „obowiązkowa”, które wymusza szybką reakcję. Presja zmniejsza ostrożność, a nikt nie chce być tym, kto nie wypełnił.",
+        "defense": "Sygnały: obowiązek i termin w mailu, nacisk na pośpiech, temat spoza codziennych zadań. Co zrobić: zatrzymaj się, gdy wiadomość naciska na natychmiastowe działanie, sprawdź jej prawdziwość innym kanałem i zgłoś ją, zanim klikniesz."
       },
       {
         "num": 4,
-        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
-        "answer": "ROBAK",
+        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA:",
+        "answer": "ROBAK – AUTOMATYCZNIE SIĘ POWIELA I TWORZY KOMPUTERY ZOMBIE",
         "correct": true,
-        "details": "Robak samodzielnie powiela się w sieci i formuje botnet."
+        "details": "Robak samodzielnie powiela się w sieci i formuje botnet.",
+        "attack": "Robak powiela się sam i przechodzi z komputera na komputer bez udziału użytkownika. Jedno kliknięcie jednego pracownika wystarcza, by zbudować sieć zainfekowanych maszyn (botnet) i dać atakującemu zasłonę dymną.",
+        "defense": "Sygnały: nagłe spowolnienie stacji, nietypowy ruch sieciowy, alerty antywirusa na kilku komputerach naraz. Co zrobić: odłącz zainfekowaną stację od sieci, zgłoś incydent, segmentuj sieć i regularnie aktualizuj oprogramowanie, by robak nie miał luk do wykorzystania."
       },
       {
         "num": 5,
-        "question": "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA",
+        "question": "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:",
         "answer": "KADRY@CARDONFLOW.COM",
         "correct": true,
-        "details": "Typosquatting (podmiana 'b' na 'd' w nazwie domeny) połączony z wiarygodnym działem kadr."
+        "details": "Typosquatting (podmiana 'b' na 'd' w nazwie domeny) połączony z wiarygodnym działem kadr.",
+        "attack": "Podmiana jednej litery w nazwie domeny (cardonflow zamiast carbonflow) daje adres, który na szybki rzut oka wygląda jak firmowy. Dział kadr to nadawca, któremu pracownicy ufają i na którego ankiety odpowiadają.",
+        "defense": "Sygnały: domena różni się o jeden znak od firmowej, wiadomość od działu, który zwykle pisze inaczej. Co zrobić: czytaj cały adres nadawcy, litera po literze, najeżdżaj kursorem na linki i zgłaszaj wątpliwe wiadomości; firma powinna dodatkowo wykrywać domeny łudząco podobne do własnej."
       }
     ],
     "educationalSlides": [
