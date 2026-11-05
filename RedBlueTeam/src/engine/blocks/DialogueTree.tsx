@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { MessageSquareCode, Send } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
 import { sounds } from '../audio/soundEffects';
+import { AppHeader } from '../components/AppHeader';
+import { ChoiceZone, ChoiceTile } from '../components/ChoiceZone';
+import { useShuffled } from '../core/shuffle';
 import type { BlockProps, DialogueTreeConfig, DialogueNode, ChoiceOutcome } from '../types/mission';
 
 interface Line {
@@ -47,6 +50,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
   );
 
   const currentNode: DialogueNode | undefined = config.nodes.find((n) => n.id === currentNodeId);
+  const currentOptions = useShuffled(currentNode?.options ?? []);
 
   const finish = (
     closing: boolean,
@@ -135,30 +139,29 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none p-4">
-      <div
-        className="border-b pb-3 mb-3 flex items-center space-x-2.5"
-        style={{ borderColor: `${accent}4d` }}
-      >
-        <div
-          className="p-1.5 rounded border"
-          style={{ backgroundColor: `${accent}33`, borderColor: accent, color: accent }}
-        >
-          <MessageSquareCode size={20} />
-        </div>
-        <h2 className="text-sm font-bold text-white tracking-widest">{config.respondent}</h2>
-      </div>
+      <AppHeader
+        icon={MessageSquareCode}
+        accent={accent}
+        title={config.title || '//ROZMOWA'}
+        subtitle={config.respondent}
+        task={
+          isFinished
+            ? 'Rozmowa zakończona.'
+            : config.task || 'Przeczytaj wiadomość rozmówcy i wybierz odpowiedź.'
+        }
+      />
 
-      <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+      <div className="flex-1 overflow-y-auto space-y-3 pr-1 mt-3">
         {lines.map((line, i) => (
           <div key={i} className={`flex ${line.isPlayer ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-[85%] px-3 py-2 rounded-xl text-[0.6875rem] leading-relaxed ${
+              className={`max-w-[85%] px-3.5 py-2.5 rounded-xl text-sm leading-relaxed font-sans ${
                 line.isPlayer
                   ? 'bg-[#0b1a26] border border-gray-700 text-gray-200'
                   : 'bg-black/50 border border-gray-800 text-gray-300'
               }`}
             >
-              <div className="text-[0.5625rem] font-bold mb-1 opacity-70">{line.sender}</div>
+              <div className="text-[0.6875rem] font-bold font-mono mb-1 opacity-70">{line.sender}</div>
               {line.text}
             </div>
           </div>
@@ -166,9 +169,9 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
         {isRespondentTyping && (
           <div className="flex justify-start">
             <div className="max-w-[85%] px-3 py-2 rounded-xl bg-black/50 border border-gray-800">
-              <div className="text-[0.5625rem] font-bold mb-1 opacity-70">{config.respondent}</div>
+              <div className="text-[0.6875rem] font-bold font-mono mb-1 opacity-70">{config.respondent}</div>
               <div className="flex items-center space-x-1" style={{ color: accent }}>
-                <span className="text-[0.625rem] opacity-80">pisze</span>
+                <span className="text-xs opacity-80">pisze</span>
                 <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '0ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '150ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: accent, animationDelay: '300ms' }} />
@@ -177,28 +180,28 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
           </div>
         )}
         {isFinished && lastFeedback && pathTier === 'critical' && (
-          <div className="text-[0.625rem] text-red-400 italic px-1">{lastFeedback}</div>
+          <div className="text-xs text-red-400 italic px-1">{lastFeedback}</div>
         )}
       </div>
 
       {currentNode && currentNode.options.length > 0 && !isFinished && (
-        <div className="pt-3 mt-3 border-t border-gray-800 space-y-2">
-          {currentNode.options.map((option) => (
-            <button
-              key={option.id}
-              data-option-id={option.id}
-              onClick={() => handleChoose(option.id)}
-              className="w-full text-left px-3 py-2 rounded-xl border border-gray-800 bg-[#08101a] hover:bg-[#0c1624] text-[0.6875rem] text-gray-200 transition-all flex items-center justify-between group cursor-pointer"
-            >
-              <span>{option.label}</span>
-              <Send
-                size={13}
-                className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2"
-                style={{ color: accent }}
-              />
-            </button>
-          ))}
-        </div>
+        <ChoiceZone accent={accent} label="WYBIERZ ODPOWIEDŹ" className="shrink-0">
+          <div className="flex flex-col gap-2">
+            {currentOptions.map((option) => (
+              <ChoiceTile
+                key={option.id}
+                accent={accent}
+                onClick={() => handleChoose(option.id)}
+                className="px-3.5 py-2.5 items-center"
+              >
+                <div className="flex items-center justify-between gap-2" data-option-id={option.id}>
+                  <span className="text-sm text-gray-100 font-sans leading-snug">{option.label}</span>
+                  <Send size={14} className="shrink-0" style={{ color: accent }} />
+                </div>
+              </ChoiceTile>
+            ))}
+          </div>
+        </ChoiceZone>
       )}
     </div>
   );

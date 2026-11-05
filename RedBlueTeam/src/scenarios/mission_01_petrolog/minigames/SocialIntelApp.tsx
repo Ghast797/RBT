@@ -18,6 +18,7 @@ import {
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
+import { shuffled } from '../../../engine/core/shuffle';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import type { BlockProps } from '../../../engine/types/mission';
@@ -43,15 +44,6 @@ const DEFAULT_PLATFORMS: SocialPlatformInfo[] = [
   { id: 'quickgram', name: 'Quickgram', handlePrefix: '', accentColor: '#ec4899', tagline: 'Fotorelacje i chwile' },
   { id: 'joinin', name: 'Joinin', handlePrefix: '', accentColor: '#06b6d4', tagline: 'Sieć kontaktów zawodowych' }
 ];
-
-const shuffle = <T,>(items: T[]): T[] => {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-};
 
 /** Miejsce na grafikę: plik z assets/social/<name>.*, w dev zastępnik z nazwą brakującego pliku. */
 const ImageSlot: React.FC<{
@@ -169,7 +161,7 @@ export const SocialIntelApp: React.FC<BlockProps<SocialIntelConfig>> = ({
 
   // Kolejność odpowiedzi losowana przy każdym podejściu (i po resecie), żeby przy powtórce trzeba było czytać.
   const shuffleOptionOrder = () =>
-    Object.fromEntries(posts.map((p) => [p.id, shuffle(getDeductionOptions(p).map((o) => o.id))]));
+    Object.fromEntries(posts.map((p) => [p.id, shuffled(getDeductionOptions(p).map((o) => o.id))]));
   const [optionOrder, setOptionOrder] = useState<Record<string, string[]>>(shuffleOptionOrder);
   const orderedDeductionOptions = (post: SocialPost) => {
     const order = optionOrder[post.id] || [];

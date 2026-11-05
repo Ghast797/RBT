@@ -244,8 +244,17 @@ export interface ChoiceCardsConfig {
   decisionNum: number;
   /** Pytanie na ekranie. */
   question: string;
+  /** Nazwa aplikacji w nagłówku, np. "//BAZA_WIRUSÓW" (domyślnie "//WYBÓR"). */
+  title?: string;
   /** Krótki tekst pod nagłówkiem aplikacji. */
   subtitle?: string;
+  /** Polecenie w pasku ZADANIE (domyślnie `question`). */
+  task?: string;
+  /** Plakietka po prawej w nagłówku, np. "KROK 1/2". */
+  step?: string;
+  /** Etykieta ramki wyboru (domyślnie "WYBIERZ JEDNO"). */
+  choiceLabel?: string;
+  /** Opcje; klocek wyświetla je w losowej kolejności. */
   options: ChoiceOption[];
 }
 
@@ -265,6 +274,11 @@ export interface DialogueNode {
 export interface DialogueTreeConfig {
   /** Nazwa rozmówcy w nagłówku okna. */
   respondent: string;
+  /** Nazwa aplikacji w nagłówku (domyślnie "//ROZMOWA"). */
+  title?: string;
+  /** Polecenie w pasku ZADANIE (domyślnie ogólne „przeczytaj i odpowiedz”). */
+  task?: string;
+  /** Węzły rozmowy; opcje każdego węzła klocek wyświetla w losowej kolejności. */
   nodes: DialogueNode[];
   /** Wiadomość zamykająca rozmowę po ostatnim węźle. */
   closingMessage?: string;

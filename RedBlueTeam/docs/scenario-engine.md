@@ -59,6 +59,8 @@ Implementuje je silnik raz. Scenariusz ich nie opisuje — zakłada je.
 | Wypowiedź gracza | w webie: przycisk odpowiedzi w panelu czatu (zastępuje rzut kostką 3D z VR); treść to linia z VR; klik = echo, **nigdy** nie otwiera aplikacji |
 | Czat = rozmowa, nie launcher | kliknięcie w czacie nie otwiera aplikacji; mentor nie podaje aplikacji do otwarcia; kolejny kafelek odblokowuje się + podświetla po kwestii gracza, a gracz klika go sam |
 | Prowadzenie do celu | badge `1` + poświata uwagi (`highlightTile`) na ikonie następnego etapu; ikony nieodblokowane są ukryte |
+| Losowa kolejność opcji | każdy wybór wyświetla opcje w losowej kolejności (`useShuffled` / `shuffled` z `engine/core/shuffle.ts`), żeby gracz nie zgadywał odpowiedzi po pozycji. Kolejność losuje się raz przy zamontowaniu aplikacji (zostaje po zamknięciu okna), a od nowa przy powtórce misji. Klocki z katalogu tasują same; minigra misji używa tych samych funkcji |
+| Naprowadzanie na odpowiedź | od M2 wzwyż informację o poprawnej odpowiedzi niesie **treść** (mentor w czacie, OSINT, materiały) — misja jest sprawdzianem czytania ze zrozumieniem. Odpowiedzi nie zdradza **interfejs**: brak „DOBRY WYBÓR!” i oceny zaraz po wyborze (wyjątek: samouczek M1), brak stałej kolejności opcji. Mostki z mentorem trzymają się wierności VR |
 | Tempo | BYTE_MASTER „pisze" (animacja) z delayem; rozmowa z NPC (`DialogueTree`) też ma delay i wskaźnik pisania (rozmowa telefoniczna) |
 | Ekrany aplikacji | jeden kafelek = jedna aplikacja; kroki w środku to sekwencyjne pełne ekrany (bez zakładek/cofania), z krótkim ekranem ładowania `ModuleLoader` między nimi |
 | Przejście dalej | przycisk „dalej" wyszarzony, dopóki krok nie spełnia kryterium ukończenia |

@@ -11,6 +11,7 @@ import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
+import { shuffled } from '../../../engine/core/shuffle';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingBuilderConfig } from './types';
 import { WebsitePreview } from './WebsitePreview';
@@ -22,15 +23,6 @@ type BuilderScreen =
   | 'load_injection'
   | 'injection'
   | 'summary';
-
-const shuffled = <T,>(items: T[]): T[] => {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-};
 
 export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = ({
   config,

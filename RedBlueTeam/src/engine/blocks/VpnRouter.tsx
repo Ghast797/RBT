@@ -11,6 +11,9 @@ import {
   Send,
   Check
 } from 'lucide-react';
+import { AppHeader } from '../components/AppHeader';
+import { ChoiceZone, ChoiceTile } from '../components/ChoiceZone';
+import { useShuffled } from '../core/shuffle';
 import { useMissionStore } from '../store/useMissionStore';
 import { sounds } from '../audio/soundEffects';
 import { ModuleLoader } from '../components/ModuleLoader';
@@ -55,6 +58,11 @@ export interface VpnRouterConfig {
   allowedIps?: string[];
   allowAiSync?: boolean;
   feedback?: { ideal: string; critical: string };
+
+  /** Nazwa aplikacji w nagłówku (domyślnie "//VPN_ROUTING"). */
+  title?: string;
+  /** Polecenie w pasku ZADANIE na ekranie dopasowania IP. */
+  task?: string;
 
   // Post-send loaders / jumps
   sendLoaderLabel?: string;
@@ -110,6 +118,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   const currentIp = octets.join('.');
   const isTargetMatched = currentIp === targetIpStr || allowedIps.includes(currentIp);
   const sender = config.sender?.options.find((s) => s.id === senderId);
+  const senderOptions = useShuffled(config.sender?.options ?? []);
 
   const setOctet = (idx: number, delta: number) => {
     sounds.playKeypress();
@@ -185,27 +194,15 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
     }
   };
 
-  const header = (sub: string, stepBadge: string) => (
-    <div className="border-b pb-3 flex items-center justify-between" style={{ borderColor: `${accent}4d` }}>
-      <div className="flex items-center space-x-2.5">
-        <div
-          className="p-1.5 rounded-lg border"
-          style={{ backgroundColor: `${accent}26`, borderColor: accent, color: accent }}
-        >
-          <Wifi size={20} />
-        </div>
-        <div>
-          <h2 className="text-sm font-bold text-white tracking-widest">//VPN_ROUTING // MASKOWANIE TOŻSAMOŚCI</h2>
-          <p className="text-[0.6875rem]" style={{ color: accent }}>{sub}</p>
-        </div>
-      </div>
-      <span
-        className="text-[0.625rem] px-2.5 py-1 rounded-md border font-mono font-bold"
-        style={{ backgroundColor: `${accent}1a`, borderColor: `${accent}66`, color: accent }}
-      >
-        {stepBadge}
-      </span>
-    </div>
+  const header = (sub: string, stepBadge: string, task: string) => (
+    <AppHeader
+      icon={Wifi}
+      accent={accent}
+      title={config.title || '//VPN_ROUTING'}
+      subtitle={sub}
+      step={stepBadge}
+      task={task}
+    />
   );
 
   if (screen === 'load_send') {
@@ -240,44 +237,35 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   if (screen === 'sender' && config.sender) {
     return (
       <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-        {header('KROK 2/2 — WYBÓR ADRESU NADAWCY', 'NADAWCA')}
-        <div className="text-xs font-bold text-white">{config.sender.question}</div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {config.sender.options.map((o) => {
-            const isSelected = senderId === o.id;
-            return (
-              <button
+        {header('KROK 2/2 — WYBÓR ADRESU NADAWCY', 'NADAWCA', config.sender.question)}
+        <ChoiceZone accent={accent} label="WYBIERZ ADRES">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {senderOptions.map((o) => (
+              <ChoiceTile
                 key={o.id}
+                accent={accent}
+                state={senderId === o.id ? 'selected' : 'idle'}
+                markerPosition="corner"
                 onClick={() => {
                   sounds.playClick();
                   setSenderId(o.id);
                 }}
-                className={`p-4 rounded-xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                  isSelected
-                    ? 'border-purple-400 bg-purple-950/30 shadow-[0_0_20px_rgba(168,85,247,0.35)] text-white'
-                    : 'border-gray-800 bg-[#08101a] text-gray-300 hover:border-gray-700 hover:bg-[#0c1624]'
-                }`}
-                style={isSelected ? { borderColor: accent, backgroundColor: `${accent}26` } : undefined}
+                className="p-3.5 h-full"
               >
-                <div className="flex justify-between items-center w-full">
-                  <span className="text-xs font-bold font-mono text-white">{o.label}</span>
-                  {isSelected && <CheckCircle2 size={16} style={{ color: accent }} />}
+                <div className="space-y-2 pr-7">
+                  <span className="text-xs font-bold font-mono text-white break-all">{o.label}</span>
+                  {o.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed">{o.desc}</p>}
                 </div>
-                {o.desc && <p className="text-[0.6875rem] text-gray-400 mt-2 leading-relaxed">{o.desc}</p>}
-              </button>
-            );
-          })}
-        </div>
+              </ChoiceTile>
+            ))}
+          </div>
+        </ChoiceZone>
         <div className="pt-2 flex items-center justify-end">
           <button
             disabled={!senderId}
             onClick={handleSender}
-            className={`px-6 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 transition-all ${
-              senderId
-                ? 'text-white cursor-pointer hover:brightness-110 shadow-lg'
-                : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-            }`}
-            style={senderId ? { backgroundColor: accent, boxShadow: `0 0 20px ${accent}80` } : undefined}
+            className="px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest transition-all flex items-center space-x-2 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed shadow-lg active:scale-95"
+            style={{ backgroundColor: accent, color: '#05090f', boxShadow: senderId ? `0 0 15px ${accent}66` : undefined }}
           >
             <Send size={14} />
             <span>WYŚLIJ SPEAR-PHISHING</span>
@@ -292,7 +280,10 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
       {header(
         hasSenderStep ? 'KROK 1/2 — MASKOWANIE ADRESU IP' : 'DOPASOWANIE ADRESU DO WĘZŁA PROXY',
-        isConnected ? 'POŁĄCZONO' : isTargetMatched ? 'ZGODNY' : 'ROZŁĄCZONY'
+        isConnected ? 'POŁĄCZONO' : isTargetMatched ? 'ZGODNY' : 'ROZŁĄCZONY',
+        isConnected
+          ? 'Połączenie zestawione. Zatwierdź routing i przejdź dalej.'
+          : config.task || 'Ustaw przyciskami +/- adres z białej listy i połącz się z tunelem VPN.'
       )}
 
       {/* Górny panel 2-kolumnowy (Biała lista + moduł AI) */}
@@ -435,8 +426,8 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
         {!isConnected ? (
           <button
             onClick={handleConnect}
-            className="flex items-center space-x-2 px-6 py-2.5 rounded-xl font-bold text-xs text-white shadow-lg transition-all cursor-pointer hover:brightness-110"
-            style={{ backgroundColor: accent, boxShadow: `0 0 20px ${accent}80` }}
+            className="flex items-center space-x-2 px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest shadow-lg transition-all cursor-pointer active:scale-95"
+            style={{ backgroundColor: accent, color: '#05090f', boxShadow: `0 0 15px ${accent}66` }}
           >
             <ShieldCheck size={16} />
             <span>POŁĄCZ Z TUNELEM VPN</span>
@@ -447,7 +438,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
               sounds.playSuccess();
               onComplete();
             }}
-            className="flex items-center space-x-2 px-6 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg transition-all cursor-pointer"
+            className="flex items-center space-x-2 px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg transition-all cursor-pointer active:scale-95"
           >
             <span>ZATWIERDŹ ROUTING I PRZEJDŹ DALEJ</span>
             <ArrowRight size={14} />
