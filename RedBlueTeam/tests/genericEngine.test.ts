@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useMissionStore } from '../src/engine/store/useMissionStore';
 import { registerMission, getMission, resolveInitialMission } from '../src/engine/registry/missionRegistry';
 import { appComponentRegistry, registerApp, renderAppIcon } from '../src/engine/registry/appRegistry';
@@ -50,21 +50,20 @@ const mockMission99: MissionDefinition = {
       isChatFocus: true
     }
   ],
-  transitions: {
-    step1_complete: {
-      id: 'step1_complete',
-      closeActiveApp: true,
-      unlockIcons: ['custom_tool_unlocked'],
-      badges: { chat: 1 },
-      timeJump: '04:15',
-      byteMasterMessages: [
-        { text: 'Dobra robota, tunel VPN postawiony. Przejdź do exploita.' }
-      ],
-      nextChatChoices: [
-        { id: 'start_exploit', label: 'OTWIERAM EXPLOIT', openAppId: 'vpn_tool' }
-      ]
+  stages: [
+    {
+      id: 'stage_vpn',
+      appId: 'vpn_tool',
+      completion: {
+        conversation: [
+          { from: 'byte_master', text: 'Dobra robota, tunel VPN postawiony. Przejdź do exploita.' },
+          { from: 'player', id: 'start_exploit', label: 'OTWIERAM EXPLOIT' }
+        ],
+        unlockIcons: ['custom_tool_unlocked'],
+        badges: { chat: 1 }
+      }
     }
-  },
+  ],
   step6: {
     summary: {
       title: 'SUKCES',
@@ -264,27 +263,35 @@ describe('Generic SCORM Scenario Engine', () => {
     expect(afterScratch.isRetryModalOpen).toBe(false);
   });
 
-  it('declaratively runs scenario transitions and generic chat choices from definition', async () => {
-    const store = useMissionStore.getState();
-    store.loadMission(mockMission99);
-    store.openApp('vpn_tool');
-    expect(useMissionStore.getState().activeApp).toBe('vpn_tool');
+  it('declaratively completes a stage from definition: bridge conversation, then unlocks', () => {
+    vi.useFakeTimers();
+    try {
+      const store = useMissionStore.getState();
+      store.loadMission(mockMission99);
+      store.openApp('vpn_tool');
+      expect(useMissionStore.getState().activeApp).toBe('vpn_tool');
 
-    // Run declarative transition
-    store.runScenarioTransition('step1_complete');
-    expect(useMissionStore.getState().activeApp).toBeNull();
-    expect(useMissionStore.getState().unlockedIcons).toContain('custom_tool_unlocked');
-    expect(useMissionStore.getState().notificationBadges['chat']).toBe(1);
-    expect(useMissionStore.getState().systemTime).toBe('04:15');
+      // Etap z definicji misji: zamknięcie okna, rozmowa mostkująca, odblokowania na końcu.
+      store.completeStage('stage_vpn');
+      vi.runAllTimers();
+      let state = useMissionStore.getState();
+      expect(state.activeApp).toBeNull();
+      expect(state.completedStages).toContain('stage_vpn');
+      expect(state.chatMessages.some((m) => m.text.includes('tunel VPN'))).toBe(true);
+      // Kwestia gracza czeka na klik — odblokowania jeszcze nie ma.
+      expect(state.chatAvailableChoices).toEqual([{ id: 'start_exploit', label: 'OTWIERAM EXPLOIT', bridgeBeat: true }]);
+      expect(state.unlockedIcons).not.toContain('custom_tool_unlocked');
 
-    // Fast-forward simulated typing
-    await new Promise((r) => setTimeout(r, 1300));
-    const stateAfterMsg = useMissionStore.getState();
-    expect(stateAfterMsg.chatMessages.some((m) => m.text.includes('tunel VPN'))).toBe(true);
-    expect(stateAfterMsg.chatAvailableChoices.some((c) => c.id === 'start_exploit')).toBe(true);
-
-    // Player picks generic choice with openAppId
-    store.chooseChatOption('start_exploit');
-    expect(useMissionStore.getState().activeApp).toBe('vpn_tool');
+      store.chooseChatOption('start_exploit');
+      state = useMissionStore.getState();
+      expect(state.chatMessages[state.chatMessages.length - 1]).toMatchObject({ sender: 'PLAYER', text: 'OTWIERAM EXPLOIT' });
+      expect(state.pendingBridge).toBeNull();
+      expect(state.unlockedIcons).toContain('custom_tool_unlocked');
+      expect(state.notificationBadges['chat']).toBe(1);
+      // Czat nie jest launcherem: kwestia gracza nie otwiera aplikacji.
+      expect(state.activeApp).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
