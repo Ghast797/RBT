@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { ShieldAlert, CheckCircle2, Terminal, Cpu } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { ShieldAlert, CheckCircle2, Terminal, Cpu, GripVertical } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
-import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
+import { ChoiceZone } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { WormBuilderConfig } from './types';
@@ -29,16 +30,44 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
   const virusOptions = useShuffled(config.virus.options);
   const selectedVirus = config.virus.options.find((o) => o.id === selectedVirusId);
 
-  const toggleInstruction = (id: string) => {
-    sounds.playKeypress();
-    setEnabledInstructions((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+  // Przeciąganie segmentów kodu (zdarzenia wskaźnika: mysz i dotyk, także między prawym monitorem a lewym ekranem).
+  // Kolejność w `enabledInstructions` to kolejność upuszczania.
+  const dropRef = useRef<HTMLDivElement | null>(null);
+  const [drag, setDrag] = useState<{ id: string; x: number; y: number; over: boolean } | null>(null);
+  const dragId = drag?.id ?? null;
+
+  const isOverDrop = (x: number, y: number) => {
+    const r = dropRef.current?.getBoundingClientRect();
+    return !!r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
   };
 
-  const addAllInstructions = () => {
-    sounds.playSuccess();
-    setEnabledInstructions(config.instructions.map((i) => i.id));
+  useEffect(() => {
+    if (!dragId) return;
+    const onMove = (e: PointerEvent) =>
+      setDrag((d) => (d ? { ...d, x: e.clientX, y: e.clientY, over: isOverDrop(e.clientX, e.clientY) } : d));
+    const onUp = (e: PointerEvent) => {
+      if (isOverDrop(e.clientX, e.clientY)) {
+        sounds.playKeypress();
+        setEnabledInstructions((prev) => (prev.includes(dragId) ? prev : [...prev, dragId]));
+      }
+      setDrag(null);
+    };
+    const onCancel = () => setDrag(null);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onCancel);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onCancel);
+    };
+  }, [dragId]);
+
+  const startDrag = (e: React.PointerEvent, id: string) => {
+    if (e.button !== 0 || enabledInstructions.includes(id)) return;
+    e.preventDefault();
+    sounds.playClick();
+    setDrag({ id, x: e.clientX, y: e.clientY, over: false });
   };
 
   const handleVirusConfirm = () => {
@@ -67,20 +96,14 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
     <AppHeader icon={ShieldAlert} accent={accent} title="//BAZA_WIRUSÓW" subtitle={subtitle} task={task} step={step} />
   );
 
-  // Prawy monitor przy edycji kodu: wybór segmentów (wybory) i przyciski; lewy ekran pokazuje podgląd kodu.
+  // Prawy monitor przy edycji kodu: segmenty do przeciągnięcia i przycisk kompilacji; strefa upuszczenia (podgląd kodu) jest na lewym ekranie.
   const codePanel = (
     <SidePanel
       accent={accent}
       heading="//BAZA_WIRUSÓW: SEGMENTY KODU"
-      sub="Zaznacz procedury, które zostaną skompilowane w ładunek."
+      sub="Przeciągnij segmenty na ekran z podglądem kodu po lewej."
       footer={
-        <div className="shrink-0 space-y-2">
-          <button
-            onClick={addAllInstructions}
-            className="w-full px-3 py-2 rounded border border-gray-700 hover:border-gray-500 text-gray-300 hover:text-white text-[0.6875rem] font-bold uppercase tracking-wider transition-all bg-black/40 cursor-pointer"
-          >
-            WSTRZYKNIJ WSZYSTKIE INSTRUKCJE
-          </button>
+        <div className="shrink-0">
           <ConfirmButton
             accent={accent}
             label="KOMPILUJ ŁADUNEK 0-DAY"
@@ -92,22 +115,40 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
       }
     >
       {screen === 'code_edit' && (
-        <ChoiceZone accent={accent} label="ZAZNACZ SEGMENTY">
+        <ChoiceZone accent={accent} label="PRZECIĄGNIJ SEGMENTY">
           <div className="flex flex-col gap-2.5">
-            {config.instructions.map((inst) => (
-              <ChoiceTile
-                key={inst.id}
-                accent={accent}
-                state={enabledInstructions.includes(inst.id) ? 'selected' : 'idle'}
-                onClick={() => toggleInstruction(inst.id)}
-                className="p-3"
-              >
-                <div className="space-y-0.5">
-                  <div className="text-xs font-mono font-bold text-white break-all">{inst.code}</div>
-                  <div className="text-[0.6875rem] text-gray-300 leading-snug">{inst.desc}</div>
+            {config.instructions.map((inst) => {
+              const used = enabledInstructions.includes(inst.id);
+              const isDragged = dragId === inst.id;
+              return (
+                <div
+                  key={inst.id}
+                  onPointerDown={(e) => startDrag(e, inst.id)}
+                  style={{
+                    touchAction: 'none',
+                    borderColor: used ? '#4b5563' : `${accent}99`,
+                    backgroundColor: used ? '#0b1724' : `${accent}14`
+                  }}
+                  className={`relative p-3 pr-9 rounded-xl border-2 flex items-start gap-2 transition-opacity ${
+                    used
+                      ? 'opacity-50 cursor-default'
+                      : 'cursor-grab active:cursor-grabbing hover:-translate-y-0.5 transition-transform'
+                  } ${isDragged ? 'opacity-40' : ''}`}
+                >
+                  <GripVertical size={14} className="mt-0.5 shrink-0 text-gray-500" />
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="text-xs font-mono font-bold text-white break-all">{inst.code}</div>
+                    <div className="text-[0.6875rem] text-gray-300 leading-snug">{inst.desc}</div>
+                  </div>
+                  {used && (
+                    <span className="absolute top-2 right-2 flex items-center gap-1 text-[0.5625rem] font-black text-emerald-400">
+                      <CheckCircle2 size={12} />
+                      UŻYTY
+                    </span>
+                  )}
                 </div>
-              </ChoiceTile>
-            ))}
+              );
+            })}
           </div>
         </ChoiceZone>
       )}
@@ -145,11 +186,20 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
         <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
           {header(
             'MODYFIKACJA KODU ROBAKA 0-DAY',
-            'Zaznacz na prawym monitorze wszystkie segmenty kodu, a potem skompiluj ładunek.',
+            'Przeciągnij z prawego monitora wszystkie segmenty kodu na ekran z podglądem kodu, a potem skompiluj ładunek.',
             'KROK 2/2'
           )}
 
-          <div className="flex-1 min-h-0 p-4 rounded-xl border border-gray-800 bg-black/70 flex flex-col font-mono">
+          <div
+            ref={dropRef}
+            className="relative flex-1 min-h-0 p-4 rounded-xl border-2 bg-black/70 flex flex-col font-mono transition-all"
+            style={{
+              borderStyle: drag ? 'dashed' : 'solid',
+              borderColor: drag ? (drag.over ? accent : `${accent}99`) : '#1f2937',
+              backgroundColor: drag?.over ? `${accent}1f` : undefined,
+              boxShadow: drag?.over ? `0 0 24px ${accent}66` : undefined
+            }}
+          >
             <div className="flex items-center space-x-2 text-gray-300 border-b border-gray-800 pb-2 shrink-0">
               <Terminal size={15} />
               <span className="text-xs uppercase tracking-widest">Podgląd assemblera / payload.asm</span>
@@ -169,12 +219,14 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
                 ) : null;
               })}
               {enabledInstructions.length === 0 && (
-                <div className="text-gray-500 italic pl-4">; brak wybranych procedur...</div>
+                <div className="text-gray-500 italic pl-4">
+                  {drag ? '; upuść segment tutaj' : '; przeciągnij tu segmenty z prawego monitora...'}
+                </div>
               )}
               <div>ret</div>
             </div>
             <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-xs shrink-0">
-              <span className="text-gray-300">Wybrane procedury:</span>
+              <span className="text-gray-300">Dodane procedury:</span>
               <span className="font-bold text-white font-mono">
                 {enabledInstructions.length} / {config.instructions.length}
               </span>
@@ -182,6 +234,23 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
           </div>
         </div>
       )}
+
+      {drag &&
+        createPortal(
+          <div
+            className="fixed z-[9999] pointer-events-none px-3 py-2 rounded-lg border-2 font-mono text-xs font-bold text-white shadow-xl"
+            style={{
+              left: drag.x + 12,
+              top: drag.y + 12,
+              borderColor: accent,
+              backgroundColor: '#0b1724',
+              boxShadow: `0 0 16px ${accent}80`
+            }}
+          >
+            {config.instructions.find((i) => i.id === drag.id)?.code}
+          </div>,
+          document.body
+        )}
 
       {screen === 'compiling' && (
         <ModuleLoader

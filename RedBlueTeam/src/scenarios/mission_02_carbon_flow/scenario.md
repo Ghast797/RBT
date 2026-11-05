@@ -71,7 +71,7 @@ Mostek (rozmowa do kolejnego etapu):
 ## Etap 3: //BAZA_WIRUSÓW
 Klocek: NOWA MINIGRA (`WormBuilderApp`: wybór wirusa → modyfikacja kodu → kompilacja)
 Cel dydaktyczny: rozróżnienie typów malware i dobór tego, który tworzy sieć zainfekowanych komputerów (botnet).
-Ekrany: wybór wirusa → modyfikacja kodu (5 instrukcji, zaznaczane klikiem; przycisk „KOMPILUJ ŁADUNEK 0-DAY”) → kompilacja → „WIRUS GOTOWY!” z tekstem „AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY” (VR S04)
+Ekrany: wybór wirusa → modyfikacja kodu (5 instrukcji przeciąganych na ekran kodu; przycisk „KOMPILUJ ŁADUNEK 0-DAY”) → kompilacja → „WIRUS GOTOWY!” z tekstem „AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY” (VR S04)
 Oceniane: D4 | Flavor (nieoceniane): modyfikacja kodu i kompilacja
 
 Decyzja D4: "WYBIERZ ODPOWIEDNIEGO WIRUSA:"
@@ -145,7 +145,7 @@ D5:
 - [NIEPEWNE] Pytania w VR-owej tabeli debriefu różnią się od ekranowych (np. „WYBIERZ SZABLON MAILA” vs „WYBIERZ SZABLON FORMULARZA:”). W grze raport używa pytań z ekranu.
 - [DO ZAPROJEKTOWANIA] Lekcje atak/obrona w debriefie (D1–D5) nie istnieją w VR; propozycja do recenzji właściciela.
 - Opisy i tagi opcji spoza VR usunięto (oceniały opcje); zostawiono podtytuły szablonów z VR.
-- [DO DECYZJI] S04, krok 2: VR każe przeciągnąć 5 klocków instrukcji na grafikę robaka. W webie gracz zaznacza segmenty kodu klikiem na prawym monitorze, a lewy ekran pokazuje podgląd assemblera. Przycisk „WSTRZYKNIJ WSZYSTKIE INSTRUKCJE” i kompilacja przez „KOMPILUJ ŁADUNEK 0-DAY” to dodatki kodu (nieoceniane).
+- [DO DECYZJI] S04, krok 2: przycisk „KOMPILUJ ŁADUNEK 0-DAY” (aktywny po przeciągnięciu wszystkich 5 segmentów) to dodatek kodu (nieoceniany). Segmenty są na prawym monitorze, a strefą upuszczania jest podgląd assemblera na lewym ekranie (VR: „na grafikę robaka”).
 - [DO DECYZJI] S01, ekran startowy: VR podaje tytuł „NOWA KAMPANIA PHISHINGOWA” i przycisk „KONTYNUUJ”. W webie tytuł jest samym dużym przyciskiem startu (bez osobnego „KONTYNUUJ”, na prośbę właściciela); reszta ekranu (nagłówek aplikacji, ikona) to standard aplikacji z M1.
 - [DO DECYZJI] S06: VR opisuje alert „MALWARE ZOSTAŁ AKTYWOWANY” i monitor z komunikatem „ROBAK – …” jako osobne ekrany; w webie to jeden ekran (tytuł = alert, treść = komunikat monitora, przycisk „PODGLĄD”).
 - [DO DECYZJI] S06: topologia sieci (nazwy stacji CF-*, role, podział 10 zainfekowanych / 2 zabezpieczone) nie pochodzi z VR; VR podaje tylko „schemat sieci zakażonej w firmie CarbonFlow”.
