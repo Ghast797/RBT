@@ -1,10 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Wifi,
   Globe,
   CheckCircle2,
   ShieldCheck,
-  ArrowRight,
   Cpu,
   AlertTriangle,
   Send,
@@ -121,6 +120,15 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   const isTargetMatched = currentIp === targetIpStr || allowedIps.includes(currentIp);
   const sender = config.sender?.options.find((s) => s.id === senderId);
   const senderOptions = useShuffled(config.sender?.options ?? []);
+
+  // Po udanym połączeniu (wariant bez kroku nadawcy) krótko pokazujemy sukces i sami przechodzimy dalej.
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+  useEffect(() => {
+    if (!isConnected || hasSenderStep) return;
+    const id = setTimeout(() => onCompleteRef.current(), 1300);
+    return () => clearTimeout(id);
+  }, [isConnected, hasSenderStep]);
 
   const setOctet = (idx: number, delta: number) => {
     sounds.playKeypress();
@@ -323,7 +331,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
         hasSenderStep ? 'KROK 1/2 — MASKOWANIE ADRESU IP' : 'DOPASOWANIE ADRESU DO WĘZŁA PROXY',
         isConnected ? 'POŁĄCZONO' : isTargetMatched ? 'ZGODNY' : 'ROZŁĄCZONY',
         isConnected
-          ? 'Połączenie zestawione. Zatwierdź routing i przejdź dalej.'
+          ? 'Połączenie zestawione. Za chwilę przejdziemy dalej…'
           : config.task || 'Wpisz w kratki (lub ustaw przyciskami +/-) adres z białej listy i połącz się z tunelem VPN.'
       )}
 
@@ -468,16 +476,9 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
             <span>POŁĄCZ Z TUNELEM VPN</span>
           </button>
         ) : (
-          <button
-            onClick={() => {
-              sounds.playSuccess();
-              onComplete();
-            }}
-            className="flex items-center space-x-2 px-6 py-2.5 rounded font-black text-xs uppercase tracking-widest bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg transition-all cursor-pointer active:scale-95"
-          >
-            <span>ZATWIERDŹ ROUTING I PRZEJDŹ DALEJ</span>
-            <ArrowRight size={14} />
-          </button>
+          <span className="text-xs font-bold tracking-widest animate-pulse" style={{ color: accent }}>
+            TUNEL AKTYWNY — PRZEKAZYWANIE…
+          </span>
         )}
       </div>
     </div>
