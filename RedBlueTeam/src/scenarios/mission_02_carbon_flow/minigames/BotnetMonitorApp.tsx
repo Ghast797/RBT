@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Radio, AlertOctagon, CheckCircle2, ArrowRight } from 'lucide-react';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { Radio, AlertOctagon, CheckCircle2 } from 'lucide-react';
+import { AppHeader } from '../../../engine/components/AppHeader';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';
+import { ConfirmButton } from './ui';
 import type { BotnetMonitorConfig } from './types';
 
 interface NodeStatus {
@@ -31,7 +32,8 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
   config,
   onComplete
 }) => {
-  const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#00ff66';
+  // Akcent = kolor kafelka //MONITOR_BOTNETU na pulpicie (jak w Misji 1).
+  const accent = '#3b82f6';
 
   const [percentage, setPercentage] = useState(0);
   const [activeStep, setActiveStep] = useState<'alert' | 'telemetry'>('alert');
@@ -55,31 +57,21 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      <div className="border-b pb-3 flex items-center justify-between" style={{ borderColor: `${accent}4d` }}>
-        <div className="flex items-center space-x-2.5">
-          <div
-            className="p-1.5 rounded border"
-            style={{ backgroundColor: `${accent}26`, borderColor: accent, color: accent }}
-          >
-            <Radio size={20} />
-          </div>
-          <div>
-            <h2 className="text-sm font-bold text-white tracking-widest">//MONITOR_BOTNETU // STATUS INFEKCJI</h2>
-            <p className="text-[0.6875rem]" style={{ color: accent }}>
-              Telemetria formowania sieci maszyn zombie w infrastrukturze {config.targetCompany}
-            </p>
-          </div>
-        </div>
-        <span
-          className="text-[0.625rem] px-2 py-0.5 rounded border font-mono"
-          style={{ backgroundColor: `${accent}1a`, borderColor: `${accent}66`, color: accent }}
-        >
-          LIVE TELEMETRY
-        </span>
-      </div>
+      <AppHeader
+        icon={Radio}
+        accent={accent}
+        title="//MONITOR_BOTNETU"
+        subtitle={`Telemetria sieci maszyn zombie w infrastrukturze ${config.targetCompany}`}
+        step="LIVE TELEMETRY"
+        task={
+          activeStep === 'alert'
+            ? 'Otwórz monitor sieci botnetu i zobacz, co zrobił robak.'
+            : 'Obserwuj infekcję. Gdy się zakończy, zamelduj mentorowi.'
+        }
+      />
 
       {activeStep === 'alert' && (
-        <div className="flex flex-col justify-between h-full space-y-4 my-auto">
+        <div className="flex flex-col justify-between flex-1 space-y-4">
           <div className="p-6 rounded-xl border border-red-500/60 bg-red-950/20 space-y-3 text-center">
             <div className="w-12 h-12 rounded-full bg-red-500/20 border border-red-500 mx-auto flex items-center justify-center text-red-400 animate-pulse">
               <AlertOctagon size={28} />
@@ -93,18 +85,16 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
             </p>
           </div>
 
-          <div className="flex justify-end pt-2">
-            <button
+          <div className="flex justify-end">
+            <ConfirmButton
+              accent={accent}
+              label="OTWÓRZ MONITOR SIECI BOTNETU"
               onClick={() => {
                 sounds.playClick();
                 setActiveStep('telemetry');
               }}
-              className="flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs bg-red-600 hover:bg-red-500 text-white transition-all"
-              style={{ boxShadow: '0 0 20px rgba(239,68,68,0.5)' }}
-            >
-              <span>OTWÓRZ MONITOR SIECI BOTNETU</span>
-              <ArrowRight size={14} />
-            </button>
+              className="w-auto px-6"
+            />
           </div>
         </div>
       )}
@@ -114,13 +104,13 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
               <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Stopień penetracji sieci:</span>
-              <div className="text-2xl font-bold font-mono text-emerald-400 flex items-center space-x-2">
+              <div className="text-2xl font-bold font-mono text-white flex items-center space-x-2">
                 <span>{percentage}%</span>
-                {percentage === 82 && <CheckCircle2 size={18} className="text-emerald-400" />}
+                {percentage === 82 && <CheckCircle2 size={18} className="text-white" />}
               </div>
               <div className="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden mt-1">
                 <div
-                  className="bg-emerald-500 h-full transition-all duration-100"
+                  className="bg-blue-500 h-full transition-all duration-100"
                   style={{ width: `${percentage}%` }}
                 />
               </div>
@@ -128,7 +118,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
 
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
               <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Aktywne maszyny zombie:</span>
-              <div className="text-2xl font-bold font-mono text-cyan-400">
+              <div className="text-2xl font-bold font-mono text-white">
                 {Math.round((percentage / 100) * 12)} / 12
               </div>
               <span className="text-[0.625rem] text-gray-400">POD KONTROLĄ C&amp;C</span>
@@ -136,8 +126,8 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
 
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
               <span className="text-[0.625rem] text-gray-400 uppercase tracking-widest">Reakcja systemów IDS:</span>
-              <div className="text-2xl font-bold font-mono text-purple-400">0 ALARMÓW</div>
-              <span className="text-[0.625rem] text-emerald-400">ŁADUNEK 0-DAY NIEWYKRYTY</span>
+              <div className="text-2xl font-bold font-mono text-white">0 ALARMÓW</div>
+              <span className="text-[0.625rem] text-white">ŁADUNEK 0-DAY NIEWYKRYTY</span>
             </div>
           </div>
 
@@ -155,7 +145,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
                     key={node.id}
                     className={`p-2.5 rounded-lg border transition-all text-xs flex items-center justify-between ${
                       isNodeInfected
-                        ? 'border-emerald-500/60 bg-emerald-950/20 text-white'
+                        ? 'border-blue-500/60 bg-blue-950/20 text-white'
                         : 'border-gray-800 bg-black/40 text-gray-500'
                     }`}
                   >
@@ -165,7 +155,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
                     </div>
                     <div
                       className={`w-2.5 h-2.5 rounded-full shrink-0 ml-1.5 ${
-                        isNodeInfected ? 'bg-emerald-400 animate-pulse' : 'bg-gray-700'
+                        isNodeInfected ? 'bg-blue-400 animate-pulse' : 'bg-gray-700'
                       }`}
                     />
                   </div>
@@ -174,23 +164,17 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
             </div>
           </div>
 
-          <div className="flex justify-end pt-2">
-            <button
-              disabled={percentage < 82}
+          <div className="flex justify-end">
+            <ConfirmButton
+              accent={accent}
+              label="ZAKOŃCZ OPERACJĘ I ZAMELDUJ MENTOROWI"
+              enabled={percentage >= 82}
               onClick={() => {
                 sounds.playSuccess();
                 onComplete();
               }}
-              className={`flex items-center space-x-2 px-6 py-2.5 rounded-lg font-bold text-xs transition-all ${
-                percentage >= 82
-                  ? 'bg-emerald-500 hover:bg-emerald-400 text-black'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-              }`}
-              style={percentage >= 82 ? { boxShadow: '0 0 20px rgba(16,185,129,0.5)' } : undefined}
-            >
-              <span>ZAKOŃCZ OPERACJĘ I ZAMELDUJ MENTOROWI</span>
-              <ArrowRight size={14} />
-            </button>
+              className="w-auto px-6"
+            />
           </div>
         </div>
       )}
