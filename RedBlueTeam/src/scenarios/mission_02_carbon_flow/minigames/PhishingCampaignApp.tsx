@@ -130,23 +130,28 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
           {header(
             'KONFIGURACJA KAMPANII',
-            'Kliknij KONTYNUUJ, aby rozpocząć konfigurację kampanii przeciwko CarbonFlow Inc.',
+            'Kliknij NOWA KAMPANIA PHISHINGOWA, aby rozpocząć konfigurację kampanii przeciwko CarbonFlow Inc.',
             'START'
           )}
-          <InfoCard accent={accent} className="text-center my-auto">
-            <Mail size={32} className="mx-auto" style={{ color: accent }} />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">NOWA KAMPANIA PHISHINGOWA</h3>
-          </InfoCard>
-          <div className="flex justify-end">
-            <ConfirmButton
-              accent={accent}
-              label="KONTYNUUJ"
+          <div className="flex-1 flex items-center justify-center">
+            <button
+              type="button"
               onClick={() => {
                 sounds.playClick();
                 setScreen('action');
               }}
-              className="w-auto px-6"
-            />
+              className="w-full max-w-md p-8 rounded-2xl border-2 text-center space-y-3 transition-all duration-150 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+              style={{
+                borderColor: accent,
+                backgroundColor: `${accent}1a`,
+                boxShadow: `0 0 24px ${accent}40`
+              }}
+            >
+              <Mail size={40} className="mx-auto" style={{ color: accent }} />
+              <span className="block text-base font-black text-white uppercase tracking-wider">
+                NOWA KAMPANIA PHISHINGOWA
+              </span>
+            </button>
           </div>
         </div>
       )}
