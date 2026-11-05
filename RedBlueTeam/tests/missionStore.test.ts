@@ -20,6 +20,29 @@ describe('Store silnika: boot, otwarcie czatu i xAPI', () => {
     expect(state.bootStage).toBe('incoming_call');
     expect(state.activeApp).toBeNull();
     expect(state.score).toBe(state.activeMission.mission.maxScore);
+    // Bez domyślnych badge'y innej misji: przed startem pulpitu nic nie świeci.
+    expect(state.notificationBadges).toEqual({});
+  });
+
+  it('misja bez intro.firstChoice/firstUnlock startuje pulpit z samą historią intro', () => {
+    const base = useMissionStore.getState().activeMission;
+    const { firstChoice: _fc, firstUnlock: _fu, startBadges: _sb, ...intro } = base.intro as Record<string, unknown>;
+    useMissionStore.getState().loadMission({ ...base, intro } as typeof base);
+    useMissionStore.getState().finishBiosBoot();
+
+    const state = useMissionStore.getState();
+    expect(state.bootStage).toBe('desktop');
+    expect(state.chatAvailableChoices).toEqual([]);
+    expect(state.pendingBridge).toBeNull();
+    expect(state.notificationBadges).toEqual({});
+    expect(state.chatMessages.every((m) => m.id.startsWith('intro_'))).toBe(true);
+  });
+
+  it('nie zawiera starego przebiegu Misji 3', () => {
+    const state = useMissionStore.getState() as unknown as Record<string, unknown>;
+    for (const legacy of ['chatStage', 'selectedVirus', 'droneFlightState', 'runScenarioTransition', 'selectVirusCard', 'hasUsbInserted']) {
+      expect(state).not.toHaveProperty(legacy);
+    }
   });
 
   it('przechodzi sekwencję startu do pulpitu i otwiera rozmowę kwestią gracza z intro', () => {

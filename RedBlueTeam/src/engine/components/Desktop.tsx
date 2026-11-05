@@ -6,7 +6,6 @@ import {
   RotateCcw,
   ArrowRight,
   MessageSquareCode,
-  HardDrive,
   HelpCircle,
   AlertTriangle,
   X,
@@ -55,8 +54,6 @@ export const Desktop: React.FC = () => {
     triggerChatAttention,
     systemDate,
     systemTime,
-    hasUsbInserted,
-    isUsbEjected,
     isDetectedModalOpen,
     detectionReason,
     isRetryModalOpen,
@@ -346,16 +343,6 @@ export const Desktop: React.FC = () => {
                   <span className="text-[0.6875rem] text-[#00ff66]">SPRAWDŹ PRAWY MONITOR ➔</span>
                 </div>
                 <ArrowRight size={24} className="text-[#00ff66] animate-pulse shrink-0" />
-              </div>
-            )}
-
-            {/* Physical USB Stick Icon on Desk */}
-            {(hasUsbInserted || isUsbEjected) && (
-              <div className="pt-2 border-t border-[#00ff66]/20 flex items-center justify-center relative z-10">
-                <div className="px-3 py-1 rounded bg-purple-950/60 border border-purple-500 text-purple-300 flex items-center space-x-2 text-[0.625rem] font-bold animate-pulse">
-                  <HardDrive size={13} />
-                  <span>[USB PODŁĄCZONE DO STANOWISKA HAKERA]</span>
-                </div>
               </div>
             )}
           </div>

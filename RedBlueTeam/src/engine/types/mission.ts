@@ -135,62 +135,6 @@ export interface DebriefData {
   educationalSlides?: EducationalSlide[];
 }
 
-// Step / Phase abstractions
-export type StepType = 
-  | 'dialogue'
-  | 'virus_builder'
-  | 'osint_browser'
-  | 'payload_config'
-  | 'delivery_interaction'
-  | 'takeover_session'
-  | 'debriefing'
-  | 'custom';
-
-export interface MissionStep {
-  id: string;
-  stepNumber: number;
-  type: StepType;
-  title: string;
-  description?: string;
-  [key: string]: any;
-}
-
-export interface ScenarioTransitionMessage {
-  text: string;
-  actionButton?: {
-    type: 'link_browser' | 'download_attachments' | 'view_car_photo';
-    label: string;
-    payload?: string;
-  };
-  imageSrc?: string;
-}
-
-export interface ScenarioTransitionChoice {
-  id: string;
-  label: string;
-  openAppId?: string;
-  nextTransitionId?: string;
-  outcome?: ChoiceOutcome;
-  choiceRecord?: {
-    num: number;
-    question: string;
-    answer: string;
-    details: string;
-    btcPenalty?: number;
-    scorePenalty?: number;
-  };
-}
-
-export interface ScenarioTransition {
-  id: string;
-  unlockIcons?: string[];
-  badges?: Record<string, number>;
-  closeActiveApp?: boolean;
-  timeJump?: string;
-  byteMasterMessages?: ScenarioTransitionMessage[];
-  nextChatChoices?: ScenarioTransitionChoice[];
-}
-
 // ---------------------------------------------------------------------------
 // KONTRAKT KLOCKA / MINIGRY (docs/scenario-engine.md, sekcja 5)
 // ---------------------------------------------------------------------------
@@ -360,15 +304,6 @@ export interface MissionDefinition {
   stages?: StageDefinition[];
   /** Dane klocków i minigier, kluczowane identyfikatorem kafelka (wzorzec B). */
   blocks?: Record<string, unknown>;
-  /** @deprecated LEGACY (wzorzec A). Nowe misje używają `stages`. */
-  transitions?: Record<string, ScenarioTransition>;
-  /** @deprecated LEGACY — martwe pole, nieczytane przez kod. */
-  steps?: MissionStep[];
-  step1?: any;
-  step2?: any;
-  step3?: any;
-  step4?: any;
-  step5?: any;
   step6: DebriefData;
   [key: string]: any;
 }
