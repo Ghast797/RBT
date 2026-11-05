@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Wifi,
   Globe,
@@ -109,7 +109,10 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   const target = parseOctets(targetIpStr);
 
   const [screen, setScreen] = useState<Screen>('ip');
-  const [octets, setOctets] = useState<number[]>(initial);
+  // Kratki trzymamy jako tekst (puste pole podczas wpisywania), liczby wynikają z nich.
+  const [fields, setFields] = useState<string[]>(initial.map(String));
+  const octets = fields.map((f) => (f === '' ? 0 : parseInt(f, 10)));
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [isSyncingAi, setIsSyncingAi] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -123,9 +126,48 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   const setOctet = (idx: number, delta: number) => {
     sounds.playKeypress();
     setErrorMessage(null);
-    setOctets((prev) =>
-      prev.map((v, i) => (i === idx ? Math.max(0, Math.min(255, v + delta)) : v))
+    setFields((prev) =>
+      prev.map((f, i) =>
+        i === idx ? String(Math.max(0, Math.min(255, (f === '' ? 0 : parseInt(f, 10)) + delta))) : f
+      )
     );
+  };
+
+  const focusOctet = (idx: number) => {
+    const el = inputRefs.current[idx];
+    if (el) {
+      el.focus();
+      el.select();
+    }
+  };
+
+  const handleOctetChange = (idx: number, raw: string) => {
+    setErrorMessage(null);
+    const digits = raw.replace(/\D/g, '').slice(0, 3);
+    const value = digits === '' ? '' : String(Math.min(255, parseInt(digits, 10)));
+    setFields((prev) => prev.map((f, i) => (i === idx ? value : f)));
+    // Pełne pole (3 cyfry) przechodzi do następnej kratki.
+    if (digits.length === 3 && idx < 3) focusOctet(idx + 1);
+  };
+
+  const handleOctetKeyDown = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === '.' || e.key === 'Enter') {
+      e.preventDefault();
+      if (idx < 3) focusOctet(idx + 1);
+    } else if (e.key === 'Backspace' && fields[idx] === '' && idx > 0) {
+      e.preventDefault();
+      focusOctet(idx - 1);
+    }
+  };
+
+  const handleOctetPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const parts = e.clipboardData.getData('text').trim().split('.');
+    if (parts.length === 4 && parts.every((p) => /^\d{1,3}$/.test(p))) {
+      e.preventDefault();
+      setErrorMessage(null);
+      setFields(parts.map((p) => String(Math.min(255, parseInt(p, 10)))));
+      focusOctet(3);
+    }
   };
 
   const handleAiSync = () => {
@@ -133,7 +175,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
     setIsSyncingAi(true);
     setErrorMessage(null);
     setTimeout(() => {
-      setOctets(parseOctets(targetIpStr));
+      setFields(parseOctets(targetIpStr).map(String));
       setIsSyncingAi(false);
       sounds.playSuccess();
     }, 900);
@@ -283,7 +325,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
         isConnected ? 'POŁĄCZONO' : isTargetMatched ? 'ZGODNY' : 'ROZŁĄCZONY',
         isConnected
           ? 'Połączenie zestawione. Zatwierdź routing i przejdź dalej.'
-          : config.task || 'Ustaw przyciskami +/- adres z białej listy i połącz się z tunelem VPN.'
+          : config.task || 'Wpisz w kratki (lub ustaw przyciskami +/-) adres z białej listy i połącz się z tunelem VPN.'
       )}
 
       {/* Górny panel 2-kolumnowy (Biała lista + moduł AI) */}
@@ -358,7 +400,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
               <span>PODSIEĆ ZGODNA</span>
             </span>
           ) : (
-            <span className="text-[0.625rem] text-gray-500 font-mono">[DOPASUJ PRZYCISKAMI +/-]</span>
+            <span className="text-[0.625rem] text-gray-500 font-mono">[WPISZ LUB +/-]</span>
           )}
         </div>
 
@@ -384,15 +426,29 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
                 >
                   +
                 </button>
-                <div
-                  className="w-full py-2 bg-black/70 border rounded text-center font-bold text-sm font-mono transition-all"
+                <input
+                  ref={(el) => {
+                    inputRefs.current[idx] = el;
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  maxLength={3}
+                  disabled={isConnected}
+                  aria-label={`Oktet ${idx + 1} adresu IP`}
+                  value={fields[idx]}
+                  onChange={(e) => handleOctetChange(idx, e.target.value)}
+                  onKeyDown={(e) => handleOctetKeyDown(idx, e)}
+                  onPaste={handleOctetPaste}
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => setFields((prev) => prev.map((f, i) => (i === idx && f === '' ? '0' : f)))}
+                  className="w-full py-2 bg-black/70 border rounded text-center font-bold text-sm font-mono transition-all outline-none focus:ring-1 select-text"
                   style={{
                     borderColor: isOctetMatch ? '#10b981' : '#374151',
-                    color: isOctetMatch ? '#10b981' : '#fff'
+                    color: isOctetMatch ? '#10b981' : '#fff',
+                    ['--tw-ring-color' as string]: accent
                   }}
-                >
-                  {val}
-                </div>
+                />
                 <button
                   type="button"
                   disabled={isConnected}
