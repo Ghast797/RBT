@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { AppHeader } from '../components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../components/ChoiceZone';
+import { ConfirmButton } from '../components/ConfirmButton';
 import { useShuffled } from '../core/shuffle';
 import { useMissionStore } from '../store/useMissionStore';
 import { sounds } from '../audio/soundEffects';
@@ -243,13 +244,14 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
     }
   };
 
-  const header = (sub: string, stepBadge: string, task: string) => (
+  const header = (sub: string, stepBadge: string, task: string, action?: React.ReactNode) => (
     <AppHeader
       icon={Wifi}
       accent={accent}
       title={config.title || '//VPN_ROUTING'}
       subtitle={sub}
       step={stepBadge}
+      action={action}
       task={task}
     />
   );
@@ -325,6 +327,19 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   }
 
   // screen === 'ip'
+  // Asysta AI: normalny przycisk w prawym górnym rogu (jak inne przyciski aplikacji), nie ukryty link.
+  const aiButton =
+    allowAiSync && !isConnected ? (
+      <ConfirmButton
+        accent={accent}
+        label={isSyncingAi ? 'SYNCHRONIZACJA…' : 'ASYSTA AI'}
+        enabled={!isSyncingAi}
+        onClick={handleAiSync}
+        icon={<Cpu size={15} className={isSyncingAi ? 'animate-pulse' : ''} />}
+        className="w-auto px-4"
+      />
+    ) : undefined;
+
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
       {header(
@@ -332,69 +347,68 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
         isConnected ? 'POŁĄCZONO' : isTargetMatched ? 'ZGODNY' : 'ROZŁĄCZONY',
         isConnected
           ? 'Połączenie zestawione. Za chwilę przejdziemy dalej…'
-          : config.task || 'Wpisz w kratki (lub ustaw przyciskami +/-) adres z białej listy i połącz się z tunelem VPN.'
+          : config.task || 'Wpisz w kratki (lub ustaw przyciskami +/-) adres z białej listy i połącz się z tunelem VPN.',
+        aiButton
       )}
 
-      {/* Środkowy panel: Bieżący adres IP + Pionowe przyciski oktetów */}
-      <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a] space-y-4">
+      {/* Biała lista: karta na pełną szerokość obszaru aplikacji, duże adresy */}
+      <div className="p-4 rounded-xl border border-cyan-500/30 bg-black/40 space-y-3 shrink-0">
+        <div className="flex items-center space-x-2 text-cyan-400">
+          <Globe size={20} />
+          <span className="text-sm font-bold uppercase tracking-wide">Dozwolone IP (Biała lista)</span>
+        </div>
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 1fr))' }}>
+          {allowedIps.map((ip) => (
+            <div
+              key={ip}
+              className="px-4 py-2.5 rounded-lg bg-black/60 border border-gray-800 flex justify-between items-center gap-3"
+            >
+              <span className="font-mono text-emerald-400 font-black text-xl tracking-wider">{ip}</span>
+              <span className="text-xs text-gray-400 uppercase tracking-wider">SERWER PROXY</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-sm text-gray-400 leading-snug">
+          Filtry bezpieczeństwa celu natychmiast odrzucają ruch spoza zarejestrowanych węzłów sieci.
+        </p>
+      </div>
+
+      {/* Bieżący adres IP + pola oktetów (+/-) */}
+      <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a] space-y-3 flex-1 min-h-0 flex flex-col justify-center">
         <div className="flex items-center justify-between border-b border-gray-800 pb-2">
-          <div className="text-xs text-gray-400 font-bold uppercase tracking-wider">
-            BIEŻĄCY ADRES WYJŚCIOWY VPN:
-          </div>
+          <div className="text-sm text-gray-300 font-bold uppercase tracking-wider">BIEŻĄCY ADRES WYJŚCIOWY VPN:</div>
           {isTargetMatched ? (
             <span
-              className="px-2.5 py-0.5 rounded text-[0.625rem] font-bold border flex items-center space-x-1"
+              className="px-3 py-1 rounded text-xs font-bold border flex items-center space-x-1"
               style={{ backgroundColor: '#10b98126', borderColor: '#10b981', color: '#10b981' }}
             >
-              <Check size={12} />
+              <Check size={14} />
               <span>PODSIEĆ ZGODNA</span>
             </span>
           ) : (
-            <span className="text-[0.625rem] text-gray-500 font-mono">[WPISZ LUB +/-]</span>
+            <span className="text-xs text-gray-500 font-mono">[WPISZ LUB +/-]</span>
           )}
-        </div>
-
-        {/* Biała lista: główny, wyśrodkowany element, tuż nad polami adresu */}
-        <div className="max-w-md mx-auto p-3.5 rounded-xl border border-cyan-500/30 bg-black/40 space-y-2">
-          <div className="flex items-center justify-center space-x-2 text-cyan-400">
-            <Globe size={16} />
-            <span className="text-xs font-bold uppercase tracking-wide">Dozwolone IP (Biała lista)</span>
-          </div>
-          <div className="space-y-1.5">
-            {allowedIps.map((ip) => (
-              <div
-                key={ip}
-                className="px-3 py-1.5 rounded-lg bg-black/60 border border-gray-800 flex justify-between items-center text-xs"
-              >
-                <span className="font-mono text-emerald-400 font-bold text-sm">{ip}</span>
-                <span className="text-[0.625rem] text-gray-400 uppercase tracking-wider">SERWER PROXY</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-[0.6875rem] text-gray-400 leading-relaxed text-center">
-            Filtry bezpieczeństwa celu natychmiast odrzucają ruch spoza zarejestrowanych węzłów sieci.
-          </p>
         </div>
 
         <div className="text-center">
           <div
-            className="text-2xl sm:text-3xl font-black font-mono tracking-widest transition-all"
+            className="text-4xl font-black font-mono tracking-widest transition-all"
             style={{ color: isTargetMatched ? '#10b981' : '#fff' }}
           >
             {currentIp}
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2.5 max-w-md mx-auto">
+        <div className="grid grid-cols-4 gap-4">
           {octets.map((val, idx) => {
             const isOctetMatch = val === target[idx];
             return (
-              <div key={idx} className="flex flex-col items-center space-y-1">
+              <div key={idx} className="flex flex-col items-center space-y-1.5">
                 <button
                   type="button"
                   disabled={isConnected}
                   onClick={() => setOctet(idx, 1)}
-                  className="w-full py-1 rounded bg-[#0c1624] hover:bg-[#15253b] border border-gray-700 text-gray-300 text-xs font-bold transition-all disabled:opacity-40 cursor-pointer"
+                  className="w-full py-1.5 rounded bg-[#0c1624] hover:bg-[#15253b] border border-gray-700 text-gray-300 text-base font-bold transition-all disabled:opacity-40 cursor-pointer"
                 >
                   +
                 </button>
@@ -414,7 +428,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
                   onPaste={handleOctetPaste}
                   onFocus={(e) => e.target.select()}
                   onBlur={() => setFields((prev) => prev.map((f, i) => (i === idx && f === '' ? '0' : f)))}
-                  className="w-full py-2 bg-black/70 border rounded text-center font-bold text-sm font-mono transition-all outline-none focus:ring-1 select-text"
+                  className="w-full py-3 bg-black/70 border-2 rounded text-center font-black text-3xl font-mono transition-all outline-none focus:ring-1 select-text"
                   style={{
                     borderColor: isOctetMatch ? '#10b981' : '#374151',
                     color: isOctetMatch ? '#10b981' : '#fff',
@@ -425,7 +439,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
                   type="button"
                   disabled={isConnected}
                   onClick={() => setOctet(idx, -1)}
-                  className="w-full py-1 rounded bg-[#0c1624] hover:bg-[#15253b] border border-gray-700 text-gray-300 text-xs font-bold transition-all disabled:opacity-40 cursor-pointer"
+                  className="w-full py-1.5 rounded bg-[#0c1624] hover:bg-[#15253b] border border-gray-700 text-gray-300 text-base font-bold transition-all disabled:opacity-40 cursor-pointer"
                 >
                   -
                 </button>
@@ -435,37 +449,22 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
         </div>
 
         {errorMessage && (
-          <div className="p-3 rounded-lg border border-red-500/50 bg-red-950/30 flex items-center space-x-2 text-xs text-red-300 animate-in fade-in">
-            <AlertTriangle size={16} className="text-red-400 shrink-0" />
+          <div className="p-3 rounded-lg border border-red-500/50 bg-red-950/30 flex items-center space-x-2 text-sm text-red-300 animate-in fade-in">
+            <AlertTriangle size={18} className="text-red-400 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {isConnected && !hasSenderStep && (
-          <div className="p-3 rounded-lg border border-emerald-500/50 bg-emerald-950/30 flex items-center space-x-2 text-xs text-emerald-300 animate-in fade-in">
-            <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+          <div className="p-3 rounded-lg border border-emerald-500/50 bg-emerald-950/30 flex items-center space-x-2 text-sm text-emerald-300 animate-in fade-in">
+            <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
             <span>{feedback.ideal}</span>
           </div>
         )}
       </div>
 
       {/* Dolny przycisk akcji */}
-      <div className="flex items-center justify-between pt-2">
-        {/* Asysta AI: mały, mało widoczny link w rogu (nie jest oczywistą ścieżką) */}
-        {allowAiSync && !isConnected ? (
-          <button
-            type="button"
-            disabled={isSyncingAi}
-            onClick={handleAiSync}
-            title="Asysta AI: dopasuj oktety do allowlisty"
-            className="flex items-center space-x-1 text-[0.625rem] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer disabled:opacity-50"
-          >
-            <Cpu size={10} className={isSyncingAi ? 'animate-pulse' : ''} />
-            <span>{isSyncingAi ? 'synchronizacja…' : 'asysta AI'}</span>
-          </button>
-        ) : (
-          <span />
-        )}
+      <div className="flex items-center justify-end shrink-0">
         {!isConnected ? (
           <button
             onClick={handleConnect}

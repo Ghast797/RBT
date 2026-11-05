@@ -10,6 +10,8 @@ interface AppHeaderProps {
   subtitle?: string;
   /** Plakietka po prawej, np. "KROK 1/3". */
   step?: string;
+  /** Przycisk akcji w prawym górnym rogu, obok plakietki `step` (np. „Asysta AI”). */
+  action?: React.ReactNode;
   /** Własna zawartość po prawej (zastępuje plakietkę `step`). */
   aside?: React.ReactNode;
   /** Polecenie dla gracza: co ma teraz zrobić. Pokazywane w wyraźnym pasku ZADANIE. */
@@ -20,7 +22,7 @@ interface AppHeaderProps {
  * Wspólny nagłówek aplikacji na pulpicie HACKERS.OS: nazwa aplikacji i bieżące zadanie gracza.
  * Zadanie jest najważniejszym tekstem na ekranie (zob. docs/player-guidance.md), więc ma osobny, duży pasek.
  */
-export const AppHeader: React.FC<AppHeaderProps> = ({ icon: Icon, accent, title, subtitle, step, aside, task }) => (
+export const AppHeader: React.FC<AppHeaderProps> = ({ icon: Icon, accent, title, subtitle, step, action, aside, task }) => (
   <div className="space-y-2.5 shrink-0">
     <div
       className="border-b pb-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
@@ -44,13 +46,18 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ icon: Icon, accent, title,
       </div>
 
       {aside ??
-        (step && (
-          <span
-            className="text-xs px-3 py-1.5 rounded-lg border font-mono tracking-wider font-black shrink-0 self-start sm:self-auto"
-            style={{ backgroundColor: `${accent}1a`, borderColor: `${accent}66`, color: accent }}
-          >
-            {step}
-          </span>
+        ((step || action) && (
+          <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
+            {action}
+            {step && (
+              <span
+                className="text-xs px-3 py-1.5 rounded-lg border font-mono tracking-wider font-black"
+                style={{ backgroundColor: `${accent}1a`, borderColor: `${accent}66`, color: accent }}
+              >
+                {step}
+              </span>
+            )}
+          </div>
         ))}
     </div>
 
