@@ -32,7 +32,7 @@
 ## Etap 1: //PHISHING
 Klocek: NOWA MINIGRA (`PhishingCampaignApp`, kreator kampanii: akcja → szablon → temat → lista adresatów)
 Cel dydaktyczny: dobór rodzaju ataku, serwisu-przykrywki i przynęty socjotechnicznej pod cel operacji (zainfekowanie sieci i zasłona dymna).
-Ekrany: wybór akcji → wybór szablonu → wybór tematu → import listy adresatów od mentora z białą listą IP (flavor)
+Ekrany: „NOWA KAMPANIA PHISHINGOWA” z przyciskiem „KONTYNUUJ” (VR S01) → wybór akcji → wybór szablonu → wybór tematu → import listy adresatów od mentora z białą listą IP (flavor)
 Oceniane: D1, D2, D3 | Flavor (nieoceniane): import listy adresatów
 
 Decyzja D1: "WYBIERZ RODZAJ AKCJI:"
@@ -71,7 +71,7 @@ Mostek (rozmowa do kolejnego etapu):
 ## Etap 3: //BAZA_WIRUSÓW
 Klocek: NOWA MINIGRA (`WormBuilderApp`: wybór wirusa → modyfikacja kodu → kompilacja)
 Cel dydaktyczny: rozróżnienie typów malware i dobór tego, który tworzy sieć zainfekowanych komputerów (botnet).
-Ekrany: wybór wirusa → modyfikacja kodu (5 instrukcji) → kompilacja → „WIRUS GOTOWY!”
+Ekrany: wybór wirusa → modyfikacja kodu (5 instrukcji, zaznaczane klikiem; przycisk „KOMPILUJ ŁADUNEK 0-DAY”) → kompilacja → „WIRUS GOTOWY!” z tekstem „AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY” (VR S04)
 Oceniane: D4 | Flavor (nieoceniane): modyfikacja kodu i kompilacja
 
 Decyzja D4: "WYBIERZ ODPOWIEDNIEGO WIRUSA:"
@@ -87,7 +87,7 @@ Mostek (rozmowa do kolejnego etapu):
 ## Etap 4: //PHISHING (WYSYŁKA)
 Klocek: NOWA MINIGRA (`PhishingDispatchApp`: nadawca → podgląd → wysyłka)
 Cel dydaktyczny: dobór adresu nadawcy, któremu pracownicy zaufają, i egzekucja wysyłki kampanii.
-Ekrany: wybór nadawcy → podgląd maila (temat, szablon i nadawca z wcześniejszych wyborów) → wysyłka SMTP → potwierdzenie
+Ekrany: wybór nadawcy → podgląd maila (temat, szablon i nadawca z wcześniejszych wyborów) i przycisk „WYŚLIJ” (VR S05) → wysyłka SMTP → potwierdzenie „KAMPANIA PHISHINGOWA ZOSTAŁA WYSŁANA” (prawy monitor wraca wtedy do czatu)
 Oceniane: D5 | Flavor (nieoceniane): podgląd i wysyłka
 
 Decyzja D5: "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:"
@@ -102,7 +102,7 @@ Mostek (rozmowa do kolejnego etapu):
 ## Etap 5: //MONITOR_BOTNETU
 Klocek: NOWA MINIGRA (`BotnetMonitorApp`, wizualizacja)
 Cel dydaktyczny: zobaczenie skutku ataku: rozprzestrzenianie się robaka po stacjach i powstanie botnetu.
-Ekrany: alert aktywacji malware → telemetria (licznik infekcji do 82%) → topologia sieci
+Ekrany: alert „MALWARE ZOSTAŁ AKTYWOWANY” z komunikatem „ROBAK – MALWARE ZOSTAŁ AKTYWOWANY. KOMPUTERY ZOMBIE SĄ TWORZONE” i przyciskiem „PODGLĄD” (VR S06, pkt 1–2) → telemetria (licznik infekcji do 82%) → topologia sieci. Liczby (82%, 12 stacji, 10 zainfekowanych / 2 zabezpieczone) i węzły wylicza kod z `botnetMonitorConfig` (`targetPercentage`, `totalWorkstations`)
 Oceniane: Flavor (bez oceny; wskaźniki niezależne od wyborów gracza, mechanizm konsekwencji planowany później)
 
 Mostek (rozmowa końcowa):
@@ -145,4 +145,8 @@ D5:
 - [NIEPEWNE] Pytania w VR-owej tabeli debriefu różnią się od ekranowych (np. „WYBIERZ SZABLON MAILA” vs „WYBIERZ SZABLON FORMULARZA:”). W grze raport używa pytań z ekranu.
 - [DO ZAPROJEKTOWANIA] Lekcje atak/obrona w debriefie (D1–D5) nie istnieją w VR; propozycja do recenzji właściciela.
 - Opisy i tagi opcji spoza VR usunięto (oceniały opcje); zostawiono podtytuły szablonów z VR.
-- Kolejność VPN → wirus: tekst „gotowy do wstrzyknięcia” nie wspomina już o maskowaniu połączenia.
+- [DO DECYZJI] S04, krok 2: VR każe przeciągnąć 5 klocków instrukcji na grafikę robaka. W webie gracz zaznacza segmenty kodu klikiem na prawym monitorze, a lewy ekran pokazuje podgląd assemblera. Przycisk „WSTRZYKNIJ WSZYSTKIE INSTRUKCJE” i kompilacja przez „KOMPILUJ ŁADUNEK 0-DAY” to dodatki kodu (nieoceniane).
+- [DO DECYZJI] S01, ekran startowy: VR podaje tylko tytuł „NOWA KAMPANIA PHISHINGOWA” i przycisk „KONTYNUUJ”; reszta ekranu (nagłówek aplikacji, ikona) to standard aplikacji z M1.
+- [DO DECYZJI] S06: VR opisuje alert „MALWARE ZOSTAŁ AKTYWOWANY” i monitor z komunikatem „ROBAK – …” jako osobne ekrany; w webie to jeden ekran (tytuł = alert, treść = komunikat monitora, przycisk „PODGLĄD”).
+- [DO DECYZJI] S06: topologia sieci (nazwy stacji CF-*, role, podział 10 zainfekowanych / 2 zabezpieczone) nie pochodzi z VR; VR podaje tylko „schemat sieci zakażonej w firmie CarbonFlow”.
+- [DO DECYZJI] S05: ekran potwierdzenia po „WYŚLIJ” (podsumowanie wysyłki, „POWRÓT DO PULPITU”) to dodatek kodu; VR kończy się na kliknięciu „WYŚLIJ”.

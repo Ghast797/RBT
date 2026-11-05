@@ -14,6 +14,9 @@ import { InfoCard, OptionCards } from './ui';
 
 type Screen = 'sender_select' | 'preview' | 'dispatching' | 'sent';
 
+const NEUTRAL_TOPIC = { label: '…', body: '…', slug: '…' };
+const NEUTRAL_TEMPLATE = { label: '…', serviceName: '…', domainHost: '…' };
+
 export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> = ({
   config,
   onDecision,
@@ -31,9 +34,10 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
   // Treść maila zależy od wcześniejszych wyborów (temat, szablon) zapisanych w silniku.
   const playerChoices = useMissionStore((s) => s.playerChoices);
   const answerFor = (num: number) => playerChoices.find((c) => c.num === num)?.answer;
-  const topic = config.topics.find((t) => t.label === answerFor(config.topicDecisionNum)) ?? config.topics[0];
+  // Brak zapisanego wyboru (np. tryb deweloperski) daje neutralny podgląd, który nie zdradza dobrej odpowiedzi.
+  const topic = config.topics.find((t) => t.label === answerFor(config.topicDecisionNum)) ?? NEUTRAL_TOPIC;
   const template =
-    config.templates.find((t) => t.label === answerFor(config.templateDecisionNum)) ?? config.templates[0];
+    config.templates.find((t) => t.label === answerFor(config.templateDecisionNum)) ?? NEUTRAL_TEMPLATE;
   const signoff = (selectedSender && config.signoffs[selectedSender.id]) || '';
 
   const handleSenderConfirm = () => {
@@ -147,7 +151,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
         footer={
           <ConfirmButton
             accent={accent}
-            label="WYŚLIJ KAMPANIĘ PHISHINGOWĄ"
+            label="WYŚLIJ"
             onClick={handleSendCampaign}
             icon={<Send size={15} />}
           />
@@ -173,7 +177,8 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      <SideMonitor>{sideContent}</SideMonitor>
+      {/* Po wysyłce prawy monitor wraca do czatu z mentorem; w trakcie wysyłki zostaje zajęty. */}
+      {screen !== 'sent' && <SideMonitor>{sideContent}</SideMonitor>}
 
       {screen === 'sender_select' && (
         <div className="flex flex-col h-full space-y-4">

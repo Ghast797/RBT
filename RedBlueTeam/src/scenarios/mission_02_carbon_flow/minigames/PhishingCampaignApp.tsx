@@ -12,6 +12,7 @@ import { SidePanel } from '../../../engine/components/SidePanel';
 import { InfoCard, OptionCards } from './ui';
 
 type Screen =
+  | 'start'
   | 'action'
   | 'load_template'
   | 'template'
@@ -27,7 +28,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   // Akcent = kolor kafelka //PHISHING na pulpicie (jak w Misji 1).
   const accent = '#38bdf8';
 
-  const [screen, setScreen] = useState<Screen>('action');
+  const [screen, setScreen] = useState<Screen>('start');
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
@@ -125,6 +126,31 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
+      {screen === 'start' && (
+        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
+          {header(
+            'KONFIGURACJA KAMPANII',
+            'Kliknij KONTYNUUJ, aby rozpocząć konfigurację kampanii przeciwko CarbonFlow Inc.',
+            'START'
+          )}
+          <InfoCard accent={accent} className="text-center my-auto">
+            <Mail size={32} className="mx-auto" style={{ color: accent }} />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">NOWA KAMPANIA PHISHINGOWA</h3>
+          </InfoCard>
+          <div className="flex justify-end">
+            <ConfirmButton
+              accent={accent}
+              label="KONTYNUUJ"
+              onClick={() => {
+                sounds.playClick();
+                setScreen('action');
+              }}
+              className="w-auto px-6"
+            />
+          </div>
+        </div>
+      )}
+
       {screen === 'action' &&
         choiceScreen(
           'KONFIGURACJA KAMPANII: RODZAJ AKCJI',

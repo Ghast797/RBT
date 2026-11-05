@@ -116,7 +116,10 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {(screen === 'code_edit' || screen === 'compiling') && <SideMonitor>{codePanel}</SideMonitor>}
+      {/* Podczas kompilacji prawy monitor zostaje zajęty (bez migania czatu), ale pusty. */}
+      {(screen === 'code_edit' || screen === 'compiling') && (
+        <SideMonitor>{screen === 'code_edit' ? codePanel : <div className="h-full" />}</SideMonitor>
+      )}
 
       {screen === 'virus_select' && (
         <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
@@ -191,7 +194,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
 
       {screen === 'ready' && (
         <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
-          {header('ŁADUNEK SKOMPILOWANY', 'Zapisz ładunek i wróć na pulpit.', 'FINALIZACJA')}
+          {header('WIRUS GOTOWY', 'Zapisz wirusa i wróć na pulpit.', 'FINALIZACJA')}
           <InfoCard accent={accent} className="text-center my-auto">
             <div
               className="w-12 h-12 rounded-full border mx-auto flex items-center justify-center"
@@ -200,16 +203,16 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
               <CheckCircle2 size={28} />
             </div>
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              ŁADUNEK 0-DAY SKOMPILOWANY
+              WIRUS GOTOWY!
             </h3>
             <p className="text-xs text-gray-300 max-w-lg mx-auto leading-relaxed">
-              Ładunek został skompilowany i zaciemniony. Jest gotowy do wstrzyknięcia w wektor dostarczenia.
+              AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY
             </p>
           </InfoCard>
           <div className="flex justify-end">
             <ConfirmButton
               accent={accent}
-              label="ZAPISZ ŁADUNEK I PRZEJDŹ DALEJ"
+              label="ZAPISZ WIRUSA I PRZEJDŹ DALEJ"
               onClick={() => {
                 sounds.playSuccess();
                 onComplete();

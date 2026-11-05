@@ -47,7 +47,7 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
         step="LIVE TELEMETRY"
         task={
           activeStep === 'alert'
-            ? 'Otwórz monitor sieci botnetu i zobacz, co zrobił robak.'
+            ? 'Kliknij PODGLĄD, aby zobaczyć, co zrobił robak.'
             : 'Obserwuj infekcję. Gdy się zakończy, zamelduj mentorowi.'
         }
       />
@@ -59,18 +59,17 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
               <AlertOctagon size={28} />
             </div>
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              MALWARE ZOSTAŁ AKTYWOWANY!
+              MALWARE ZOSTAŁ AKTYWOWANY
             </h3>
             <p className="text-xs text-gray-300 max-w-lg mx-auto leading-relaxed">
-              Pracownik działu kadr otworzył link do ankiety. Robak 0-day bezszelestnie wstrzyknął proces
-              w systemie operacyjnym i rozpoczął skanowanie lokalnej podsieci w poszukiwaniu podatnych maszyn.
+              ROBAK – MALWARE ZOSTAŁ AKTYWOWANY. KOMPUTERY ZOMBIE SĄ TWORZONE
             </p>
           </div>
 
           <div className="flex justify-end">
             <ConfirmButton
               accent={accent}
-              label="OTWÓRZ MONITOR SIECI BOTNETU"
+              label="PODGLĄD"
               onClick={() => {
                 sounds.playClick();
                 setActiveStep('telemetry');
