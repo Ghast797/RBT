@@ -4,6 +4,7 @@
 // useMissionStore (chatStage / chooseChatOption). Zob. docs/migration-spec.md.
 
 import type { StageDefinition } from '../../engine/types/mission';
+import mission3Data from './data/mission3.json';
 import type {
   VirusLabConfig,
   OsintBrowserConfig,
@@ -15,6 +16,16 @@ import type {
 // ---------------------------------------------------------------------------
 // DANE KLOCKÓW / MINIGIER (kluczowane identyfikatorem kafelka pulpitu)
 // ---------------------------------------------------------------------------
+
+/** Kwestia mentora z mostka etapu 1 — ta sama trafia do czatu i do notatki w //TOR (prawy monitor). */
+const BRIDGE_BROWSER_LINE = 'ZAJRZYJ NA ICH STRONĘ INTERNETOWĄ: HTTPS://OLCOMPANY.CLOUD';
+
+/** Kwestia mentora z intro (data/mission3.json), cytowana w notatce na prawym monitorze. */
+const introLine = (id: string): string => {
+  const line = mission3Data.intro.dialogue.find((d) => d.id === id);
+  if (!line) throw new Error(`Brak kwestii intro: ${id}`);
+  return line.text;
+};
 
 /** Etap 1: D1 wybór wirusa + builder RAT (flavor bez oceny). */
 export const virusLabConfig: VirusLabConfig = {
@@ -111,9 +122,81 @@ export const virusLabConfig: VirusLabConfig = {
 
 /** Etap 2: D2 wybór celu (małe rozgałęzienie) + D3 wektor socjotechniczny. */
 export const osintBrowserConfig: OsintBrowserConfig = {
-  site: {},
-  eventsHint:
-    'Dział sprzedaży O&L świętował niedawno imprezę integracyjną; wśród nowych pracowników jest świeżo zatrudniony junior.',
+  site: {
+    url: 'https://olcompany.cloud',
+    title: 'O&L COMPANY',
+    heroHeadline: 'JESTEŚMY JEDNYM Z NAJWIĘKSZYCH DYSTRYBUTORÓW PALIW',
+    heroSubheadline: 'OBSŁUGUJEMY MIĘDZYNARODOWĄ SIEĆ STACJI PALIWOWYCH ORAZ ZAOPATRUJEMY NAJWIĘKSZE KORPORACJE',
+    contact: {
+      phone: '+48 871 787-83-76',
+      email: 'sales@olcompany.cloud'
+    },
+    employees: [
+      {
+        id: 'jan_lukasiewicz',
+        name: 'JAN ŁUKASIEWICZ',
+        role: 'CEO',
+        avatarBg: '#3b82f6',
+        bio: 'Założyciel i prezes O&L Company. Nadzoruje kluczowe kontrakty paliwowe oraz rygorystyczne procedury bezpieczeństwa korporacji.',
+        optionId: 'choose_ceo'
+      },
+      {
+        id: 'slawomir_bialek',
+        name: 'SŁAWOMIR BIAŁEK',
+        role: 'SZEF DZIAŁU CYBERBEZPIECZEŃSTWA',
+        avatarBg: '#ef4444',
+        bio: 'CISO z 15-letnim stażem. Certyfikowany audytor ISO 27001 i architekt SOC. Natychmiast wykrywa i neutralizuje wszelkie anomalie sieciowe.',
+        optionId: 'choose_ciso'
+      },
+      {
+        id: 'wiktoria_galecka',
+        name: 'WIKTORIA GAŁECKA',
+        role: 'SPECJALISTKA DS. LOGISTYKI',
+        avatarBg: '#0284c7',
+        bio: 'Koordynuje transport cystern kolejowych i rurociągów. Korzysta wyłącznie z dedykowanego, odizolowanego systemu ERP.',
+        optionId: 'choose_logistics'
+      },
+      {
+        id: 'agnieszka_leman',
+        name: 'AGNIESZKA LEMAN',
+        role: 'SZEFOWA DZIAŁU SPRZEDAŻY',
+        avatarBg: '#8b5cf6',
+        bio: 'Liderka działu handlowego. Skupiona na relacjach B2B, ostrożna wobec niezweryfikowanych kontaktów zewnętrznych.'
+      },
+      {
+        id: 'mateusz_klimowicz',
+        name: 'MATEUSZ KLIMOWICZ',
+        role: 'JUNIOR SPECJALISTA DS. WSPARCIA KLIENTA',
+        avatarBg: '#f59e0b',
+        bio: 'Zatrudniony 2 tygodnie temu po udanym procesie rekrutacji. Nowy w branży, nie przeszedł jeszcze pełnego szkolenia z procedur anty-phishingowych.',
+        optionId: 'choose_mateusz'
+      }
+    ],
+    news: [
+      {
+        id: 'party_sales',
+        title: 'IMPREZA INTEGRACYJNA!',
+        date: '17 WRZEŚNIA 2022',
+        boxText: '15 WRZEŚNIA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU SPRZEDAŻY!',
+        content: 'POWITALIŚMY NA POKŁADZIE NOWYCH PRACOWNIKÓW ORAZ ŚWIĘTOWALIŚMY OSTATNIE SUKCESY!',
+        hashtags: '#OL #BESTCOMPANY #COMPANYUNHACKED',
+        galleryText: 'ZAPRASZAMY DO OGLĄDANIA PONIŻSZEJ GALERII ZDJĘĆ!'
+      },
+      {
+        id: 'meeting_logistics',
+        title: 'SPOTKANIE!',
+        date: '5 LISTOPADA 2020',
+        boxText: '4 LISTOPADA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU LOGISTYKI',
+        content: 'PRACOWNICY MIELI OKAZJĘ SPRÓBOWAĆ SWOICH SIŁ W CODZIENNYCH ZADANIACH NASZEGO NAJLEPSZEGO DZIAŁU LOGISTYKI!',
+        hashtags: '#OL #BESTCOMPANY #COMPANYUNHACKED',
+        galleryText: 'FOTORELACJA Z WYDARZENIA FIRMOWEGO'
+      }
+    ]
+  },
+  mentorNote: {
+    target: [introLine('intro_3'), BRIDGE_BROWSER_LINE],
+    vector: [introLine('intro_4')]
+  },
   target: {
     decisionNum: 2,
     question: 'KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?',
@@ -121,7 +204,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
       {
         id: 'choose_ceo',
         label: 'JAN ŁUKASIEWICZ (CEO)',
-        desc: 'Założyciel i prezes. Nadzoruje kluczowe kontrakty i rygorystyczne procedury bezpieczeństwa.',
+        desc: 'Założyciel i prezes O&L Company.',
         tier: 'suboptimal',
         feedback:
           'Jan Łukasiewicz to CEO – jego poczta przechodzi przez asystentów i restrykcyjne filtry. Taki atak zostanie spalony szybko.'
@@ -129,7 +212,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
       {
         id: 'choose_logistics',
         label: 'WIKTORIA GAŁECKA (LOGISTYKA)',
-        desc: 'Koordynuje transport cystern. Korzysta wyłącznie z odizolowanego systemu ERP.',
+        desc: 'Specjalistka ds. logistyki.',
         tier: 'suboptimal',
         feedback:
           'Dział logistyki pracuje w odizolowanym ERP i nie ma dostępu do dokumentacji infrastruktury FREEVOLT.'
@@ -137,14 +220,14 @@ export const osintBrowserConfig: OsintBrowserConfig = {
       {
         id: 'choose_mateusz',
         label: 'MATEUSZ KLIMOWICZ (JUNIOR WSPARCIA)',
-        desc: 'Zatrudniony 2 tygodnie temu, nie przeszedł jeszcze pełnego szkolenia anty-phishingowego.',
+        desc: 'Junior specjalista ds. wsparcia klienta.',
         tier: 'ideal',
         feedback: 'Junior nie przeszedł jeszcze pełnego szkolenia anty-phishingowego – idealny wektor wejścia.'
       },
       {
         id: 'choose_ciso',
         label: 'SŁAWOMIR BIAŁEK (CISO)',
-        desc: 'CISO z 15-letnim stażem, architekt SOC. Natychmiast wykrywa anomalie sieciowe.',
+        desc: 'Szef działu cyberbezpieczeństwa (CISO).',
         tier: 'critical',
         feedback:
           'Szef SOC z 15-letnim stażem natychmiast zauważy anomalię, odetnie sieć i zabezpieczy logi.'
@@ -158,14 +241,14 @@ export const osintBrowserConfig: OsintBrowserConfig = {
       {
         id: 'vector_party_zip',
         label: 'PENDRIVE ZE ZDJĘCIAMI Z IMPREZY (WIRUS W ARCHIWUM ZIP)',
-        desc: 'Kontekst imprezy integracyjnej wzbudza ciekawość, a archiwum ZIP omija proste filtry.',
+        desc: 'Fizyczny nośnik ze zdjęciami z wydarzenia firmowego. Ładunek w archiwum ZIP.',
         tier: 'ideal',
         feedback: 'Dzięki archiwum antywirus nie znajdzie zagrożenia, a kontekst imprezy usypia czujność ofiary.'
       },
       {
         id: 'vector_fake_invoice',
         label: 'FAŁSZYWA FAKTURA VAT W PLIKU .EXE',
-        desc: 'Załącznik wykonywalny wysłany mailem.',
+        desc: 'Plik wykonywalny w załączniku wiadomości e-mail.',
         tier: 'critical',
         feedback: 'Plik .exe zostanie natychmiast zablokowany przez Windows Defendera i bramkę pocztową.'
       }
@@ -299,7 +382,7 @@ export const mission3Stages: StageDefinition[] = [
     completion: {
       conversation: [
         { from: 'player', id: 'm3_reply_virus', label: 'GOTOWE. MASZ JAKIEŚ DANE O FIRMIE?' },
-        { from: 'byte_master', text: 'ZAJRZYJ NA ICH STRONĘ INTERNETOWĄ: HTTPS://OLCOMPANY.CLOUD' }
+        { from: 'byte_master', text: BRIDGE_BROWSER_LINE }
       ],
       unlockIcons: ['browser_unlocked', 'browser'],
       badges: { browser: 1, chat: 1 },

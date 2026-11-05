@@ -4,6 +4,8 @@ import { getMission } from '../src/engine/registry/missionRegistry';
 import { appComponentRegistry } from '../src/engine/registry/appRegistry';
 import { resolveDecisionCount } from '../src/engine/core/scoring';
 import type { ChoiceOutcome, MissionDefinition } from '../src/engine/types/mission';
+import type { OsintBrowserConfig } from '../src/scenarios/mission_03_ol_company/minigames/types';
+import { resolveTargetPick } from '../src/scenarios/mission_03_ol_company/minigames/osintLogic';
 
 // ---------------------------------------------------------------------------
 // TEST CHARAKTERYZUJĄCY MISJĘ 3 (O&L COMPANY)
@@ -271,8 +273,95 @@ describe('Misja 3 — przepływ wzorca B przez silnik', () => {
 describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', () => {
   it.todo('builder RAT: zły zestaw (moduł/maskowanie/pakiet) blokuje kompilację bez naliczenia decyzji');
   it.todo('builder RAT: poprawny zestaw reverse_tcp + bg_service + dll_archive odblokowuje onComplete');
-  it.todo('cel D2: wybór CEO/Logistyki cofa do ponownego wyboru, a końcowe D2 agreguje się do suboptimal');
-  it.todo('cel D2: wybór CISO natychmiast zgłasza critical (bez ponownego wyboru)');
+  it('cel D2: wybór CEO/Logistyki cofa do ponownego wyboru, a końcowe D2 agreguje się do suboptimal', () => {
+    const def = getMission(MISSION_ID) as MissionDefinition;
+    const cfg = (def.blocks as Record<string, any>).browser as OsintBrowserConfig;
+    const byId = (id: string) => cfg.target.options.find((o) => o.id === id)!;
+
+    // Zły cel (suboptimal): brak decyzji, pushback mentora = feedback opcji.
+    for (const id of ['choose_ceo', 'choose_logistics']) {
+      const res = resolveTargetPick(byId(id), false);
+      expect(res).toEqual({ kind: 'retry', pushback: byId(id).feedback });
+    }
+    // Poprawny cel bez złych prób = ideal, po złej próbie = suboptimal (agregacja).
+    expect(resolveTargetPick(byId('choose_mateusz'), false)).toEqual({ kind: 'proceed', tier: 'ideal' });
+    expect(resolveTargetPick(byId('choose_mateusz'), true)).toEqual({ kind: 'proceed', tier: 'suboptimal' });
+  });
+
+  it('cel D2: wybór CISO natychmiast zgłasza critical (bez ponownego wyboru), nawet po złej próbie', () => {
+    const def = getMission(MISSION_ID) as MissionDefinition;
+    const cfg = (def.blocks as Record<string, any>).browser as OsintBrowserConfig;
+    const ciso = cfg.target.options.find((o) => o.id === 'choose_ciso')!;
+    expect(resolveTargetPick(ciso, false)).toEqual({ kind: 'critical' });
+    expect(resolveTargetPick(ciso, true)).toEqual({ kind: 'critical' });
+  });
+
+  describe('D2/D3 przez silnik', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      __setBridgeDelayForTests(0);
+      useMissionStore.getState().loadMission(MISSION_ID);
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+      __setBridgeDelayForTests(2000);
+    });
+
+    const report = (num: number, tier: ChoiceOutcome) =>
+      useMissionStore.getState().reportDecision({ num, question: `D${num}`, answer: 'X', tier, feedback: '' });
+
+    it('Mateusz po złej próbie: D2 suboptimal obniża wynik, nie wykrywa', () => {
+      report(2, 'suboptimal');
+      const st = useMissionStore.getState();
+      expect(st.isDetectedModalOpen).toBe(false);
+      expect(st.criticalErrorsCount).toBe(0);
+      expect(st.score).toBeLessThan(100);
+      expect(st.playerChoices.find((c) => c.num === 2)?.outcome).toBe('suboptimal');
+    });
+
+    it('CISO (D2) otwiera ekran wykrycia', () => {
+      report(2, 'critical');
+      expect(useMissionStore.getState().isDetectedModalOpen).toBe(true);
+      expect(useMissionStore.getState().playerChoices.find((c) => c.num === 2)?.outcome).toBe('critical');
+    });
+
+    it('faktura .exe (D3) otwiera ekran wykrycia', () => {
+      report(3, 'critical');
+      expect(useMissionStore.getState().isDetectedModalOpen).toBe(true);
+    });
+  });
+
+  it('//TOR: jedno źródło danych strony i notatka mentora (bez pól oceniających i bez podpowiedzi w opisach)', () => {
+    const def = getMission(MISSION_ID) as MissionDefinition;
+    const cfg = (def.blocks as Record<string, any>).browser as OsintBrowserConfig;
+    // Dane strony pełne i bez pola isTarget.
+    expect(cfg.site.employees.length).toBeGreaterThanOrEqual(5);
+    expect(cfg.site.news.length).toBeGreaterThanOrEqual(2);
+    cfg.site.employees.forEach((e) => expect(e).not.toHaveProperty('isTarget'));
+    expect(cfg).not.toHaveProperty('eventsHint');
+    // Każda karta celu D2 ma swojego pracownika z bio na stronie (OSINT), jednoznacznie.
+    cfg.target.options.forEach((o) => {
+      const emps = cfg.site.employees.filter((e) => e.optionId === o.id);
+      expect(emps, `pracownik dla ${o.id}`).toHaveLength(1);
+      expect(emps[0].bio.length).toBeGreaterThan(20);
+    });
+    // Zakładka wydarzeń niesie imprezę działu sprzedaży (przesłanka do D3).
+    expect(cfg.site.news.some((n) => /IMPREZA INTEGRACYJNA DZIAŁU SPRZEDAŻY/.test(n.boxText))).toBe(true);
+    // Notatka mentora na prawym monitorze cytuje intro i mostek etapu 1 z danych.
+    const virusStage = (def.stages ?? []).find((s) => s.id === 'virus_database')!;
+    const bridgeLine = (virusStage.completion.conversation ?? []).find((b: any) => b.from === 'byte_master') as any;
+    expect(cfg.mentorNote.target).toContain(bridgeLine.text);
+    const introTexts = def.intro.dialogue.map((d: any) => d.text);
+    expect(cfg.mentorNote.target.some((l) => introTexts.includes(l))).toBe(true);
+    expect(cfg.mentorNote.vector.some((l) => introTexts.includes(l))).toBe(true);
+    // D3: dwie opcje, ZIP ideal i .exe critical; opisy bez słów oceny.
+    expect(cfg.vector.options.map((o) => [o.id, o.tier])).toEqual(
+      expect.arrayContaining([['vector_party_zip', 'ideal'], ['vector_fake_invoice', 'critical']])
+    );
+    [...cfg.target.options, ...cfg.vector.options].forEach((o) => {
+      expect(o.desc ?? '', o.id).not.toMatch(/idealn|najsłabsz|natychmiast|omija|usypia|wzbudza/i);
+    });
+  });
   it.todo('pendrive D4: tylko jeden załącznik można wgrać, potem wymagane podpięcie RAT do ZIP (flavor)');
   it('dron: adres i pojazd to osobne decyzje D7/D8, zły wybór = critical, dane mapy i parkingu spójne z opcjami', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;

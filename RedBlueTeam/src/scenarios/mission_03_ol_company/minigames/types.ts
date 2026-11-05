@@ -40,9 +40,46 @@ export interface VirusLabConfig {
 }
 
 // --- Etap 2: //TOR: PRZEGLĄDARKA (D2 cel + D3 wektor, OSINT) ----------------
+/** Pracownik na stronie O&L (materiał OSINT). `optionId` łączy go z kartą celu D2. */
+export interface OsintEmployee {
+  id: string;
+  name: string;
+  role: string;
+  avatarBg: string;
+  bio: string;
+  optionId?: string;
+}
+
+/** Wpis w zakładce WYDARZENIA strony O&L. */
+export interface OsintNewsItem {
+  id: string;
+  title: string;
+  date: string;
+  boxText: string;
+  content: string;
+  hashtags: string;
+  galleryText: string;
+}
+
+/** Pełne dane strony O&L Company — jedyne źródło dla minigry (hero, pracownicy, wydarzenia). */
+export interface OsintSite {
+  url: string;
+  title: string;
+  heroHeadline: string;
+  heroSubheadline: string;
+  contact: { phone: string; email: string };
+  employees: OsintEmployee[];
+  news: OsintNewsItem[];
+}
+
 export interface OsintBrowserConfig {
   /** Dane strony O&L (hero, pracownicy z bio, wydarzenia) — materiał OSINT. */
-  site: Record<string, unknown>;
+  site: OsintSite;
+  /**
+   * Notatka od mentora na prawym monitorze (zastępuje czat, który przejmuje SideMonitor).
+   * Cytaty z intro i z mostka poprzedniego etapu, potrzebne do D2 i D3.
+   */
+  mentorNote: { target: string[]; vector: string[] };
   /**
    * D2: wybór celu. Małe rozgałęzienie (bez gałęzi w store): opcje `suboptimal`
    * (CEO, Logistyka) cofają do ponownego wyboru, `critical` (CISO) natychmiast
@@ -52,8 +89,6 @@ export interface OsintBrowserConfig {
   target: GradedDecision;
   /** D3: wektor socjotechniczny (pendrive ze zdjęciami z imprezy vs faktura .exe). */
   vector: GradedDecision;
-  /** Zdarzenie firmowe, które gracz musi odczytać z OSINT przed wyborem wektora. */
-  eventsHint?: string;
 }
 
 // --- Etap 3: //DYSK E: PENDRIVE (D4 załącznik, D5 wolumin, D6 koperta) ------
