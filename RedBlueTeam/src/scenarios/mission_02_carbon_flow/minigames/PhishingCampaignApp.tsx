@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Mail, CheckCircle2, Users, ShieldAlert } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
@@ -20,6 +20,10 @@ type Screen =
   | 'topic'
   | 'import_list';
 
+const IMPORT_DURATION_MS = 2000;
+/** Ilu odbiorców pokazuje podgląd na prawym monitorze (reszta jako „i N kolejnych”). */
+const SAMPLE_COUNT = 5;
+
 export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> = ({
   config,
   onDecision,
@@ -33,6 +37,10 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [isImported, setIsImported] = useState(false);
+  // Import trwa chwilę: pasek i licznik wczytanych adresów (stan żyje w aplikacji, więc wraca po ponownym otwarciu).
+  const [isImporting, setIsImporting] = useState(false);
+  const [importedCount, setImportedCount] = useState(0);
+  const listSize = config.mailingList.recipients.length;
 
   // Opcje w losowej kolejności (raz przy zamontowaniu aplikacji; od nowa przy powtórce misji).
   const actionOptions = useShuffled(config.action.options);
@@ -125,9 +133,34 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   };
 
   const handleImport = () => {
-    sounds.playSuccess();
-    setIsImported(true);
+    sounds.playClick();
+    setImportedCount(0);
+    setIsImporting(true);
   };
+
+  useEffect(() => {
+    if (!isImporting) return;
+    const step = Math.floor(IMPORT_DURATION_MS / Math.max(1, listSize));
+    const id = setInterval(() => {
+      setImportedCount((n) => {
+        const next = n + 1;
+        if (next >= listSize) clearInterval(id);
+        return Math.min(next, listSize);
+      });
+      sounds.playKeypress();
+    }, step);
+    return () => clearInterval(id);
+  }, [isImporting, listSize]);
+
+  useEffect(() => {
+    if (!isImporting || importedCount < listSize) return;
+    const id = setTimeout(() => {
+      sounds.playSuccess();
+      setIsImporting(false);
+      setIsImported(true);
+    }, 400);
+    return () => clearTimeout(id);
+  }, [isImporting, importedCount, listSize]);
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
@@ -229,7 +262,32 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
             'KROK 4/4'
           )}
 
-          {!isImported ? (
+          {isImporting ? (
+            <InfoCard accent={accent} className="my-auto space-y-4">
+              <div className="flex items-end justify-between gap-3">
+                <div className="text-xs font-bold tracking-widest animate-pulse" style={{ color: accent }}>
+                  IMPORTOWANIE BAZY ADRESATÓW…
+                </div>
+                <div className="text-3xl font-black font-mono text-white leading-none">
+                  <span style={{ color: accent }}>{importedCount}</span>
+                  <span className="text-gray-500"> / {listSize}</span>
+                </div>
+              </div>
+              <div className="h-3 rounded bg-black/60 border overflow-hidden" style={{ borderColor: `${accent}55` }}>
+                <div
+                  className="h-full transition-all duration-150"
+                  style={{
+                    width: `${Math.round((importedCount / listSize) * 100)}%`,
+                    backgroundColor: accent,
+                    boxShadow: `0 0 12px ${accent}`
+                  }}
+                />
+              </div>
+              <div className="text-sm font-mono text-gray-300 truncate h-5">
+                {importedCount > 0 ? `wczytano: ${config.mailingList.recipients[importedCount - 1].email}` : 'łączenie z bazą…'}
+              </div>
+            </InfoCard>
+          ) : !isImported ? (
             <InfoCard accent={accent} className="text-center my-auto">
               <Users size={32} className="mx-auto" style={{ color: accent }} />
               <h3 className="text-sm font-bold text-white">LISTA PRACOWNIKÓW CARBONFLOW INC.</h3>
@@ -291,7 +349,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                   Przykładowi odbiorcy z bazy kontaktów:
                 </div>
                 <div className="flex flex-col gap-2 text-xs font-mono">
-                  {config.mailingList.recipients.slice(0, 4).map((r) => (
+                  {config.mailingList.recipients.slice(0, SAMPLE_COUNT).map((r) => (
                     <div key={r.email} className="p-2.5 rounded bg-[#09111c] border border-gray-800 space-y-0.5">
                       <div className="text-gray-200">
                         {r.name} ({r.role})
@@ -299,6 +357,9 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                       <div style={{ color: accent }}>{r.email}</div>
                     </div>
                   ))}
+                  {listSize > SAMPLE_COUNT && (
+                    <div className="text-gray-400 px-1">… i {listSize - SAMPLE_COUNT} kolejnych adresów</div>
+                  )}
                 </div>
               </div>
 
