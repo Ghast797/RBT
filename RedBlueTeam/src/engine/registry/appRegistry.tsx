@@ -27,17 +27,11 @@ import { useMissionStore } from '../store/useMissionStore';
 import { ActiveAppProvider } from '../components/SideMonitor';
 import { ChatApp } from '../apps/ChatApp';
 import { DebriefApp } from '../apps/DebriefApp';
-import {
-  VirusDatabaseApp,
-  TorBrowserApp,
-  PendriveApp,
-  DroneApp,
-  RatSessionApp
-} from '../widgets';
 import { ChoiceCards, DialogueTree, VpnRouter } from '../blocks';
 
-// Minigry misji (np. Energy Rock) rejestrują się same przez registerApp przy
-// załadowaniu swojego modułu scenariusza — nie importujemy ich tutaj.
+// Minigry misji rejestrują się same (registerScenarioApps / registerApp) przy
+// załadowaniu swojego modułu scenariusza — nie importujemy ich tutaj, żeby paczka
+// SCORM jednej misji nie zawierała kodu innych.
 
 // Base Application Registry for Generic / Shared Apps
 export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
@@ -49,12 +43,6 @@ export const appComponentRegistry: Record<string, React.ComponentType<any>> = {
   dialogue_tree: DialogueTree,
   vpn_router: VpnRouter,
   vpn_app: VpnRouter,
-
-  virus_database: VirusDatabaseApp,
-  browser: TorBrowserApp,
-  pendrive_app: PendriveApp,
-  drone_app: DroneApp,
-  rat_session: RatSessionApp,
 };
 
 /**
@@ -84,7 +72,7 @@ export function registerApp(componentId: string, component: React.ComponentType<
  *
  * `appKey` to identyfikator kafelka z `desktopApps` (ze zgodnością wstecz dla
  * samego `componentId`). Każdy komponent dostaje `config`, `onDecision` i
- * `onComplete` — starsze widgety te propsy ignorują.
+ * `onComplete`.
  * Zob. docs/scenario-engine.md, sekcja 5.
  */
 export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }> = ({ componentId: appKey }) => {

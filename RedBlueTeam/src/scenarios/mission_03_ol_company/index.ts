@@ -19,8 +19,7 @@ export const mission3Definition: MissionDefinition = {
   blocks: mission3Blocks
 };
 
-// Minigry misji rejestrowane w silniku pod swoimi componentId (nowe id, by nie
-// kolidować ze starymi widgetami z engine/widgets, które zostają do sprzątania).
+// Minigry misji rejestrowane w silniku pod swoimi componentId (prefiks `ol_`).
 export const mission3Apps: Record<string, React.ComponentType<any>> = {
   ol_virus_lab: VirusLabApp,
   ol_osint_browser: OsintBrowserApp,
