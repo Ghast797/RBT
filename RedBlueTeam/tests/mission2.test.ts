@@ -169,10 +169,23 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
   describe('dane współdzielone i monitor botnetu', () => {
     it('lista mailingowa i podgląd wysyłki oraz VPN i allowlista mają jedno źródło danych', () => {
       expect(phishingDispatchConfig.targetDomain).toBe(phishingCampaignConfig.mailingList.targetDomain);
-      expect(phishingDispatchConfig.recipientsCount).toBe(phishingCampaignConfig.mailingList.employeesCount);
+      expect(phishingDispatchConfig.recipients).toEqual(
+        phishingCampaignConfig.mailingList.recipients.map((r) => r.email)
+      );
+      expect(botnetMonitorConfig.totalWorkstations).toBe(phishingDispatchConfig.recipients.length);
       expect(vpnConfig.allowedIps).toEqual(phishingCampaignConfig.mailingList.whitelistedIps);
       expect(phishingDispatchConfig.topicDecisionNum).toBe(phishingCampaignConfig.topic.decisionNum);
       expect(phishingDispatchConfig.templateDecisionNum).toBe(phishingCampaignConfig.template.decisionNum);
+    });
+
+    it('lista mailingowa: 12 unikalnych adresów w domenie celu (nie w domenie nadawcy z D5)', () => {
+      const { recipients, targetDomain } = phishingCampaignConfig.mailingList;
+      const emails = recipients.map((r) => r.email);
+      expect(emails).toHaveLength(12);
+      expect(new Set(emails).size).toBe(12);
+      for (const e of emails) expect(e).toMatch(new RegExp(`^[a-z]+\.[a-z]+@${targetDomain.replace('.', '\.')}$`));
+      expect(targetDomain).toBe('carbonflow.com');
+      expect(phishingDispatchConfig.recipients.length).toBe(emails.length);
     });
 
     it('summarizeBotnet liczy infekcje z konfiguracji (82% z 12 stacji = 10 + 2)', () => {

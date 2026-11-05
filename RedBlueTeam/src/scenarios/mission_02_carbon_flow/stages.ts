@@ -15,9 +15,41 @@ import type {
 // WSPÓLNE STAŁE (jedno źródło prawdy dla danych powtarzanych w kilku klockach)
 // ---------------------------------------------------------------------------
 
-/** Domena ofiary i liczba adresów na liście mailingowej (//PHISHING i podgląd wysyłki). */
+/** Domena firmy-celu (nie mylić z domeną nadawcy z D5, która jest jej typosquattingiem). */
 const TARGET_DOMAIN = 'carbonflow.com';
-const MAILING_LIST_SIZE = 12;
+
+/**
+ * Lista mailingowa pracowników CarbonFlow: jedno źródło dla importu w //PHISHING, siatki skrzynek
+ * w wysyłce i liczby stacji w monitorze botnetu. Liczba adresatów = długość tej listy.
+ */
+const MAILING_LIST: Array<{ name: string; role: string; email: string }> = [
+  ['Anna Kowalska', 'Dyrektor HR'],
+  ['Tomasz Nowak', 'Główny Księgowy'],
+  ['Piotr Wiśniewski', 'Inżynier Przesyłu'],
+  ['Robert Moris', 'CEO / Prezes'],
+  ['Katarzyna Wójcik', 'Specjalistka ds. Zakupów'],
+  ['Marek Kamiński', 'Kierownik Dyspozytorni'],
+  ['Magdalena Lewandowska', 'Analityk Rynku Paliw'],
+  ['Jakub Zieliński', 'Administrator IT'],
+  ['Ewa Szymańska', 'Radca Prawny'],
+  ['Michał Dąbrowski', 'Technik Telemetrii'],
+  ['Agnieszka Woźniak', 'Koordynator Logistyki'],
+  ['Łukasz Kozłowski', 'Inspektor BHP']
+].map(([name, role]) => ({
+  name,
+  role,
+  email: `${emailLocal(name)}@${TARGET_DOMAIN}`
+}));
+
+/** „Łukasz Kozłowski” -> „lukasz.kozlowski” (bez polskich znaków diakrytycznych). */
+function emailLocal(fullName: string): string {
+  return fullName
+    .toLowerCase()
+    .replace(/ł/g, 'l')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/\s+/g, '.');
+}
 
 /** Adresy IP z białej listy nadawców CarbonFlow (lista w //PHISHING, cel w //TUNEL_VPN). */
 const ALLOWED_SENDER_IPS = ['82.123.192.116', '77.141.195.139'];
@@ -163,14 +195,8 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
   },
   mailingList: {
     targetDomain: TARGET_DOMAIN,
-    employeesCount: MAILING_LIST_SIZE,
     whitelistedIps: ALLOWED_SENDER_IPS,
-    sampleRecipients: [
-      { name: 'Anna Kowalska', email: 'a.kowalska@carbonflow.com', role: 'Dyrektor HR' },
-      { name: 'Tomasz Nowak', email: 't.nowak@carbonflow.com', role: 'Główny Księgowy' },
-      { name: 'Piotr Wiśniewski', email: 'p.wisniewski@carbonflow.com', role: 'Inżynier Przesyłu' },
-      { name: 'Robert Moris', email: 'r.moris@carbonflow.com', role: 'CEO / Prezes' }
-    ]
+    recipients: MAILING_LIST
   }
 };
 
@@ -201,7 +227,7 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
     ]
   },
   targetDomain: TARGET_DOMAIN,
-  recipientsCount: MAILING_LIST_SIZE,
+  recipients: MAILING_LIST.map((r) => r.email),
   topicDecisionNum: phishingCampaignConfig.topic.decisionNum,
   templateDecisionNum: phishingCampaignConfig.template.decisionNum,
   topics: [
@@ -237,7 +263,7 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
 export const botnetMonitorConfig: BotnetMonitorConfig = {
   targetCompany: 'CarbonFlow Inc.',
   targetPercentage: 82,
-  totalWorkstations: 12
+  totalWorkstations: MAILING_LIST.length
 };
 
 /** Dane klocków M2, kluczowane identyfikatorem kafelka pulpitu. */

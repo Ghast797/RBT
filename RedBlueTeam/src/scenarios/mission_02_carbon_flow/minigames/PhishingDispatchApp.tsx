@@ -19,18 +19,19 @@ const NEUTRAL_TEMPLATE = { label: '…', serviceName: '…', domainHost: '…' }
 const DISPATCH_DURATION_MS = 4800;
 
 /**
- * Wizualizacja wysyłki: pasek postępu, licznik dostarczonych, skrzynki zapalające się po kolei
- * i słupki narastającej liczby dostarczonych wiadomości. Liczby i domena z konfiguracji.
+ * Wizualizacja wysyłki: pasek postępu, licznik dostarczonych i skrzynki (adresy e-mail pracowników)
+ * zapalające się po kolei. Adresy i domena z konfiguracji; liczba odbiorców = długość listy.
  * Wszystko „dostarczone" — to nie jest ocena wyboru gracza.
  */
 const DispatchViz: React.FC<{
   accent: string;
-  total: number;
+  recipients: string[];
   domain: string;
   /** Aktualna liczba dostarczonych; w stanie końcowym równa `total`. */
   delivered: number;
   done?: boolean;
-}> = ({ accent, total, domain, delivered, done }) => {
+}> = ({ accent, recipients, domain, delivered, done }) => {
+  const total = recipients.length;
   const pct = total > 0 ? Math.round((delivered / total) * 100) : 100;
   return (
     <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a] space-y-3">
@@ -57,13 +58,13 @@ const DispatchViz: React.FC<{
         />
       </div>
 
-      <div className="grid grid-cols-6 gap-2">
-        {Array.from({ length: total }, (_, i) => {
+      <div className="grid grid-cols-2 gap-2">
+        {recipients.map((email, i) => {
           const on = i < delivered;
           return (
             <div
-              key={i}
-              className="flex flex-col items-center gap-1 py-1.5 rounded-lg border transition-all duration-300"
+              key={email}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all duration-300 min-w-0"
               style={{
                 borderColor: on ? accent : '#1f2937',
                 backgroundColor: on ? `${accent}1f` : '#05090f',
@@ -71,27 +72,11 @@ const DispatchViz: React.FC<{
                 boxShadow: on ? `0 0 10px ${accent}55` : undefined
               }}
             >
-              <Mail size={16} />
-              <span className="text-xs font-mono">{String(i + 1).padStart(2, '0')}</span>
+              {on ? <CheckCircle2 size={16} className="shrink-0" /> : <Mail size={16} className="shrink-0" />}
+              <span className="text-xs sm:text-sm font-mono truncate">{email}</span>
             </div>
           );
         })}
-      </div>
-
-      <div>
-        <div className="text-xs text-gray-400 tracking-wider uppercase pb-1">Dostarczone w czasie</div>
-        <div className="flex items-end gap-1 h-16 border-b border-gray-700">
-          {Array.from({ length: total }, (_, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-t transition-all duration-300"
-              style={{
-                height: i < delivered ? `${((i + 1) / total) * 100}%` : '4%',
-                backgroundColor: i < delivered ? accent : '#1f2937'
-              }}
-            />
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -99,10 +84,11 @@ const DispatchViz: React.FC<{
 
 const DispatchProgress: React.FC<{
   accent: string;
-  total: number;
+  recipients: string[];
   domain: string;
   onDone: () => void;
-}> = ({ accent, total, domain, onDone }) => {
+}> = ({ accent, recipients, domain, onDone }) => {
+  const total = recipients.length;
   const [delivered, setDelivered] = useState(0);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
@@ -131,7 +117,7 @@ const DispatchProgress: React.FC<{
       <div className="text-sm font-bold tracking-widest animate-pulse" style={{ color: accent }}>
         ROZSYŁANIE PAKIETÓW SMTP PRZEZ TUNEL VPN…
       </div>
-      <DispatchViz accent={accent} total={total} domain={domain} delivered={delivered} />
+      <DispatchViz accent={accent} recipients={recipients} domain={domain} delivered={delivered} />
     </div>
   );
 };
@@ -197,7 +183,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           <div className="text-xs text-gray-400 font-mono text-right">
             DO:{' '}
             <span className="text-white">
-              pracownicy@{config.targetDomain} ({config.recipientsCount} odbiorców)
+              pracownicy@{config.targetDomain} ({config.recipients.length} odbiorców)
             </span>
           </div>
         </div>
@@ -284,7 +270,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           <div className="p-3 rounded-lg border border-gray-800 bg-black/20">
             <span className="text-xs text-gray-400 block tracking-wider">ODBIORCY</span>
             <span className="font-bold text-white">
-              {config.recipientsCount} adresów w domenie {config.targetDomain}
+              {config.recipients.length} adresów w domenie {config.targetDomain}
             </span>
           </div>
         </div>
@@ -320,7 +306,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
       {screen === 'dispatching' && (
         <DispatchProgress
           accent={accent}
-          total={config.recipientsCount}
+          recipients={config.recipients}
           domain={config.targetDomain}
           onDone={() => {
             sounds.playSuccess();
@@ -346,9 +332,9 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           </div>
           <DispatchViz
             accent={accent}
-            total={config.recipientsCount}
+            recipients={config.recipients}
             domain={config.targetDomain}
-            delivered={config.recipientsCount}
+            delivered={config.recipients.length}
             done
           />
           <div className="flex justify-end">

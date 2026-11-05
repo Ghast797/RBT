@@ -234,7 +234,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
               <Users size={32} className="mx-auto" style={{ color: accent }} />
               <h3 className="text-sm font-bold text-white">LISTA PRACOWNIKÓW CARBONFLOW INC.</h3>
               <p className="text-xs text-gray-300 max-w-md mx-auto leading-relaxed">
-                Lista mailingowa zawiera {config.mailingList.employeesCount} zweryfikowanych adresów pracowników w
+                Lista mailingowa zawiera {config.mailingList.recipients.length} zweryfikowanych adresów pracowników w
                 domenie {config.mailingList.targetDomain}.
               </p>
               <ConfirmButton
@@ -251,7 +251,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                 <div className="flex items-center space-x-2" style={{ color: accent }}>
                   <CheckCircle2 size={20} />
                   <span className="text-sm font-bold">
-                    ZAŁADOWANO BAZĘ: {config.mailingList.targetDomain} ({config.mailingList.employeesCount} REKORDÓW)
+                    ZAŁADOWANO BAZĘ: {config.mailingList.targetDomain} ({config.mailingList.recipients.length} REKORDÓW)
                   </span>
                 </div>
                 <span className="text-xs text-gray-300 font-mono shrink-0">STATUS: UZBROJONE</span>
@@ -283,7 +283,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
           <SidePanel
             accent={accent}
             heading="//PHISHING: ADRESACI"
-            sub={`Baza mailingowa pracowników CarbonFlow Inc. (${config.mailingList.employeesCount} adresów)`}
+            sub={`Baza mailingowa pracowników CarbonFlow Inc. (${config.mailingList.recipients.length} adresów)`}
           >
             <div className="space-y-4">
               <div className="space-y-2">
@@ -291,7 +291,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
                   Przykładowi odbiorcy z bazy kontaktów:
                 </div>
                 <div className="flex flex-col gap-2 text-xs font-mono">
-                  {config.mailingList.sampleRecipients.map((r) => (
+                  {config.mailingList.recipients.slice(0, 4).map((r) => (
                     <div key={r.email} className="p-2.5 rounded bg-[#09111c] border border-gray-800 space-y-0.5">
                       <div className="text-gray-200">
                         {r.name} ({r.role})

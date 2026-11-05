@@ -18,9 +18,9 @@ export interface PhishingCampaignConfig {
   };
   mailingList: {
     targetDomain: string;
-    employeesCount: number;
     whitelistedIps: string[];
-    sampleRecipients: Array<{ name: string; email: string; role: string }>;
+    /** Cała lista mailingowa (długość = liczba adresatów). */
+    recipients: Array<{ name: string; email: string; role: string }>;
   };
 }
 
@@ -54,9 +54,9 @@ export interface PhishingDispatchConfig {
     question: string;
     options: ChoiceOption[];
   };
-  /** Domena ofiary i liczba odbiorców z listy mailingowej (podgląd wiadomości). */
+  /** Domena firmy-celu i adresy e-mail odbiorców z listy mailingowej (liczba = długość listy). */
   targetDomain: string;
-  recipientsCount: number;
+  recipients: string[];
   /** Numery decyzji z poprzedniego etapu, z których czytamy wybór (temat, szablon). */
   topicDecisionNum: number;
   templateDecisionNum: number;
