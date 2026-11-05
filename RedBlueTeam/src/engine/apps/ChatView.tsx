@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Bot, Globe, Download, Send } from 'lucide-react';
-import { useMissionStore } from '../store/useMissionStore';
+import { Bot, Send } from 'lucide-react';
 import type { ChatMessage } from '../store/useMissionStore';
 
 export interface ChatViewChoice {
@@ -61,7 +60,6 @@ export const ChatView: React.FC<ChatViewProps> = ({
   title = 'BYTE_MASTER',
   footer
 }) => {
-  const openApp = useMissionStore((s) => s.openApp);
   const endRef = useRef<HTMLDivElement>(null);
 
   // Wiadomości obecne przy montowaniu (powrót do aplikacji) nie są animowane.
@@ -159,64 +157,6 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   <div className="whitespace-pre-wrap">
                     {typingNow ? <TypedText text={msg.text} onDone={() => markDone(msg.id)} /> : msg.text}
                   </div>
-
-                  {/* Embedded Action Button (e.g. Link to Browser, Download attachments) */}
-                  {!typingNow && msg.actionButton && (
-                    <div className="mt-2.5 pt-2 border-t border-[#00f0ff]/20">
-                      {msg.actionButton.type === 'link_browser' && (
-                        <button
-                          onClick={() => openApp('browser')}
-                          className="w-full py-2 px-3 bg-[#00f0ff]/20 hover:bg-[#00f0ff]/30 border border-[#00f0ff] text-[#00f0ff] rounded font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shadow-[0_0_10px_rgba(0,240,255,0.3)]"
-                        >
-                          <Globe size={13} />
-                          <span>{msg.actionButton.label}</span>
-                        </button>
-                      )}
-
-                      {msg.actionButton.type === 'download_attachments' && (
-                        <button
-                          onClick={() => {
-                            useMissionStore.setState({ hasUsbInserted: true });
-                            openApp('pendrive_app');
-                          }}
-                          className="w-full py-2 px-3 bg-[#00ff66]/20 hover:bg-[#00ff66]/30 border border-[#00ff66] text-[#00ff66] rounded font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shadow-[0_0_10px_rgba(0,255,102,0.3)]"
-                        >
-                          <Download size={13} />
-                          <span>{msg.actionButton.label}</span>
-                        </button>
-                      )}
-
-                      {msg.actionButton.type === 'open_app' && msg.actionButton.payload && (
-                        <button
-                          onClick={() => openApp(msg.actionButton!.payload as any)}
-                          className="w-full py-2 px-3 bg-[#00ff66]/20 hover:bg-[#00ff66]/30 border border-[#00ff66] text-[#00ff66] rounded font-bold text-xs flex items-center justify-center space-x-1.5 transition-all shadow-[0_0_10px_rgba(0,255,102,0.3)]"
-                        >
-                          <Send size={13} />
-                          <span>{msg.actionButton.label}</span>
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Embedded Vehicle Image Reference from video */}
-                  {!typingNow && msg.imageSrc === 'car_ref' && (
-                    <div className="mt-2.5 p-2 bg-[#050b11] border border-[#00f0ff]/30 rounded">
-                      <div className="w-full h-24 bg-[#0a121a] rounded flex flex-col items-center justify-center p-2 border border-slate-700">
-                        <svg viewBox="0 0 160 80" className="w-full h-full max-h-20 drop-shadow-md">
-                          <circle cx="45" cy="65" r="11" fill="#0f172a" stroke="#64748b" strokeWidth="2" />
-                          <circle cx="115" cy="65" r="11" fill="#0f172a" stroke="#64748b" strokeWidth="2" />
-                          <circle cx="45" cy="65" r="4" fill="#94a3b8" />
-                          <circle cx="115" cy="65" r="4" fill="#94a3b8" />
-                          <path d="M 20 58 Q 20 48 35 48 L 130 48 Q 145 48 145 58 L 145 65 L 125 65 Q 125 55 105 55 Q 85 55 85 65 L 55 65 Q 55 55 35 55 Q 20 55 20 65 Z" fill="#f8fafc" stroke="#334155" strokeWidth="1.5" />
-                          <polygon points="50,48 68,30 108,30 118,48" fill="#1e293b" />
-                          <rect x="66" y="27" width="44" height="4" rx="2" fill="#ef4444" stroke="#b91c1c" strokeWidth="1" />
-                        </svg>
-                        <div className="text-[0.625rem] text-center font-bold text-white mt-1">
-                          BIAŁY HATCHBACK // DACH: CZERWONY
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
