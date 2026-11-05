@@ -274,5 +274,26 @@ describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', ()
   it.todo('cel D2: wybór CEO/Logistyki cofa do ponownego wyboru, a końcowe D2 agreguje się do suboptimal');
   it.todo('cel D2: wybór CISO natychmiast zgłasza critical (bez ponownego wyboru)');
   it.todo('pendrive D4: tylko jeden załącznik można wgrać, potem wymagane podpięcie RAT do ZIP (flavor)');
-  it.todo('dron: adres i pojazd to osobne decyzje D7/D8, zły wybór = critical');
+  it('dron: adres i pojazd to osobne decyzje D7/D8, zły wybór = critical, dane mapy i parkingu spójne z opcjami', () => {
+    const def = getMission(MISSION_ID) as MissionDefinition;
+    const cfg = (def.blocks as Record<string, any>).drone_app;
+    expect(cfg.address.decisionNum).toBe(7);
+    expect(cfg.car.decisionNum).toBe(8);
+    // D7: tylko jeden adres ideal, reszta critical; każda opcja ma pin na mapie.
+    expect(cfg.address.options.filter((o: any) => o.tier === 'ideal')).toHaveLength(1);
+    expect(cfg.address.options.filter((o: any) => o.tier === 'critical')).toHaveLength(3);
+    cfg.address.options.forEach((o: any) => {
+      expect(cfg.mapLocations.some((l: any) => l.id === o.id)).toBe(true);
+    });
+    // D8: tylko jeden pojazd ideal (cel ze zdjęcia), reszta critical; każda opcja = auto na parkingu (car_<id>).
+    const idealCar = cfg.car.options.filter((o: any) => o.tier === 'ideal');
+    expect(idealCar).toHaveLength(1);
+    expect(cfg.car.options.filter((o: any) => o.tier === 'critical')).toHaveLength(5);
+    cfg.car.options.forEach((o: any) => {
+      expect(cfg.parkingCars.some((c: any) => `car_${c.id}` === o.id)).toBe(true);
+    });
+    const target = cfg.parkingCars.filter((c: any) => c.isTarget);
+    expect(target).toHaveLength(1);
+    expect(`car_${target[0].id}`).toBe(idealCar[0].id);
+  });
 });
