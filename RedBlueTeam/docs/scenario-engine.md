@@ -104,8 +104,10 @@ Stan między etapami (co wybrano wcześniej) element czyta z `customState`, nie 
 **Zamknięcie etapu (mostek do następnego).** Gdy element woła `onComplete()`, silnik gra `StageCompletion` z definicji etapu jako **rozmowę mostkującą**. Dane (nie kod):
 - `conversation: ConversationBeat[]` — skrypt rozmowy 1:1 z VR, naprzemiennie:
   - `{ from: 'byte_master', text }` — kwestia mentora: pojawia się po jednej, z animacją „pisze" i delayem (2 s);
-  - `{ from: 'player', id, label }` — kwestia gracza: przycisk w czacie; klik wysyła echo i przesuwa rozmowę, **nic nie otwiera**.
+  - `{ from: 'player', id, label }` — kwestia gracza: przycisk w czacie; klik wysyła echo i przesuwa rozmowę, **nic nie otwiera**;
+  - `{ from: 'time_jump', label, sublabel?, durationMs? }` — **przeskok czasu**: pełnoekranowa nakładka `TimeJump` na pulpicie („MIJA KILKA GODZIN…”). Używaj go, gdy VR mówi o czekaniu na reakcję ofiar (np. „poczekajmy, aż rybka chwyci haczyk”) — to sposób pokazania „czekania”, nie nowa treść. Mostek czeka na koniec animacji (domyślnie 3 s), potem gra dalej. Stan: `timeJump` i `endTimeJump()` w `useMissionStore`; nakładkę renderuje `Desktop`.
 - `unlockIcons` + `badges` + `highlightTile` — stosowane **dopiero po ostatnim beacie** rozmowy. Kafelek odblokowuje się więc wtedy, gdy gracz napisze do mentora, co ma zrobić.
+- `unlockDelayMs` — opóźnienie tych odblokowań, badge i podświetlenia liczone od końca mostka. Domyślnie **3000**, gdy mostek zawierał beat `time_jump` (gracz ma zauważyć, że „coś się wydarzyło”), inaczej 0. Powtórka misji czyści trwający przeskok i oczekujące odblokowanie. W testach opóźnienie skaluje `__setBridgeDelayForTests` (0 = bez czekania); beat `time_jump` wymaga w testach wywołania `endTimeJump()` (jak koniec animacji w UI).
 - `incomingCall: { appId, label }` — baner „POŁĄCZENIE PRZYCHODZĄCE: …” na pulpicie (np. telefon od szefa IT ofiary w M4). Klik otwiera aplikację `appId`; baner gaśnie, gdy jej etap zostanie zaliczony. Pulpit nie zna żadnej misji — tekst pochodzi wyłącznie z danych etapu.
 - `sound` — dźwięk na koniec mostka.
 

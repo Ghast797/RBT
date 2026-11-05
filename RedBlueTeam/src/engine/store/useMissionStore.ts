@@ -139,7 +139,15 @@ export interface MissionState {
       incomingCall?: { appId: string; label: string };
     };
     sound?: 'notification' | 'alarm' | 'success';
+    /** Opóźnienie odblokowań po końcu mostka (`StageCompletion.unlockDelayMs`). */
+    unlockDelayMs?: number;
+    /** Czy w mostku był beat `time_jump` (domyślne opóźnienie 3 s). */
+    hadTimeJump?: boolean;
   } | null;
+  /** Trwający przeskok czasu (nakładka na pulpicie); `null`, gdy nic nie trwa. */
+  timeJump: { label: string; sublabel?: string; durationMs?: number } | null;
+  /** Wywoływane przez nakładkę po zakończeniu animacji — mostek gra dalej. */
+  endTimeJump: () => void;
 
   // Step 3: Pendrive USB (Mission 3 compatibility)
   hasUsbInserted: boolean;
@@ -387,6 +395,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     highlightedTileId: null as string | null,
     incomingCall: null as { appId: string; label: string } | null,
     pendingBridge: null as MissionState['pendingBridge'],
+    timeJump: null as MissionState['timeJump'],
 
     // Step 3
     hasUsbInserted: false,
@@ -438,6 +447,20 @@ let BRIDGE_DELAY = 2000;
 /** Tylko do testów: skraca delay rozmowy, by nie czekać sekund. */
 export function __setBridgeDelayForTests(ms: number) { BRIDGE_DELAY = ms; }
 
+// Odblokowania po przeskoku czasu: domyślne opóźnienie i oczekujący timer.
+const DEFAULT_UNLOCK_DELAY_AFTER_TIME_JUMP = 3000;
+let unlockTimer: ReturnType<typeof setTimeout> | null = null;
+function clearUnlockTimer() {
+  if (unlockTimer !== null) {
+    clearTimeout(unlockTimer);
+    unlockTimer = null;
+  }
+}
+/** Opóźnienie skaluje się z `__setBridgeDelayForTests` (0 w testach = bez czekania). */
+function scaledUnlockDelay(ms: number) {
+  return Math.round(ms * (BRIDGE_DELAY / 2000));
+}
+
 export const useMissionStore = create<MissionState>((set, get) => ({
   ...getInitialMissionState(initialMission),
 
@@ -454,7 +477,8 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       return;
     }
 
-    set(getInitialMissionState(targetMission));
+    clearUnlockTimer();
+    set({ ...getInitialMissionState(targetMission), timeJump: null });
   },
 
   setCustomState: (key, value) => {
@@ -486,9 +510,11 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   retryFromScratch: () => {
     sounds.playClick();
+    clearUnlockTimer();
     const currentMission = get().activeMission;
     set({
       ...getInitialMissionState(currentMission),
+      timeJump: null,
       bootStage: 'incoming_call',
       isDetectedModalOpen: false,
       detectionReason: null,
@@ -498,12 +524,14 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   retryFromChoices: () => {
     sounds.playSuccess();
+    clearUnlockTimer();
     const currentMission = get().activeMission;
     const baseInitial = getInitialMissionState(currentMission);
     const opening = resolveOpeningChat(currentMission, get().introReplies);
 
     set({
       ...baseInitial,
+      timeJump: null,
       bootStage: 'desktop',
       activeApp: null,
       isDetectedModalOpen: false,
@@ -651,7 +679,9 @@ export const useMissionStore = create<MissionState>((set, get) => ({
           highlightTile: completion.highlightTile,
           incomingCall: completion.incomingCall
         },
-        sound: completion.sound
+        sound: completion.sound,
+        unlockDelayMs: completion.unlockDelayMs,
+        hadTimeJump: false
       }
     }));
     get().advanceBridge();
@@ -666,29 +696,48 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     if (!pb) return;
     const i = pb.index;
 
-    // Koniec rozmowy → odblokowania, badge, podświetlenie.
+    // Koniec rozmowy → odblokowania, badge, podświetlenie (z opóźnieniem po przeskoku czasu).
     if (i >= pb.beats.length) {
-      set((s) => {
-        const unlocked = [...s.unlockedIcons];
-        (pb.unlock.unlockIcons || []).forEach((ic) => {
-          if (!unlocked.includes(ic)) unlocked.push(ic);
+      const applyUnlock = () => {
+        unlockTimer = null;
+        set((s) => {
+          const unlocked = [...s.unlockedIcons];
+          (pb.unlock.unlockIcons || []).forEach((ic) => {
+            if (!unlocked.includes(ic)) unlocked.push(ic);
+          });
+          return {
+            unlockedIcons: unlocked,
+            notificationBadges: { ...s.notificationBadges, ...(pb.unlock.badges || {}) },
+            highlightedTileId: pb.unlock.highlightTile ?? s.highlightedTileId,
+            incomingCall: pb.unlock.incomingCall ?? s.incomingCall
+          };
         });
-        return {
-          unlockedIcons: unlocked,
-          notificationBadges: { ...s.notificationBadges, ...(pb.unlock.badges || {}) },
-          highlightedTileId: pb.unlock.highlightTile ?? s.highlightedTileId,
-          incomingCall: pb.unlock.incomingCall ?? s.incomingCall,
-          isByteMasterTyping: false,
-          pendingBridge: null
-        };
-      });
-      if (pb.sound === 'alarm') sounds.playAlarm();
-      else if (pb.sound === 'success') sounds.playSuccess();
-      else sounds.playNotification();
+        if (pb.sound === 'alarm') sounds.playAlarm();
+        else if (pb.sound === 'success') sounds.playSuccess();
+        else sounds.playNotification();
+      };
+      set({ isByteMasterTyping: false, pendingBridge: null });
+      const delay = scaledUnlockDelay(
+        pb.unlockDelayMs ?? (pb.hadTimeJump ? DEFAULT_UNLOCK_DELAY_AFTER_TIME_JUMP : 0)
+      );
+      clearUnlockTimer();
+      if (delay > 0) unlockTimer = setTimeout(applyUnlock, delay);
+      else applyUnlock();
       return;
     }
 
     const beat = pb.beats[i];
+
+    // Przeskok czasu → nakładka na pulpicie; mostek czeka na `endTimeJump`.
+    if (beat.from === 'time_jump') {
+      set((s) => ({
+        isByteMasterTyping: false,
+        chatAvailableChoices: [],
+        timeJump: { label: beat.label, sublabel: beat.sublabel, durationMs: beat.durationMs },
+        pendingBridge: s.pendingBridge ? { ...s.pendingBridge, hadTimeJump: true } : null
+      }));
+      return;
+    }
 
     // Kwestia gracza → przycisk w czacie (klik przesunie rozmowę).
     if (beat.from === 'player') {
@@ -699,6 +748,8 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     // Kwestia BYTE_MASTERA → animacja „pisze" + delay, potem wiadomość, potem następny beat.
     set({ isByteMasterTyping: true, chatAvailableChoices: [] });
     setTimeout(() => {
+      // Mostek mógł zostać przerwany (powtórka misji) — nie dopisuj kwestii do nowej rozgrywki.
+      if (!get().pendingBridge) return;
       sounds.playNotification();
       set((s) => ({
         isByteMasterTyping: false,
@@ -707,6 +758,13 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       }));
       get().advanceBridge();
     }, BRIDGE_DELAY);
+  },
+
+  endTimeJump: () => {
+    const { timeJump, pendingBridge } = get();
+    if (!timeJump) return;
+    set({ timeJump: null, pendingBridge: pendingBridge ? { ...pendingBridge, index: pendingBridge.index + 1 } : null });
+    get().advanceBridge();
   },
 
   unlockIcon: (id: string) => {
@@ -1894,6 +1952,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   resetGame: () => {
     sounds.playClick();
     const currentMission = get().activeMission;
+    clearUnlockTimer();
     set(getInitialMissionState(currentMission));
   },
 

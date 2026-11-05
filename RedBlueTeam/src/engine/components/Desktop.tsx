@@ -19,6 +19,7 @@ import { ChatApp } from '../apps/ChatApp';
 import { AppHost, renderAppIcon } from '../registry/appRegistry';
 import { SideMonitorProvider, SideMonitorSlot, useSideMonitorActive } from './SideMonitor';
 import { sounds } from '../audio/soundEffects';
+import { TimeJump } from './TimeJump';
 import { isDevMode } from '../core/devMode';
 
 /**
@@ -62,7 +63,9 @@ export const Desktop: React.FC = () => {
     openRetryModal,
     closeRetryModal,
     retryFromScratch,
-    retryFromChoices
+    retryFromChoices,
+    timeJump,
+    endTimeJump
   } = useMissionStore();
 
   const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
@@ -115,6 +118,19 @@ export const Desktop: React.FC = () => {
     <div className="relative w-screen h-screen overflow-hidden bg-[#03060a] select-none font-mono flex flex-col justify-between p-3">
       {/* Background Ambience & Scanlines */}
       <div className="absolute inset-0 crt-scanlines z-50 pointer-events-none opacity-25" />
+
+      {/* Przeskok czasu z mostka etapu (beat `time_jump`): nakładka na cały ekran. */}
+      {timeJump && (
+        <div className="fixed inset-0 z-[90] bg-[#05090f] animate-in fade-in duration-300">
+          <TimeJump
+            label={timeJump.label}
+            sublabel={timeJump.sublabel}
+            durationMs={timeJump.durationMs}
+            accent={activeMission.mission.accentColor || '#00ff66'}
+            onDone={endTimeJump}
+          />
+        </div>
+      )}
       <div className="absolute inset-0 bg-[radial-gradient(#00ff6610_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
       {/* Main Dual-Screen Workspace (Left Monitor + Right Chat Monitor) */}

@@ -304,7 +304,12 @@ export interface DialogueTreeConfig {
  */
 export type ConversationBeat =
   | { from: 'byte_master'; text: string }
-  | { from: 'player'; id: string; label: string };
+  | { from: 'player'; id: string; label: string }
+  /**
+   * Przeskok czasu (pełnoekranowy `TimeJump`) — pokazuje „czekanie” z VR, np. aż ofiary
+   * otworzą maila. Mostek czeka na koniec animacji, potem gra dalej.
+   */
+  | { from: 'time_jump'; label: string; sublabel?: string; durationMs?: number };
 
 /** Co dzieje się po ukończeniu etapu: rozmowa z mentorem, a na jej końcu odblokowania. */
 export interface StageCompletion {
@@ -325,6 +330,12 @@ export interface StageCompletion {
    * Klik otwiera aplikację `appId`; baner znika, gdy etap tej aplikacji zostanie zaliczony.
    */
   incomingCall?: { appId: string; label: string };
+  /**
+   * Opóźnienie (ms) odblokowań, badge i `highlightTile` liczone od końca mostka.
+   * Domyślnie 3000, jeśli mostek zawierał beat `time_jump` (gracz ma chwilę zauważyć,
+   * że „coś się wydarzyło”), inaczej 0.
+   */
+  unlockDelayMs?: number;
   /** Czy zamknąć otwarte okno i wrócić na pulpit (domyślnie tak). */
   closeActiveApp?: boolean;
   /** Dźwięk na koniec mostka. */

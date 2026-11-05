@@ -50,7 +50,8 @@ Mostek (rozmowa do kolejnego etapu):
 - BM: "<kwestia mentora, 1:1 z VR>"
 - GRACZ: "<kwestia gracza, 1:1 z VR — ostatnia kwestia gracza odblokowuje kolejny kafelek>"
 - BM: "<ewentualna odpowiedź mentora>"
-- odblokuj: <//IKONA kolejnej aplikacji>
+- PRZESKOK CZASU: "<MIJA KILKA GODZIN…>" | "<podtekst, np. CZEKAMY, AŻ OFIARY OTWORZĄ MAILA>"   (opcjonalnie)
+- odblokuj: <//IKONA kolejnej aplikacji> (po przeskoku z opóźnieniem 3 s)
 ```
 
 Reguły:
@@ -58,6 +59,7 @@ Reguły:
 - Etap bez oceny (sam przerywnik) ma `Cel dydaktyczny` i mechanikę, bez bloku `Decyzja`.
 - Etap może mieć kilka decyzji (np. temat + treść maila = D5, D6).
 - **Mostek to rozmowa (naprzemiennie BM / GRACZ), 1:1 z VR** — także wielobeatowa (np. meldunek). Czat nie otwiera aplikacji; to kwestia gracza odblokowuje kolejny kafelek. Gdy VR milczy na granicy etapów, dodaj krótką kwestię-spójnik gracza i oznacz `[SPÓJNIK]`.
+- **Czekanie z VR = przeskok czasu.** Gdy VR na granicy etapów mówi o czekaniu (np. na otwarcie maila przez ofiarę), dodaj w mostku wiersz `PRZESKOK CZASU` (beat `time_jump`) po kwestii gracza. Kafelek następnego etapu odblokowuje się i podświetla 3 s po jego końcu (`unlockDelayMs`, domyślnie 3000). Tekst przeskoku jest dodatkiem kodu — zapisz go w „Odchylenia od VR”.
 - **`critical` oszczędnie** — tylko dekonspiracja / pułapka kończąca operację (honeypot, zdradzenie celu, rażąca niespójność). Wybór słaby, ale działający = `suboptimal` (gra toczy się dalej, werdykt w debriefie). Nie blokuj gracza na każdym niedoskonałym wyborze.
 - **Nie podpowiadaj odpowiedzi na ekranie** minigry (np. nie etykietuj puli plików nazwą celu). Gracz identyfikuje cele z fikcji i kwestii mentora.
 - Tempa (loadery, przeskoki czasu, animacje, delaye) **nie opisuj** — daje je silnik (`scenario-engine.md`, sekcja 9).

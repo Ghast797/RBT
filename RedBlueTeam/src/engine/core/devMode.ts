@@ -20,6 +20,7 @@ export const enableDevMode = () => {
   store.setState({
     unlockedIcons: [...unlocked],
     pendingBridge: null,
+    timeJump: null,
     chatAvailableChoices: [],
     isByteMasterTyping: false,
     highlightedTileId: null
