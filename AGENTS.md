@@ -2,7 +2,7 @@
 
 ## 🚨 KRYTYCZNE WYTYCZNE ARCHITEKTURY (BEZWZGLĘDNIE PRZESTRZEGAĆ)
 
-> **MODEL DOCELOWY:** `RedBlueTeam/docs/scenario-engine.md` (kontrakt, konwencje, katalog klocków), `scenario-format.md` (format `scenario.md`), `player-guidance.md` (prowadzenie gracza — jak ze scenariusza ustawić, by gracz wiedział, co robić), `vr-to-scenario-skill.md` (skill). Trwa migracja z modelu `transitions`/widgety na model etapów/klocków — poniższe zasady opisują stan docelowy.
+> **MODEL DOCELOWY:** `RedBlueTeam/docs/scenario-engine.md` (kontrakt, konwencje, katalog klocków), `scenario-format.md` (format `scenario.md`), `player-guidance.md` (prowadzenie gracza — jak ze scenariusza ustawić, by gracz wiedział, co robić), `mission-standard.md` (lista kontrolna misji 2+ na wzorcu M2 — treść, interfejs, tempo, weryfikacja), `vr-to-scenario-skill.md` (skill). Trwa migracja z modelu `transitions`/widgety na model etapów/klocków — poniższe zasady opisują stan docelowy.
 
 ### 1. PODZIAŁ SILNIK / SCENARIUSZE, BEZ DUPLIKATÓW
 - **ZAKAZ**: NIE twórz folderów komponentów/store/typów poza `src/engine/` i `src/scenarios/`.
@@ -64,6 +64,7 @@
    - utwórz katalog `src/scenarios/mission_XX_nazwa/` (Vite wykrywa go automatycznie);
    - dla każdej decyzji dobierz klocek z `src/engine/blocks/` albo napisz minigrę w `minigames/` misji (kontrakt silnika);
    - ustaw etapy tak, by w każdej chwili był jeden jasny następny krok (`player-guidance.md`);
+   - spełnij listę kontrolną `docs/mission-standard.md` (misja 2+; M1 to samouczek);
    - złóż definicję misji (`desktopApps`, `stages`, `blocks`, intro, debrief) i w `index.ts` wyeksportuj standardowy kontrakt: `scenarioDefinition` oraz `scenarioApps`;
    - dodaj misję do `MISSION_CATALOG` w `scripts/package-scorm.js`.
 3. **Weryfikacja**: `npm test` oraz `node scripts/package-scorm.js --mission=X` (sprawdź czy ZIP w `dist/` zawiera wyłącznie tę misję).
