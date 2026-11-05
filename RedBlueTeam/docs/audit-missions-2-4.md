@@ -5,6 +5,51 @@ Audyt wykonany tylko odczytem. Punkt odniesienia: M1 (PetroLog) jako wzorzec **w
 - Konsekwencja odroczona: słaby wybór ujawnia się etap lub dwa później, tekstem, z potrąceniem BTC, a w raporcie pojawia się „Widok Blue Teamu”.
 - Bez licznika wykrycia. Rozgałęzienia tylko małe i oczywiste.
 
+## Stan prac (aktualizacja 2026-11-05, koniec sesji)
+
+Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude lub Gemini/OpenCode) zaczyna od tej sekcji.
+
+**Zrobione**
+- **Silnik:**
+  - `useShuffled`;
+  - klocki `ChoiceCards`/`VpnRouter`/`DialogueTree` w standardzie M1;
+  - `ChoiceCardGrid`/`ChoiceRows`;
+  - `ConfirmButton`/`SidePanel`;
+  - `incomingCall`;
+  - beat `time_jump` + `unlockDelayMs`;
+  - VPN: wpisywanie z klawiatury i auto-przejście.
+- **M2 zamknięte** po trzech turach audytu właściciela. Brakuje tylko grafik szablonów w `mission_02_carbon_flow/assets/forms/` (`poodle_forms`, `quickgram`, `kneenook`, 4:3).
+- **Standard misji 2+:** [`mission-standard.md`](mission-standard.md).
+- **M3 na wzorcu B:**
+  - 5 minigier `ol_*` w `mission_03_ol_company/minigames/`;
+  - etapy w `stages.ts`;
+  - raport z lekcjami;
+  - `scenario.md`;
+  - spec w `mission_03_ol_company/docs/migration-spec.md`;
+  - `tests/mission3.test.ts`.
+- **Sprzątanie legacy M3 w silniku** (zacommitowane): stare widgety, maszyna stanów w store, przyciski w `ChatView`, test `missionStore`, neutralna domyślna misja, zaślepki `Stub*`.
+
+**W toku (niezacommitowane w chwili zamknięcia sesji)**
+- **Cięcie cyklu importów:** nowy `engine/registry/scenarioApps.ts` oraz zmiany w `appRegistry.tsx` i `scenarios/*/index.ts`. Przed commitem sprawdź `npx vitest run`, `npx tsc -p tsconfig.app.json --noEmit` i ładowanie M1–M4 w przeglądarce. Jeśli coś nie działa, odrzuć zmiany (`git restore` / usunięcie nowego pliku).
+- **Do dokończenia sprzątania:**
+  - usunięcie martwych `step1..step5` z `mission_03_ol_company/data/mission3.json` (sprawdź grepem, że nic ich nie czyta);
+  - `scenario-engine.md` sekcja 8 i `AGENTS.md`: legacy wygaszone;
+  - `node scripts/package-scorm.js --all` + grep izolacji ZIP (np. „O&L” nie może być w M2/M4);
+  - regresja M1–M4 w przeglądarce.
+
+**Następne kroki**
+1. **Agenci testujący M3:** recenzja kodu przeciw `mission-standard.md` (Opus), audyt w przeglądarce każdego ekranu przy 1366×768 i 1920×1080 (Sonnet), izolacja paczek (Haiku).
+2. **Tura poprawek M3.** Już znane:
+   - po udanej kompilacji RAT `VirusLabApp` ma przejść dalej sam, bez przycisku „ZAPISZ ŁADUNEK…”;
+   - `DroneApp` zajmuje prawy monitor, więc wiadomość mentora z adresem ofiary trzeba pokazać w panelu jako notatkę;
+   - odpowiedzi D1/D2 w `step6` mają mieć pełne etykiety z ekranu; wymaga to poprawki `tests/mission3.test.ts` ok. l.100.
+3. **Audyt M3 przez właściciela.** Do akceptacji:
+   - builder RAT bez oceny (8 decyzji);
+   - zły cel D2 → `suboptimal` po powrocie mentora;
+   - `educationalSlides` usunięte z M3 (M2/M4 nadal je mają).
+4. **M4** wg `mission-standard.md`: rozjazdy z PDF (9 vs 10 decyzji — układ wg oceny logiki), `scenario.md`, przeskok czasu w mostku po VPN, wygląd M2.
+5. **Do decyzji właściciela:** dopasowanie M1 do zasady „karty na dużym ekranie, wiersze na prawym” (POCZTA, KREATOR_STRONY).
+
 ## Stan w skrócie
 
 | | M2 CarbonFlow | M3 O&L | M4 Energy Rock |
