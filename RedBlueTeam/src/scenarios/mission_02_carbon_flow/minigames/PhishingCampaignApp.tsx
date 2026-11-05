@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Mail, CheckCircle2, ArrowRight, Users, ShieldAlert } from 'lucide-react';
+import { Mail, CheckCircle2, Users, ShieldAlert } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
-import type { BlockProps } from '../../../engine/types/mission';
+import { AppHeader } from '../../../engine/components/AppHeader';
+import { SideMonitor } from '../../../engine/components/SideMonitor';
+import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingCampaignConfig } from './types';
+import { ConfirmButton, InfoCard, OptionCards, SidePanel } from './ui';
 
 type Screen =
   | 'action'
@@ -19,7 +22,8 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   onDecision,
   onComplete
 }) => {
-  const blue = '#38bdf8';
+  // Akcent = kolor kafelka //PHISHING na pulpicie (jak w Misji 1).
+  const accent = '#38bdf8';
 
   const [screen, setScreen] = useState<Screen>('action');
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
@@ -36,26 +40,34 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   const selectedTemplate = config.template.options.find((o) => o.id === selectedTemplateId);
   const selectedTopic = config.topic.options.find((o) => o.id === selectedTopicId);
 
-  const header = (title: string, sub: string, step: string) => (
-    <div className="border-b pb-3 flex items-center justify-between" style={{ borderColor: `${blue}4d` }}>
-      <div className="flex items-center space-x-2.5">
-        <div
-          className="p-1.5 rounded border"
-          style={{ backgroundColor: `${blue}26`, borderColor: blue, color: blue }}
-        >
-          <Mail size={20} />
-        </div>
-        <div>
-          <h2 className="text-sm font-bold text-white tracking-widest">{title}</h2>
-          <p className="text-[0.6875rem]" style={{ color: blue }}>{sub}</p>
-        </div>
+  const header = (subtitle: string, task: string, step: string) => (
+    <AppHeader icon={Mail} accent={accent} title="//PHISHING" subtitle={subtitle} task={task} step={step} />
+  );
+
+  // Ekran z jednym wyborem. Nie ma tu podglądu, który wymagałby prawego monitora, więc wybór stoi na lewym ekranie.
+  const choiceScreen = (
+    subtitle: string,
+    task: string,
+    step: string,
+    options: ChoiceOption[],
+    selectedId: string | null,
+    onSelect: (id: string) => void,
+    confirmLabel: string,
+    enabled: boolean,
+    onConfirm: () => void
+  ) => (
+    <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
+      {header(subtitle, task, step)}
+      <OptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} />
+      <div className="flex justify-end">
+        <ConfirmButton
+          accent={accent}
+          label={confirmLabel}
+          enabled={enabled}
+          onClick={onConfirm}
+          className="w-auto px-6"
+        />
       </div>
-      <span
-        className="text-[0.625rem] px-2 py-0.5 rounded border font-mono"
-        style={{ backgroundColor: `${blue}1a`, borderColor: `${blue}66`, color: blue }}
-      >
-        {step}
-      </span>
     </div>
   );
 
@@ -111,275 +123,162 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
 
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
-      {screen === 'action' && (
-        <div className="flex flex-col justify-between h-full space-y-4">
-          {header('//KREATOR_PHISHINGU // RODZAJ AKCJI', config.action.question, 'KROK 1/4')}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {actionOptions.map((opt) => {
-              const isSelected = selectedActionId === opt.id;
-              return (
-                <div
-                  key={opt.id}
-                  onClick={() => {
-                    sounds.playClick();
-                    setSelectedActionId(opt.id);
-                  }}
-                  className={`p-4 rounded-xl border-2 transition-all flex flex-col justify-between cursor-pointer ${
-                    isSelected
-                      ? 'border-[#38bdf8] bg-[#38bdf8]/15 shadow-[0_0_20px_rgba(56,189,248,0.3)]'
-                      : 'border-gray-800 bg-[#08101a] hover:border-gray-700 hover:bg-[#0c1624]'
-                  }`}
-                  style={isSelected ? { borderColor: blue, backgroundColor: `${blue}26`, boxShadow: `0 0 20px ${blue}4d` } : undefined}
-                >
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-white leading-snug">{opt.label}</h4>
-                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
-                  </div>
-                  {opt.tags && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {opt.tags.map((t) => (
-                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="flex justify-end pt-2">
-            <button
-              disabled={!selectedAction}
-              onClick={handleActionConfirm}
-              className={`flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs transition-all ${
-                selectedAction
-                  ? 'text-black hover:opacity-90'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-              }`}
-              style={selectedAction ? { backgroundColor: blue, boxShadow: `0 0 20px ${blue}80` } : undefined}
-            >
-              <span>ZATWIERDŹ RODZAJ AKCJI</span>
-              <ArrowRight size={14} />
-            </button>
-          </div>
-        </div>
-      )}
+      {screen === 'action' &&
+        choiceScreen(
+          'KONFIGURACJA KAMPANII: RODZAJ AKCJI',
+          'Wybierz rodzaj akcji, którą przeprowadzisz przeciwko CarbonFlow Inc.',
+          'KROK 1/4',
+          actionOptions,
+          selectedActionId,
+          setSelectedActionId,
+          'ZATWIERDŹ RODZAJ AKCJI',
+          !!selectedAction,
+          handleActionConfirm
+        )}
 
       {screen === 'load_template' && (
         <ModuleLoader
           label="Pobieranie bazy szablonów formularzy..."
           durationMs={900}
-          accent={blue}
+          accent={accent}
           onDone={() => setScreen('template')}
         />
       )}
 
-      {screen === 'template' && (
-        <div className="flex flex-col justify-between h-full space-y-4">
-          {header('//KREATOR_PHISHINGU // SZABLON FORMULARZA', config.template.question, 'KROK 2/4')}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {templateOptions.map((opt) => {
-              const isSelected = selectedTemplateId === opt.id;
-              return (
-                <div
-                  key={opt.id}
-                  onClick={() => {
-                    sounds.playClick();
-                    setSelectedTemplateId(opt.id);
-                  }}
-                  className={`p-4 rounded-xl border-2 transition-all flex flex-col justify-between cursor-pointer ${
-                    isSelected
-                      ? 'border-[#38bdf8] bg-[#38bdf8]/15 shadow-[0_0_20px_rgba(56,189,248,0.3)]'
-                      : 'border-gray-800 bg-[#08101a] hover:border-gray-700 hover:bg-[#0c1624]'
-                  }`}
-                  style={isSelected ? { borderColor: blue, backgroundColor: `${blue}26`, boxShadow: `0 0 20px ${blue}4d` } : undefined}
-                >
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-white leading-snug">{opt.label}</h4>
-                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
-                  </div>
-                  {opt.tags && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {opt.tags.map((t) => (
-                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="flex justify-end pt-2">
-            <button
-              disabled={!selectedTemplate}
-              onClick={handleTemplateConfirm}
-              className={`flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs transition-all ${
-                selectedTemplate
-                  ? 'text-black hover:opacity-90'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-              }`}
-              style={selectedTemplate ? { backgroundColor: blue, boxShadow: `0 0 20px ${blue}80` } : undefined}
-            >
-              <span>ZATWIERDŹ SZABLON</span>
-              <ArrowRight size={14} />
-            </button>
-          </div>
-        </div>
-      )}
+      {screen === 'template' &&
+        choiceScreen(
+          'KONFIGURACJA KAMPANII: SZABLON FORMULARZA',
+          'Wybierz szablon formularza, w którym ofiary otrzymają link.',
+          'KROK 2/4',
+          templateOptions,
+          selectedTemplateId,
+          setSelectedTemplateId,
+          'ZATWIERDŹ SZABLON',
+          !!selectedTemplate,
+          handleTemplateConfirm
+        )}
 
       {screen === 'load_topic' && (
         <ModuleLoader
           label="Konfigurowanie przynęty socjotechnicznej..."
           durationMs={900}
-          accent={blue}
+          accent={accent}
           onDone={() => setScreen('topic')}
         />
       )}
 
-      {screen === 'topic' && (
-        <div className="flex flex-col justify-between h-full space-y-4">
-          {header('//KREATOR_PHISHINGU // TEMAT I PRZYNĘTA', config.topic.question, 'KROK 3/4')}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {topicOptions.map((opt) => {
-              const isSelected = selectedTopicId === opt.id;
-              return (
-                <div
-                  key={opt.id}
-                  onClick={() => {
-                    sounds.playClick();
-                    setSelectedTopicId(opt.id);
-                  }}
-                  className={`p-4 rounded-xl border-2 transition-all flex flex-col justify-between cursor-pointer ${
-                    isSelected
-                      ? 'border-[#38bdf8] bg-[#38bdf8]/15 shadow-[0_0_20px_rgba(56,189,248,0.3)]'
-                      : 'border-gray-800 bg-[#08101a] hover:border-gray-700 hover:bg-[#0c1624]'
-                  }`}
-                  style={isSelected ? { borderColor: blue, backgroundColor: `${blue}26`, boxShadow: `0 0 20px ${blue}4d` } : undefined}
-                >
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-white leading-snug">{opt.label}</h4>
-                    {opt.desc && <p className="text-[0.6875rem] text-gray-400 leading-relaxed">{opt.desc}</p>}
-                  </div>
-                  {opt.tags && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {opt.tags.map((t) => (
-                        <span key={t} className="text-[0.5625rem] px-1.5 py-0.5 rounded bg-black/60 text-gray-300">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+      {screen === 'topic' &&
+        choiceScreen(
+          'KONFIGURACJA KAMPANII: TEMAT I PRZYNĘTA',
+          'Wybierz temat ankiety, który ma zainteresować pracowników.',
+          'KROK 3/4',
+          topicOptions,
+          selectedTopicId,
+          setSelectedTopicId,
+          'ZATWIERDŹ TEMAT ANKIETY',
+          !!selectedTopic,
+          handleTopicConfirm
+        )}
 
-          <div className="flex justify-end pt-2">
-            <button
-              disabled={!selectedTopic}
-              onClick={handleTopicConfirm}
-              className={`flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs transition-all ${
-                selectedTopic
-                  ? 'text-black hover:opacity-90'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-              }`}
-              style={selectedTopic ? { backgroundColor: blue, boxShadow: `0 0 20px ${blue}80` } : undefined}
-            >
-              <span>ZATWIERDŹ TEMAT ANKIETY</span>
-              <ArrowRight size={14} />
-            </button>
+      {screen === 'import_list' && (
+        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
+          {header(
+            'KONFIGURACJA KAMPANII: ODBIORCY',
+            isImported
+              ? 'Baza jest załadowana. Zapisz kampanię.'
+              : 'Zaimportuj bazę adresatów, aby zaadresować kampanię.',
+            'KROK 4/4'
+          )}
+
+          {!isImported ? (
+            <InfoCard accent={accent} className="text-center my-auto">
+              <Users size={32} className="mx-auto" style={{ color: accent }} />
+              <h3 className="text-sm font-bold text-white">LISTA PRACOWNIKÓW CARBONFLOW INC.</h3>
+              <p className="text-xs text-gray-300 max-w-md mx-auto leading-relaxed">
+                Lista mailingowa zawiera {config.mailingList.employeesCount} zweryfikowanych adresów pracowników w
+                domenie {config.mailingList.targetDomain}.
+              </p>
+              <ConfirmButton
+                accent={accent}
+                label="IMPORTUJ LISTĘ ADRESATÓW"
+                onClick={handleImport}
+                icon={<Users size={15} />}
+                className="w-auto mx-auto px-6"
+              />
+            </InfoCard>
+          ) : (
+            <InfoCard accent={accent} className="my-auto">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center space-x-2" style={{ color: accent }}>
+                  <CheckCircle2 size={20} />
+                  <span className="text-sm font-bold">
+                    ZAŁADOWANO BAZĘ: {config.mailingList.targetDomain} ({config.mailingList.employeesCount} REKORDÓW)
+                  </span>
+                </div>
+                <span className="text-xs text-gray-300 font-mono shrink-0">STATUS: UZBROJONE</span>
+              </div>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Lista adresatów i allowlista nadawców CarbonFlow są na prawym monitorze.
+              </p>
+            </InfoCard>
+          )}
+
+          <div className="flex justify-end">
+            <ConfirmButton
+              accent={accent}
+              label="ZAPISZ KAMPANIĘ"
+              enabled={isImported}
+              onClick={() => {
+                sounds.playSuccess();
+                onComplete();
+              }}
+              className="w-auto px-6"
+            />
           </div>
         </div>
       )}
 
-      {screen === 'import_list' && (
-        <div className="flex flex-col justify-between h-full space-y-4">
-          {header('//KREATOR_PHISHINGU // IMPORT BAZY ODBIORCÓW', 'Baza mailingowa pracowników CarbonFlow Inc.', 'KROK 4/4')}
-
-          {!isImported ? (
-            <div className="p-6 rounded-xl border border-gray-800 bg-[#08101a] space-y-3 text-center my-auto">
-              <Users size={32} className="mx-auto" style={{ color: blue }} />
-              <h3 className="text-sm font-bold text-white">LISTA PRACOWNIKÓW CARBONFLOW INC.</h3>
-              <p className="text-xs text-gray-400 max-w-md mx-auto">
-                Lista mailingowa zawiera {config.mailingList.employeesCount} zweryfikowanych adresów pracowników w domenie {config.mailingList.targetDomain}.
-                Załaduj bazę do kreatora, aby zaadresować kampanię.
-              </p>
-              <button
-                onClick={handleImport}
-                className="flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs text-black hover:opacity-90 shadow-lg transition-all mx-auto mt-2"
-                style={{ backgroundColor: blue, boxShadow: `0 0 20px ${blue}80` }}
-              >
-                <Users size={16} />
-                <span>IMPORTUJ LISTĘ ADRESATÓW</span>
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div
-                className="p-3.5 rounded-xl border flex items-center justify-between"
-                style={{ borderColor: `${blue}66`, backgroundColor: `${blue}1a` }}
-              >
-                <div className="flex items-center space-x-2" style={{ color: blue }}>
-                  <CheckCircle2 size={18} />
-                  <span className="text-xs font-bold">ZAŁADOWANO BAZĘ: {config.mailingList.targetDomain} ({config.mailingList.employeesCount} REKORDÓW)</span>
-                </div>
-                <span className="text-[0.625rem] text-gray-400 font-mono">STATUS: UZBROJONE</span>
-              </div>
-
-              <div className="p-3 rounded-lg border border-gray-800 bg-black/40 space-y-2">
+      {/* Prawy monitor: lista adresatów i allowlista (treść pomocnicza, żeby ekran się nie przewijał). */}
+      {screen === 'import_list' && isImported && (
+        <SideMonitor>
+          <SidePanel
+            accent={accent}
+            heading="//PHISHING: ADRESACI"
+            sub={`Baza mailingowa pracowników CarbonFlow Inc. (${config.mailingList.employeesCount} adresów)`}
+          >
+            <div className="space-y-4">
+              <div className="space-y-2">
                 <div className="text-[0.6875rem] font-bold text-gray-300 uppercase tracking-wide">
                   Przykładowi odbiorcy z bazy kontaktów:
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[0.625rem] font-mono">
+                <div className="flex flex-col gap-2 text-[0.6875rem] font-mono">
                   {config.mailingList.sampleRecipients.map((r) => (
-                    <div key={r.email} className="p-2 rounded bg-[#09111c] border border-gray-800 flex justify-between">
-                      <span className="text-gray-300">{r.name} ({r.role})</span>
-                      <span className="text-cyan-400">{r.email}</span>
+                    <div key={r.email} className="p-2.5 rounded bg-[#09111c] border border-gray-800 space-y-0.5">
+                      <div className="text-gray-200">
+                        {r.name} ({r.role})
+                      </div>
+                      <div style={{ color: accent }}>{r.email}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg border border-purple-900/50 bg-purple-950/20 text-[0.6875rem] space-y-1">
-                <div className="font-bold text-purple-300 flex items-center space-x-1.5">
-                  <ShieldAlert size={14} />
+              <div className="p-3 rounded-lg border border-gray-800 bg-black/30 text-[0.6875rem] space-y-2">
+                <div className="font-bold text-gray-200 flex items-center space-x-1.5">
+                  <ShieldAlert size={14} style={{ color: accent }} />
                   <span>BIAŁA LISTA NADAWCÓW (ALLOWLISTA IP CARBONFLOW):</span>
                 </div>
-                <div className="flex gap-2 font-mono text-purple-200">
+                <div className="flex flex-wrap gap-2 font-mono text-gray-200">
                   {config.mailingList.whitelistedIps.map((ip) => (
-                    <span key={ip} className="px-2 py-0.5 rounded bg-black/50 border border-purple-800/60">
+                    <span key={ip} className="px-2 py-0.5 rounded bg-black/50 border border-gray-700">
                       {ip}
                     </span>
                   ))}
                 </div>
               </div>
             </div>
-          )}
-
-          <div className="flex justify-end pt-2">
-            <button
-              disabled={!isImported}
-              onClick={() => {
-                sounds.playSuccess();
-                onComplete();
-              }}
-              className={`flex items-center space-x-2 px-5 py-2.5 rounded-lg font-bold text-xs transition-all ${
-                isImported
-                  ? 'text-black hover:opacity-90'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-              }`}
-              style={isImported ? { backgroundColor: blue, boxShadow: `0 0 20px ${blue}80` } : undefined}
-            >
-              <span>ZAPISZ KAMPANIĘ</span>
-              <ArrowRight size={14} />
-            </button>
-          </div>
-        </div>
+          </SidePanel>
+        </SideMonitor>
       )}
     </div>
   );
