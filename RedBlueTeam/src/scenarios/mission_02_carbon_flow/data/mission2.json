@@ -72,12 +72,17 @@
       "WELCOME... HACKER"
     ],
     "firstUnlock": {
-      "unlockIcons": ["virus_database_unlocked", "virus_database"],
-      "badges": { "virus_database": 1 },
-      "highlightTile": "virus_database"
+      "unlockIcons": [
+        "phishing_unlocked",
+        "phishing_app"
+      ],
+      "badges": {
+        "phishing_app": 1
+      },
+      "highlightTile": "phishing_app"
     },
     "startBadges": {
-      "virus_database": 1
+      "phishing_app": 1
     }
   },
   "desktopApps": [
@@ -90,13 +95,13 @@
       "isChatFocus": true
     },
     {
-      "id": "virus_database",
-      "label": "//BAZA_WIRUSÓW",
-      "color": "#ec4899",
-      "icon": "ShieldAlert",
-      "componentId": "worm_builder",
-      "unlockedOnly": true,
-      "requiredUnlockId": "virus_database_unlocked"
+      "id": "phishing_app",
+      "label": "//PHISHING",
+      "color": "#38bdf8",
+      "icon": "Mail",
+      "componentId": "phishing_campaign",
+      "requiredUnlockId": "phishing_unlocked",
+      "unlockedOnly": true
     },
     {
       "id": "vpn_app",
@@ -108,13 +113,22 @@
       "requiredUnlockId": "vpn_unlocked"
     },
     {
-      "id": "phishing_app",
-      "label": "//KREATOR_PHISHINGU",
-      "color": "#38bdf8",
-      "icon": "Mail",
-      "componentId": "phishing_campaign",
+      "id": "virus_database",
+      "label": "//BAZA_WIRUSÓW",
+      "color": "#ec4899",
+      "icon": "ShieldAlert",
+      "componentId": "worm_builder",
       "unlockedOnly": true,
-      "requiredUnlockId": "phishing_unlocked"
+      "requiredUnlockId": "virus_database_unlocked"
+    },
+    {
+      "id": "phishing_dispatch",
+      "label": "//PHISHING (WYSYŁKA)",
+      "color": "#38bdf8",
+      "icon": "Send",
+      "componentId": "phishing_dispatch",
+      "unlockedOnly": true,
+      "requiredUnlockId": "phishing_dispatch_unlocked"
     },
     {
       "id": "botnet_monitor",
@@ -149,31 +163,31 @@
     "choices": [
       {
         "num": 1,
-        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
-        "answer": "ROBAK",
-        "correct": true,
-        "details": "Robak samodzielnie powiela się w sieci i formuje botnet."
-      },
-      {
-        "num": 2,
         "question": "WYBIERZ RODZAJ AKCJI",
         "answer": "WIRUS 0-DAY",
         "correct": true,
         "details": "Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary."
       },
       {
-        "num": 3,
+        "num": 2,
         "question": "WYBIERZ SZABLON MAILA",
         "answer": "POODLE (POODLE FORMS)",
         "correct": true,
         "details": "Profesjonalny szablon formularza ankietowego idealnie pasuje do planu wysłania fałszywej ankiety pracowniczej."
       },
       {
-        "num": 4,
+        "num": 3,
         "question": "WYBIERZ TEMAT ANKIETY",
         "answer": "OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO",
         "correct": true,
         "details": "Przymus w połączeniu z tematem integracji tworzy idealną presję socjotechniczną."
+      },
+      {
+        "num": 4,
+        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
+        "answer": "ROBAK",
+        "correct": true,
+        "details": "Robak samodzielnie powiela się w sieci i formuje botnet."
       },
       {
         "num": 5,

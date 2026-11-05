@@ -15,10 +15,10 @@ import type {
 // DANE KLOCKÓW / MINIGIER
 // ---------------------------------------------------------------------------
 
-/** D1: Konstrukcja i modyfikacja robaka 0-day (Etap 1 - Uzbrojenie). */
+/** D4: Konstrukcja i modyfikacja robaka 0-day (Etap 4 - Uzbrojenie). */
 export const wormBuilderConfig: WormBuilderConfig = {
   virus: {
-    decisionNum: 1,
+    decisionNum: 4,
     question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
     options: [
       {
@@ -56,7 +56,7 @@ export const wormBuilderConfig: WormBuilderConfig = {
   ]
 };
 
-/** S02: Konfiguracja VPN (dopasowanie IP do allowlisty antyspamowej CarbonFlow - Flavor). */
+/** S03: Konfiguracja VPN (dopasowanie IP do allowlisty antyspamowej CarbonFlow - Flavor). */
 export const vpnConfig: VpnConfig = {
   initialIp: '192.168.1.45',
   targetIp: '82.123.192.116',
@@ -67,10 +67,10 @@ export const vpnConfig: VpnConfig = {
   }
 };
 
-/** D2–D5: Pełna konfiguracja kampanii phishingowej (Etap 3 - Dostarczenie). */
+/** D1–D3: Konfiguracja kampanii phishingowej: akcja, szablon, temat (Etap 1 - //PHISHING). */
 export const phishingCampaignConfig: PhishingCampaignConfig = {
   action: {
-    decisionNum: 2,
+    decisionNum: 1,
     question: 'WYBIERZ RODZAJ AKCJI:',
     options: [
       {
@@ -103,7 +103,7 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
     ]
   },
   template: {
-    decisionNum: 3,
+    decisionNum: 2,
     question: 'WYBIERZ SZABLON FORMULARZA:',
     options: [
       {
@@ -136,7 +136,7 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
     ]
   },
   topic: {
-    decisionNum: 4,
+    decisionNum: 3,
     question: 'WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:',
     options: [
       {
@@ -178,7 +178,11 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
       { name: 'Piotr Wiśniewski', email: 'p.wisniewski@carbonflow.com', role: 'Inżynier Przesyłu' },
       { name: 'Robert Moris', email: 'r.moris@carbonflow.com', role: 'CEO / Prezes' }
     ]
-  },
+  }
+};
+
+/** D5: Wybór adresu nadawcy i wysyłka kampanii (Etap 5 - Dostarczenie, //PHISHING (WYSYŁKA)). */
+export const phishingDispatchConfig: PhishingDispatchConfig = {
   sender: {
     decisionNum: 5,
     question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
@@ -208,14 +212,38 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
         feedback: 'Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.'
       }
     ]
-  }
-};
-
-/** PhishingDispatchConfig dla zgodności wstecznej minigry. */
-export const phishingDispatchConfig: PhishingDispatchConfig = {
-  sender: phishingCampaignConfig.sender!,
+  },
   targetDomain: 'carbonflow.com',
-  surveyTitle: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO'
+  recipientsCount: 12,
+  topicDecisionNum: 3,
+  templateDecisionNum: 2,
+  topics: [
+    {
+      label: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO',
+      body: 'Przypominamy o konieczności wypełnienia corocznej, obowiązkowej ankiety dotyczącej organizacji firmowego wyjazdu integracyjnego CarbonFlow Inc.',
+      slug: 'carbonflow-integracja-2026'
+    },
+    {
+      label: 'ANKIETA DOTYCZĄCA ĆWICZEŃ PRZECIWPOŻAROWYCH',
+      body: 'Prosimy wszystkich pracowników o pilne wypełnienie ankiety weryfikującej znajomość procedur ewakuacyjnych i przeciwpożarowych w CarbonFlow Inc.',
+      slug: 'carbonflow-cwiczenia-pozarnicze-2026'
+    },
+    {
+      label: 'ULUBIONE OWOCE Z OWOCOWEGO CZWARTKU',
+      body: 'Zapraszamy do udziału w krótkim plebiscycie pracowników na temat preferowanego asortymentu w ramach akcji Owocowe Czwartki w CarbonFlow Inc.',
+      slug: 'carbonflow-owocowy-czwartek-2026'
+    }
+  ],
+  templates: [
+    { label: 'POODLE FORMS', serviceName: 'Poodle Forms', domainHost: 'poodleforms.net' },
+    { label: 'Quickgram', serviceName: 'Quickgram', domainHost: 'quickgram.social' },
+    { label: 'Kneenook', serviceName: 'Kneenook', domainHost: 'kneenook.forum' }
+  ],
+  signoffs: {
+    typosquatting_kadry: 'Dział Kadr i Płac CarbonFlow Inc.',
+    marketing_carbon: 'Dział Marketingu CarbonFlow Inc.',
+    catering_oilflow: 'Obsługa Gastronomiczna OilFlow Catering'
+  }
 };
 
 /** S04: Telemetria rozprzestrzeniania robaka i monitor botnetu (Etap 4). */
@@ -227,21 +255,22 @@ export const botnetMonitorConfig: BotnetMonitorConfig = {
 
 /** Dane klocków M2, kluczowane identyfikatorem kafelka pulpitu. */
 export const mission2Blocks: Record<string, unknown> = {
-  virus_database: wormBuilderConfig,
-  vpn_app: vpnConfig,
   phishing_app: phishingCampaignConfig,
+  vpn_app: vpnConfig,
+  virus_database: wormBuilderConfig,
+  phishing_dispatch: phishingDispatchConfig,
   botnet_monitor: botnetMonitorConfig
 };
 
 // ---------------------------------------------------------------------------
-// ETAPY MISJI — przebieg przez completeStage (wzorzec B, Cyber Kill Chain)
+// ETAPY MISJI — kolejność wg VR: akcja / szablon / temat -> VPN -> wirus -> nadawca
 // ---------------------------------------------------------------------------
 
 export const mission2Stages: StageDefinition[] = [
   {
-    id: 'virus_database',
-    appId: 'virus_database',
-    decisions: [1],
+    id: 'phishing_app',
+    appId: 'phishing_app',
+    decisions: [1, 2, 3],
     completion: {
       conversation: [
         {
@@ -250,7 +279,7 @@ export const mission2Stages: StageDefinition[] = [
         },
         {
           from: 'player',
-          id: 'm2_reply_virus',
+          id: 'm2_reply_phishing',
           label: 'WIEM, SKORZYSTAM Z VPN, ABY OMINĄĆ ICH SYSTEMY ANTYSPAMOWE'
         }
       ],
@@ -268,33 +297,51 @@ export const mission2Stages: StageDefinition[] = [
       conversation: [
         {
           from: 'byte_master',
-          text: 'WIESZ JUŻ, Z JAKIEGO ADRESU WYŚLESZ ZAINFEKOWANĄ ANKIETĘ?'
+          text: 'STWÓRZ WIRUSA 0-DAY. BĘDZIEMY MIELI PEWNOŚĆ, ŻE WIRUS JEST NIEWYKRYWALNY'
         },
         {
           from: 'player',
           id: 'm2_reply_vpn',
-          label: 'ZAREJESTRUJĘ DOMENĘ ŁUDZĄCO PODOBNĄ DO FIRMOWEJ. PRZYGOTUJĘ ADRES, KTÓRY UŚPI CZUJNOŚĆ PRACOWNIKÓW.'
+          label: 'ROBI SIĘ'
         }
       ],
-      unlockIcons: ['phishing_unlocked', 'phishing_app'],
-      badges: { phishing_app: 1, chat: 1 },
-      highlightTile: 'phishing_app',
+      unlockIcons: ['virus_database_unlocked', 'virus_database'],
+      badges: { virus_database: 1, chat: 1 },
+      highlightTile: 'virus_database',
       sound: 'notification'
     }
   },
   {
-    id: 'phishing_app',
-    appId: 'phishing_app',
-    decisions: [2, 3, 4, 5],
+    id: 'virus_database',
+    appId: 'virus_database',
+    decisions: [4],
     completion: {
       conversation: [
         {
           from: 'byte_master',
-          text: 'KAMPANIA ROZESŁANA. SPRAWDŹMY, CZY ŁADUNEK ZACZĄŁ ROZPRZESTRZENIAĆ SIĘ PO STACJACH ROBOCZYCH.'
+          text: 'WIESZ JUŻ, Z JAKIEGO ADRESU WYŚLESZ ZAINFEKOWANĄ ANKIETĘ?'
         },
         {
           from: 'player',
-          id: 'm2_reply_phishing',
+          id: 'm2_reply_virus',
+          label: 'SPOKOJNA TWOJA ZAKAPTURZONA. PODMIENIĘ JEDNĄ LITERĘ W DOMENIE FIRMOWEJ. NIKT NIE ZWRÓCI NA TO UWAGI'
+        }
+      ],
+      unlockIcons: ['phishing_dispatch_unlocked', 'phishing_dispatch'],
+      badges: { phishing_dispatch: 1, chat: 1 },
+      highlightTile: 'phishing_dispatch',
+      sound: 'notification'
+    }
+  },
+  {
+    id: 'phishing_dispatch',
+    appId: 'phishing_dispatch',
+    decisions: [5],
+    completion: {
+      conversation: [
+        {
+          from: 'player',
+          id: 'm2_reply_dispatch',
           label: 'GOTOWE. TERAZ MUSIMY POCZEKAĆ, AŻ RYBKA CHWYCI HACZYK'
         }
       ],

@@ -22,11 +22,6 @@ export interface PhishingCampaignConfig {
     whitelistedIps: string[];
     sampleRecipients: Array<{ name: string; email: string; role: string }>;
   };
-  sender?: {
-    decisionNum: number;
-    question: string;
-    options: ChoiceOption[];
-  };
 }
 
 export interface VpnConfig {
@@ -52,14 +47,24 @@ export interface WormBuilderConfig {
   }>;
 }
 
+/** Wariant treści maila zależny od wcześniejszych wyborów gracza (temat, szablon, nadawca). */
 export interface PhishingDispatchConfig {
   sender: {
     decisionNum: number;
     question: string;
     options: ChoiceOption[];
   };
+  /** Domena ofiary i liczba odbiorców z listy mailingowej (podgląd wiadomości). */
   targetDomain: string;
-  surveyTitle: string;
+  recipientsCount: number;
+  /** Numery decyzji z poprzedniego etapu, z których czytamy wybór (temat, szablon). */
+  topicDecisionNum: number;
+  templateDecisionNum: number;
+  /** Warianty treści kluczowane etykietą wybranej opcji (jak w `PlayerChoiceRecord.answer`). */
+  topics: Array<{ label: string; body: string; slug: string }>;
+  templates: Array<{ label: string; serviceName: string; domainHost: string }>;
+  /** Podpis w mailu zależny od wybranego nadawcy (klucz: id opcji nadawcy). */
+  signoffs: Record<string, string>;
 }
 
 export interface BotnetMonitorConfig {

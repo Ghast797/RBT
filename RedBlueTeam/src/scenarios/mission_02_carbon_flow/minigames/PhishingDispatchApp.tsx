@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Send, AtSign, ArrowRight, ExternalLink } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { PhishingDispatchConfig } from './types';
 
@@ -18,6 +19,14 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
   const [selectedSenderId, setSelectedSenderId] = useState<string | null>(null);
 
   const selectedSender = config.sender.options.find((o) => o.id === selectedSenderId);
+
+  // Treść maila zależy od wcześniejszych wyborów (temat, szablon) zapisanych w silniku.
+  const playerChoices = useMissionStore((s) => s.playerChoices);
+  const answerFor = (num: number) => playerChoices.find((c) => c.num === num)?.answer;
+  const topic = config.topics.find((t) => t.label === answerFor(config.topicDecisionNum)) ?? config.topics[0];
+  const template =
+    config.templates.find((t) => t.label === answerFor(config.templateDecisionNum)) ?? config.templates[0];
+  const signoff = (selectedSender && config.signoffs[selectedSender.id]) || '';
 
   const handleSenderConfirm = () => {
     if (!selectedSender) return;
@@ -71,7 +80,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
               {config.sender.question}
             </h3>
             <p className="text-[0.6875rem] text-gray-400">
-              Wybierz adres e-mail, pod który podszyjesz się w nagłówku wiadomości. Domena powinna jak najbardziej przypominać prawdziwą domenę @carbonflow.com.
+              Wybierz adres e-mail, z którego zostanie wysłana wiadomość.
             </p>
           </div>
 
@@ -141,29 +150,26 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
                   <span className="font-mono text-cyan-400 font-bold">{selectedSender?.label}</span>
                 </div>
                 <div className="text-[0.6875rem] text-gray-400 font-mono">
-                  DO: <span className="text-white">pracownicy@carbonflow.com (12 odbiorców)</span>
+                  DO: <span className="text-white">pracownicy@{config.targetDomain} ({config.recipientsCount} odbiorców)</span>
                 </div>
               </div>
 
               <div className="text-xs pt-1">
                 <span className="text-gray-400">TEMAT: </span>
-                <span className="text-white font-bold">{config.surveyTitle}</span>
+                <span className="text-white font-bold">{topic.label}</span>
               </div>
             </div>
 
             <div className="p-4 rounded-xl border border-gray-800 bg-black/60 space-y-3 text-xs leading-relaxed text-gray-300">
               <p>Dzień dobry,</p>
+              <p>{topic.body}</p>
               <p>
-                Przypominamy o konieczności wypełnienia corocznej, obowiązkowej ankiety dotyczącej organizacji
-                firmowego wyjazdu integracyjnego CarbonFlow Inc.
-              </p>
-              <p>
-                Czas na wypełnienie formularza upływa dzisiaj o godzinie 16:00. Link do formularza w bezpiecznym serwisie Poodle Forms:
+                Czas na wypełnienie formularza upływa dzisiaj o godzinie 16:00. Link do formularza w serwisie {template.serviceName}:
               </p>
               <div className="p-3 rounded-lg border border-cyan-800/60 bg-cyan-950/30 flex items-center justify-between">
                 <div className="flex items-center space-x-2 text-cyan-300 font-mono text-[0.6875rem]">
                   <ExternalLink size={14} />
-                  <span>https://poodleforms.net/surveys/carbonflow-integracja-2026?token=0day_worm</span>
+                  <span className="truncate">{`https://${template.domainHost}/surveys/${topic.slug}?token=0day_worm`}</span>
                 </div>
                 <span className="text-[0.5625rem] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
                   ŁADUNEK WSTRZYKNIĘTY
@@ -171,7 +177,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
               </div>
               <p className="text-[0.6875rem] text-gray-400 pt-2">
                 Z poważaniem,<br />
-                Dział Kadr i Płac CarbonFlow Inc.
+                {signoff}
               </p>
             </div>
           </div>
