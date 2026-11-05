@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Send, ExternalLink, CheckCircle2 } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Send, ExternalLink, CheckCircle2, Mail } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
-import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
@@ -10,12 +9,132 @@ import type { BlockProps } from '../../../engine/types/mission';
 import type { PhishingDispatchConfig } from './types';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { SidePanel } from '../../../engine/components/SidePanel';
-import { InfoCard, OptionCards } from './ui';
+import { OptionCards } from './ui';
 
 type Screen = 'sender_select' | 'preview' | 'dispatching' | 'sent';
 
 const NEUTRAL_TOPIC = { label: '…', body: '…', slug: '…' };
 const NEUTRAL_TEMPLATE = { label: '…', serviceName: '…', domainHost: '…' };
+
+const DISPATCH_DURATION_MS = 4800;
+
+/**
+ * Wizualizacja wysyłki: pasek postępu, licznik dostarczonych, skrzynki zapalające się po kolei
+ * i słupki narastającej liczby dostarczonych wiadomości. Liczby i domena z konfiguracji.
+ * Wszystko „dostarczone" — to nie jest ocena wyboru gracza.
+ */
+const DispatchViz: React.FC<{
+  accent: string;
+  total: number;
+  domain: string;
+  /** Aktualna liczba dostarczonych; w stanie końcowym równa `total`. */
+  delivered: number;
+  done?: boolean;
+}> = ({ accent, total, domain, delivered, done }) => {
+  const pct = total > 0 ? Math.round((delivered / total) * 100) : 100;
+  return (
+    <div className="p-4 rounded-xl border border-gray-800 bg-[#08101a] space-y-3">
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <div className="text-xs text-gray-400 tracking-wider uppercase">
+            {done ? 'Dostarczono' : 'Wysyłanie wiadomości'}
+          </div>
+          <div className="text-3xl font-black font-mono text-white leading-none pt-1">
+            <span style={{ color: accent }}>{delivered}</span>
+            <span className="text-gray-500"> / {total}</span>
+          </div>
+        </div>
+        <div className="text-xs text-gray-400 font-mono text-right">
+          serwer pocztowy {domain}
+          <div className="text-lg font-black" style={{ color: accent }}>{pct}%</div>
+        </div>
+      </div>
+
+      <div className="h-2.5 rounded bg-black/60 border overflow-hidden" style={{ borderColor: `${accent}55` }}>
+        <div
+          className="h-full transition-all duration-300"
+          style={{ width: `${pct}%`, backgroundColor: accent, boxShadow: `0 0 12px ${accent}` }}
+        />
+      </div>
+
+      <div className="grid grid-cols-6 gap-2">
+        {Array.from({ length: total }, (_, i) => {
+          const on = i < delivered;
+          return (
+            <div
+              key={i}
+              className="flex flex-col items-center gap-1 py-1.5 rounded-lg border transition-all duration-300"
+              style={{
+                borderColor: on ? accent : '#1f2937',
+                backgroundColor: on ? `${accent}1f` : '#05090f',
+                color: on ? accent : '#4b5563',
+                boxShadow: on ? `0 0 10px ${accent}55` : undefined
+              }}
+            >
+              <Mail size={16} />
+              <span className="text-xs font-mono">{String(i + 1).padStart(2, '0')}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      <div>
+        <div className="text-xs text-gray-400 tracking-wider uppercase pb-1">Dostarczone w czasie</div>
+        <div className="flex items-end gap-1 h-16 border-b border-gray-700">
+          {Array.from({ length: total }, (_, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-t transition-all duration-300"
+              style={{
+                height: i < delivered ? `${((i + 1) / total) * 100}%` : '4%',
+                backgroundColor: i < delivered ? accent : '#1f2937'
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DispatchProgress: React.FC<{
+  accent: string;
+  total: number;
+  domain: string;
+  onDone: () => void;
+}> = ({ accent, total, domain, onDone }) => {
+  const [delivered, setDelivered] = useState(0);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
+  useEffect(() => {
+    const step = Math.max(60, Math.floor(DISPATCH_DURATION_MS / Math.max(1, total)));
+    let n = 0;
+    let finishId: ReturnType<typeof setTimeout> | undefined;
+    const id = setInterval(() => {
+      n += 1;
+      setDelivered(n);
+      sounds.playKeypress();
+      if (n >= total) {
+        clearInterval(id);
+        finishId = setTimeout(() => onDoneRef.current(), 700);
+      }
+    }, step);
+    return () => {
+      clearInterval(id);
+      if (finishId) clearTimeout(finishId);
+    };
+  }, [total]);
+
+  return (
+    <div className="flex flex-col h-full space-y-4">
+      <div className="text-sm font-bold tracking-widest animate-pulse" style={{ color: accent }}>
+        ROZSYŁANIE PAKIETÓW SMTP PRZEZ TUNEL VPN…
+      </div>
+      <DispatchViz accent={accent} total={total} domain={domain} delivered={delivered} />
+    </div>
+  );
+};
 
 export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> = ({
   config,
@@ -75,7 +194,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
               {selectedSender?.label ?? '…'}
             </span>
           </div>
-          <div className="text-[0.6875rem] text-gray-400 font-mono text-right">
+          <div className="text-xs text-gray-400 font-mono text-right">
             DO:{' '}
             <span className="text-white">
               pracownicy@{config.targetDomain} ({config.recipientsCount} odbiorców)
@@ -99,18 +218,18 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           className="p-3 rounded-lg border flex items-center justify-between gap-3"
           style={{ borderColor: `${accent}66`, backgroundColor: `${accent}12` }}
         >
-          <div className="flex items-center space-x-2 font-mono text-[0.6875rem] min-w-0" style={{ color: accent }}>
+          <div className="flex items-center space-x-2 font-mono text-xs min-w-0" style={{ color: accent }}>
             <ExternalLink size={14} className="shrink-0" />
             <span className="truncate">{`https://${template.domainHost}/surveys/${topic.slug}?token=0day_worm`}</span>
           </div>
           <span
-            className="text-[0.5625rem] px-2 py-0.5 rounded border font-mono shrink-0"
+            className="text-[0.6875rem] px-2 py-0.5 rounded border font-mono shrink-0"
             style={{ borderColor: `${accent}66`, color: accent, backgroundColor: `${accent}1a` }}
           >
             ŁADUNEK WSTRZYKNIĘTY
           </span>
         </div>
-        <p className="text-[0.6875rem] text-gray-400 pt-2">
+        <p className="text-xs text-gray-400 pt-2">
           Z poważaniem,
           <br />
           {signoff || '…'}
@@ -159,11 +278,11 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
       >
         <div className="space-y-2 text-xs">
           <div className="p-3 rounded-lg border border-gray-800 bg-black/20">
-            <span className="text-[0.625rem] text-gray-400 block tracking-wider">NADAWCA</span>
+            <span className="text-xs text-gray-400 block tracking-wider">NADAWCA</span>
             <span className="font-bold text-white font-mono break-all">{selectedSender?.label}</span>
           </div>
           <div className="p-3 rounded-lg border border-gray-800 bg-black/20">
-            <span className="text-[0.625rem] text-gray-400 block tracking-wider">ODBIORCY</span>
+            <span className="text-xs text-gray-400 block tracking-wider">ODBIORCY</span>
             <span className="font-bold text-white">
               {config.recipientsCount} adresów w domenie {config.targetDomain}
             </span>
@@ -199,10 +318,10 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
       )}
 
       {screen === 'dispatching' && (
-        <ModuleLoader
-          label="Rozsyłanie pakietów SMTP przez tunel VPN do serwera CarbonFlow Inc..."
-          durationMs={1300}
+        <DispatchProgress
           accent={accent}
+          total={config.recipientsCount}
+          domain={config.targetDomain}
           onDone={() => {
             sounds.playSuccess();
             setScreen('sent');
@@ -211,23 +330,27 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
       )}
 
       {screen === 'sent' && (
-        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
+        <div className="flex flex-col h-full space-y-3 animate-in fade-in duration-200">
           {header('KAMPANIA WYSŁANA', 'Wróć na pulpit i obserwuj, co się stanie.', 'FINALIZACJA')}
-          <InfoCard accent={accent} className="text-center my-auto">
-            <div
-              className="w-12 h-12 rounded-full border mx-auto flex items-center justify-center"
-              style={{ borderColor: accent, backgroundColor: `${accent}26`, color: accent }}
-            >
-              <CheckCircle2 size={28} />
+          <div className="flex items-center gap-3 px-1">
+            <CheckCircle2 size={28} style={{ color: accent }} className="shrink-0" />
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                KAMPANIA PHISHINGOWA ZOSTAŁA WYSŁANA
+              </h3>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Pakiety SMTP trafiły do skrzynek pracowników {config.targetDomain}. Oczekujemy na otwarcie linku i
+                aktywację ładunku w sieci LAN.
+              </p>
             </div>
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              KAMPANIA PHISHINGOWA ZOSTAŁA WYSŁANA
-            </h3>
-            <p className="text-xs text-gray-300 max-w-lg mx-auto leading-relaxed">
-              Pakiety SMTP zostały dostarczone do skrzynek {config.recipientsCount} pracowników w domenie{' '}
-              {config.targetDomain}. Oczekujemy na otwarcie linku i aktywację ładunku w sieci LAN.
-            </p>
-          </InfoCard>
+          </div>
+          <DispatchViz
+            accent={accent}
+            total={config.recipientsCount}
+            domain={config.targetDomain}
+            delivered={config.recipientsCount}
+            done
+          />
           <div className="flex justify-end">
             <ConfirmButton accent={accent} label="POWRÓT DO PULPITU" onClick={onComplete} className="w-auto px-6" />
           </div>
