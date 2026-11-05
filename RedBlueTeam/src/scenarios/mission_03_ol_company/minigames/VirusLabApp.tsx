@@ -1,103 +1,258 @@
-// Etap 1 — //BAZA_WIRUSÓW (stub szkieletu). D1: wybór wirusa (oceniane) +
-// builder RAT jako aktywność nieoceniana (flavor): zły zestaw blokuje
-// kompilację, poprawny wywołuje onComplete. Pełna wersja: migration-spec.md.
+// Etap 1 — //BAZA_WIRUSÓW. D1: wybór wirusa (oceniane, karty na dużym ekranie).
+// Potem builder RAT jako aktywność NIEOCENIANA (flavor): trzy grupy przełączników,
+// zły zestaw blokuje kompilację komunikatem (bez onDecision i bez wykrycia),
+// poprawny kończy etap przez onComplete. Spec: docs/migration-spec.md, sekcja 1.
 
 import React, { useState } from 'react';
+import { ShieldAlert, CheckCircle2, Cpu, AlertTriangle } from 'lucide-react';
+import { useShuffled } from '../../../engine/core/shuffle';
+import { sounds } from '../../../engine/audio/soundEffects';
+import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { AppHeader } from '../../../engine/components/AppHeader';
+import { ChoiceZone, ChoiceTile, ChoiceCardGrid } from '../../../engine/components/ChoiceZone';
+import { SideMonitor } from '../../../engine/components/SideMonitor';
+import { SidePanel } from '../../../engine/components/SidePanel';
+import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import type { BlockProps } from '../../../engine/types/mission';
-import type { ChoiceOption } from '../../../engine/types/mission';
-import type { VirusLabConfig } from './types';
-import { StubShell, StubHeader, StubChoiceList, StubActionButton, StubNote } from './ui';
+import type { VirusLabConfig, BuilderGroup } from './types';
+
+type Screen = 'virus_select' | 'loading' | 'builder' | 'compiling' | 'ready';
+type GroupKey = 'modules' | 'masking' | 'package';
+
+const ACCENT = '#ec4899'; // kolor kafelka //BAZA_WIRUSÓW
+
+const GROUP_KEYS: GroupKey[] = ['modules', 'masking', 'package'];
+
+/** Jedna grupa przełączników buildera: karty (radio) na dużym ekranie. */
+const BuilderColumn: React.FC<{
+  group: BuilderGroup;
+  value: string | null;
+  onChange: (id: string) => void;
+}> = ({ group, value, onChange }) => {
+  const options = useShuffled(group.options);
+  return (
+    <ChoiceZone accent={ACCENT} label={group.title.replace(/:$/, '').toUpperCase()}>
+      <div className="flex flex-col gap-2.5">
+        {options.map((o) => (
+          <ChoiceTile
+            key={o.id}
+            accent={ACCENT}
+            state={value === o.id ? 'selected' : 'idle'}
+            markerPosition="corner"
+            onClick={() => {
+              sounds.playClick();
+              onChange(o.id);
+            }}
+            className="p-3.5 pr-10"
+          >
+            <div className="space-y-1">
+              <div className="text-sm font-bold text-white leading-snug">{o.label}</div>
+              <div className="text-sm text-gray-300 leading-snug">{o.desc}</div>
+            </div>
+          </ChoiceTile>
+        ))}
+      </div>
+    </ChoiceZone>
+  );
+};
 
 export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDecision, onComplete }) => {
+  const [screen, setScreen] = useState<Screen>('virus_select');
   const [virusId, setVirusId] = useState<string | null>(null);
-  const [locked, setLocked] = useState(false);
-  const [mod, setMod] = useState<string | null>(null);
-  const [mask, setMask] = useState<string | null>(null);
-  const [pkg, setPkg] = useState<string | null>(null);
+  const [decided, setDecided] = useState(false);
+  const [picked, setPicked] = useState<Record<GroupKey, string | null>>({
+    modules: null,
+    masking: null,
+    package: null
+  });
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
 
-  const chosen = config.virus.options.find((o) => o.id === virusId);
-  const showBuilder = chosen && chosen.tier !== 'critical';
+  const virusOptions = useShuffled(config.virus.options);
+  const virus = config.virus.options.find((o) => o.id === virusId);
+  const allPicked = GROUP_KEYS.every((k) => picked[k]);
 
-  const pickVirus = (o: ChoiceOption) => {
-    if (locked) return;
-    setVirusId(o.id);
+  const header = (subtitle: string, task: string, step: string) => (
+    <AppHeader icon={ShieldAlert} accent={ACCENT} title="//BAZA_WIRUSÓW" subtitle={subtitle} task={task} step={step} />
+  );
+
+  const handleVirusConfirm = () => {
+    if (!virus || decided) return;
+    sounds.playSuccess();
+    setDecided(true);
     onDecision({
       num: config.virus.decisionNum,
       question: config.virus.question,
-      answer: o.label,
-      tier: o.tier,
-      feedback: o.feedback
+      answer: virus.label,
+      tier: virus.tier,
+      feedback: virus.feedback
     });
-    if (o.tier === 'critical') setLocked(true);
+    // critical: zostajemy na ekranie wyboru (zablokowanym) — silnik pokazuje wykrycie.
+    if (virus.tier !== 'critical') setScreen('loading');
   };
 
-  const compile = () => {
-    if (!mod || !mask || !pkg) {
-      setError('WYBIERZ WSZYSTKIE 3 PARAMETRY PRZED KOMPILACJĄ.');
-      return;
-    }
-    const okMod = config.builder.modules.options.find((x) => x.id === mod)?.correct;
-    const okMask = config.builder.masking.options.find((x) => x.id === mask)?.correct;
-    const okPkg = config.builder.package.options.find((x) => x.id === pkg)?.correct;
-    if (!okMod || !okMask || !okPkg) {
-      const wrong = !okMod
-        ? config.builder.modules.options.find((x) => x.id === mod)
-        : !okMask
-          ? config.builder.masking.options.find((x) => x.id === mask)
-          : config.builder.package.options.find((x) => x.id === pkg);
-      setError(`BŁĄD KOMPILACJI: ${wrong?.feedback ?? 'zły parametr ładunku.'}`);
+  const setGroup = (key: GroupKey, id: string) => {
+    setError(null);
+    setPicked((p) => ({ ...p, [key]: id }));
+  };
+
+  const handleCompile = () => {
+    sounds.playClick();
+    if (!allPicked) {
+      setError('WYBIERZ 3 PARAMETRY PRZED KOMPILACJĄ.');
       return;
     }
     setError(null);
-    setDone(true);
-    onComplete();
+    setScreen('compiling');
   };
 
-  const Group: React.FC<{ title: string; opts: VirusLabConfig['builder']['modules']['options']; value: string | null; set: (v: string) => void }> = ({ title, opts, value, set }) => (
-    <div className="space-y-2">
-      <div className="text-xs font-black text-[#00ff66] tracking-wide">{title}</div>
-      {opts.map((o) => (
-        <label
-          key={o.id}
-          className={`block p-2.5 rounded border-2 cursor-pointer text-[0.6875rem] ${
-            value === o.id ? 'bg-[#00ff66]/15 border-[#00ff66]' : 'bg-[#060a0f] border-slate-800 hover:border-slate-600'
-          }`}
-        >
-          <input type="radio" className="hidden" checked={value === o.id} onChange={() => { setError(null); set(o.id); }} />
-          <div className="font-bold text-white leading-snug">{o.label}</div>
-          <div className="text-gray-400 mt-0.5 leading-relaxed">{o.desc}</div>
-        </label>
-      ))}
-    </div>
-  );
+  const handleCompileDone = () => {
+    const chosen = GROUP_KEYS.map((k) => config.builder[k].options.find((o) => o.id === picked[k]));
+    const wrong = chosen.find((o) => !o?.correct);
+    if (wrong) {
+      sounds.playError();
+      setError(`BŁĄD KOMPILACJI: ${wrong.feedback}`);
+      setScreen('builder');
+      return;
+    }
+    sounds.playSuccess();
+    setScreen('ready');
+  };
 
-  return (
-    <StubShell>
-      <StubHeader title="//BAZA_WIRUSÓW" task={showBuilder ? 'Skonfiguruj i skompiluj ładunek RAT.' : config.virus.question} />
-      <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-4">
-        {!showBuilder ? (
-          <StubChoiceList options={config.virus.options} selectedId={virusId} disabled={locked} onPick={pickVirus} />
-        ) : (
-          <div className="space-y-4">
-            <StubNote>{config.builder.subtitle}</StubNote>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <Group title={config.builder.modules.title} opts={config.builder.modules.options} value={mod} set={setMod} />
-              <Group title={config.builder.masking.title} opts={config.builder.masking.options} value={mask} set={setMask} />
-              <Group title={config.builder.package.title} opts={config.builder.package.options} value={pkg} set={setPkg} />
+  const summary = (key: GroupKey) => config.builder[key].options.find((o) => o.id === picked[key])?.label;
+
+  const buildPanel = (
+    <SidePanel
+      accent={ACCENT}
+      heading="//BAZA_WIRUSÓW: KOMPILACJA"
+      sub="Parametry ładunku RAT (x64 / Windows 11)."
+      footer={
+        <ConfirmButton
+          accent={ACCENT}
+          label="KOMPILUJ ŁADUNEK"
+          onClick={handleCompile}
+          icon={<Cpu size={15} />}
+        />
+      }
+    >
+      <div className="space-y-3 text-xs leading-snug">
+        {GROUP_KEYS.map((k) => (
+          <div key={k} className="space-y-0.5">
+            <div className="text-[0.6875rem] font-black tracking-widest text-gray-400 uppercase">
+              {config.builder[k].title.replace(/:$/, '')}
             </div>
-            {error && (
-              <div className="p-3 rounded bg-[#ff3366]/10 border border-[#ff3366]/60 text-xs text-[#ff3366] font-bold">{error}</div>
-            )}
-            {done ? (
-              <StubNote>{config.builder.successMessage}</StubNote>
-            ) : (
-              <StubActionButton label="[KOMPILUJ ŁADUNEK]" onClick={compile} />
-            )}
+            <div className={summary(k) ? 'text-white font-bold' : 'text-gray-500 italic'}>
+              {summary(k) ?? 'nie wybrano'}
+            </div>
+          </div>
+        ))}
+        {error && (
+          <div className="p-3 rounded-lg border border-[#ff3366]/70 bg-[#ff3366]/10 text-[#ff3366] font-bold flex items-start gap-2">
+            <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+            <span>{error}</span>
           </div>
         )}
       </div>
-    </StubShell>
+    </SidePanel>
+  );
+
+  return (
+    <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
+      {(screen === 'builder' || screen === 'compiling') && (
+        <SideMonitor>{screen === 'builder' ? buildPanel : <div className="h-full" />}</SideMonitor>
+      )}
+
+      {screen === 'virus_select' && (
+        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
+          {header(
+            'DOBÓR ŁADUNKU ZŁOŚLIWEGO OPROGRAMOWANIA',
+            'Wybierz rodzaj wirusa, który posłuży w operacji przeciwko O&L Company.',
+            'KROK 1/2'
+          )}
+          <ChoiceCardGrid
+            accent={ACCENT}
+            options={virusOptions}
+            selectedId={virusId}
+            onSelect={(id: string) => {
+              if (decided) return;
+              sounds.playClick();
+              setVirusId(id);
+            }}
+            size="lg"
+          />
+          <div className="flex justify-end">
+            <ConfirmButton
+              accent={ACCENT}
+              label="ZATWIERDŹ WYBÓR WIRUSA"
+              enabled={!!virus && !decided}
+              onClick={handleVirusConfirm}
+              className="w-auto px-6"
+            />
+          </div>
+        </div>
+      )}
+
+      {screen === 'loading' && (
+        <ModuleLoader
+          label="Ładowanie buildera ładunku RAT..."
+          durationMs={900}
+          accent={ACCENT}
+          onDone={() => setScreen('builder')}
+        />
+      )}
+
+      {screen === 'builder' && (
+        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
+          {header(
+            config.builder.title,
+            'Skonfiguruj ładunek RAT: wybierz po jednym parametrze w każdej kolumnie, a potem skompiluj go na prawym monitorze.',
+            'KROK 2/2'
+          )}
+          <p className="text-xs text-gray-400 shrink-0">{config.builder.subtitle}</p>
+          <div className="grid grid-cols-3 gap-3 items-start">
+            {GROUP_KEYS.map((k) => (
+              <BuilderColumn key={k} group={config.builder[k]} value={picked[k]} onChange={(id) => setGroup(k, id)} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {screen === 'compiling' && (
+        <ModuleLoader
+          label="Kompilacja ładunku RAT i pakowanie..."
+          durationMs={1400}
+          accent={ACCENT}
+          onDone={handleCompileDone}
+        />
+      )}
+
+      {screen === 'ready' && (
+        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
+          {header('ŁADUNEK SKOMPILOWANY', 'Zapisz ładunek i wróć na pulpit.', 'FINALIZACJA')}
+          <div
+            className="p-5 rounded-xl border space-y-3 text-center my-auto"
+            style={{ borderColor: `${ACCENT}66`, backgroundColor: `${ACCENT}12` }}
+          >
+            <div
+              className="w-12 h-12 rounded-full border mx-auto flex items-center justify-center"
+              style={{ borderColor: ACCENT, backgroundColor: `${ACCENT}26`, color: ACCENT }}
+            >
+              <CheckCircle2 size={28} />
+            </div>
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">{config.builder.successMessage}</h3>
+          </div>
+          <div className="flex justify-end">
+            <ConfirmButton
+              accent={ACCENT}
+              label="ZAPISZ ŁADUNEK I PRZEJDŹ DALEJ"
+              onClick={() => {
+                sounds.playSuccess();
+                onComplete();
+              }}
+              className="w-auto px-6"
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
