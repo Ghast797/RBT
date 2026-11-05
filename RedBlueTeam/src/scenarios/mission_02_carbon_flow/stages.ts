@@ -34,19 +34,22 @@ export const wormBuilderConfig: WormBuilderConfig = {
     options: [
       {
         id: 'worm',
-        label: 'ROBAK – AUTOMATYCZNIE SIĘ POWIELA I TWORZY KOMPUTERY ZOMBIE',
+        label: 'ROBAK',
+        desc: 'Samoreplikujący się program, który rozprzestrzenia się po sieci bez udziału użytkownika.',
         tier: 'ideal',
         feedback: 'Robak samodzielnie powiela się w sieci i formuje botnet.'
       },
       {
         id: 'keylogger',
-        label: 'KEYLOGGER – POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE',
+        label: 'KEYLOGGER',
+        desc: 'Program rejestrujący wszystkie naciśnięcia klawiszy na komputerze ofiary.',
         tier: 'suboptimal',
         feedback: 'Przechwytuje dane na jednej stacji, nie tworzy botnetu.'
       },
       {
         id: 'ransomware',
-        label: 'RANSOMWARE – MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ',
+        label: 'RANSOMWARE',
+        desc: 'Program szyfrujący dane na komputerze ofiary i w jej sieci, by zażądać okupu za ich odblokowanie.',
         tier: 'critical',
         feedback: 'Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.'
       }

@@ -208,7 +208,7 @@
       {
         "num": 4,
         "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA:",
-        "answer": "ROBAK – AUTOMATYCZNIE SIĘ POWIELA I TWORZY KOMPUTERY ZOMBIE",
+        "answer": "ROBAK",
         "correct": true,
         "details": "Robak samodzielnie powiela się w sieci i formuje botnet.",
         "attack": "Robak powiela się sam i przechodzi z komputera na komputer bez udziału użytkownika. Jedno kliknięcie jednego pracownika wystarcza, by zbudować sieć zainfekowanych maszyn (botnet) i dać atakującemu zasłonę dymną.",

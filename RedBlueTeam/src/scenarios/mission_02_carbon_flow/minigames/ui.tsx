@@ -126,3 +126,35 @@ export const ImageOptionCards: React.FC<{
     </div>
   </ChoiceZone>
 );
+
+/** Karty w siatce: duża, wyśrodkowana nazwa i krótka, neutralna definicja pod spodem. */
+export const NameCards: React.FC<{
+  accent: string;
+  options: ChoiceOption[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  label?: string;
+}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO' }) => (
+  <ChoiceZone accent={accent} label={label}>
+    <div className="grid grid-cols-3 gap-3">
+      {options.map((opt) => (
+        <ChoiceTile
+          key={opt.id}
+          accent={accent}
+          state={selectedId === opt.id ? 'selected' : 'idle'}
+          markerPosition="corner"
+          onClick={() => {
+            sounds.playClick();
+            onSelect(opt.id);
+          }}
+          className="p-4 min-h-[11rem]"
+        >
+          <div className="flex flex-col items-center justify-center text-center h-full min-h-[8.5rem] space-y-3">
+            <h3 className="text-lg font-black text-white tracking-wider leading-tight">{opt.label}</h3>
+            {opt.desc && <p className="text-[0.6875rem] text-gray-300 leading-relaxed">{opt.desc}</p>}
+          </div>
+        </ChoiceTile>
+      ))}
+    </div>
+  </ChoiceZone>
+);

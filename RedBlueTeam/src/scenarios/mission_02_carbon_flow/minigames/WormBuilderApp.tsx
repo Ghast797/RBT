@@ -10,7 +10,7 @@ import type { BlockProps } from '../../../engine/types/mission';
 import type { WormBuilderConfig } from './types';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { SidePanel } from '../../../engine/components/SidePanel';
-import { InfoCard, OptionCards } from './ui';
+import { InfoCard, NameCards } from './ui';
 
 type Screen = 'virus_select' | 'code_edit' | 'compiling' | 'ready';
 
@@ -128,7 +128,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
             'Wybierz rodzaj wirusa, który posłuży w operacji przeciwko CarbonFlow Inc.',
             'KROK 1/2'
           )}
-          <OptionCards accent={accent} options={virusOptions} selectedId={selectedVirusId} onSelect={setSelectedVirusId} />
+          <NameCards accent={accent} options={virusOptions} selectedId={selectedVirusId} onSelect={setSelectedVirusId} />
           <div className="flex justify-end">
             <ConfirmButton
               accent={accent}

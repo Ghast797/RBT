@@ -75,9 +75,9 @@ Ekrany: wybór wirusa → modyfikacja kodu (5 instrukcji, zaznaczane klikiem; pr
 Oceniane: D4 | Flavor (nieoceniane): modyfikacja kodu i kompilacja
 
 Decyzja D4: "WYBIERZ ODPOWIEDNIEGO WIRUSA:"
-- ROBAK – AUTOMATYCZNIE SIĘ POWIELA I TWORZY KOMPUTERY ZOMBIE | ideal | Robak samodzielnie powiela się w sieci i formuje botnet.
-- KEYLOGGER – POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE | suboptimal | Przechwytuje dane na jednej stacji, nie tworzy botnetu.
-- RANSOMWARE – MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ | critical | Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.
+- ROBAK | ideal | Robak samodzielnie powiela się w sieci i formuje botnet.
+- KEYLOGGER | suboptimal | Przechwytuje dane na jednej stacji, nie tworzy botnetu.
+- RANSOMWARE | critical | Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "WIESZ JUŻ, Z JAKIEGO ADRESU WYŚLESZ ZAINFEKOWANĄ ANKIETĘ?"
@@ -146,7 +146,8 @@ D5:
 - [DO ZAPROJEKTOWANIA] Lekcje atak/obrona w debriefie (D1–D5) nie istnieją w VR; propozycja do recenzji właściciela.
 - Opisy i tagi opcji spoza VR usunięto (oceniały opcje); zostawiono podtytuły szablonów z VR.
 - [DO DECYZJI] S04, krok 2: VR każe przeciągnąć 5 klocków instrukcji na grafikę robaka. W webie gracz zaznacza segmenty kodu klikiem na prawym monitorze, a lewy ekran pokazuje podgląd assemblera. Przycisk „WSTRZYKNIJ WSZYSTKIE INSTRUKCJE” i kompilacja przez „KOMPILUJ ŁADUNEK 0-DAY” to dodatki kodu (nieoceniane).
-- [DO DECYZJI] S01, ekran startowy: VR podaje tylko tytuł „NOWA KAMPANIA PHISHINGOWA” i przycisk „KONTYNUUJ”; reszta ekranu (nagłówek aplikacji, ikona) to standard aplikacji z M1.
+- [DO DECYZJI] S01, ekran startowy: VR podaje tytuł „NOWA KAMPANIA PHISHINGOWA” i przycisk „KONTYNUUJ”. W webie tytuł jest samym dużym przyciskiem startu (bez osobnego „KONTYNUUJ”, na prośbę właściciela); reszta ekranu (nagłówek aplikacji, ikona) to standard aplikacji z M1.
 - [DO DECYZJI] S06: VR opisuje alert „MALWARE ZOSTAŁ AKTYWOWANY” i monitor z komunikatem „ROBAK – …” jako osobne ekrany; w webie to jeden ekran (tytuł = alert, treść = komunikat monitora, przycisk „PODGLĄD”).
 - [DO DECYZJI] S06: topologia sieci (nazwy stacji CF-*, role, podział 10 zainfekowanych / 2 zabezpieczone) nie pochodzi z VR; VR podaje tylko „schemat sieci zakażonej w firmie CarbonFlow”.
 - [DO DECYZJI] S05: ekran potwierdzenia po „WYŚLIJ” (podsumowanie wysyłki, „POWRÓT DO PULPITU”) to dodatek kodu; VR kończy się na kliknięciu „WYŚLIJ”.
+- [DO DECYZJI] S04, D4: VR podaje opcje jako „NAZWA – opis”. W webie to karty w siatce: duża nazwa na środku i neutralna definicja pod spodem (pole `desc`: robak – samoreplikujący się program rozprzestrzeniający się po sieci; keylogger – program rejestrujący naciśnięcia klawiszy; ransomware – program szyfrujący dane w celu okupu). Opisy z VR („tworzy komputery zombie”, „pokaże wszystko…”) zastąpiono neutralnymi, bo wskazywały odpowiedź; etykieta w raporcie to sama nazwa typu.
