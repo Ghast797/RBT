@@ -694,12 +694,11 @@ export const mission3Stages: StageDefinition[] = [
     id: 'drone_app',
     appId: 'drone_app',
     decisions: [5, 6],
-    // Opis auta od mentora trafia do logu czatu przy pierwszym otwarciu //DRON (bez obrazka-wzorca; „PRZESYŁAM CI ZDJĘCIE” pominięte).
+    // Adres i opis auta od mentora trafiają do logu czatu przy pierwszym otwarciu //DRON (bez obrazka-wzorca;
+    // „PRZESYŁAM CI ZDJĘCIE” pominięte). Adres jest powtórzony w pierwszej kwestii (krótszej niż w VR, bez „PRZEWIŃ CZAT”),
+    // bo przy 1366×768 oryginalna wiadomość z adresem leży poza widocznym fragmentem czatu: obie kwestie mają mieścić się razem.
     openingConversation: [
-      {
-        from: 'byte_master',
-        text: 'WSKAŻ DOM MATEUSZA NA MAPIE. ADRES WYSŁAŁEM CI WCZEŚNIEJ. PRZEWIŃ CZAT, JEŚLI GO NIE PAMIĘTASZ'
-      },
+      { from: 'byte_master', text: 'WSKAŻ DOM MATEUSZA NA MAPIE. PRZYPOMINAM ADRES: UL. OŁTASZYŃSKA 92C/6, 53-034 WROCŁAW' },
       { from: 'byte_master', text: 'GOŚĆ JEŹDZI BIAŁYM SAMOCHODEM Z CZERWONYM DACHEM.' }
     ],
     completion: {

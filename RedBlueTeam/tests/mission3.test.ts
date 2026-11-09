@@ -570,15 +570,17 @@ describe('Misja 3 — mostki (1:1 z dokumentem), przeskoki z zegarem, openingCon
     ]);
   });
 
-  it('//DRON ma openingConversation z opisem auta i „PRZEWIŃ CZAT”, bez „ZDJĘCIE”; inne etapy jej nie mają', () => {
+  it('//DRON ma openingConversation z adresem i opisem auta (dwie kwestie obok siebie), bez „ZDJĘCIE”; inne etapy jej nie mają', () => {
     const opening = stageOf('drone_app').openingConversation!;
     expect(opening.map(beatLine)).toEqual([
-      'BM: WSKAŻ DOM MATEUSZA NA MAPIE. ADRES WYSŁAŁEM CI WCZEŚNIEJ. PRZEWIŃ CZAT, JEŚLI GO NIE PAMIĘTASZ',
+      'BM: WSKAŻ DOM MATEUSZA NA MAPIE. PRZYPOMINAM ADRES: UL. OŁTASZYŃSKA 92C/6, 53-034 WROCŁAW',
       'BM: GOŚĆ JEŹDZI BIAŁYM SAMOCHODEM Z CZERWONYM DACHEM.'
     ]);
     const text = opening.map(beatLine).join(' ');
     expect(text).toContain('BIAŁYM SAMOCHODEM Z CZERWONYM DACHEM');
-    expect(text).toContain('PRZEWIŃ CZAT');
+    // Adres z rozmowy = adres opcji idealnej D5 (gracz nie musi niczego przewijać).
+    expect(text).toContain('OŁTASZYŃSKA 92C');
+    expect(text).not.toContain('PRZEWIŃ CZAT');
     expect(text).not.toContain('ZDJĘCIE');
     (def().stages ?? [])
       .filter((s) => s.id !== 'drone_app')
@@ -747,12 +749,13 @@ describe('Misja 3 — przepływ przez silnik', () => {
     useMissionStore.getState().openApp('drone_app');
     driveBridge();
     const messages = useMissionStore.getState().chatMessages.map((m) => m.text);
-    expect(messages).toContain(
-      'WSKAŻ DOM MATEUSZA NA MAPIE. ADRES WYSŁAŁEM CI WCZEŚNIEJ. PRZEWIŃ CZAT, JEŚLI GO NIE PAMIĘTASZ'
-    );
+    expect(messages).toContain('WSKAŻ DOM MATEUSZA NA MAPIE. PRZYPOMINAM ADRES: UL. OŁTASZYŃSKA 92C/6, 53-034 WROCŁAW');
     expect(dronTexts()).toHaveLength(1);
-    // Adres z mostka etapu 3 jest wcześniej w logu czatu: gracz ma go do przewinięcia.
-    expect(messages.some((t) => t.includes('OŁTASZYŃSKA 92C/6, 53-034'))).toBe(true);
+    // Adres jest dwa razy w logu: w mostku etapu 3 i w ostatnich kwestiach przed mapą (widoczny bez przewijania).
+    expect(messages.filter((t) => t.includes('OŁTASZYŃSKA 92C/6, 53-034'))).toHaveLength(2);
+    // Opis auta jest ostatnią kwestią: adres i opis auta sąsiadują na dole czatu.
+    expect(messages[messages.length - 1]).toBe('GOŚĆ JEŹDZI BIAŁYM SAMOCHODEM Z CZERWONYM DACHEM.');
+    expect(messages[messages.length - 2]).toContain('OŁTASZYŃSKA 92C/6');
 
     // Zamknięcie i ponowne otwarcie nie powtarza rozmowy.
     useMissionStore.getState().closeApp();
