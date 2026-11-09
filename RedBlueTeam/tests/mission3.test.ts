@@ -374,6 +374,21 @@ describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', ()
       expect(shown, o.id).toContain(emp.name);
     });
   });
+  it('pendrive i sesja RAT mają jedno źródło: nazwy archiwów w opcjach D4, wolumin z D5', () => {
+    const def = getMission(MISSION_ID) as MissionDefinition;
+    const blocks = def.blocks as Record<string, any>;
+    const pendrive = blocks.pendrive_app;
+    const rat = blocks.rat_session;
+    pendrive.attachments.options.forEach((o: any) => expect(o.archive, o.id).toMatch(/^[A-Z0-9_]+\.ZIP$/));
+    // Sesja RAT czyta archiwum z tych samych opcji (po numerze decyzji i etykiecie), a wolumin z D5.
+    expect(rat.archiveDecisionNum).toBe(pendrive.attachments.decisionNum);
+    expect(rat.archiveOptions).toBe(pendrive.attachments.options);
+    expect(rat.volumeDecisionNum).toBe(pendrive.volume.decisionNum);
+    expect(rat.fallback.archive).toMatch(/\.ZIP$/);
+    // Każda etykieta D4 jest unikalna, więc odpowiedź gracza jednoznacznie wskazuje archiwum.
+    const labels = pendrive.attachments.options.map((o: any) => o.label);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
   it.todo('pendrive D4: tylko jeden załącznik można wgrać, potem wymagane podpięcie RAT do ZIP (flavor)');
   it('dron: adres i pojazd to osobne decyzje D7/D8, zły wybór = critical, dane mapy i parkingu spójne z opcjami', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;

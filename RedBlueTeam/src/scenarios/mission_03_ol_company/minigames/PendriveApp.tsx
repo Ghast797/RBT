@@ -14,7 +14,7 @@ import { SidePanel } from '../../../engine/components/SidePanel';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { ChoiceCardGrid } from '../../../engine/components/ChoiceZone';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
-import type { GradedDecision, PendriveConfig } from './types';
+import type { AttachmentOption, GradedDecision, PendriveConfig } from './types';
 
 type Screen =
   | 'attach'
@@ -31,20 +31,13 @@ const BIND_DURATION_MS = 1600;
 const BOUND_MS = 1300;
 const ACCENT = '#f59e0b'; // kolor kafelka //DYSK E na pulpicie
 
-/** Nazwa archiwum wynikająca z wgranego pliku (neutralna, nie zdradza oceny). */
-const archiveName = (opt: ChoiceOption): string => {
-  if (opt.id === 'party_photos') return 'FOTKI_AFTERPARTY.ZIP';
-  const base = opt.label.replace(/\.[A-Za-z0-9]+$/, '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
-  return `${base.toUpperCase()}.ZIP`;
-};
-
 export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDecision, onComplete }) => {
   const [screen, setScreen] = useState<Screen>('attach');
   const [attachId, setAttachId] = useState<string | null>(null);
   const [volumeId, setVolumeId] = useState<string | null>(null);
   const [envelopeId, setEnvelopeId] = useState<string | null>(null);
   // Zatwierdzone (zgłoszone) opcje — panel boczny pokazuje tylko to, co już zapisano na nośniku.
-  const [uploaded, setUploaded] = useState<ChoiceOption | null>(null);
+  const [uploaded, setUploaded] = useState<AttachmentOption | null>(null);
   const [volumeSet, setVolumeSet] = useState<ChoiceOption | null>(null);
   const [envelopeSet, setEnvelopeSet] = useState<ChoiceOption | null>(null);
   const [isBinding, setIsBinding] = useState(false);
@@ -57,7 +50,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   const volumeOptions = useShuffled(config.volume.options);
   const envelopeOptions = useShuffled(config.envelope.options);
 
-  const find = (d: GradedDecision, id: string | null) => d.options.find((o) => o.id === id);
+  const find = <O extends ChoiceOption>(d: GradedDecision<O>, id: string | null) => d.options.find((o) => o.id === id);
 
   /** Zgłasza decyzję; zwraca true, gdy gra trwa (nie-critical). */
   const report = (d: GradedDecision, o: ChoiceOption): boolean => {
@@ -119,7 +112,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
     <AppHeader icon={HardDrive} accent={ACCENT} title="//DYSK E: PENDRIVE" subtitle={subtitle} task={task} step={step} />
   );
 
-  const zip = uploaded ? archiveName(uploaded) : null;
+  const zip = uploaded ? uploaded.archive : null;
 
   const row = (label: string, value: React.ReactNode) => (
     <div className="p-2.5 rounded bg-[#09111c] border border-gray-800 space-y-0.5">

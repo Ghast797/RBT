@@ -273,18 +273,21 @@ export const pendriveConfig: PendriveConfig = {
       {
         id: 'party_photos',
         label: 'IMG_00034521.JPG X3 (ZDJĘCIA Z IMPREZY)',
+        archive: 'FOTKI_AFTERPARTY.ZIP',
         tier: 'ideal',
         feedback: 'Paczka zdjęć z imprezy doskonale pasuje do profilu ofiary i usypia jej czujność.'
       },
       {
         id: 'hr_docs',
         label: 'DOKUMENTY_HR.DOCX',
+        archive: 'DOKUMENTY_HR.ZIP',
         tier: 'suboptimal',
         feedback: 'Dokumenty kadrowe wzbudzają pewne podejrzenia, lecz pracownik może je otworzyć.'
       },
       {
         id: 'termination',
         label: 'WYPOWIEDZENIE_UMOWY_O_PRACE.PDF',
+        archive: 'WYPOWIEDZENIE_UMOWY_O_PRACE.ZIP',
         tier: 'critical',
         feedback: 'Pismo o zwolnieniu wywołuje natychmiastową panikę i telefon do kadr/przełożonego!'
       }
@@ -362,11 +365,51 @@ export const droneConfig: DroneConfig = {
   successDrop: "POMYŚLNIE POZOSTAWIONO KOPERTĘ Z PENDRIVE'EM. DRON WRACA DO POKOJU HAKERA."
 };
 
-/** Etap 5: sesja RAT (finał bez oceny). */
+/** Etap 5: sesja RAT (finał bez oceny). Archiwum (D4) i wolumin (D5) czyta z wyborów gracza. */
 export const ratSessionConfig: RatSessionConfig = {
   host: { name: 'MATEUSZ_BIURO_O&L', ip: '161.185.160.93' },
   takeoverLabel: '[PRZEJMIJ PULPIT OFIARY]',
-  networkLabel: '[PRZEJMIJ SIEĆ FREEVOLT]'
+  networkLabel: '[PRZEJMIJ SIEĆ FREEVOLT]',
+  archiveDecisionNum: pendriveConfig.attachments.decisionNum,
+  archiveOptions: pendriveConfig.attachments.options,
+  volumeDecisionNum: pendriveConfig.volume.decisionNum,
+  fallback: { archive: 'ARCHIWUM.ZIP', volume: 'NOŚNIK USB' },
+  texts: {
+    alert: {
+      title: 'PENDRIVE ZOSTAŁ PODŁĄCZONY',
+      status: 'MALWARE ZOSTAŁ AKTYWOWANY',
+      hostLabel: 'NAZWA KOMPUTERA:',
+      ipLabel: 'AKTYWOWANE NA IP:'
+    },
+    desktop: {
+      banner: 'KONTROLUJESZ PULPIT OFIARY',
+      watermark: 'O&L Company',
+      networkIcon: 'FREEVOLT',
+      networkIconTitle: 'Zinfiltruj sieć FREEVOLT',
+      extractedStatus: '[STATUS: WYEKSTRAKTOWANO // RAT AKTYWNY]',
+      extractedNote: 'Pracownik wypakował archiwum. Wirus RAT połączył się z serwerem C2 hakera.',
+      hint: 'Dostęp do stacji aktywny. Zinfiltruj sieć FREEVOLT.'
+    },
+    network: {
+      headline: 'UZYSKAŁEŚ ZDALNY DOSTĘP',
+      subtitle: 'DO SIECI O&L COMPANY',
+      victimNode: 'MATEUSZ',
+      victimStatus: '[PRZEJĘTY // RAT]',
+      otherNodes: ['PC-1', 'SRV'],
+      endLabel: 'ZAKOŃCZ SESJĘ I ZAMELDUJ MENTOROWI'
+    },
+    loaders: {
+      desktop: 'ŁADOWANIE: PRZEJĘCIE PULPITU OFIARY',
+      network: 'ŁADOWANIE: ZDALNY DOSTĘP DO SIECI'
+    },
+    tasks: {
+      alert: 'Przejmij pulpit stacji ofiary, aby uzyskać dostęp do komputera.',
+      loading_desktop: 'Trwa przejmowanie pulpitu ofiary.',
+      desktop: 'Kliknij PRZEJMIJ SIEĆ FREEVOLT, aby zinfiltrować sieć O&L.',
+      loading_network: 'Trwa nawiązywanie zdalnego dostępu do sieci.',
+      network: 'Sesja aktywna. Zakończ sesję i zamelduj mentorowi.'
+    }
+  }
 };
 
 /** Dane klocków M3, kluczowane identyfikatorem kafelka pulpitu. */
