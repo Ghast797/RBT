@@ -128,6 +128,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
     heroSubheadline: 'OBSŁUGUJEMY MIĘDZYNARODOWĄ SIEĆ STACJI PALIWOWYCH ORAZ ZAOPATRUJEMY NAJWIĘKSZE KORPORACJE',
     contact: { phone: '+48 871 787-83-76', email: 'sales@olcompany.cloud' },
     employeesHeading: 'NASI EKSPERCI:',
+    scrollDownLabel: 'Przewiń stronę w dół',
     // Opisy i staż: tylko zakres pracy i czas w firmie, bez słowa o szkoleniach i poziomie wiedzy z bezpieczeństwa.
     employees: [
       {
@@ -176,11 +177,13 @@ export const osintBrowserConfig: OsintBrowserConfig = {
         optionId: 'choose_mateusz'
       }
     ],
-    // Wpisy 1:1 z dokumentu, bez dat rocznych (dokument ich nie podaje).
+    // Wpisy z dokumentu, daty dopasowane do fabuły (dzień misji 19.05.2026, Mateusz w firmie od ok. 2 tygodni):
+    // impreza sprzedaży niedawno, w maju, z powitaniem nowych pracowników; wydarzenie logistyki wcześniej.
+    // VR podaje „15 WRZEŚNIA” i „4 LISTOPADA” (niezgodne z fabułą). Bez dat rocznych.
     events: [
       {
         id: 'party_sales',
-        headline: '15 WRZEŚNIA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU SPRZEDAŻY!',
+        headline: '8 MAJA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU SPRZEDAŻY!',
         body: 'POWITALIŚMY NA POKŁADZIE NOWYCH PRACOWNIKÓW ORAZ ŚWIĘTOWALIŚMY OSTATNIE SUKCESY!',
         hashtags: '#OL #BESTCOMPANY #COMPANYUNHACKED',
         photos: [
@@ -191,7 +194,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
       },
       {
         id: 'meeting_logistics',
-        headline: '4 LISTOPADA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU LOGISTYKI!',
+        headline: '14 MARCA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU LOGISTYKI!',
         photos: [
           { group: 'events', name: 'meeting_logistics_1' },
           { group: 'events', name: 'meeting_logistics_2' }

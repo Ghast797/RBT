@@ -83,6 +83,13 @@ export const SiteView: React.FC<SiteViewProps> = ({
     measure();
   };
 
+  const scrollDown = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    sounds.playClick();
+    el.scrollBy({ top: Math.max(120, el.clientHeight * 0.8), behavior: 'smooth' });
+  };
+
   return (
     <div
       className="flex-1 min-h-0 flex flex-col rounded-xl border-2 overflow-hidden bg-[#0b1220]"
@@ -136,7 +143,15 @@ export const SiteView: React.FC<SiteViewProps> = ({
         </div>
         {!atEnd && (
           <div className="pointer-events-none absolute bottom-0 inset-x-0 h-16 flex items-end justify-center pb-2 bg-gradient-to-t from-black/40 to-transparent">
-            <ChevronDown size={28} className="text-white animate-bounce drop-shadow" aria-hidden />
+            {/* Strzałka „jest więcej”: klik przewija stronę o ekran w dół. */}
+            <button
+              type="button"
+              aria-label={site.scrollDownLabel}
+              onClick={scrollDown}
+              className="pointer-events-auto cursor-pointer rounded-full p-1 hover:bg-white/20"
+            >
+              <ChevronDown size={28} className="text-white animate-bounce drop-shadow" aria-hidden />
+            </button>
           </div>
         )}
       </div>
@@ -147,7 +162,7 @@ export const SiteView: React.FC<SiteViewProps> = ({
 /** Nagłówek firmy powtarzany na każdej zakładce strony (logo i nazwa). */
 const SiteMasthead: React.FC<{ site: OsintSite }> = ({ site }) => (
   <div style={{ backgroundColor: SITE_NAVY }}>
-    <div className={`${PAGE_WIDTH} flex items-center gap-3 py-3`}>
+    <div className={`${PAGE_WIDTH} flex items-center gap-3 py-2`}>
       <div className="w-9 h-9 rounded-md flex items-center justify-center text-white" style={{ backgroundColor: SITE_ORANGE }}>
         <Fuel size={20} />
       </div>
@@ -168,14 +183,14 @@ const SiteFooter: React.FC<{ site: OsintSite }> = ({ site }) => (
 const HomePage: React.FC<{ site: OsintSite }> = ({ site }) => (
   <div>
     <SiteMasthead site={site} />
-    <section className="py-12 text-white" style={{ background: `linear-gradient(135deg, ${SITE_NAVY} 0%, #1d4670 100%)` }}>
+    <section className="py-5 text-white" style={{ background: `linear-gradient(135deg, ${SITE_NAVY} 0%, #1d4670 100%)` }}>
       <div className={PAGE_WIDTH}>
-        <h1 className="text-2xl lg:text-3xl font-black leading-tight max-w-3xl">{site.heroHeadline}</h1>
-        <p className="mt-4 text-base lg:text-lg text-slate-200 max-w-3xl leading-relaxed">{site.heroSubheadline}</p>
+        <h1 className="text-xl lg:text-2xl font-black leading-tight max-w-3xl">{site.heroHeadline}</h1>
+        <p className="mt-2 text-sm lg:text-base text-slate-200 max-w-3xl leading-snug">{site.heroSubheadline}</p>
       </div>
     </section>
 
-    <section className="py-4 bg-white border-b border-slate-200 text-sm font-semibold text-slate-700">
+    <section className="py-2.5 bg-white border-b border-slate-200 text-sm font-semibold text-slate-700">
       <div className={`${PAGE_WIDTH} flex flex-wrap gap-x-8 gap-y-2`}>
         <span className="flex items-center gap-2">
           <Phone size={15} style={{ color: SITE_ORANGE }} />
@@ -188,8 +203,8 @@ const HomePage: React.FC<{ site: OsintSite }> = ({ site }) => (
       </div>
     </section>
 
-    <section className={`${PAGE_WIDTH} py-8`}>
-      <h2 className="text-xl font-black tracking-wide mb-6" style={{ color: SITE_NAVY }}>
+    <section className={`${PAGE_WIDTH} py-5`}>
+      <h2 className="text-xl font-black tracking-wide mb-4" style={{ color: SITE_NAVY }}>
         {site.employeesHeading}
       </h2>
       <div className="flex flex-col gap-5">

@@ -175,6 +175,8 @@ export interface OsintSite {
   contact: { phone: string; email: string };
   /** Nagłówek sekcji pracowników: „NASI EKSPERCI:”. */
   employeesHeading: string;
+  /** Opis dostępności strzałki „przewiń w dół” u dołu okna strony. */
+  scrollDownLabel: string;
   employees: OsintEmployee[];
   events: OsintEvent[];
 }

@@ -438,15 +438,33 @@ describe('Misja 3 — dane strony //TOR (OSINT)', () => {
     ]);
   });
 
-  it('wydarzenia: dwa wpisy 1:1 z dokumentu, 3 i 2 zdjęcia, bez dat rocznych', () => {
+  it('wydarzenia: dwa wpisy (daty wg fabuły), 3 i 2 zdjęcia, bez dat rocznych', () => {
     expect(site.events).toHaveLength(2);
-    expect(site.events[0].headline).toBe('15 WRZEŚNIA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU SPRZEDAŻY!');
+    expect(site.events[0].headline).toBe('8 MAJA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU SPRZEDAŻY!');
     expect(site.events[0].body).toBe('POWITALIŚMY NA POKŁADZIE NOWYCH PRACOWNIKÓW ORAZ ŚWIĘTOWALIŚMY OSTATNIE SUKCESY!');
     expect(site.events[0].hashtags).toBe('#OL #BESTCOMPANY #COMPANYUNHACKED');
     expect(site.events[0].photos).toHaveLength(3);
-    expect(site.events[1].headline).toBe('4 LISTOPADA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU LOGISTYKI!');
+    expect(site.events[1].headline).toBe('14 MARCA ODBYŁA SIĘ IMPREZA INTEGRACYJNA DZIAŁU LOGISTYKI!');
     expect(site.events[1].photos).toHaveLength(2);
     expect(JSON.stringify(site.events)).not.toMatch(/20\d\d/);
+  });
+
+  it('daty wydarzeń zgodne z fabułą: dzień misji 19.05.2026, staż Mateusza ok. 2 tygodnie', () => {
+    const MONTHS: Record<string, number> = { STYCZNIA: 1, LUTEGO: 2, MARCA: 3, KWIETNIA: 4, MAJA: 5, CZERWCA: 6 };
+    const [dd, mm] = def().mission.date.split('.').map(Number);
+    const missionDay = mm * 100 + dd; // porównywalne w obrębie roku (MMDD)
+    const dayOf = (headline: string) => {
+      const m = headline.match(/^(\d{1,2}) ([A-ZŁŚŹŻĆ]+) /)!;
+      return MONTHS[m[2]] * 100 + Number(m[1]);
+    };
+    const sales = dayOf(site.events[0].headline);
+    const logistics = dayOf(site.events[1].headline);
+    // Staż 2 tygodnie: Mateusz zaczął ok. 5 maja, więc impreza z „nowymi pracownikami” jest po jego starcie, a przed dniem misji.
+    expect(sales).toBeGreaterThanOrEqual(5 * 100 + 5);
+    expect(sales).toBeLessThan(missionDay);
+    // Wydarzenie logistyki jest wcześniejsze niż impreza sprzedaży (lekcja D3: „świeże wydarzenie” to impreza sprzedaży).
+    expect(logistics).toBeLessThan(sales);
+    expect(site.events[0].body).toMatch(/NOWYCH PRACOWNIKÓW/);
   });
 
   it('brak pól oceniających w danych strony i na kartach celu, opisy bez słów o szkoleniach', () => {
