@@ -2,49 +2,56 @@
   "mission": {
     "id": "mission-3-ol-company",
     "title": "MISJA 3 – O&L COMPANY",
-    "subTitle": "Infiltracja socjotechniczna",
+    "subTitle": "Socjotechnika, trojan RAT i fizyczny atak drop USB z wykorzystaniem drona",
     "systemOs": "//HACKERS.OS",
     "date": "19.05.2026",
     "accentColor": "#00ff66",
     "rewardBtc": 4.02,
     "maxScore": 100,
-    "decisionCount": 8,
-    "targetCompany": "O&L Company"
+    "decisionCount": 6,
+    "targetCompany": "O&L Company",
+    "passingScore": 80
   },
   "intro": {
     "callerName": "BYTE_MASTER",
     "callStatus": "POŁĄCZENIE PRZYCHODZĄCE",
-    "startBadges": { "chat": 1 },
-    "firstChoice": { "id": "m3_reply_intro", "label": "NAJPIERW STWORZĘ WIRUSA." },
+    "startBadges": {
+      "chat": 1
+    },
     "firstUnlock": {
-      "unlockIcons": ["virus_database_unlocked", "virus_database"],
-      "badges": { "virus_database": 1 },
+      "unlockIcons": [
+        "virus_database_unlocked",
+        "virus_database"
+      ],
+      "badges": {
+        "virus_database": 1
+      },
       "highlightTile": "virus_database"
     },
     "dialogue": [
       {
         "id": "intro_1",
         "sender": "BYTE_MASTER",
-        "text": "Witaj, hakerze! Przed tobą kolejne zadanie.",
-        "playerResponse": "Jasne, chociaż miło by było wiedzieć na czym stoję i ile jeszcze zadań przede mną, zanim przyjmiecie mnie do DARKSUN."
+        "text": "WITAJ, HAKERZE! PRZED TOBĄ KOLEJNE ZADANIE",
+        "playerResponse": "JASNE, CHOCIAŻ MIŁO BY BYŁO WIEDZIEĆ NA CZYM STOJĘ I ILE JESZCZE ZADAŃ PRZEDE MNĄ, ZANIM PRZYJMIECIE MNIE DO DARKSUN"
       },
       {
         "id": "intro_2",
         "sender": "BYTE_MASTER",
-        "text": "Cierpliwości. Jesteś na dobrej drodze. Póki co bardzo nam pomagasz w walce z koncernami.",
-        "playerResponse": "Ok, niech będzie. A więc?"
+        "text": "CIERPLIWOŚCI. JESTEŚ NA DOBREJ DRODZE, PÓKI CO BARDZO NAM POMAGASZ W WALCE Z KONCERNAMI",
+        "playerResponse": "OK, NIECH BĘDZIE. A WIĘC?"
       },
       {
         "id": "intro_3",
         "sender": "BYTE_MASTER",
-        "text": "O&L Company to jedna z większych spółek paliwowych. Z moich źródeł wynika, że mają brakującą część dokumentacji na temat FREEVOLT, w tym opis całej infrastruktury, więc to bardzo cenne dane. Zdobycie ich będzie wymagało od ciebie kreatywności!",
-        "playerResponse": "Czy wirus, który przejmie pulpit pracownika jest wystarczająco kreatywny?"
+        "text": "O&L COMPANY TO JEDNA Z WIĘKSZYCH SPÓŁEK PALIWOWYCH. Z MOICH ŹRÓDEŁ WYNIKA, ŻE MAJĄ BRAKUJĄCĄ CZĘŚĆ DOKUMENTACJI NA TEMAT FREEVOLT, W TYM OPIS CAŁEJ INFRASTRUKTURY, WIĘC TO BARDZO CENNE DANE. ZDOBYCIE ICH BĘDZIE WYMAGAŁO OD CIEBIE KREATYWNOŚCI",
+        "playerResponse": "CZY WIRUS, KTÓRY PRZEJMIE PULPIT PRACOWNIKA JEST WYSTARCZAJĄCO KREATYWNY?"
       },
       {
         "id": "intro_4",
         "sender": "BYTE_MASTER",
-        "text": "To zależy jak go dostarczysz.",
-        "playerResponse": "Daj mi chwilę."
+        "text": "TO ZALEŻY JAK GO DOSTARCZYSZ",
+        "playerResponse": "DAJ MI CHWILĘ"
       }
     ],
     "biosLines": [
@@ -115,7 +122,7 @@
     },
     {
       "id": "rat_session",
-      "label": "//WIRUS: RAT — SESJA",
+      "label": "//WIRUS: RAT (C2)",
       "color": "#00f0ff",
       "icon": "Radio",
       "componentId": "ol_rat_session",
@@ -134,24 +141,70 @@
   ],
   "step6": {
     "summary": {
-      "title": "SUKCES",
+      "title": "ZHAKOWANO O&L",
       "subtitle": "UKOŃCZONO ZADANIE 3",
       "company": "O&L Company",
       "scorePercent": 100,
-      "perfectChoices": 8,
+      "perfectChoices": 6,
       "goodChoices": 0,
       "criticalErrors": 0,
       "btcReward": 4.02
     },
     "choices": [
-      { "num": 1, "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA:", "answer": "RAT: REMOTE ACCESS TROJAN", "correct": true, "details": "RAT umożliwia pełne, ciche przejęcie kontroli nad pulpitem ofiary bez alarmowania działu IT.", "attack": "RAT (Remote Access Trojan) daje atakującemu zdalny pulpit na stacji pracownika. Działa w tle jak zwykła usługa systemowa, więc nie wywołuje alarmu, a z jednego komputera można sięgnąć do dokumentacji w sieci firmy. Keylogger widziałby tylko klawisze, a ransomware zaalarmowałby firmę od razu.", "defense": "Sygnały: nieznany proces lub usługa startująca razem z systemem, nietypowy ruch wychodzący na obcy adres, pulpit, który „sam się rusza”. Co zrobić: ogranicz uprawnienia kont (zasada najmniejszych uprawnień), korzystaj z EDR i monitoringu ruchu wychodzącego, a przy podejrzeniu infekcji odłącz stację od sieci i zgłoś incydent do IT." },
-      { "num": 2, "question": "KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?", "answer": "MATEUSZ KLIMOWICZ (JUNIOR WSPARCIA)", "correct": true, "details": "Nowy pracownik junior posiada najmniejsze doświadczenie i jest statystycznie najsłabszym ogniwem.", "attack": "Atakujący wybiera najsłabsze ogniwo, a nie najważniejszą osobę. Mateusz pracuje od dwóch tygodni, nie przeszedł szkolenia antyphishingowego i chce zrobić dobre wrażenie, więc łatwo ufa „firmowej” przesyłce. CEO i CISO mają filtry, asystentów i czujność, a logistyka pracuje w odizolowanym systemie.", "defense": "Sygnały: nowy pracownik z publicznie widoczną datą zatrudnienia i rolą na stronie firmy. Co zrobić: szkolenie z cyberbezpieczeństwa już pierwszego dnia pracy (przed dostępem do systemów), jasna procedura zgłaszania podejrzanych rzeczy i kultura, w której nikt nie boi się zapytać IT. Warto też nie ujawniać na stronie firmy zbędnych szczegółów o stażu i obowiązkach osób." },
-      { "num": 3, "question": "JAK GO OSZUKASZ (WEKTOR SOCJOTECHNICZNY)?", "answer": "PENDRIVE ZE ZDJĘCIAMI Z IMPREZY (WIRUS W ARCHIWUM ZIP)", "correct": true, "details": "Kontekst realnego wydarzenia firmowego wzbudza ciekawość i usypia czujność ofiary.", "attack": "To baiting: fizyczny nośnik z przynętą, która nawiązuje do prawdziwego wydarzenia (impreza działu sprzedaży, znana z publicznych wpisów firmy). Zdjęcia z imprezy chce obejrzeć każdy, a ładunek ukryty w archiwum ZIP omija proste skanery. Załącznik .exe udający fakturę zatrzymałyby filtr pocztowy i Windows Defender.", "defense": "Sygnały: nośnik USB, którego nikt nie zamawiał i który „przypadkiem” trafił do Ciebie; przynęta pasująca do niedawnego wydarzenia. Co zrobić: nigdy nie podłączaj znalezionych ani podrzuconych nośników do komputera służbowego, oddaj je do IT. Firma powinna wprowadzić politykę USB (blokada portów lub biała lista urządzeń) i ograniczyć zdjęcia z wydarzeń publikowane w sieci." },
-      { "num": 4, "question": "JAKI PLIK WGRASZ NA PENDRIVE'A?", "answer": "IMG_00034521.JPG X3 (ZDJĘCIA Z IMPREZY)", "correct": true, "details": "Archiwum ZIP pozwala na skuteczne zamaskowanie payloadu wirusa DLL.", "attack": "Zdjęcia z imprezy to przynęta dopasowana do ofiary: ciekawość każe je otworzyć. Prawdziwy ładunek (biblioteka DLL) jest ukryty w archiwum ZIP obok fotografii, więc użytkownik widzi tylko niewinne pliki, a skaner bez rozpakowania archiwum niczego nie wykrywa. Dokument HR lub wypowiedzenie wywołałyby podejrzenia albo panikę i telefon do przełożonego.", "defense": "Sygnały: nazwy plików w stylu aparatu (IMG_...) razem z archiwum, którego nikt nie obiecywał; treść niezwiązana z Twoją pracą. Co zrobić: nie otwieraj plików z nieznanego nośnika, a szczególnie archiwów ZIP i RAR. Firma powinna skanować rozpakowane archiwa i blokować uruchamianie nieznanych bibliotek DLL (np. kontrola aplikacji)." },
-      { "num": 5, "question": "WYBIERZ NAZWĘ PENDRIVE'A:", "answer": "IMPREZA", "correct": true, "details": "Naturalna, wiarygodna etykieta woluminu spójna z przygotowaną przynętą.", "attack": "Nazwa woluminu (etykieta dysku) widoczna w systemie po podłączeniu pendrive'a wzmacnia legendę: „IMPREZA” brzmi jak zwykła pamiątka z wydarzenia. Nazwa w rodzaju „KEYLOGGER” zdradziłaby nośnik od razu, a „NOWY DYSK” nie dawałby powodu, by zajrzeć do środka.", "defense": "Sygnały: etykieta pasuje „aż za dobrze” do bieżących wydarzeń w firmie, a nośnik nie pochodzi od nikogo, kogo znasz. Co zrobić: nazwa dysku niczego nie dowodzi, bo każdy może ją ustawić. Nie podłączaj obcego pendrive'a niezależnie od podpisu, a polityka USB powinna blokować nieautoryzowane urządzenia na stacjach roboczych." },
-      { "num": 6, "question": "WYBIERZ PODPIS NA KOPERCIE:", "answer": "ZDJĘCIA Z AFTERPARTY O&L COMPANY!", "correct": true, "details": "Dedykowana etykieta fizyczna maksymalizuje szansę podłączenia nośnika przez pracownika.", "attack": "Podpis na kopercie pracuje na ciekawość: „zdjęcia z afterparty” z nazwą firmy sugerują, że ktoś zgubił coś bliskiego pracownikowi i warto to sprawdzić. Ofiara sama podłącza nośnik, bo chce zobaczyć zdjęcia i rzekomo pomóc właścicielowi. Podpis o zwolnieniu spowodowałby alarm, a „zgubione dokumenty” mogą zostać zignorowane.", "defense": "Sygnały: koperta z pendrive'em zostawiona na samochodzie lub w miejscu, gdzie na pewno ją znajdziesz, z podpisem skłaniającym do ciekawości. Co zrobić: zasada nieużywania znalezionych nośników obowiązuje także wtedy, gdy podpis wygląda znajomo i niewinnie. Zanieś kopertę do IT lub ochrony, bez podłączania. Firma powinna szkolić pracowników z baitingu na przykładach takich podrzutów." },
-      { "num": 7, "question": "WSKAŻ DRONOWI ADRES DOMU OFIARY:", "answer": "OŁTASZYŃSKA 92C", "correct": true, "details": "Właściwa lokalizacja uzyskana podczas fazy rekonesansu adresu Mateusza.", "attack": "Atak sięgnął poza sieć: dron dostarcza przynętę pod dom ofiary, bo adres da się ustalić z publicznych źródeł i danych podanych przez mentora. Zostawienie koperty przy samochodzie, którym ofiara jedzie do pracy, przenosi zainfekowany nośnik prosto do firmy. Pomyłka adresu oznaczałaby koniec operacji.", "defense": "Sygnały: tajemnicza przesyłka lub drobny przedmiot pozostawiony przy domu albo samochodzie bez nadawcy. Co zrobić: ogranicz publikowanie adresu, zdjęć domu i auta w mediach społecznościowych (higiena OSINT) i traktuj niezamówione przesyłki jako podejrzane. Firma powinna uczyć, że ataki mogą zacząć się poza biurem i że znaleziony nośnik niezależnie od miejsca to zagrożenie." },
-      { "num": 8, "question": "WYBIERZ MIEJSCE NA PARKINGU (POJAZD OFIARY):", "answer": "BIAŁY SAMOCHÓD Z CZERWONYM DACHEM", "correct": true, "details": "Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera.", "attack": "Dokładne rozpoznanie pojazdu ofiary na parkingu pokazuje, jak szczegółowe jest przygotowanie takiego ataku. Wystarczy zdjęcie auta z mediów społecznościowych lub z obserwacji. Koperta na złym samochodzie trafia do przypadkowej osoby i zdradza próbę ataku, więc atakujący musi mieć pewność, że trafił we właściwy.", "defense": "Sygnały: obce przedmioty lub koperty pozostawione na szybie albo pod wycieraczką, szczególnie bez wiadomego nadawcy. Co zrobić: nie otwieraj ani nie sprawdzaj takiej przesyłki w komputerze, zgłoś ją ochronie lub IT. Nie wrzucaj zdjęć, na których widać swój samochód i tablice, oraz zachowaj zasadę ograniczonego zaufania do podrzuconych rzeczy na parkingu." }
+      {
+        "num": 1,
+        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
+        "answer": "RAT",
+        "correct": true,
+        "details": "Daje bezpośredni, interaktywny wgląd w pulpit stacji roboczej pracownika i pozwala na swobodną eksplorację zasobów korporacyjnych bez wszczynania alarmu.",
+        "attack": "RAT (Remote Access Trojan) daje atakującemu zdalny pulpit na stacji pracownika. Działa w tle jak zwykła usługa systemowa, więc nie wywołuje alarmu, a z jednego komputera można sięgnąć do dokumentacji w sieci firmy. Ransomware zablokowałby stację i od razu postawił na nogi dział IT, a keylogger pokazałby tylko wciskane klawisze, bez dostępu do plików projektowych i schematów.",
+        "defense": "Sygnały: nieznany proces lub usługa startująca razem z systemem, nietypowy ruch wychodzący na obcy adres, pulpit, który „sam się rusza”. Co zrobić: ogranicz uprawnienia kont (zasada najmniejszych uprawnień), korzystaj z EDR i monitoringu ruchu wychodzącego, a przy podejrzeniu infekcji odłącz stację od sieci i zgłoś incydent do IT."
+      },
+      {
+        "num": 2,
+        "question": "KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?",
+        "answer": "JUNIOR SPECJALISTA DS. WSPARCIA KLIENTA",
+        "correct": true,
+        "details": "Nowo zatrudniony pracownik na juniorskim stanowisku charakteryzuje się najmniejszym doświadczeniem, brakiem obycia z procedurami bezpieczeństwa i najwyższą podatnością na socjotechnikę.",
+        "attack": "Atakujący wybiera najsłabsze ogniwo, a nie najważniejszą osobę. Strona firmy pokazywała, że Mateusz pracuje w O&L od dwóch tygodni i obsługuje klientów, więc najpewniej nie zna jeszcze procedur i chce zrobić dobre wrażenie. CEO i szef cyberbezpieczeństwa zgłosiliby incydent od razu, a doświadczone pracownice wyższego szczebla są ostrożniejsze wobec nietypowych nośników.",
+        "defense": "Sygnały: publicznie widoczny staż, stanowisko i zakres obowiązków każdej osoby na stronie firmy. Wszystkie informacje o Tobie w sieci mogą zostać użyte przeciwko Tobie. Co zrobić: szkolenie z cyberbezpieczeństwa już pierwszego dnia pracy (przed dostępem do systemów), jasna procedura zgłaszania podejrzanych rzeczy i kultura, w której nikt nie boi się zapytać IT. Warto też nie ujawniać na stronie firmy zbędnych szczegółów o stażu i obowiązkach osób."
+      },
+      {
+        "num": 3,
+        "question": "JAK GO OSZUKASZ?",
+        "answer": "NAWIĄŻĘ DO IMPREZY DZIAŁU SPRZEDAŻY",
+        "correct": true,
+        "details": "Idealnie wykorzystuje świeże wydarzenie firmowe oraz naturalną ludzką ciekawość i strach przed kompromitacją, a spakowanie złośliwego kodu do ZIP omija proste skanery antywirusowe.",
+        "attack": "To baiting: fizyczny nośnik z przynętą, która nawiązuje do prawdziwego wydarzenia (impreza działu sprzedaży, znana z publicznych wpisów firmy). Zdjęcia z imprezy chce obejrzeć każdy, a ładunek ukryty w archiwum ZIP omija proste skanery antywirusowe. Dokumenty HR o zwolnieniach mogłyby trafić prosto do kadr, a pusty pendrive z podpisem KEYLOGGER zaalarmowałby pracownika i administratora.",
+        "defense": "Sygnały: nośnik USB, którego nikt nie zamawiał i który „przypadkiem” trafił do Ciebie; przynęta pasująca do niedawnego wydarzenia; archiwum ZIP lub RAR z nieznanego źródła. Co zrobić: wirusy mogą kryć się w dowolnym pliku, szczególnie w archiwach .zip i .rar. Jeśli nie masz pewności, skąd pochodzi plik i czy jest bezpieczny, poproś o pomoc administratora lub dział IT. Firma powinna też ograniczyć zdjęcia z wydarzeń publikowane w sieci."
+      },
+      {
+        "num": 4,
+        "question": "WYBIERZ PODPIS NA KOPERCIE",
+        "answer": "ZDJĘCIA Z AFTERPARTY O&L COMPANY!",
+        "correct": true,
+        "details": "Precyzyjnie nawiązuje do właściwej nazwy koncernu i nieformalnego charakteru imprezy, wzbudzając maksymalne zaufanie i motywację do natychmiastowego otwarcia.",
+        "attack": "Nazwa dysku („IMPREZA”) i podpis na kopercie budują legendę nośnika: „zdjęcia z afterparty” z poprawną nazwą firmy sugerują, że ktoś zgubił coś bliskiego pracownikowi i warto to sprawdzić. Błędna nazwa firmy (B&O zamiast O&L) wprowadza dysonans, a podpis „WYPOWIEDZENIE UMOWY” lub „ZGUBIONE DOKUMENTY” sprzeczny ze zdjęciami skłoniłby do oddania koperty ochronie. Nazwa „KEYLOGGER” zdradziłaby nośnik od razu.",
+        "defense": "Sygnały: koperta z pendrive'em zostawiona tam, gdzie na pewno ją znajdziesz, z podpisem skłaniającym do ciekawości. Co zrobić: nie wkładaj znalezionych ani podejrzanych pendrive'ów do swojego komputera, bo każdy nośnik pamięci to potencjalne ryzyko infekcji. Nazwa dysku i podpis niczego nie dowodzą, bo każdy może je ustawić. Zanieś kopertę do IT lub ochrony, a w programie antywirusowym włącz skanowanie dysków przenośnych."
+      },
+      {
+        "num": 5,
+        "question": "WSKAŻ DRONOWI ADRES DOMU OFIARY",
+        "answer": "OŁTASZYŃSKA 92C",
+        "correct": true,
+        "details": "Prawidłowy adres domowy Mateusza Klimowicza przekazany wcześniej przez mentora w wywiadzie operacyjnym.",
+        "attack": "Atak sięgnął poza sieć: dron dostarcza przynętę pod dom ofiary, bo adres da się ustalić z publicznych źródeł i danych zdobytych w rozpoznaniu. Zostawienie koperty przy samochodzie, którym ofiara jedzie do pracy, przenosi zainfekowany nośnik prosto do firmy. Pomyłka adresu oznaczałaby koniec operacji, a w rejonie obiektów użyteczności publicznej nośnik przechwyciłyby osoby trzecie.",
+        "defense": "Sygnały: tajemnicza przesyłka lub drobny przedmiot pozostawiony przy domu albo samochodzie bez nadawcy. Co zrobić: ogranicz publikowanie adresu, zdjęć domu i auta w mediach społecznościowych (higiena OSINT) i traktuj niezamówione przesyłki jako podejrzane. Firma powinna uczyć, że ataki mogą zacząć się poza biurem i że znaleziony nośnik niezależnie od miejsca to zagrożenie."
+      },
+      {
+        "num": 6,
+        "question": "WYBIERZ MIEJSCE NA PARKINGU, GDZIE OFIARA NA PEWNO ZNAJDZIE KOPERTĘ Z PENDRIVE'M",
+        "answer": "BIAŁY SAMOCHÓD Z CZERWONYM DACHEM – SAMOCHÓD OFIARY",
+        "correct": true,
+        "details": "Koperta zostaje precyzyjnie umieszczona na samochodzie Mateusza, gwarantując jej odnalezienie przed wyjazdem do biura.",
+        "attack": "Dokładne rozpoznanie pojazdu ofiary na parkingu pokazuje, jak szczegółowe jest przygotowanie takiego ataku. Wystarczy opis auta z rozmowy lub zdjęcie z mediów społecznościowych. Koperta na złym samochodzie trafia do przypadkowego sąsiada i zdradza próbę ataku, a koperta upuszczona na asfalt może zostać zgubiona lub zniszczona.",
+        "defense": "Sygnały: obce przedmioty lub koperty pozostawione na szybie albo pod wycieraczką, szczególnie bez wiadomego nadawcy. Co zrobić: nie sprawdzaj takiej przesyłki w komputerze, zgłoś ją ochronie lub IT. Nie wrzucaj zdjęć, na których widać swój samochód i tablice, i zachowaj zasadę ograniczonego zaufania do podrzuconych rzeczy na parkingu."
+      }
     ]
   }
 }
