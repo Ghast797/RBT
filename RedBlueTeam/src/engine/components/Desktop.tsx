@@ -62,6 +62,7 @@ export const Desktop: React.FC = () => {
     retryFromScratch,
     retryFromChoices,
     timeJump,
+    timeJumpCount,
     endTimeJump
   } = useMissionStore();
 
@@ -120,6 +121,7 @@ export const Desktop: React.FC = () => {
       {timeJump && (
         <div className="fixed inset-0 z-[90] bg-[#05090f] animate-in fade-in duration-300">
           <TimeJump
+            key={timeJumpCount}
             label={timeJump.label}
             sublabel={timeJump.sublabel}
             durationMs={timeJump.durationMs}

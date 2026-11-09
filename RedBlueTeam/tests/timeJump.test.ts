@@ -265,4 +265,27 @@ describe('Mostek etapu: beat time_jump i unlockDelayMs', () => {
       expect(useMissionStore.getState().unlockedIcons).not.toContain('vpn_unlocked');
     }
   });
+  it('dwa beaty time_jump pod rząd: licznik rośnie (key nakładki), a mostek kończy się po obu', () => {
+    load({
+      conversation: [
+        { from: 'time_jump', label: 'PIERWSZY', durationMs: 1000 },
+        { from: 'time_jump', label: 'DRUGI', durationMs: 1000 }
+      ],
+      unlockIcons: ['vpn_unlocked']
+    });
+    const s0 = useMissionStore.getState().timeJumpCount;
+    useMissionStore.getState().completeStage('stage_x');
+    expect(useMissionStore.getState().timeJump?.label).toBe('PIERWSZY');
+    const c1 = useMissionStore.getState().timeJumpCount;
+    expect(c1).toBe(s0 + 1);
+
+    useMissionStore.getState().endTimeJump();
+    expect(useMissionStore.getState().timeJump?.label).toBe('DRUGI');
+    const c2 = useMissionStore.getState().timeJumpCount;
+    expect(c2).toBe(c1 + 1);
+
+    useMissionStore.getState().endTimeJump();
+    expect(useMissionStore.getState().timeJump).toBeNull();
+    expect(useMissionStore.getState().pendingBridge).toBeNull();
+  });
 });

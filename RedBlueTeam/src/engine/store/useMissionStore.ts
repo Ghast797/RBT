@@ -99,6 +99,8 @@ export interface MissionState {
   } | null;
   /** Trwający przeskok czasu (nakładka na pulpicie); `null`, gdy nic nie trwa. */
   timeJump: { label?: string; sublabel?: string; durationMs?: number; clockFrom?: string; clock?: string } | null;
+  /** Licznik rozpoczętych przeskoków czasu — `key` nakładki, by kolejny przeskok pod rząd przemontował zegar. */
+  timeJumpCount: number;
   /** Wywoływane przez nakładkę po zakończeniu animacji — mostek gra dalej. */
   endTimeJump: () => void;
 
@@ -283,6 +285,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     incomingCall: null as { appId: string; label: string } | null,
     pendingBridge: null as MissionState['pendingBridge'],
     timeJump: null as MissionState['timeJump'],
+    timeJumpCount: 0,
 
     // Raport i punktacja
     score: mission.mission?.maxScore ?? 100,
@@ -633,6 +636,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       set((s) => ({
         isByteMasterTyping: false,
         chatAvailableChoices: [],
+        timeJumpCount: s.timeJumpCount + 1,
         timeJump: {
           label: beat.label,
           sublabel: beat.sublabel,
