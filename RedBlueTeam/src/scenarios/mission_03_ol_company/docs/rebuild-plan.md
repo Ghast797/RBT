@@ -2,7 +2,7 @@
 
 Źródło prawdy: `docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md` (6 decyzji, D1–D6). Obecna implementacja (8 decyzji) powstała bez dokumentu i ma być z nim zgodna. Standard: `RedBlueTeam/docs/mission-standard.md`, kontrakt: `docs/scenario-engine.md` (sekcje 3 i 5). Uwagi właściciela z testu (tabela w sekcji 0) są wiążące.
 
-**Status:** porcje A (silnik) i B (dane i struktura) zrobione. Sekcja 9 („Kontrakt porcji B”) opisuje faktyczne nazwy pól configów, assetów i `componentId` i jest **nadrzędna** wobec sekcji 3 i 6 tam, gdzie nazwy się różnią (plan powstał przed kodem). Odpowiedzi właściciela na pytania P1–P10: sekcja 8.
+**Status:** porcje A–H zrobione (A silnik, B dane i struktura, C–G minigry, H porządki i dokumentacja: `scenario.md`, `docs/moodle-baza-wiedzy.md`, ta notka zastępuje `migration-spec.md`). Następne: I (weryfikacja w przeglądarce, testy) i J (audyt właściciela / niezależna recenzja). Sekcja 9 („Kontrakt porcji B”) opisuje faktyczne nazwy pól configów, assetów i `componentId` i jest **nadrzędna** wobec sekcji 3 i 6 tam, gdzie nazwy się różnią (plan powstał przed kodem). Odpowiedzi właściciela na pytania P1–P10: sekcja 8.
 
 Skróty: **BM** = Byte_Master, **czat** = czat BM na prawym monitorze (aplikacja nie przejmuje go przez `SideMonitor`).
 
@@ -289,12 +289,12 @@ Każdy agent: osobny commit po zakończeniu, `npx vitest run` i `npx tsc -p tsco
 |---|---|---|---|
 | 1 | **A. Silnik** (**zrobiona**) | `src/engine/components/TimeJump.tsx`, `src/engine/core/clock.ts`, `src/engine/components/Desktop.tsx` (przekazanie propsów), `src/engine/store/useMissionStore.ts` (`timeJump.clockFrom`, `openingConversation` w `openApp`, czyszczenie przy powtórce), `src/engine/types/mission.ts`, `src/engine/components/usePointerDrag.ts`, `tests/clock.test.ts`, `tests/timeJump.test.ts`, `docs/scenario-engine.md` (sekcje 5 i 9) | Pierwsza: dostarcza typy (`clockFrom`, `openingConversation`) dla B. Bez zmian w `scenarios/`. M2 i M4 muszą zostać zielone. |
 | 2 | **B. Dane i struktura** (**zrobiona**, sekcja 9) | `stages.ts`, `minigames/types.ts`, `minigames/ui.tsx` (`ImageSlot`, helpery), `minigames/siteAssets.ts`, `assets/<grupa>/.gitkeep` (6 grup), `data/mission3.json`, `index.ts` (bez zmiany eksportów), `tests/mission3.test.ts`; usunięcie `builderLogic.ts` | Po A. Zastępuje 5 komponentów minigier **tymczasowymi zaślepkami** (te same nazwy eksportów, `AppHeader` + przycisk wołający `onComplete`), żeby `tsc` i testy przepływu przechodziły przed porcjami C–G. Wspólne pliki (`stages.ts`, `types.ts`, `mission3.json`, testy struktury) należą **tylko** do B. |
-| 3 ‖ | **C. //BAZA_WIRUSÓW** | `minigames/VirusLabApp.tsx`, `ScratchMatrix.tsx`, `matrixLogic.ts`, `tests/m3-matrix.test.ts` | Po B. |
-| 3 ‖ | **D. //TOR** | `minigames/OsintBrowserApp.tsx`, `SiteView.tsx`, `osintLogic.ts`, `tests/m3-osint.test.ts` | Po B. |
-| 3 ‖ | **E. //DYSK E** | `minigames/PendriveApp.tsx`, `usbLogic.ts`, `tests/m3-usb.test.ts` | Po B (kontrakt `m3_usb` w `types.ts`). Używa `usePointerDrag` z A. |
-| 3 ‖ | **F. //DRON** | `minigames/DroneApp.tsx`, `DroneMap.tsx`, `DroneCamera.tsx`, `droneLogic.ts`, `tests/m3-drone.test.ts` | Po B. Czyta `m3_usb` (z fallbackiem na czas dev). |
-| 3 ‖ | **G. //WIRUS: RAT** | `minigames/RatSessionApp.tsx`, `FreevoltFiles.tsx`, `NetworkDiagram.tsx`, `tests/m3-rat.test.ts` | Po B. Używa `usePointerDrag` z A. |
-| 4 | **H. Dokumentacja** | `scenario.md`, `docs/migration-spec.md` (usunąć lub oznaczyć), `docs/moodle-baza-wiedzy.md` | Po C–G (odchylenia dopisane na podstawie faktycznej implementacji). Dodać M3 do `docs/mission-standard.md` tylko, jeśli zmieniły się reguły. |
+| 3 ‖ | **C. //BAZA_WIRUSÓW** (**zrobiona**) | `minigames/VirusLabApp.tsx`, `ScratchMatrix.tsx`, `matrixLogic.ts`, `tests/m3-matrix.test.ts` | Po B. |
+| 3 ‖ | **D. //TOR** (**zrobiona**) | `minigames/OsintBrowserApp.tsx`, `SiteView.tsx`, `osintLogic.ts`, `tests/m3-osint.test.ts` | Po B. |
+| 3 ‖ | **E. //DYSK E** (**zrobiona**) | `minigames/PendriveApp.tsx`, `usbLogic.ts`, `tests/m3-usb.test.ts` | Po B (kontrakt `m3_usb` w `types.ts`). Używa `usePointerDrag` z A. |
+| 3 ‖ | **F. //DRON** (**zrobiona**) | `minigames/DroneApp.tsx`, `DroneMap.tsx`, `DroneCamera.tsx`, `droneLogic.ts`, `tests/m3-drone.test.ts` | Po B. Czyta `m3_usb` (z fallbackiem na czas dev). |
+| 3 ‖ | **G. //WIRUS: RAT** (**zrobiona**) | `minigames/RatSessionApp.tsx`, `FreevoltFiles.tsx`, `NetworkDiagram.tsx`, `tests/m3-rat.test.ts` | Po B. Używa `usePointerDrag` z A. |
+| 4 | **H. Dokumentacja** (**zrobiona**) | `scenario.md`, `docs/migration-spec.md` (usunąć lub oznaczyć), `docs/moodle-baza-wiedzy.md` | Po C–G (odchylenia dopisane na podstawie faktycznej implementacji). Dodać M3 do `docs/mission-standard.md` tylko, jeśli zmieniły się reguły. |
 | 5 | **I. Weryfikacja** | brak własnych plików; poprawki zgłasza do właścicieli porcji | Przeglądarka (`?mission=3&dev=1`): każdy ekran przy 1366×768 i 1920×1080, konsola czysta w nowej karcie po świeżym załadowaniu, `node scripts/package-scorm.js --mission=3`. |
 | 6 | **J. Niezależna recenzja** | brak | Agent, który nie pisał kodu, przeciw `mission-standard.md` i dokumentowi VR; potem poprawki (commit po każdym kroku, jak w M2). |
 
