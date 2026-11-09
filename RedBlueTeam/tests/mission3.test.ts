@@ -6,6 +6,13 @@ import { resolveDecisionCount } from '../src/engine/core/scoring';
 import type { ChoiceOutcome, MissionDefinition } from '../src/engine/types/mission';
 import type { OsintBrowserConfig } from '../src/scenarios/mission_03_ol_company/minigames/types';
 import { resolveTargetPick, targetCardContent } from '../src/scenarios/mission_03_ol_company/minigames/osintLogic';
+import {
+  validateBuilder,
+  GROUP_KEYS,
+  BUILDER_INCOMPLETE_MESSAGE,
+  type BuilderPick
+} from '../src/scenarios/mission_03_ol_company/minigames/builderLogic';
+import type { VirusLabConfig } from '../src/scenarios/mission_03_ol_company/minigames/types';
 
 // ---------------------------------------------------------------------------
 // TEST CHARAKTERYZUJĄCY MISJĘ 3 (O&L COMPANY)
@@ -282,8 +289,54 @@ describe('Misja 3 — przepływ wzorca B przez silnik', () => {
 // pełne minigry (stuby nie odwzorowują jeszcze tych szczegółów).
 // ---------------------------------------------------------------------------
 describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', () => {
-  it.todo('builder RAT: zły zestaw (moduł/maskowanie/pakiet) blokuje kompilację bez naliczenia decyzji');
-  it.todo('builder RAT: poprawny zestaw reverse_tcp + bg_service + dll_archive odblokowuje onComplete');
+  describe('builder RAT (validateBuilder)', () => {
+    const builder = (): VirusLabConfig['builder'] =>
+      ((getMission(MISSION_ID) as MissionDefinition).blocks as Record<string, any>).virus_database.builder;
+    const correctPick = (): BuilderPick =>
+      Object.fromEntries(GROUP_KEYS.map((k) => [k, builder()[k].options.find((o) => o.correct)!.id])) as BuilderPick;
+
+    it('w każdej grupie dokładnie jedna opcja jest poprawna: reverse_tcp + bg_service + dll_archive', () => {
+      GROUP_KEYS.forEach((k) => expect(builder()[k].options.filter((o) => o.correct)).toHaveLength(1));
+      expect(correctPick()).toEqual({ modules: 'reverse_tcp', masking: 'bg_service', package: 'dll_archive' });
+    });
+
+    it('niepełny wybór nie zaczyna kompilacji', () => {
+      expect(validateBuilder(builder(), { modules: null, masking: null, package: null })).toEqual({
+        kind: 'incomplete',
+        message: BUILDER_INCOMPLETE_MESSAGE
+      });
+      expect(validateBuilder(builder(), { ...correctPick(), masking: null }).kind).toBe('incomplete');
+    });
+
+    it('zły parametr blokuje kompilację komunikatem z feedbackiem opcji, bez naliczenia decyzji', () => {
+      const before = useMissionStore.getState().playerChoices.length;
+      GROUP_KEYS.forEach((group) => {
+        builder()[group].options
+          .filter((o) => !o.correct)
+          .forEach((wrongOption) => {
+            const result = validateBuilder(builder(), { ...correctPick(), [group]: wrongOption.id });
+            expect(result).toEqual({
+              kind: 'wrong',
+              group,
+              message: `BŁĄD KOMPILACJI: ${wrongOption.feedback}`
+            });
+          });
+      });
+      // Funkcja jest czysta: builder nie zgłasza decyzji (aktywność nieoceniana).
+      expect(useMissionStore.getState().playerChoices.length).toBe(before);
+    });
+
+    it('przy kilku błędach zgłasza pierwszą złą grupę w kolejności modułu, maskowania, pakietu', () => {
+      const wrongPick = Object.fromEntries(
+        GROUP_KEYS.map((k) => [k, builder()[k].options.find((o) => !o.correct)!.id])
+      ) as BuilderPick;
+      expect(validateBuilder(builder(), wrongPick)).toMatchObject({ kind: 'wrong', group: 'modules' });
+    });
+
+    it('poprawny zestaw (reverse_tcp + bg_service + dll_archive) kończy kompilację sukcesem', () => {
+      expect(validateBuilder(builder(), correctPick())).toEqual({ kind: 'ok' });
+    });
+  });
   it('cel D2: wybór CEO/Logistyki cofa do ponownego wyboru, a końcowe D2 agreguje się do suboptimal', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;
     const cfg = (def.blocks as Record<string, any>).browser as OsintBrowserConfig;
@@ -436,5 +489,96 @@ describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', ()
     expect(cfg.mentorNote.length).toBeGreaterThan(0);
     cfg.mentorNote.forEach((line: string) => expect(bridgeTexts).toContain(line));
     expect(cfg.mentorNote.join(' ')).toContain('OŁTASZYŃSKA 92C/6');
+  });
+});
+
+
+// ---------------------------------------------------------------------------
+// MOSTKI, PRZESKOKI CZASU I RAPORT — wzorem tests/mission2.test.ts
+// ---------------------------------------------------------------------------
+describe('Misja 3 — mostki i raport', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    __setBridgeDelayForTests(0);
+    useMissionStore.getState().loadMission(MISSION_ID);
+    useMissionStore.getState().finishBiosBoot();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    __setBridgeDelayForTests(2000);
+  });
+
+  /** Przegrywa mostek aż do przeskoku czasu (kwestie mentora i kliki gracza przed nim). */
+  const driveUntilTimeJump = () => {
+    for (let i = 0; i < 20 && !useMissionStore.getState().timeJump; i++) {
+      vi.runAllTimers();
+      const beat = useMissionStore.getState().chatAvailableChoices.find((c) => c.bridgeBeat);
+      if (beat && !useMissionStore.getState().timeJump) useMissionStore.getState().chooseChatOption(beat.id);
+    }
+  };
+
+  it('pytania w step6.choices są identyczne z pytaniami z klocków (ekranem decyzji)', () => {
+    const def = getMission(MISSION_ID) as MissionDefinition;
+    const decisions = collectDecisions((def.blocks ?? {}) as Record<string, any>);
+    for (let k = 1; k <= 8; k++) {
+      const choice = def.step6.choices.find((c: any) => c.num === k) as any;
+      expect(decisions[k]?.question, `pytanie D${k} w blocks`).toBeTruthy();
+      expect(choice.question, `pytanie D${k} w raporcie`).toBe(decisions[k].question);
+      expect(choice.attack, `attack D${k}`).toBeTruthy();
+      expect(choice.defense, `defense D${k}`).toBeTruthy();
+    }
+  });
+
+  it('mostki odblokowują kafelki dopiero po kwestii gracza (i po przeskoku czasu)', () => {
+    const store = useMissionStore.getState();
+    driveBridge(); // intro -> odblokowanie bazy wirusów
+    expect(useMissionStore.getState().unlockedIcons).toContain('virus_database');
+
+    const def = useMissionStore.getState().activeMission as MissionDefinition;
+    for (const stage of def.stages ?? []) {
+      const unlockId = stage.completion.unlockIcons![0];
+      const beats = stage.completion.conversation ?? [];
+      // Mostek ma kwestię gracza (klik), więc samo wyświetlenie kwestii mentora niczego nie odblokowuje.
+      expect(beats.some((b: any) => b.from === 'player'), `${stage.id}: kwestia gracza`).toBe(true);
+      expect(useMissionStore.getState().unlockedIcons).not.toContain(unlockId);
+
+      store.completeStage(stage.id);
+      vi.runAllTimers();
+      expect(useMissionStore.getState().unlockedIcons, `${stage.id}: przed kwestią gracza`).not.toContain(unlockId);
+      driveBridge();
+      expect(useMissionStore.getState().unlockedIcons, `${stage.id}: po mostku`).toContain(unlockId);
+    }
+  });
+
+  it('mostek pendrive -> dron: przeskok 06:02, kafelek drona odblokowuje się dopiero po przeskoku', () => {
+    const store = useMissionStore.getState();
+    driveBridge();
+    for (const id of ['virus_database', 'browser']) {
+      store.completeStage(id);
+      driveBridge();
+    }
+    store.completeStage('pendrive_app');
+    driveUntilTimeJump();
+    expect(useMissionStore.getState().timeJump?.label).toContain('06:02');
+    expect(useMissionStore.getState().unlockedIcons).not.toContain('drone_unlocked');
+    useMissionStore.getState().endTimeJump();
+    driveBridge();
+    expect(useMissionStore.getState().unlockedIcons).toContain('drone_unlocked');
+  });
+
+  it('mostek drona -> sesja RAT: przeskok 08:12, kafelek sesji odblokowuje się dopiero po przeskoku', () => {
+    const store = useMissionStore.getState();
+    driveBridge();
+    for (const id of ['virus_database', 'browser', 'pendrive_app']) {
+      store.completeStage(id);
+      driveBridge();
+    }
+    store.completeStage('drone_app');
+    driveUntilTimeJump();
+    expect(useMissionStore.getState().timeJump?.label).toContain('08:12');
+    expect(useMissionStore.getState().unlockedIcons).not.toContain('rat_session_unlocked');
+    useMissionStore.getState().endTimeJump();
+    driveBridge();
+    expect(useMissionStore.getState().unlockedIcons).toContain('rat_session_unlocked');
   });
 });

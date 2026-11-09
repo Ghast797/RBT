@@ -16,16 +16,14 @@ import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VirusLabConfig, BuilderGroup } from './types';
 import { LOADER_MS, LOADER_LONG_MS } from './ui';
+import { GROUP_KEYS, validateBuilder, type GroupKey } from './builderLogic';
 
 type Screen = 'virus_select' | 'loading' | 'builder' | 'compiling' | 'ready';
-type GroupKey = 'modules' | 'masking' | 'package';
 
 const ACCENT = '#ec4899'; // kolor kafelka //BAZA_WIRUSÓW
 
 /** Jak długo gracz widzi komunikat o gotowym ładunku, zanim etap zakończy się sam. */
 const READY_MS = 1400;
-
-const GROUP_KEYS: GroupKey[] = ['modules', 'masking', 'package'];
 
 /**
  * Jedna grupa przełączników buildera: karty (radio) na dużym ekranie.
@@ -86,7 +84,6 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
   const virus = config.virus.options.find((o) => o.id === virusId);
-  const allPicked = GROUP_KEYS.every((k) => picked[k]);
 
   const header = (subtitle: string, task: string, step: string) => (
     <AppHeader icon={ShieldAlert} accent={ACCENT} title="//BAZA_WIRUSÓW" subtitle={subtitle} task={task} step={step} />
@@ -125,8 +122,9 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
 
   const handleCompile = () => {
     sounds.playClick();
-    if (!allPicked) {
-      setError('WYBIERZ 3 PARAMETRY PRZED KOMPILACJĄ.');
+    const result = validateBuilder(config.builder, picked);
+    if (result.kind === 'incomplete') {
+      setError(result.message);
       return;
     }
     setError(null);
@@ -134,11 +132,10 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
   };
 
   const handleCompileDone = () => {
-    const chosen = GROUP_KEYS.map((k) => config.builder[k].options.find((o) => o.id === picked[k]));
-    const wrong = chosen.find((o) => !o?.correct);
-    if (wrong) {
+    const result = validateBuilder(config.builder, picked);
+    if (result.kind !== 'ok') {
       sounds.playError();
-      setError(`BŁĄD KOMPILACJI: ${wrong.feedback}`);
+      setError(result.message);
       setScreen('builder');
       return;
     }
