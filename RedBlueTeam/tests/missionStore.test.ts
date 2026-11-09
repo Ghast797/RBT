@@ -76,4 +76,13 @@ describe('Store silnika: boot, otwarcie czatu i xAPI', () => {
     expect(statement.result.success).toBe(true);
     expect(statement.result.extensions?.['https://cybersec-training.internal/extensions/status']).toBe('terminated');
   });
+
+  it('zdanie xAPI z openDebrief bierze opis z metadanych misji, bez zaszytych tekstów konkretnego scenariusza', () => {
+    useMissionStore.getState().openDebrief();
+    const statement = MockLRS.getStatements()[0];
+    const json = JSON.stringify(statement);
+    expect(json).not.toMatch(/social engineering|Infiltrator/i);
+    const { title } = useMissionStore.getState().activeMission.mission;
+    expect(json).toContain(title);
+  });
 });

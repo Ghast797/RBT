@@ -31,6 +31,7 @@ export const ModuleLoader: React.FC<ModuleLoaderProps> = ({
   const callback = onDone || onComplete;
   const [progress, setProgress] = useState(0);
   const doneRef = useRef(false);
+  const callbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const steps = 10;
@@ -46,12 +47,16 @@ export const ModuleLoader: React.FC<ModuleLoaderProps> = ({
           doneRef.current = true;
           sounds.playSuccess();
           if (callback) {
-            setTimeout(callback, 180);
+            callbackTimerRef.current = setTimeout(callback, 180);
           }
         }
       }
     }, tick);
-    return () => clearInterval(id);
+    return () => {
+      clearInterval(id);
+      // Odmontowanie w trakcie krótkiej pauzy po 100% nie może wywołać callbacku na zamkniętym ekranie.
+      if (callbackTimerRef.current !== null) clearTimeout(callbackTimerRef.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -745,11 +745,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   openDebrief: () => {
     sounds.playSuccess();
     const { score, activeMission } = get();
+    const { title, subTitle } = activeMission.mission;
     MockLRS.sendStatement(
       createMissionCompletionStatement(
-        { name: "Infiltrator Agent", mbox: "mailto:agent@hackers.os" },
+        undefined, // domyślny aktor xAPI (neutralny); tożsamość ucznia nadaje LMS
         score,
-        `Completed ${activeMission.mission.title} social engineering penetration simulation`,
+        `Ukończono ${title}${subTitle ? ` — ${subTitle}` : ''}`,
         activeMission.mission
       )
     );
