@@ -143,20 +143,20 @@ Dla każdej interakcji nowego scenariusza:
 
 Minigra zostaje w folderze misji, dopóki służy jednej misji. Nie uogólniamy „na zapas".
 
-## 8. Wzorzec B vs legacy (A) — co wygaszamy
+## 8. Wzorzec B vs legacy (A) — legacy wygaszone
 
-Wzorzec **A jest legacy** — nie kopiuj go do nowych misji. Przepisujemy na **B** (ten dokument). Co się zmienia:
+Wszystkie misje (M1–M4) działają na **wzorcu B** (etapy + klocki/minigry). Wzorzec **A** (przebieg fabuły i dane decyzji zaszyte w store i widgetach) został z silnika usunięty: nie ma `engine/widgets/`, `transitions`, `runScenarioTransition`, maszyny stanów `chatStage` ani pól per-krok w `useMissionStore.ts`. Nie odtwarzaj go w nowych misjach. Różnice, które zostały po migracji:
 
-| Element | A (legacy, do wygaszenia) | B (standard) |
+| Element | A (usunięte) | B (standard) |
 |---|---|---|
 | Dane decyzji (opcje, punkty) | wpisane w widgetach (`VIRUSES`, `SUBJECT_OPTIONS`…) | w `blocks{}` definicji misji |
-| Punktacja | każdy widget liczy kary sam (`isCritical ? 11.11 : 7.11`) | silnik z poziomu + `N` + `rewardBtc` (`reportDecision`) |
+| Punktacja | każdy widget liczył kary sam (`isCritical ? 11.11 : 7.11`) | silnik z poziomu + `N` + `rewardBtc` (`reportDecision`) |
 | Przebieg fabuły | `advanceMission4Story` / `transitions` zaszyte w store | `stages[]` + `completeStage` |
 | Wybór 1 z N | osobne widgety o tej samej logice | jeden klocek `ChoiceCards` |
 | Minigry (skaner, VPN, stacja) | w `engine/widgets/` z resztą | w `scenarios/mission_XX/minigames/`, kontrakt z sekcji 5 |
-| `steps` w JSON | martwe (żaden komponent nie czyta) | nie używać — dane idą do `blocks` |
+| `steps` / `step1..step5` w JSON | martwe (żaden komponent nie czytał) | nie używać — dane idą do `blocks`; z JSON zostaje `step6` (raport pooperacyjny) |
 
-**Stan migracji:** **cała Misja 4 jest już na B** — to wzorzec referencyjny do kopiowania (etapy, klocki/minigry, przepływ czatu, tempo). Minigry M4 (`scenarios/mission_04_energy_rock/minigames/`) pokazują: sekwencyjne ekrany per aplikacja, `ModuleLoader` między ekranami, zgłaszanie decyzji przez kontrakt. Misja 3 zostaje na legacy (A) do osobnej konwersji — do tego czasu w kodzie są oba wzorce, ale **nowy kod piszemy wyłącznie w B**.
+Wzorce referencyjne do kopiowania: **M4** (etapy, klocki/minigry, przepływ czatu, tempo; minigry z sekwencyjnymi ekranami, `ModuleLoader` między ekranami, zgłaszanie decyzji przez kontrakt) i **M2** (standard z `mission-standard.md`). M3 jest przeniesiona na B (`scenarios/mission_03_ol_company/`).
 
 ## 9. Tempo i „czucie komputera" (toolkit silnika)
 

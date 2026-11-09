@@ -2,7 +2,7 @@
 
 ## 🚨 KRYTYCZNE WYTYCZNE ARCHITEKTURY (BEZWZGLĘDNIE PRZESTRZEGAĆ)
 
-> **MODEL DOCELOWY:** `RedBlueTeam/docs/scenario-engine.md` (kontrakt, konwencje, katalog klocków), `scenario-format.md` (format `scenario.md`), `player-guidance.md` (prowadzenie gracza — jak ze scenariusza ustawić, by gracz wiedział, co robić), `mission-standard.md` (lista kontrolna misji 2+ na wzorcu M2 — treść, interfejs, tempo, weryfikacja), `vr-to-scenario-skill.md` (skill). Trwa migracja z modelu `transitions`/widgety na model etapów/klocków — poniższe zasady opisują stan docelowy.
+> **MODEL DOCELOWY:** `RedBlueTeam/docs/scenario-engine.md` (kontrakt, konwencje, katalog klocków), `scenario-format.md` (format `scenario.md`), `player-guidance.md` (prowadzenie gracza — jak ze scenariusza ustawić, by gracz wiedział, co robić), `mission-standard.md` (lista kontrolna misji 2+ na wzorcu M2 — treść, interfejs, tempo, weryfikacja), `vr-to-scenario-skill.md` (skill). Wszystkie misje (M1–M4) działają na modelu etapów/klocków; stary model `transitions`/widgety został usunięty z silnika.
 
 ### 1. PODZIAŁ SILNIK / SCENARIUSZE, BEZ DUPLIKATÓW
 - **ZAKAZ**: NIE twórz folderów komponentów/store/typów poza `src/engine/` i `src/scenarios/`.
