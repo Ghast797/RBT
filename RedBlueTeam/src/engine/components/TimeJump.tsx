@@ -3,9 +3,9 @@ import { sounds } from '../audio/soundEffects';
 import { clockAt, formatClock, handAngles, hoursElapsed, parseClock, resolveJumpClock } from '../core/clock';
 
 interface TimeJumpProps {
-  /** Opcjonalny podpis pod zegarem (mały; zegar jest głównym elementem). */
+  /** Opcjonalny podpis pod zegarem (czytelny, ale zegar zostaje głównym elementem). */
   label?: string;
-  /** Drugi, jeszcze mniejszy podpis. */
+  /** Drugi, mniejszy podpis. */
   sublabel?: string;
   /** Czas trwania animacji w ms (domyślnie 3000). */
   durationMs?: number;
@@ -58,8 +58,8 @@ const Dial: React.FC<{ minutes: number; accent: string }> = ({ minutes, accent }
  * Ekran „przeskoku czasu” — narracyjna pauza między etapami (czekanie z VR).
  * Pokazuje lecący zegar: tarcza analogowa i (gdy podano `clockTo`) cyfrowa godzina,
  * która przewija się od `clockFrom` do `clockTo` krzywą ease-in-out przez `durationMs`.
- * Bez `clockTo` wirują tylko wskazówki, bez cyfr. `label`/`sublabel` to opcjonalny,
- * mały podpis — silnik nie dodaje własnych tekstów typu „mija kilka godzin”.
+ * Bez `clockTo` wirują tylko wskazówki, bez cyfr. `label`/`sublabel` to opcjonalny
+ * podpis — silnik nie dodaje własnych tekstów typu „mija kilka godzin”.
  * Przy `prefers-reduced-motion` zegar od razu stoi na godzinie docelowej.
  * Zob. docs/scenario-engine.md, sekcja 5.
  */
@@ -152,11 +152,11 @@ export const TimeJump: React.FC<TimeJumpProps> = ({
         </div>
       )}
       {label && (
-        <div className="text-xs font-bold tracking-widest text-center" style={{ color: accent }}>
+        <div className="text-lg font-bold tracking-widest text-center" style={{ color: accent }}>
           {label}
         </div>
       )}
-      {sublabel && <div className="text-[0.6875rem] text-gray-400 text-center max-w-sm">{sublabel}</div>}
+      {sublabel && <div className="text-base text-gray-300 text-center max-w-md">{sublabel}</div>}
       <div className="w-56 h-1.5 bg-[#0a1610] border rounded overflow-hidden" style={{ borderColor: `${accent}66` }}>
         <div className="h-full" style={{ width: `${t * 100}%`, backgroundColor: accent }} />
       </div>
