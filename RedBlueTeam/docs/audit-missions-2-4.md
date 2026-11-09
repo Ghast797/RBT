@@ -5,7 +5,7 @@ Audyt wykonany tylko odczytem. Punkt odniesienia: M1 (PetroLog) jako wzorzec **w
 - Konsekwencja odroczona: słaby wybór ujawnia się etap lub dwa później, tekstem, z potrąceniem BTC, a w raporcie pojawia się „Widok Blue Teamu”.
 - Bez licznika wykrycia. Rozgałęzienia tylko małe i oczywiste.
 
-## Stan prac (aktualizacja 2026-11-05, koniec sesji)
+## Stan prac (aktualizacja 2026-11-09)
 
 Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude lub Gemini/OpenCode) zaczyna od tej sekcji.
 
@@ -40,18 +40,22 @@ Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude
 - Przyczyna: minigry importują `useMissionStore`, a store przez `missionRegistry` → `virtual:active-scenario` importuje wszystkie `scenarios/*/index.ts`, które importują minigry. Rejestr aplikacji to tylko jedna z krawędzi cyklu.
 - Propozycja: store nie powinien importować scenariuszy synchronnie na starcie modułu (`resolveInitialMission()` przy tworzeniu store). Np. neutralny stan początkowy + jawne `initMission()` wołane z `main.tsx` po załadowaniu scenariuszy. To zmiana architektury startu, wymaga osobnej decyzji.
 
+**M3 przetestowane i poprawione (2026-11-09)**
+- Testy: recenzja kodu (Opus), przejście jak student + każdy ekran w 1366×768 i 1920×1080 (Sonnet), spójność danych (Haiku). Ścieżka idealna 100%, ścieżki błędów i pamięć stanu działają.
+- Poprawki M3: kroki bez decyzji przechodzą same (także builder w M2), notatka mentora z adresem w //DRON, karty celu D2 z neutralnym opisem (bio po kliknięciu), finał RAT pokazuje wybory gracza, pytania z raportu na ekranach decyzji, `answer` = etykiety, dane drona z jednego źródła, //TOR po ukończeniu w trybie do odczytu, dłuższe loadery, czysta funkcja `builderLogic.ts`.
+- Poprawki silnika (wszystkie misje): raport pooperacyjny w dwóch panelach bez przewijania do 10 decyzji, pole `clock` w beacie `time_jump` (zegar pulpitu), podświetlenie kafelka 3 s od końca przeskoku, napis powtórki „ZACZNIJ MISJĘ OD NOWA (BEZ INTRO)”.
+- Stan: 138 testów zielonych (1 `it.todo` o pendrive), tsc czysty, 4 paczki SCORM izolowane.
+
 **Następne kroki**
-1. **Agenci testujący M3:** recenzja kodu przeciw `mission-standard.md` (Opus), audyt w przeglądarce każdego ekranu przy 1366×768 i 1920×1080 (Sonnet), izolacja paczek (Haiku).
-2. **Tura poprawek M3.** Już znane:
-   - po udanej kompilacji RAT `VirusLabApp` ma przejść dalej sam, bez przycisku „ZAPISZ ŁADUNEK…”;
-   - `DroneApp` zajmuje prawy monitor, więc wiadomość mentora z adresem ofiary trzeba pokazać w panelu jako notatkę;
-   - odpowiedzi D1/D2 w `step6` mają mieć pełne etykiety z ekranu; wymaga to poprawki `tests/mission3.test.ts` ok. l.100.
-3. **Audyt M3 przez właściciela.** Do akceptacji:
+1. **Audyt M3 przez właściciela.** Do akceptacji:
    - builder RAT bez oceny (8 decyzji);
    - zły cel D2 → `suboptimal` po powrocie mentora;
-   - `educationalSlides` usunięte z M3 (M2/M4 nadal je mają).
-4. **M4** wg `mission-standard.md`: rozjazdy z PDF (9 vs 10 decyzji — układ wg oceny logiki), `scenario.md`, przeskok czasu w mostku po VPN, wygląd M2.
-5. **Do decyzji właściciela:** dopasowanie M1 do zasady „karty na dużym ekranie, wiersze na prawym” (POCZTA, KREATOR_STRONY).
+   - `educationalSlides` usunięte z M3 (M2/M4 nadal je mają);
+   - nowy układ raportu pooperacyjnego (dotyczy wszystkich misji).
+2. **M4** wg `mission-standard.md`: rozjazdy z PDF (9 vs 10 decyzji — układ wg oceny logiki), `scenario.md`, przeskok czasu w mostku po VPN, lekcje atak/obrona, wygląd M2.
+3. **Reguła dwóch:** builder M3 (`VirusLabApp`) i M2 (`WormBuilderApp`) mają ten sam przebieg — kandydat na klocek silnika.
+4. **Do decyzji właściciela:** dopasowanie M1 do zasady „karty na dużym ekranie, wiersze na prawym” (POCZTA, KREATOR_STRONY); cykl importów w dev (zmiana startu store).
+5. Znane drobne: karty na 1920×1080 wypełniają górną połowę okna (M2 i M3 tak samo); commit `24a8af3` sam nie przechodzi tsc (pole `clock` przed typem z `6e406bb`).
 
 ## Stan w skrócie
 
