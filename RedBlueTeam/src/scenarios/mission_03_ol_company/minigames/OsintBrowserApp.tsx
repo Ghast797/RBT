@@ -48,6 +48,8 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   const [attempted, setAttempted] = useState(false);
   const [pushbacks, setPushbacks] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
+  // Po zapisaniu planu ataku strona zostaje do odczytu (powrót do WYDARZEŃ i profili po ponownym otwarciu).
+  const [completed, setCompleted] = useState(false);
   const completedRef = useRef(false);
 
   // Kolejność kart losuje się raz przy zamontowaniu (od nowa przy powtórce misji).
@@ -121,6 +123,8 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   const finish = () => {
     if (completedRef.current) return;
     completedRef.current = true;
+    setCompleted(true);
+    setScreen('site');
     onComplete();
   };
 
@@ -213,8 +217,10 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
     <div className="flex flex-col flex-1 min-h-0 space-y-3 animate-in fade-in duration-200">
       {header(
         site.url.toUpperCase(),
-        'Przeczytaj profile pracowników, otwórz zakładkę WYDARZENIA i przejdź do wyboru celu.',
-        'KROK 1/3'
+        completed
+          ? 'Plan ataku zapisany. Strona O&L jest tylko do odczytu: możesz wrócić do profili i WYDARZEŃ.'
+          : 'Przeczytaj profile pracowników, otwórz zakładkę WYDARZENIA i przejdź do wyboru celu.',
+        completed ? 'GOTOWE' : 'KROK 1/3'
       )}
 
       <div className="flex-1 min-h-0 flex flex-col rounded-lg overflow-hidden border border-[#00ff66]/30 bg-[#04080e]">
@@ -345,21 +351,23 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
         </div>
       </div>
 
-      <div className="shrink-0 flex items-center justify-end gap-4">
-        {!eventsViewed && (
-          <span className="text-xs text-gray-400">Otwórz zakładkę WYDARZENIA, aby przejść dalej.</span>
-        )}
-        <ConfirmButton
-          accent={ACCENT}
-          label="PRZEJDŹ DO WYBORU CELU"
-          enabled={eventsViewed}
-          onClick={() => {
-            sounds.playClick();
-            setScreen('loading_target');
-          }}
-          className="w-auto px-6"
-        />
-      </div>
+      {!completed && (
+        <div className="shrink-0 flex items-center justify-end gap-4">
+          {!eventsViewed && (
+            <span className="text-xs text-gray-400">Otwórz zakładkę WYDARZENIA, aby przejść dalej.</span>
+          )}
+          <ConfirmButton
+            accent={ACCENT}
+            label="PRZEJDŹ DO WYBORU CELU"
+            enabled={eventsViewed}
+            onClick={() => {
+              sounds.playClick();
+              setScreen('loading_target');
+            }}
+            className="w-auto px-6"
+          />
+        </div>
+      )}
     </div>
   );
 
