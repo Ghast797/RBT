@@ -27,13 +27,17 @@ const READY_MS = 1400;
 
 const GROUP_KEYS: GroupKey[] = ['modules', 'masking', 'package'];
 
-/** Jedna grupa przełączników buildera: karty (radio) na dużym ekranie. */
+/**
+ * Jedna grupa przełączników buildera: karty (radio) na dużym ekranie.
+ * Kolejność opcji przychodzi z rodzica (`useShuffled` w `VirusLabApp`): kolumna odmontowuje się przy każdej
+ * zmianie ekranu (kompilacja, błąd), więc tasowanie we wnętrzu przetasowywałoby karty po każdym powrocie.
+ */
 const BuilderColumn: React.FC<{
   group: BuilderGroup;
+  options: BuilderGroup['options'];
   value: string | null;
   onChange: (id: string) => void;
-}> = ({ group, value, onChange }) => {
-  const options = useShuffled(group.options);
+}> = ({ group, options, value, onChange }) => {
   return (
     <ChoiceZone accent={ACCENT} label={group.title.replace(/:$/, '').toUpperCase()}>
       <div className="flex flex-col gap-2.5">
@@ -72,6 +76,12 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
   const [error, setError] = useState<string | null>(null);
 
   const virusOptions = useShuffled(config.virus.options);
+  // Kolejność opcji buildera losuje się raz na montaż aplikacji (hooki w rodzicu, nie w kolumnie).
+  const builderOptions: Record<GroupKey, BuilderGroup['options']> = {
+    modules: useShuffled(config.builder.modules.options),
+    masking: useShuffled(config.builder.masking.options),
+    package: useShuffled(config.builder.package.options)
+  };
   const completedRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
@@ -229,7 +239,13 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
           <p className="text-xs text-gray-400 shrink-0">{config.builder.subtitle}</p>
           <div className="grid grid-cols-3 gap-3 items-start">
             {GROUP_KEYS.map((k) => (
-              <BuilderColumn key={k} group={config.builder[k]} value={picked[k]} onChange={(id) => setGroup(k, id)} />
+              <BuilderColumn
+                key={k}
+                group={config.builder[k]}
+                options={builderOptions[k]}
+                value={picked[k]}
+                onChange={(id) => setGroup(k, id)}
+              />
             ))}
           </div>
         </div>
