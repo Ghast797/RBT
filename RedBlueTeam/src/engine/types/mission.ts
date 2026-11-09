@@ -307,6 +307,15 @@ export interface StageDefinition {
   appId: string;
   /** Numery decyzji ocenianych w tym etapie. */
   decisions?: number[];
+  /**
+   * Rozmowa grana w czacie na prawym monitorze, gdy gracz PIERWSZY raz otwiera aplikację
+   * etapu (ten sam mechanizm co mostek: animacja „pisze”, opóźnienie, przyciski kwestii gracza).
+   * Służy do rzeczy, o których mentor mówi „w trakcie” pracy w aplikacji (np. opis auta
+   * do wypatrzenia). Gra się raz na rozgrywkę; powtórka misji ją resetuje.
+   * Gdy trwa mostek, rozmowa czeka na jego koniec; gdy gracz zaliczy etap w trakcie rozmowy,
+   * jej reszta gra się przed mostkiem etapu. Nie odblokowuje niczego.
+   */
+  openingConversation?: ConversationBeat[];
   completion: StageCompletion;
 }
 

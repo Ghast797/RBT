@@ -55,6 +55,10 @@ export interface MissionState {
   appRunId: number;
   /** Etapy już ukończone — ponowne ukończenie tylko zamyka okno, bez powtórki mostka. */
   completedStages: string[];
+  /** Etapy, których `openingConversation` już zagrała albo czeka w kolejce — rozmowa gra raz na rozgrywkę. */
+  playedOpenings: string[];
+  /** Rozmowy przy otwarciu aplikacji odłożone, bo akurat trwał mostek (grają po jego końcu, po kolei). */
+  queuedOpenings: string[];
   unlockedIcons: string[];
   unlockIcon: (id: string) => void;
   notificationBadges: Record<string, number>;
@@ -90,6 +94,8 @@ export interface MissionState {
     hadTimeJump?: boolean;
     /** Kiedy (ms, `Date.now()`) skończył się ostatni przeskok czasu — od tej chwili liczy się opóźnienie odblokowań. */
     timeJumpEndedAt?: number;
+    /** To `openingConversation` etapu (rozmowa przy otwarciu aplikacji), nie mostek po ukończeniu etapu: bez odblokowań i dźwięku. */
+    opening?: boolean;
   } | null;
   /** Trwający przeskok czasu (nakładka na pulpicie); `null`, gdy nic nie trwa. */
   timeJump: { label?: string; sublabel?: string; durationMs?: number; clockFrom?: string; clock?: string } | null;
@@ -260,6 +266,8 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     openedApps: [] as WindowId[],
     appRunId: ++appRunCounter,
     completedStages: [] as string[],
+    playedOpenings: [] as string[],
+    queuedOpenings: [] as string[],
     unlockedIcons: initialUnlocked,
     notificationBadges: {} as Record<string, number>,
     systemDate: mission.mission?.date || '',
@@ -315,6 +323,19 @@ function clearUnlockTimer() {
     unlockTimer = null;
   }
 }
+
+// Znacznik „pisania” mentora: każde wejście w `advanceBridge` unieważnia opóźnioną kwestię
+// z poprzedniego wejścia, więc zastąpiony lub przerwany mostek nie dopisze starej kwestii.
+let typingToken = 0;
+/** Przerywa wszystko, co mostek ma w locie (timer odblokowań i opóźnioną kwestię mentora). */
+function cancelBridgeTimers() {
+  clearUnlockTimer();
+  typingToken++;
+}
+
+let messageCounter = 0;
+/** Unikalny id wiadomości (sam `Date.now()` powtarza się przy dwóch kwestiach w tej samej milisekundzie). */
+const nextMessageId = (prefix: string) => `${prefix}_${Date.now()}_${++messageCounter}`;
 /** Opóźnienie skaluje się z `__setBridgeDelayForTests` (0 w testach = bez czekania). */
 function scaledUnlockDelay(ms: number) {
   return Math.round(ms * (BRIDGE_DELAY / 2000));
@@ -336,7 +357,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       return;
     }
 
-    clearUnlockTimer();
+    cancelBridgeTimers();
     set({ ...getInitialMissionState(targetMission), timeJump: null });
   },
 
@@ -369,7 +390,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   retryFromScratch: () => {
     sounds.playClick();
-    clearUnlockTimer();
+    cancelBridgeTimers();
     const currentMission = get().activeMission;
     set({
       ...getInitialMissionState(currentMission),
@@ -383,7 +404,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   retryFromChoices: () => {
     sounds.playSuccess();
-    clearUnlockTimer();
+    cancelBridgeTimers();
     const currentMission = get().activeMission;
     const baseInitial = getInitialMissionState(currentMission);
     const opening = resolveOpeningChat(currentMission, get().introReplies);
@@ -521,6 +542,11 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     const { completion } = stage;
 
+    // Gracz zaliczył etap w trakcie rozmowy przy otwarciu aplikacji: jej niezagrana reszta
+    // gra przed mostkiem etapu (nic nie ginie), a unieważniony timer starej kwestii nie wraca.
+    const running = get().pendingBridge;
+    const carriedBeats = running?.opening ? running.beats.slice(running.index) : [];
+
     // Powrót na pulpit; start rozmowy mostkującej (odblokowania DOPIERO po jej zakończeniu).
     set((s) => ({
       activeApp: completion.closeActiveApp === false ? s.activeApp : null,
@@ -530,7 +556,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       chatAvailableChoices: [],
       isByteMasterTyping: false,
       pendingBridge: {
-        beats: completion.conversation || [],
+        beats: [...carriedBeats, ...(completion.conversation || [])],
         index: 0,
         unlock: {
           unlockIcons: completion.unlockIcons,
@@ -554,6 +580,14 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const pb = get().pendingBridge;
     if (!pb) return;
     const i = pb.index;
+    const token = ++typingToken;
+
+    // Rozmowa przy otwarciu aplikacji kończy się bez odblokowań i dźwięku; potem gra następna z kolejki.
+    if (i >= pb.beats.length && pb.opening) {
+      set({ isByteMasterTyping: false, pendingBridge: null });
+      playQueuedOpening();
+      return;
+    }
 
     // Koniec rozmowy → odblokowania, badge, podświetlenie (z opóźnieniem po przeskoku czasu).
     if (i >= pb.beats.length) {
@@ -586,6 +620,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       clearUnlockTimer();
       if (delay > 0) unlockTimer = setTimeout(applyUnlock, delay);
       else applyUnlock();
+      playQueuedOpening();
       return;
     }
 
@@ -618,12 +653,13 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     // Kwestia BYTE_MASTERA → animacja „pisze" + delay, potem wiadomość, potem następny beat.
     set({ isByteMasterTyping: true, chatAvailableChoices: [] });
     setTimeout(() => {
-      // Mostek mógł zostać przerwany (powtórka misji) — nie dopisuj kwestii do nowej rozgrywki.
-      if (!get().pendingBridge) return;
+      // Mostek mógł zostać przerwany lub zastąpiony (powtórka misji, zaliczenie etapu w trakcie
+      // rozmowy przy otwarciu) — nie dopisuj kwestii ze starego przebiegu.
+      if (token !== typingToken || !get().pendingBridge) return;
       sounds.playNotification();
       set((s) => ({
         isByteMasterTyping: false,
-        chatMessages: [...s.chatMessages, { id: `bm_${Date.now()}_${i}`, sender: 'BYTE_MASTER' as const, text: beat.text }],
+        chatMessages: [...s.chatMessages, { id: nextMessageId('bm'), sender: 'BYTE_MASTER' as const, text: beat.text }],
         pendingBridge: s.pendingBridge ? { ...s.pendingBridge, index: i + 1 } : null
       }));
       get().advanceBridge();
@@ -710,6 +746,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const highlightedTileId = get().highlightedTileId === app ? null : get().highlightedTileId;
 
     set({ activeApp: app, openedApps: withOpenedApp(get().openedApps, app), notificationBadges: badges, highlightedTileId });
+    requestOpeningConversation(app);
   },
 
   rememberApp: (app) => {
@@ -732,7 +769,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       set((s) => ({
         chatMessages: [
           ...s.chatMessages,
-          { id: `msg_${Date.now()}`, sender: 'PLAYER', text: choice.label }
+          { id: nextMessageId('msg'), sender: 'PLAYER', text: choice.label }
         ],
         chatAvailableChoices: [],
         pendingBridge: s.pendingBridge ? { ...s.pendingBridge, index: s.pendingBridge.index + 1 } : null
@@ -778,7 +815,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   resetGame: () => {
     sounds.playClick();
     const currentMission = get().activeMission;
-    clearUnlockTimer();
+    cancelBridgeTimers();
     set(getInitialMissionState(currentMission));
   },
 
@@ -840,3 +877,48 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     set({ isExitModalOpen: true });
   }
 }));
+
+// ----------------- ROZMOWA PRZY OTWARCIU APLIKACJI -----------------
+// `StageDefinition.openingConversation`: gra raz na rozgrywkę, przy pierwszym otwarciu
+// aplikacji etapu, tym samym mechanizmem co mostek (`pendingBridge` z flagą `opening`).
+// Gdy akurat trwa mostek albo przeskok czasu, rozmowa trafia do kolejki i gra po jego końcu.
+
+function startOpeningConversation(stageId: string) {
+  const stage = (useMissionStore.getState().activeMission.stages || []).find((st) => st.id === stageId);
+  if (!stage?.openingConversation) return;
+  useMissionStore.setState({
+    chatAvailableChoices: [],
+    pendingBridge: { beats: stage.openingConversation, index: 0, unlock: {}, opening: true }
+  });
+  useMissionStore.getState().advanceBridge();
+}
+
+/** Woływane po otwarciu aplikacji: pierwsza rozmowa etapu startuje od razu albo staje w kolejce. */
+function requestOpeningConversation(appId: string) {
+  const state = useMissionStore.getState();
+  const stage = (state.activeMission.stages || []).find(
+    (st) => st.appId === appId && st.openingConversation && st.openingConversation.length > 0
+  );
+  if (!stage) return;
+  if (state.playedOpenings.includes(stage.id) || state.completedStages.includes(stage.id)) return;
+  useMissionStore.setState({ playedOpenings: [...state.playedOpenings, stage.id] });
+  if (state.pendingBridge || state.timeJump) {
+    useMissionStore.setState((s) => ({ queuedOpenings: [...s.queuedOpenings, stage.id] }));
+    return;
+  }
+  startOpeningConversation(stage.id);
+}
+
+/** Woływane na końcu każdej rozmowy: gra rozmowę przy otwarciu, która czekała w kolejce. */
+function playQueuedOpening() {
+  const { queuedOpenings, pendingBridge, completedStages } = useMissionStore.getState();
+  if (pendingBridge || queuedOpenings.length === 0) return;
+  const [next, ...rest] = queuedOpenings;
+  useMissionStore.setState({ queuedOpenings: rest });
+  // Etap zaliczony w międzyczasie — rozmowa straciła sens.
+  if (completedStages.includes(next)) {
+    playQueuedOpening();
+    return;
+  }
+  startOpeningConversation(next);
+}
