@@ -160,7 +160,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
     if (!volume || !signature || !usbFile) return;
     sounds.playSuccess();
     setCustomState(USB_STATE_KEY, buildUsbState(volume, usbFile, signature));
-    onDecision(buildD4Report(config.signature, volume, signature));
+    onDecision(buildD4Report(config.signature, volume, signature, config.reportLabels));
     if (signature.tier !== 'critical') setScreen('eject');
   };
 

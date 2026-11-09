@@ -399,6 +399,7 @@ export const pendriveConfig: PendriveConfig = {
       }
     ]
   },
+  reportLabels: { volume: 'NAZWA DYSKU', signature: 'PODPIS' },
   successMessage: 'PENDRIVE GOTOWY. WYSUNIĘTO PAMIĘĆ USB.'
 };
 

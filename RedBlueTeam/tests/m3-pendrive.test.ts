@@ -24,29 +24,37 @@ describe('M3 //DYSK E: logika pendrive', () => {
   });
 
   it('D4 = gorszy z nazwy i podpisu, odpowiedź to podpis', () => {
-    const ideal = aggregateD4(vol('vol_impreza'), sig('env_afterparty'));
+    const ideal = aggregateD4(vol('vol_impreza'), sig('env_afterparty'), cfg.reportLabels);
     expect(ideal.tier).toBe('ideal');
     expect(ideal.answer).toBe('ZDJĘCIA Z AFTERPARTY O&L COMPANY!');
 
-    const nameWorse = aggregateD4(vol('vol_bo'), sig('env_afterparty'));
+    const nameWorse = aggregateD4(vol('vol_bo'), sig('env_afterparty'), cfg.reportLabels);
     expect(nameWorse.tier).toBe('suboptimal');
     expect(nameWorse.source).toBe('volume');
     expect(nameWorse.feedback).toBe(vol('vol_bo').feedback);
-    expect(nameWorse.answer).toBe('ZDJĘCIA Z AFTERPARTY O&L COMPANY!');
+    // Ocenę obniżyła nazwa dysku: raport pokazuje obie odpowiedzi.
+    expect(nameWorse.answer).toBe('NAZWA DYSKU: ZDJĘCIA B&O COMPANY / PODPIS: ZDJĘCIA Z AFTERPARTY O&L COMPANY!');
 
-    const sigWorse = aggregateD4(vol('vol_impreza'), sig('env_bo'));
+    const sigWorse = aggregateD4(vol('vol_impreza'), sig('env_bo'), cfg.reportLabels);
     expect(sigWorse.tier).toBe('suboptimal');
     expect(sigWorse.source).toBe('signature');
+    // Ocenę wyznaczył podpis: w raporcie sam podpis (jak w debriefie).
+    expect(sigWorse.answer).toBe('PENDRIVE ZE ZDJĘCIAMI B&O COMPANY');
 
-    expect(aggregateD4(vol('vol_new_disk'), sig('env_lost_docs')).tier).toBe('critical');
-    expect(aggregateD4(vol('vol_bo'), sig('env_bo')).tier).toBe('suboptimal');
+    expect(aggregateD4(vol('vol_new_disk'), sig('env_lost_docs'), cfg.reportLabels).tier).toBe('critical');
+    expect(aggregateD4(vol('vol_bo'), sig('env_bo'), cfg.reportLabels).tier).toBe('suboptimal');
   });
 
   it('buildD4Report: numer 4 i pytanie z podpisu', () => {
-    const r = buildD4Report(cfg.signature, vol('vol_bo'), sig('env_afterparty'));
+    const r = buildD4Report(cfg.signature, vol('vol_bo'), sig('env_afterparty'), cfg.reportLabels);
     expect(r.num).toBe(4);
     expect(r.question).toBe(cfg.signature.question);
     expect(r.tier).toBe('suboptimal');
+    expect(r.answer).toBe('NAZWA DYSKU: ZDJĘCIA B&O COMPANY / PODPIS: ZDJĘCIA Z AFTERPARTY O&L COMPANY!');
+    // Ścieżka idealna zgłasza sam podpis (zgodny z debriefem).
+    expect(buildD4Report(cfg.signature, vol('vol_impreza'), sig('env_afterparty'), cfg.reportLabels).answer).toBe(
+      'ZDJĘCIA Z AFTERPARTY O&L COMPANY!'
+    );
   });
 
   it('KEYLOGGER zgłasza D4 critical od razu, inne nazwy nie', () => {

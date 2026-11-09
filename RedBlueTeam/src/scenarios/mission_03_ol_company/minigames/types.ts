@@ -254,6 +254,8 @@ export interface PendriveConfig {
   volume: GradedStep & { choiceLabel: string; confirmLabel: string; loader: string; task: string };
   /** D4: podpis na kopercie (4 wiersze). `confirmLabel` = „WYSUŃ PAMIĘĆ USB” zatwierdza D4 i wysuwa nośnik. */
   signature: GradedDecision & { choiceLabel: string; confirmLabel: string; task: string };
+  /** Przedrostki odpowiedzi D4 w raporcie, gdy ocenę obniżyła nazwa dysku: `NAZWA DYSKU: X / PODPIS: Y`. */
+  reportLabels: { volume: string; signature: string };
   /** Komunikat po wysunięciu nośnika (→ `onComplete`). */
   successMessage: string;
 }

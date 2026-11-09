@@ -4,7 +4,7 @@
 
 import type { ChoiceOutcome, DecisionReport } from '../../../engine/types/mission';
 import { buildReport, reportAnswerOf } from './report';
-import type { GradedDecision, ReportableOption, UsbAttachment, UsbPlanRule, UsbState } from './types';
+import type { GradedDecision, PendriveConfig, ReportableOption, UsbAttachment, UsbPlanRule, UsbState } from './types';
 
 /** Waga poziomu: im wyższa, tym gorszy. */
 export const TIER_RANK: Record<ChoiceOutcome, number> = { ideal: 0, suboptimal: 1, critical: 2 };
@@ -34,6 +34,9 @@ export function fileMatchesPlan(rule: UsbPlanRule | undefined, fileId: string): 
   return !!rule && rule.fileIds.includes(fileId);
 }
 
+/** Przedrostki odpowiedzi D4 w raporcie (teksty z configu: `pendriveConfig.reportLabels`). */
+export type D4ReportLabels = PendriveConfig['reportLabels'];
+
 /** Wynik agregacji D4: poziom, feedback gorszego kroku (przy remisie: podpisu) i odpowiedź do raportu. */
 export interface D4Outcome {
   tier: ChoiceOutcome;
@@ -43,14 +46,25 @@ export interface D4Outcome {
   source: 'volume' | 'signature';
 }
 
-/** Agregacja D4: poziom = gorszy z kroków nazwy i podpisu; odpowiedź w raporcie to podpis. */
-export function aggregateD4(volume: ReportableOption, signature: ReportableOption): D4Outcome {
+/**
+ * Agregacja D4: poziom = gorszy z kroków nazwy i podpisu. Odpowiedź w raporcie to podpis, a gdy ocenę
+ * obniżyła nazwa dysku (gorsza od podpisu), raport pokazuje obie: `NAZWA DYSKU: X / PODPIS: Y`,
+ * żeby gracz widział, co obniżyło ocenę.
+ */
+export function aggregateD4(
+  volume: ReportableOption,
+  signature: ReportableOption,
+  labels: D4ReportLabels
+): D4Outcome {
   const volumeWorse = TIER_RANK[volume.tier] > TIER_RANK[signature.tier];
   const source = volumeWorse ? volume : signature;
+  const answer = volumeWorse
+    ? `${labels.volume}: ${volume.label} / ${labels.signature}: ${reportAnswerOf(signature)}`
+    : reportAnswerOf(signature);
   return {
     tier: source.tier,
     feedback: source.feedback,
-    answer: reportAnswerOf(signature),
+    answer,
     source: volumeWorse ? 'volume' : 'signature'
   };
 }
@@ -59,9 +73,10 @@ export function aggregateD4(volume: ReportableOption, signature: ReportableOptio
 export function buildD4Report(
   decision: Pick<GradedDecision, 'decisionNum' | 'question'>,
   volume: ReportableOption,
-  signature: ReportableOption
+  signature: ReportableOption,
+  labels: D4ReportLabels
 ): DecisionReport {
-  const outcome = aggregateD4(volume, signature);
+  const outcome = aggregateD4(volume, signature, labels);
   return buildReport(decision, signature, {
     tier: outcome.tier,
     feedback: outcome.feedback,
