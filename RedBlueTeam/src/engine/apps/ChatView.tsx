@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState } from 'react';
 import { Bot, Send } from 'lucide-react';
 import type { ChatMessage } from '../store/useMissionStore';
 
@@ -60,7 +60,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
   title = 'BYTE_MASTER',
   footer
 }) => {
-  const endRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const hasScrolledRef = useRef(false);
 
   // Wiadomości obecne przy montowaniu (powrót do aplikacji) nie są animowane.
   const initialIds = useRef(new Set(messages.map((m) => m.id)));
@@ -75,16 +77,32 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
   const markDone = (id: string) => setDoneIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (smooth: boolean) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (smooth) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    else el.scrollTop = el.scrollHeight;
+  };
+
+  // Nowa wiadomość, odpowiedzi lub wskaźnik pisania → najnowsza treść w pełni widoczna.
+  // Pierwsze przewinięcie (powrót do aplikacji) jest natychmiastowe, kolejne płynne.
+  useLayoutEffect(() => {
+    scrollToBottom(hasScrolledRef.current);
+    hasScrolledRef.current = true;
   }, [messages, choices, isTyping, doneIds]);
 
-  // Przewijaj także w trakcie pisania.
+  // Zmiana wysokości (pojawienie się panelu odpowiedzi, który zmniejsza obszar wiadomości, dymek
+  // rosnący po załadowaniu czcionki, skalowanie okna) nie może zostawić dołu ucięty: płynne
+  // przewijanie liczy cel z chwili startu, więc po zmianie układu dojeżdżamy do dołu natychmiast.
   useEffect(() => {
-    if (!isAnimating) return;
-    const timer = setInterval(() => endRef.current?.scrollIntoView(), 120);
-    return () => clearInterval(timer);
-  }, [isAnimating]);
+    const area = scrollRef.current;
+    const content = contentRef.current;
+    if (!area || !content || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => scrollToBottom(false));
+    observer.observe(area);
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className={`flex flex-col h-full bg-[#060c14]/95 border-2 transition-all rounded-xl overflow-hidden font-mono text-xs select-none ${
@@ -116,74 +134,75 @@ export const ChatView: React.FC<ChatViewProps> = ({
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-3.5">
-        {messages.map((msg) => {
-          const typingNow = msg.id === animatingId;
-          return (
-            <div
-              key={msg.id}
-              className={`flex flex-col ${
-                msg.sender === 'PLAYER'
-                  ? 'items-end'
-                  : msg.sender === 'SYSTEM'
-                  ? 'items-center'
-                  : 'items-start'
-              }`}
-            >
-              {msg.sender === 'SYSTEM' ? (
-                <div className="px-3 py-1 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.625rem] text-[#00ff66] italic my-1">
-                  {msg.text}
-                </div>
-              ) : (
-                <div
-                  className={`max-w-[92%] p-3 text-xs leading-relaxed transition-all relative ${
-                    msg.sender === 'PLAYER'
-                      ? 'bg-[#00f0ff]/15 border border-[#00f0ff] text-[#d1fae5] rounded-l-lg rounded-tr-lg shadow-[0_0_12px_rgba(0,240,255,0.15)]'
-                      : 'bg-[#0b1724] border border-[#00f0ff]/40 text-[#d1fae5] rounded-r-lg rounded-tl-lg shadow-[0_0_12px_rgba(0,240,255,0.1)]'
-                  }`}
-                  style={{
-                    clipPath:
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-3">
+        <div ref={contentRef} className="space-y-3.5">
+          {messages.map((msg) => {
+            const typingNow = msg.id === animatingId;
+            return (
+              <div
+                key={msg.id}
+                className={`flex flex-col ${
+                  msg.sender === 'PLAYER'
+                    ? 'items-end'
+                    : msg.sender === 'SYSTEM'
+                    ? 'items-center'
+                    : 'items-start'
+                }`}
+              >
+                {msg.sender === 'SYSTEM' ? (
+                  <div className="px-3 py-1 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.625rem] text-[#00ff66] italic my-1">
+                    {msg.text}
+                  </div>
+                ) : (
+                  <div
+                    className={`max-w-[92%] p-3 text-xs leading-relaxed transition-all relative ${
                       msg.sender === 'PLAYER'
-                        ? 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)'
-                        : 'polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px)'
-                  }}
-                >
-                  <div className="text-[0.625rem] font-bold mb-1 flex items-center justify-between">
-                    <span className={msg.sender === 'PLAYER' ? 'text-[#00f0ff]' : 'text-[#38bdf8]'}>
-                      {msg.sender === 'PLAYER' ? 'TY (HAKER)' : 'BYTE_MASTER'}
-                    </span>
+                        ? 'bg-[#00f0ff]/15 border border-[#00f0ff] text-[#d1fae5] rounded-l-lg rounded-tr-lg shadow-[0_0_12px_rgba(0,240,255,0.15)]'
+                        : 'bg-[#0b1724] border border-[#00f0ff]/40 text-[#d1fae5] rounded-r-lg rounded-tl-lg shadow-[0_0_12px_rgba(0,240,255,0.1)]'
+                    }`}
+                    style={{
+                      clipPath:
+                        msg.sender === 'PLAYER'
+                          ? 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)'
+                          : 'polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px)'
+                    }}
+                  >
+                    <div className="text-[0.625rem] font-bold mb-1 flex items-center justify-between">
+                      <span className={msg.sender === 'PLAYER' ? 'text-[#00f0ff]' : 'text-[#38bdf8]'}>
+                        {msg.sender === 'PLAYER' ? 'TY (HAKER)' : 'BYTE_MASTER'}
+                      </span>
+                    </div>
+
+                    <div className="whitespace-pre-wrap">
+                      {typingNow ? <TypedText text={msg.text} onDone={() => markDone(msg.id)} /> : msg.text}
+                    </div>
                   </div>
+                )}
+              </div>
+            );
+          })}
 
-                  <div className="whitespace-pre-wrap">
-                    {typingNow ? <TypedText text={msg.text} onDone={() => markDone(msg.id)} /> : msg.text}
-                  </div>
-                </div>
-              )}
+          {/* Byte_Master Typing Indicator */}
+          {isTyping && !isAnimating && (
+            <div className="flex items-start space-x-2 mr-6 animate-pulse">
+              <div className="w-5 h-5 rounded-full bg-[#00f0ff]/20 border border-[#00f0ff] flex items-center justify-center shrink-0 mt-0.5">
+                <Bot size={12} className="text-[#00f0ff]" />
+              </div>
+              <div
+                className="px-3 py-2 rounded-r-lg rounded-tl-lg bg-[#0b1724] border border-[#00f0ff]/50 text-[#00f0ff] flex items-center space-x-2 shadow-[0_0_12px_rgba(0,240,255,0.15)]"
+                style={{ clipPath: 'polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px)' }}
+              >
+                <span className="font-bold tracking-wider text-[0.6875rem]">BYTE_MASTER pisze</span>
+                <span className="flex space-x-1 items-center ml-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '300ms' }} />
+                </span>
+              </div>
             </div>
-          );
-        })}
+          )}
 
-        {/* Byte_Master Typing Indicator */}
-        {isTyping && !isAnimating && (
-          <div className="flex items-start space-x-2 mr-6 animate-pulse">
-            <div className="w-5 h-5 rounded-full bg-[#00f0ff]/20 border border-[#00f0ff] flex items-center justify-center shrink-0 mt-0.5">
-              <Bot size={12} className="text-[#00f0ff]" />
-            </div>
-            <div
-              className="px-3 py-2 rounded-r-lg rounded-tl-lg bg-[#0b1724] border border-[#00f0ff]/50 text-[#00f0ff] flex items-center space-x-2 shadow-[0_0_12px_rgba(0,240,255,0.15)]"
-              style={{ clipPath: 'polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px)' }}
-            >
-              <span className="font-bold tracking-wider text-[0.6875rem]">BYTE_MASTER pisze</span>
-              <span className="flex space-x-1 items-center ml-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-bounce" style={{ animationDelay: '300ms' }} />
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div ref={endRef} />
+        </div>
       </div>
 
       {/* Footer (np. start systemu) albo opcje odpowiedzi */}
