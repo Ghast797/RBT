@@ -29,13 +29,16 @@ Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude
   - `tests/mission3.test.ts`.
 - **Sprzątanie legacy M3 w silniku** (zacommitowane): stare widgety, maszyna stanów w store, przyciski w `ChatView`, test `missionStore`, neutralna domyślna misja, zaślepki `Stub*`.
 
-**W toku (niezacommitowane w chwili zamknięcia sesji)**
-- **Cięcie cyklu importów:** nowy `engine/registry/scenarioApps.ts` oraz zmiany w `appRegistry.tsx` i `scenarios/*/index.ts`. Przed commitem sprawdź `npx vitest run`, `npx tsc -p tsconfig.app.json --noEmit` i ładowanie M1–M4 w przeglądarce. Jeśli coś nie działa, odrzuć zmiany (`git restore` / usunięcie nowego pliku).
-- **Do dokończenia sprzątania:**
-  - usunięcie martwych `step1..step5` z `mission_03_ol_company/data/mission3.json` (sprawdź grepem, że nic ich nie czyta);
-  - `scenario-engine.md` sekcja 8 i `AGENTS.md`: legacy wygaszone;
-  - `node scripts/package-scorm.js --all` + grep izolacji ZIP (np. „O&L” nie może być w M2/M4);
-  - regresja M1–M4 w przeglądarce.
+**Domknięte (2026-11-09)**
+- Martwe `step1..step5` usunięte z `mission3.json` (zostaje `intro`, `desktopApps`, `step6`).
+- Silnik bez legacy: w `src/engine/` nie ma `widgets`, `transitions`, `ScenarioTransition*`, `chatStage` ani pól Step1–Step5 w store; `scenario-engine.md` sekcja 8 i `AGENTS.md` opisują to jako wygaszone.
+- Izolacja paczek (`package-scorm.js --all`): żadna paczka nie zawiera nazw innych misji. Wyjątek legalny: tekst fabularny M4 wspomina Petrolog. Znaleziony i naprawiony wyciek: domyślne wartości `xapi.ts` zawierały id i tytuł M3 (trafiały do M1, M2, M4).
+- Regresja M1–M4 w przeglądarce (`?mission=N&dev=1`, 2 kafelki, czat) i `/` (wybór misji): bez nowych błędów w konsoli.
+
+**Otwarte: cykl importów w dev (HMR)**
+- Próba cięcia przez `engine/registry/scenarioApps.ts` **została odrzucona**: nie usuwa cyklu. Edycja minigry (np. `PhishingDispatchApp.tsx`) nadal daje w konsoli `Cannot access 'PhishingDispatchApp' before initialization`, po czym Vite przeładowuje stronę i gra działa. Dotyczy tylko HMR w dev, nie paczek.
+- Przyczyna: minigry importują `useMissionStore`, a store przez `missionRegistry` → `virtual:active-scenario` importuje wszystkie `scenarios/*/index.ts`, które importują minigry. Rejestr aplikacji to tylko jedna z krawędzi cyklu.
+- Propozycja: store nie powinien importować scenariuszy synchronnie na starcie modułu (`resolveInitialMission()` przy tworzeniu store). Np. neutralny stan początkowy + jawne `initMission()` wołane z `main.tsx` po załadowaniu scenariuszy. To zmiana architektury startu, wymaga osobnej decyzji.
 
 **Następne kroki**
 1. **Agenci testujący M3:** recenzja kodu przeciw `mission-standard.md` (Opus), audyt w przeglądarce każdego ekranu przy 1366×768 i 1920×1080 (Sonnet), izolacja paczek (Haiku).
@@ -54,7 +57,7 @@ Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude
 
 | | M2 CarbonFlow | M3 O&L | M4 Energy Rock |
 |---|---|---|---|
-| Model | etapy (B) | **logika w store** (`chatStage`, `chooseChatOption`, ok. 1000 linii w `useMissionStore.ts`), widgety w `engine/widgets/` | etapy (B), kompletne |
+| Model | etapy (B) | etapy (B); stary przebieg ze store usunięty | etapy (B), kompletne |
 | Decyzje | 5 | 8 + niepunktowany builder RAT | 10 (VR: 9) |
 | `scenario.md` | jest, ale odzwierciedla kod, nie VR | brak, brak dokumentu VR w repo | brak, jest PDF |
 | `AppHeader` / `ChoiceZone` / `SideMonitor` | brak | brak | brak |
