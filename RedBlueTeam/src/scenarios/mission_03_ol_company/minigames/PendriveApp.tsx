@@ -8,14 +8,14 @@ import { Download, FileText, HardDrive, Image as ImageIcon, Package, Usb, Check 
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceCardGrid } from '../../../engine/components/ChoiceZone';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
-import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { LOADER_LONG_MS, LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import { PLAN_STATE_KEY, USB_STATE_KEY, type PendriveConfig, type UsbAttachment } from './types';
-import { LOADER_LONG_MS, LOADER_MS, ImageSlot } from './ui';
+import { ImageSlot } from './ui';
 import {
   buildD4Report,
   buildUsbState,

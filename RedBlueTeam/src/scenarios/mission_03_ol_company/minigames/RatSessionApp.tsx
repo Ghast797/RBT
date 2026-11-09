@@ -7,14 +7,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, ArrowRight, Folder, Loader2, Monitor, Radio, Trash2 } from 'lucide-react';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
-import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import { FreevoltFiles } from './FreevoltFiles';
 import { NetworkDiagram } from './NetworkDiagram';
 import { COPY_TICK_MS, allCopied, hasActiveCopies, startCopy, tickCopies, type CopyProgress } from './ratLogic';
-import { ImageSlot, LOADER_MS } from './ui';
+import { ImageSlot } from './ui';
 import { USB_STATE_KEY, type RatSessionConfig, type UsbState } from './types';
 
 type Screen = 'c2' | 'loader_desktop' | 'desktop' | 'files' | 'loader_network' | 'network';

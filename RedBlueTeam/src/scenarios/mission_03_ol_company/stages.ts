@@ -15,7 +15,7 @@ import type {
   RatSessionConfig,
   UsbState
 } from './minigames/types';
-import { reportAnswerOf } from './minigames/report';
+import { reportAnswerOf } from '../../engine/core/report';
 
 // ---------------------------------------------------------------------------
 // WSPÓLNE STAŁE (jedno źródło prawdy dla danych powtarzanych w kilku klockach)

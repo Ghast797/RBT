@@ -1,22 +1,23 @@
-// „Matryca kompilacji” (scena S02): zdrapka. Gracz przeciąga kursorem (myszą albo palcem) po czarnej masce,
-// spod której wyłania się grafika wirusa, a pasek postępu rośnie segmentami i zapalają się cztery podpisy części.
-// Cała matematyka odsłaniania jest w matrixLogic.ts; tu jest tylko rysowanie i obsługa wskaźnika.
+// Klocek „zdrapka” (M3 i M4, scena „matryca kompilacji”). Gracz przeciąga kursorem (myszą albo palcem) po
+// czarnej masce, spod której wyłania się grafika, a pasek postępu rośnie segmentami i zapalają się podpisy części.
+// Cała matematyka odsłaniania jest w core/matrixLogic.ts; tu jest tylko rysowanie i obsługa wskaźnika.
 //
 // Pole ma stałą rozdzielczość wewnętrzną (960×540), więc zmiana rozmiaru okna ani ukrycie aplikacji na pulpicie
 // (display: none w AppHost) nie kasują zdrapanych miejsc. Komponent nie zna oceny i nie raportuje decyzji.
+// Silnik nie zna mechanizmu grafik misji: grafikę pod maską rysuje `renderImage(variant)` podane przez misję.
+// To fragment ekranu (bez AppHeader i bez przycisku dalej), osadzany w minigrze misji, nie samodzielny etap.
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CheckCircle2, MousePointer2 } from 'lucide-react';
-import { sounds } from '../../../engine/audio/soundEffects';
-import { ImageSlot } from './ui';
-import type { MatrixVariant, VirusMatrixConfig } from './types';
+import { sounds } from '../audio/soundEffects';
+import type { MatrixVariant, ScratchMatrixConfig } from '../types/mission';
 import {
   createGrid,
   matrixView,
   revealStroke,
   revealedFraction,
   type NormPoint
-} from './matrixLogic';
+} from '../core/matrixLogic';
 
 /** Rozdzielczość wewnętrzna płótna (proporcje 16:9 jak siatka w matrixLogic). */
 const CANVAS_W = 960;
@@ -53,16 +54,31 @@ function drawMask(ctx: CanvasRenderingContext2D, accent: string) {
   ctx.fillText('?', CANVAS_W / 2, CANVAS_H / 2 + 14);
 }
 
-export const ScratchMatrix: React.FC<{
-  config: VirusMatrixConfig;
-  /** Wariant wybrany w D1: grafika, tekst alternatywny i cztery podpisy części. */
-  variant: MatrixVariant;
+export interface ScratchMatrixProps<TImage = unknown> {
+  /** Teksty i parametry zdrapki (warianty nie są tu czytane: wybrany podaje `variant`). */
+  config: Omit<ScratchMatrixConfig<TImage>, 'variants'>;
+  /** Wybrany wariant: grafika, tekst alternatywny i podpisy części. */
+  variant: MatrixVariant<TImage>;
+  /** Akcent aplikacji (ramka, podpisy, domyślny kolor maski i paska). */
   accent: string;
-  /** Matryca zakończona i komunikat sukcesu widoczny (VirusLabApp zaraz kończy etap). */
+  /** Zdrapka zakończona i komunikat sukcesu widoczny (minigra zaraz kończy etap lub pokazuje przycisk dalej). */
   done: boolean;
   /** Pasek doszedł do 100% (wołane raz). */
   onRevealed: () => void;
-}> = ({ config, variant, accent, done, onRevealed }) => {
+  /** Grafika pod maską; wypełnia pole (proporcje 16:9), np. `<ImageSlot asset={v.image} … />` misji. */
+  renderImage: (variant: MatrixVariant<TImage>) => React.ReactNode;
+}
+
+export function ScratchMatrix<TImage = unknown>({
+  config,
+  variant,
+  accent,
+  done,
+  onRevealed,
+  renderImage
+}: ScratchMatrixProps<TImage>) {
+  const maskColor = config.maskColor ?? accent;
+  const barColor = variant.barColor ?? config.barColor ?? accent;
   const gridRef = useRef(createGrid());
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -108,9 +124,9 @@ export const ScratchMatrix: React.FC<{
     (el: HTMLCanvasElement | null) => {
       canvasRef.current = el;
       const ctx = el?.getContext('2d');
-      if (ctx) drawMask(ctx, accent);
+      if (ctx) drawMask(ctx, maskColor);
     },
-    [accent]
+    [maskColor]
   );
 
   // Pole o stałych proporcjach 16:9 wpisane w dostępne miejsce. Zerowe rozmiary (aplikacja ukryta) ignorujemy.
@@ -189,7 +205,7 @@ export const ScratchMatrix: React.FC<{
 
   return (
     <div className="flex flex-col flex-1 min-h-0 gap-3">
-      <style>{`@keyframes m3-scratch-hint { 0% { transform: translate(-30%, 25%); opacity: 0 } 15% { opacity: 1 } 80% { opacity: 1 } 100% { transform: translate(30%, -25%); opacity: 0 } }`}</style>
+      <style>{`@keyframes scratch-matrix-hint { 0% { transform: translate(-30%, 25%); opacity: 0 } 15% { opacity: 1 } 80% { opacity: 1 } 100% { transform: translate(30%, -25%); opacity: 0 } }`}</style>
 
       {/* Nagłówek ekranu; po 100% zmienia się w komunikat sukcesu. */}
       {done ? (
@@ -223,7 +239,7 @@ export const ScratchMatrix: React.FC<{
                 className="absolute inset-0"
                 style={{ background: `radial-gradient(circle at 50% 50%, ${accent}55 0%, #16263b 60%, #0e1a2a 100%)` }}
               >
-                <ImageSlot asset={variant.image} label={variant.imageAlt} fit="contain" />
+                {renderImage(variant)}
               </div>
               <canvas
                 ref={attachCanvas}
@@ -242,7 +258,7 @@ export const ScratchMatrix: React.FC<{
                   <MousePointer2
                     size={44}
                     className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                    style={{ animation: 'm3-scratch-hint 1.8s ease-in-out infinite' }}
+                    style={{ animation: 'scratch-matrix-hint 1.8s ease-in-out infinite' }}
                   />
                   <span
                     className="px-3 py-1 rounded-full text-xs font-black tracking-widest animate-pulse"
@@ -256,7 +272,7 @@ export const ScratchMatrix: React.FC<{
           )}
         </div>
 
-        {/* Cztery podpisane części wirusa: zapalają się w trakcie odsłaniania. */}
+        {/* Podpisane części programu: zapalają się w trakcie odsłaniania. */}
         <div className="w-[38%] max-w-[22rem] shrink-0 min-h-0 flex flex-col justify-center gap-2.5">
           {variant.parts.map((part, i) => {
             const lit = i < partsLit;
@@ -298,9 +314,9 @@ export const ScratchMatrix: React.FC<{
                 key={i}
                 className="flex-1 h-4 rounded-sm border transition-all duration-200"
                 style={{
-                  borderColor: on ? (complete ? '#00ff66' : accent) : '#1f2937',
-                  backgroundColor: on ? (complete ? '#00ff66' : accent) : '#0b1724',
-                  boxShadow: on ? `0 0 8px ${complete ? '#00ff66' : accent}88` : undefined
+                  borderColor: on ? (complete ? '#00ff66' : barColor) : '#1f2937',
+                  backgroundColor: on ? (complete ? '#00ff66' : barColor) : '#0b1724',
+                  boxShadow: on ? `0 0 8px ${complete ? '#00ff66' : barColor}88` : undefined
                 }}
               />
             );
@@ -310,4 +326,4 @@ export const ScratchMatrix: React.FC<{
       </div>
     </div>
   );
-};
+}

@@ -10,15 +10,14 @@ import { Crosshair, Camera, Radio, Power, CheckCircle2, Navigation } from 'lucid
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
-import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone } from '../../../engine/components/ChoiceZone';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
 import type { BlockProps } from '../../../engine/types/mission';
 import { USB_STATE_KEY, type DroneConfig, type UsbState } from './types';
-import { buildReport } from './report';
-import { LOADER_MS } from './ui';
+import { buildReport } from '../../../engine/core/report';
 import { DroneMap } from './DroneMap';
 import { DroneCamera } from './DroneCamera';
 import {

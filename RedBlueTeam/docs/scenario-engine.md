@@ -139,9 +139,15 @@ Tylko klocki, które **już się powtarzają** w istniejącym kodzie. Katalog ro
 | `DialogueTree` | rozmowa z NPC, węzły z opcjami | `nodes[]` z `{incoming, options[], nextNode}` | `onDecision` per węzeł oceniany, `onComplete` na końcu |
 | `Configurator` | suwaki + przełączniki, ocena z funkcji | `controls[]`, `evaluate(state) → tier` | `onDecision` z oceną konfiguracji |
 | `PoolSelect` | zaznacz właściwe z puli (cele / śmieci / pułapki) | `items[]` z `{label, role}`, `targetRole` | `onDecision` z trafnością zestawu |
-| `VpnRouter` | dopasowanie oktetów IP (+/- lub asysta AI) pod reguły sieci | `initialIp`, `targetIp`, `allowedIps[]`, opcjonalny `decisionNum` | `onComplete` (krok `Flavor` bez oceny gdy brak `decisionNum`) lub `onDecision` |
+| `VpnRouter` | dopasowanie oktetów IP (+/- lub asysta AI) pod reguły sieci, opcjonalnie wybór nadawcy | płasko (M2): `initialIp`, `targetIp`, `allowedIps[]`, opcjonalny `decisionNum`; zagnieżdżone: `vpn: {…}` + `sender: {decisionNum, question, options[], confirmLabel?, includeIpInAnswer?}`, `sendLoaderLabel?`, `timeJump?` | krok IP bez `decisionNum` to bramka (zły adres blokuje bez kary, bez raportu); `sender` = jedna decyzja (`answer` = `IP + nadawca` przy `includeIpInAnswer`); po wysyłce `onComplete`, przeskok czasu tylko gdy podano `timeJump` (domyślnie gra go mostek) |
+| `ScratchMatrix` | zdrapka: kursorem odsłania grafikę pod maską, segmentowy pasek i podpisy części zapalają się z postępem | `ScratchMatrixConfig`: `heading`, `revealThreshold`, `segments`, `variants{id: MatrixVariant}`, `doneMessage`, `hint`, `barColor?`, `maskColor?`; `MatrixVariant`: `programName`, `image` (format misji), `imageAlt`, `parts[]`, `barColor?` | fragment ekranu minigry (nie samodzielny etap): props `config`, `variant`, `accent`, `done`, `onRevealed` (raz, przy 100%), `renderImage(variant)` (misja rysuje grafikę swoim `ImageSlot`); bez oceny |
 
-`ChoiceCards` pokrywa dziś 5 decyzji w M4 i część M3 — to pierwszy kandydat do wydzielenia. Intro BYTE_MASTERA i negocjacje to `DialogueTree`. `VpnRouter` obsługuje tunelowanie IP w M2 i M4.
+`ChoiceCards` pokrywa dziś 5 decyzji w M4 i część M3 — to pierwszy kandydat do wydzielenia. Intro BYTE_MASTERA i negocjacje to `DialogueTree`. `VpnRouter` obsługuje tunelowanie IP w M2 i M4. `ScratchMatrix` (M3 //BAZA_WIRUSÓW, M4 S02) liczy postęp w `core/matrixLogic.ts` (czysta logika, testy w `tests/matrixLogic.test.ts`).
+
+Wspólne pomocniki minigier (nie klocki):
+- `core/report.ts`: `buildReport(decision, option, overrides?)` → `DecisionReport` (`decision` = `{decisionNum, question}`, `answer` = `reportAnswerOf(option)` = `reportAnswer ?? label`, `overrides` nadpisuje `tier`/`feedback`/`answer`), typ `ReportableOption` (`ChoiceOption` + `reportAnswer?`).
+- `components/ModuleLoader.tsx`: `LOADER_MS` (1700) i `LOADER_LONG_MS` (2000), czasy ładowania między ekranami.
+- Grafiki misji (`ImageSlot`, `siteAssets.ts` z `import.meta.glob`) zostają w folderze misji: wspólny glob wciągnąłby assety wszystkich misji do każdej paczki SCORM.
 
 ## 7. Jak rośnie katalog (reguła dwóch)
 

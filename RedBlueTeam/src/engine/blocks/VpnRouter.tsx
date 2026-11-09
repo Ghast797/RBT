@@ -17,7 +17,8 @@ import { useMissionStore } from '../store/useMissionStore';
 import { sounds } from '../audio/soundEffects';
 import { ModuleLoader } from '../components/ModuleLoader';
 import { TimeJump } from '../components/TimeJump';
-import type { BlockProps, ChoiceOutcome } from '../types/mission';
+import { reportAnswerOf } from '../core/report';
+import type { BlockProps, ChoiceOutcome, DecisionReport } from '../types/mission';
 
 function parseOctets(ip?: string): number[] {
   if (!ip) return [127, 0, 0, 1];
@@ -31,6 +32,8 @@ export interface VpnSenderOption {
   desc?: string;
   tier: ChoiceOutcome;
   feedback: string;
+  /** Odpowiedź do raportu, gdy inna niż etykieta (domyślnie `label`). */
+  reportAnswer?: string;
 }
 
 export interface VpnRouterConfig {
@@ -47,6 +50,10 @@ export interface VpnRouterConfig {
     decisionNum: number;
     question: string;
     options: VpnSenderOption[];
+    /** Etykieta przycisku wysyłki (domyślnie „WYŚLIJ SPEAR-PHISHING”). */
+    confirmLabel?: string;
+    /** Odpowiedź w raporcie = `IP + nadawca` (np. `109.43.200.124 + M.WILK@PRIV.COM`), gdy IP nie jest osobną decyzją. */
+    includeIpInAnswer?: boolean;
   };
 
   // Flat structure (Mission 2):
@@ -65,7 +72,11 @@ export interface VpnRouterConfig {
 
   // Post-send loaders / jumps
   sendLoaderLabel?: string;
-  /** Przeskok czasu po wysyłce: bez tekstów to sama wirująca tarcza; `label`/`sublabel` to mały podpis. */
+  /**
+   * Przeskok czasu po wysyłce (wariant z nadawcą, tylko gdy podany): bez tekstów to sama wirująca tarcza;
+   * `label`/`sublabel` to mały podpis. Bez `timeJump` klocek kończy etap zaraz po ładowaniu wysyłki,
+   * a przeskok z godzinami gra mostek (`TimeJump` z `clockFrom`/`clock`, standard misji).
+   */
   timeJump?: {
     label?: string;
     sublabel?: string;
@@ -74,6 +85,68 @@ export interface VpnRouterConfig {
 }
 
 type Screen = 'ip' | 'sender' | 'load_send' | 'timejump';
+
+// ---------------------------------------------------------------------------
+// Czysta logika klocka (bez UI, testowana w tests/blocks.test.ts)
+// ---------------------------------------------------------------------------
+
+const DEFAULT_VPN_FEEDBACK = {
+  ideal: 'Pomyślnie dopasowano adres IP! Ruch zamaskowany i dopuszczony przez filtry.',
+  critical: 'Błąd: Adres IP nie znajduje się na białej liście dopuszczonych węzłów!'
+};
+
+/** Konfiguracja kroku IP po normalizacji (płaska M2 albo zagnieżdżona w `config.vpn`). */
+export function resolveVpnStep(config: VpnRouterConfig) {
+  const vpnSub = config.vpn || config;
+  const targetIp = vpnSub.targetIp || '127.0.0.1';
+  return {
+    initialIp: vpnSub.initialIp || '127.0.0.1',
+    targetIp,
+    allowedIps: vpnSub.allowedIps && vpnSub.allowedIps.length > 0 ? vpnSub.allowedIps : [targetIp],
+    /** Bez numeru krok IP jest bramką: zły adres blokuje przejście bez kary, dobry nie jest oceniany. */
+    decisionNum: vpnSub.decisionNum,
+    question: vpnSub.question || 'Dopasuj adres IP węzła wyjściowego VPN:',
+    feedback: vpnSub.feedback || DEFAULT_VPN_FEEDBACK
+  };
+}
+
+/** Próba połączenia: czy adres przechodzi i raport (tylko gdy krok IP ma `decisionNum`). */
+export function vpnConnectResult(config: VpnRouterConfig, ip: string): { ok: boolean; report: DecisionReport | null } {
+  const step = resolveVpnStep(config);
+  const ok = ip === step.targetIp || step.allowedIps.includes(ip);
+  const report: DecisionReport | null =
+    step.decisionNum === undefined
+      ? null
+      : {
+          num: step.decisionNum,
+          question: step.question,
+          answer: ip,
+          tier: ok ? 'ideal' : 'critical',
+          feedback: ok ? step.feedback.ideal : step.feedback.critical
+        };
+  return { ok, report };
+}
+
+/** Raport decyzji kroku nadawcy; z `includeIpInAnswer` odpowiedź = `IP + nadawca`. */
+export function vpnSenderReport(
+  sender: NonNullable<VpnRouterConfig['sender']>,
+  option: VpnSenderOption,
+  ip: string
+): DecisionReport {
+  const answer = reportAnswerOf(option);
+  return {
+    num: sender.decisionNum,
+    question: sender.question,
+    answer: sender.includeIpInAnswer ? `${ip} + ${answer}` : answer,
+    tier: option.tier,
+    feedback: option.feedback
+  };
+}
+
+/** Co po ekranie ładowania wysyłki: przeskok czasu tylko, gdy config go podaje. */
+export function vpnAfterSend(config: VpnRouterConfig): 'timejump' | 'complete' {
+  return config.timeJump ? 'timejump' : 'complete';
+}
 
 /**
  * Reużywalny klocek VPN / Routing IP (HACKERS.OS).
@@ -90,18 +163,11 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#a855f7';
 
   // Normalizacja konfiguracji (płaska lub zagnieżdżona w config.vpn)
-  const vpnSub = config.vpn || config;
-  const initialIpStr = vpnSub.initialIp || '127.0.0.1';
-  const targetIpStr = vpnSub.targetIp || '127.0.0.1';
-  const allowedIps = (vpnSub.allowedIps && vpnSub.allowedIps.length > 0)
-    ? vpnSub.allowedIps
-    : [targetIpStr];
-  const decisionNum = vpnSub.decisionNum;
-  const question = vpnSub.question || 'Dopasuj adres IP węzła wyjściowego VPN:';
-  const feedback = vpnSub.feedback || {
-    ideal: 'Pomyślnie dopasowano adres IP! Ruch zamaskowany i dopuszczony przez filtry.',
-    critical: 'Błąd: Adres IP nie znajduje się na białej liście dopuszczonych węzłów!'
-  };
+  const step = resolveVpnStep(config);
+  const initialIpStr = step.initialIp;
+  const targetIpStr = step.targetIp;
+  const allowedIps = step.allowedIps;
+  const feedback = step.feedback;
   const allowAiSync = config.allowAiSync !== false;
   const hasSenderStep = Boolean(config.sender && config.sender.options?.length > 0);
 
@@ -192,21 +258,12 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
 
   const handleConnect = () => {
     sounds.playClick();
+    const { ok, report } = vpnConnectResult(config, currentIp);
+    if (report) onDecision(report);
 
-    if (isTargetMatched) {
+    if (ok) {
       sounds.playSuccess();
       setErrorMessage(null);
-
-      if (decisionNum !== undefined) {
-        onDecision({
-          num: decisionNum,
-          question,
-          answer: currentIp,
-          tier: 'ideal',
-          feedback: feedback.ideal
-        });
-      }
-
       if (hasSenderStep) {
         setScreen('sender');
       } else {
@@ -214,31 +271,14 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
       }
     } else {
       sounds.playAlarm();
-      const failMsg = feedback.critical;
-      setErrorMessage(failMsg);
-
-      if (decisionNum !== undefined) {
-        onDecision({
-          num: decisionNum,
-          question,
-          answer: currentIp,
-          tier: 'critical',
-          feedback: failMsg
-        });
-      }
+      setErrorMessage(feedback.critical);
     }
   };
 
   const handleSender = () => {
     if (!sender || !config.sender) return;
     sounds.playClick();
-    onDecision({
-      num: config.sender.decisionNum,
-      question: config.sender.question,
-      answer: sender.label,
-      tier: sender.tier,
-      feedback: sender.feedback
-    });
+    onDecision(vpnSenderReport(config.sender, sender, currentIp));
 
     if (sender.tier !== 'critical') {
       setScreen('load_send');
@@ -264,7 +304,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
         durationMs={1800}
         accent={accent}
         onDone={() => {
-          if (hasSenderStep) {
+          if (vpnAfterSend(config) === 'timejump') {
             setScreen('timejump');
           } else {
             onComplete();
@@ -309,7 +349,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
             style={{ backgroundColor: accent, color: '#05090f', boxShadow: senderId ? `0 0 15px ${accent}66` : undefined }}
           >
             <Send size={14} />
-            <span>WYŚLIJ SPEAR-PHISHING</span>
+            <span>{config.sender.confirmLabel || 'WYŚLIJ SPEAR-PHISHING'}</span>
           </button>
         </div>
       </div>

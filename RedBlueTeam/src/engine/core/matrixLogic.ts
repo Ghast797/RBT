@@ -1,4 +1,4 @@
-// Logika „matrycy kompilacji” (scena S02, zdrapka) — czysta, bez UI, żeby dało się ją przetestować.
+// Logika zdrapki (klocek ScratchMatrix: M3 i M4, scena „matryca kompilacji”) — czysta, bez UI, żeby dało się ją przetestować.
 //
 // Pole zdrapki to siatka komórek (domyślnie 64×36, kwadratowe komórki przy proporcjach 16:9).
 // Pociągnięcie kursorem zaznacza komórki w kole wokół punktu jako odsłonięte. Postęp to odsłonięta część

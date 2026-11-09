@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { sounds } from '../audio/soundEffects';
 
+/** Czas ładowania między ekranami minigier (ms): standard M2 to ok. 1,5–2 s. */
+export const LOADER_MS = 1700;
+/** Dłuższe ładowanie dla „ciężkich” akcji (kompilacja, zapis planu). */
+export const LOADER_LONG_MS = 2000;
+
 interface ModuleLoaderProps {
   /** Nagłówek paska (np. "ŁADOWANIE MODUŁU: SKANER SYGNATURY"). */
   label?: string;

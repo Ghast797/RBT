@@ -10,13 +10,12 @@ import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
-import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { LOADER_LONG_MS, LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { ChoiceCardGrid, ChoiceTile, ChoiceZone } from '../../../engine/components/ChoiceZone';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import { PLAN_STATE_KEY, type OsintBrowserConfig, type ReportableOption } from './types';
-import { buildReport } from './report';
-import { LOADER_LONG_MS, LOADER_MS } from './ui';
+import { buildReport } from '../../../engine/core/report';
 import { SiteView } from './SiteView';
 import {
   INITIAL_READ_STATE,

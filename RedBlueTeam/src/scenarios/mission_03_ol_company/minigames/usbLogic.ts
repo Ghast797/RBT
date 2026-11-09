@@ -3,7 +3,7 @@
 // jej poziom to GORSZY z dwóch. Zob. docs/rebuild-plan.md, sekcja 3.3.
 
 import type { ChoiceOutcome, DecisionReport } from '../../../engine/types/mission';
-import { buildReport, reportAnswerOf } from './report';
+import { buildReport, reportAnswerOf } from '../../../engine/core/report';
 import type { GradedDecision, PendriveConfig, ReportableOption, UsbAttachment, UsbPlanRule, UsbState } from './types';
 
 /** Waga poziomu: im wyższa, tym gorszy. */

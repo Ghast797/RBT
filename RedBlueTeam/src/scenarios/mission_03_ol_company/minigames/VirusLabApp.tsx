@@ -9,12 +9,12 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceCardGrid } from '../../../engine/components/ChoiceZone';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
-import { ModuleLoader } from '../../../engine/components/ModuleLoader';
+import { LOADER_LONG_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VirusLabConfig } from './types';
-import { buildReport } from './report';
-import { LOADER_LONG_MS } from './ui';
-import { ScratchMatrix } from './ScratchMatrix';
+import { buildReport } from '../../../engine/core/report';
+import { ScratchMatrix } from '../../../engine/blocks/ScratchMatrix';
+import { ImageSlot } from './ui';
 
 type Screen = 'virus_select' | 'loader' | 'matrix';
 
@@ -119,7 +119,14 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
             task={config.matrix.task}
             step={config.steps[1]}
           />
-          <ScratchMatrix config={config.matrix} variant={variant} accent={accent} done={done} onRevealed={() => setDone(true)} />
+          <ScratchMatrix
+            config={config.matrix}
+            variant={variant}
+            accent={accent}
+            done={done}
+            onRevealed={() => setDone(true)}
+            renderImage={(v) => <ImageSlot asset={v.image} label={v.imageAlt} fit="contain" />}
+          />
           {done && (
             <div className="flex justify-end shrink-0 animate-in fade-in duration-200">
               <ConfirmButton accent={accent} label={config.virusTexts.nextLabel} onClick={handleNext} className="w-auto px-6" />

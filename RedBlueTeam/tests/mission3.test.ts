@@ -13,7 +13,7 @@ import {
   droneConfig,
   ratSessionConfig
 } from '../src/scenarios/mission_03_ol_company/stages';
-import { buildReport, reportAnswerOf } from '../src/scenarios/mission_03_ol_company/minigames/report';
+import { buildReport, reportAnswerOf } from '../src/engine/core/report';
 
 // ---------------------------------------------------------------------------
 // TESTY MISJI 3 (O&L COMPANY), wzorzec B (etapy + klocki/minigry, jak M2/M4)

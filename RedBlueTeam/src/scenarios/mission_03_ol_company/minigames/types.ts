@@ -5,19 +5,15 @@
 // poziom decyzji wynika z danych, a punkty liczy silnik (core/scoring.ts).
 // Plan przebudowy i kontrakt dla agentów minigier: docs/rebuild-plan.md. Źródło prawdy: docs/Scenariusz…md.
 
-import type { ChoiceOption, ChoiceOutcome } from '../../../engine/types/mission';
+import type { ChoiceOption, ChoiceOutcome, MatrixVariant as EngineMatrixVariant, ScratchMatrixConfig } from '../../../engine/types/mission';
+import type { ReportableOption } from '../../../engine/core/report';
+
+export type { ReportableOption };
+export type { MatrixPart } from '../../../engine/types/mission';
 
 // ---------------------------------------------------------------------------
 // WSPÓLNE
 // ---------------------------------------------------------------------------
-
-/**
- * Opcja z odpowiedzią do raportu pooperacyjnego. `onDecision.answer` = `reportAnswer ?? label`
- * (kolumna „Wybór gracza” tabeli debriefu z dokumentu bywa krótsza niż etykieta na ekranie).
- */
-export interface ReportableOption extends ChoiceOption {
-  reportAnswer?: string;
-}
 
 /** Krok wyboru bez numeru decyzji (nie jest osobno oceniany, np. nazwa pendrive'a wchodząca do D4). */
 export interface GradedStep<O extends ChoiceOption = ReportableOption> {
@@ -68,50 +64,21 @@ export const PLAN_STATE_KEY = 'm3_plan';
 // Etap 1: //BAZA_WIRUSÓW (D1 + matryca kompilacji jako flavor bez oceny)
 // ---------------------------------------------------------------------------
 
-/** Jedna część programu podpisana pod zdrapką (zapala się w miarę odsłaniania). */
-export interface MatrixPart {
-  id: string;
-  /** Krótka nazwa, np. `PODGLĄD EKRANU`. */
-  label: string;
-  /** Jedno zdanie bez żargonu, np. „widzisz pulpit ofiary”. */
-  desc: string;
-}
-
 /**
- * Wariant ekranu zdrapki dla wybranego w D1 programu: nazwa programu, grafika pod maską (z tekstem
- * alternatywnym) i cztery podpisy części. Dzięki temu po wyborze Ransomware (suboptimal, gra idzie dalej)
- * ekran nie sugeruje, że powstaje RAT.
+ * Wariant ekranu zdrapki (klocek `ScratchMatrix` z silnika) dla wybranego w D1 programu: nazwa programu,
+ * grafika pod maską (`AssetRef` misji, rysuje ją `ImageSlot` przez `renderImage`) i cztery podpisy części.
+ * Dzięki temu po wyborze Ransomware (suboptimal, gra idzie dalej) ekran nie sugeruje, że powstaje RAT.
  */
-export interface MatrixVariant {
-  /** Nazwa składanego programu, np. `RAT`. */
-  programName: string;
-  /** Grafika pod maską: `{ group: 'virus', name: 'rat' }`. */
-  image: AssetRef;
-  /** Tekst alternatywny grafiki. */
-  imageAlt: string;
-  /** Cztery podpisane części programu. */
-  parts: MatrixPart[];
-}
+export type MatrixVariant = EngineMatrixVariant<AssetRef>;
 
-export interface VirusMatrixConfig {
-  /** Nagłówek ekranu: „WYSZUKAJ CZĘŚCI WIRUSA:”. */
-  heading: string;
+/** Zdrapka M3: konfiguracja klocka silnika (`ScratchMatrixConfig`) + teksty ekranu w VirusLabApp. */
+export interface VirusMatrixConfig extends ScratchMatrixConfig<AssetRef> {
   /** Przedrostek podtytułu z nazwą składanego programu: „SKŁADASZ PROGRAM:” (+ `variant.programName`). */
   programPrefix: string;
   /** Napis na ekranie ładowania przed zdrapką (bez żargonu). */
   loaderText: string;
-  /** Odsłonięta część pola (0..1), od której pasek liczy się jako 100% (z dokumentu: 100%, w danych 0,92). */
-  revealThreshold: number;
-  /** Liczba segmentów paska postępu. */
-  segments: number;
-  /** Warianty ekranu wg id opcji D1 (każda opcja prowadząca do zdrapki, czyli niekrytyczna, ma wariant). */
-  variants: Record<string, MatrixVariant>;
-  /** Komunikat po 100%: „WIRUS GOTOWY! AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY”. */
-  doneMessage: string;
   /** Polecenie ZADANIE ekranu zdrapki. */
   task: string;
-  /** Podpis wskazówki, która pojawia się po chwili bez zdrapywania („PRZECIĄGAJ TUTAJ”). */
-  hint: string;
 }
 
 export interface VirusLabConfig {

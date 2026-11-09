@@ -259,7 +259,8 @@ export const DebriefApp: React.FC = () => {
     );
   };
 
-  // Przebieg negocjacji (D10 / Misja 4): pełny panel z turami obok siebie, bez przewijania.
+  // Przebieg rozmowy (`negotiationTranscript`, np. negocjacje w M4): pełny panel z turami obok siebie, bez przewijania.
+  // Podpis rozmówcy z danych (`NegotiationTurn.opponentLabel`, domyślnie ROZMÓWCA).
   const renderTranscript = () => {
     const c = choices.find((x) => x.num === transcriptNum);
     if (!c) return null;
@@ -270,7 +271,7 @@ export const DebriefApp: React.FC = () => {
         <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2 shrink-0 gap-2">
           <span className="text-xs font-black uppercase tracking-wider text-cyan-400 flex items-center space-x-1.5">
             <Terminal size={13} />
-            <span>//ZAPIS_AUDIO_I_CZATU: PRZEBIEG NEGOCJACJI Z SZEFEM IT (3 TURY)</span>
+            <span>{`//ZAPIS_AUDIO_I_CZATU: PRZEBIEG NEGOCJACJI (TURY: ${transcript.length})`}</span>
           </span>
           <button
             type="button"
@@ -291,7 +292,7 @@ export const DebriefApp: React.FC = () => {
                 <span className="text-xs text-gray-400 font-mono">TURA 0{turn.turn}</span>
               </div>
               <div className="p-2 rounded bg-red-950/20 border border-red-500/30 text-red-200 text-xs leading-snug">
-                <span className="text-xs uppercase font-bold text-red-400 block mb-0.5">SZEF IT:</span>
+                <span className="text-xs uppercase font-bold text-red-400 block mb-0.5">{`${turn.opponentLabel || 'ROZMÓWCA'}:`}</span>
                 <span className="font-sans">{turn.opponent}</span>
               </div>
               <div className="p-2 rounded bg-emerald-950/20 border border-emerald-500/30 text-emerald-200 text-xs leading-snug">

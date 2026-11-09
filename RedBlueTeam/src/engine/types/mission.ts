@@ -78,6 +78,8 @@ export type ChoiceOutcome = 'ideal' | 'suboptimal' | 'critical';
 export interface NegotiationTurn {
   turn: number;
   title: string;
+  /** Podpis kwestii rozmówcy w transkrypcie debriefu, np. `SZEF IT` (domyślnie `ROZMÓWCA`). */
+  opponentLabel?: string;
   opponent: string;
   player: string;
   psychology: string;
@@ -235,6 +237,53 @@ export interface DialogueTreeConfig {
   decisionNum?: number;
   /** Pytanie do debriefu w trybie agregującym. */
   question?: string;
+}
+
+/** Jedna podpisana część programu pod zdrapką `ScratchMatrix` (zapala się w miarę odsłaniania). */
+export interface MatrixPart {
+  id: string;
+  /** Krótka nazwa, np. `PODGLĄD EKRANU`. */
+  label: string;
+  /** Jedno zdanie bez żargonu, np. „widzisz pulpit ofiary”. */
+  desc: string;
+}
+
+/**
+ * Wariant ekranu zdrapki (zwykle wg opcji wybranej w poprzedniej decyzji): nazwa programu, grafika pod maską
+ * i podpisane części. `image` jest dowolnym odwołaniem misji (np. `AssetRef`): silnik go nie interpretuje,
+ * rysuje go `renderImage` podane przez misję.
+ */
+export interface MatrixVariant<TImage = unknown> {
+  /** Nazwa składanego programu, np. `RAT`. */
+  programName: string;
+  /** Grafika pod maską (format zna tylko misja). */
+  image: TImage;
+  /** Tekst alternatywny grafiki. */
+  imageAlt: string;
+  /** Podpisane części programu (zwykle cztery). */
+  parts: MatrixPart[];
+  /** Kolor paska postępu dla tego wariantu (nadpisuje `ScratchMatrixConfig.barColor`). */
+  barColor?: string;
+}
+
+/** Zdrapka: gracz odsłania kursorem grafikę pod maską, pasek segmentowy rośnie, podpisy części się zapalają. */
+export interface ScratchMatrixConfig<TImage = unknown> {
+  /** Nagłówek nad polem, np. „WYSZUKAJ CZĘŚCI WIRUSA:”. */
+  heading: string;
+  /** Odsłonięta część pola (0..1), od której pasek liczy się jako 100%. */
+  revealThreshold: number;
+  /** Liczba segmentów paska postępu. */
+  segments: number;
+  /** Warianty ekranu wg id (np. id opcji poprzedniej decyzji). */
+  variants: Record<string, MatrixVariant<TImage>>;
+  /** Komunikat po 100% (zastępuje nagłówek). */
+  doneMessage: string;
+  /** Podpis wskazówki po chwili bez zdrapywania („PRZECIĄGAJ TUTAJ”). */
+  hint: string;
+  /** Kolor zapalonych segmentów paska (domyślnie akcent aplikacji). Po 100% pasek jest zielony. */
+  barColor?: string;
+  /** Kolor siatki i „?” na masce (domyślnie akcent aplikacji). */
+  maskColor?: string;
 }
 
 // ---------------------------------------------------------------------------

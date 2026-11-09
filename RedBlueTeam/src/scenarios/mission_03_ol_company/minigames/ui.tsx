@@ -1,16 +1,11 @@
 // Wspólne elementy interfejsu minigier M3. Prawy monitor w M3 to czat BYTE_MASTERA (żadna minigra nie
 // wywołuje SideMonitor), więc nie ma tu notatek mentora. Wspólne z innymi misjami: AppHeader, ChoiceZone,
-// ConfirmButton, ModuleLoader, usePointerDrag w engine/components/.
+// ConfirmButton, ModuleLoader (z LOADER_MS / LOADER_LONG_MS), usePointerDrag w engine/components/.
 
 import React from 'react';
 import { Image as ImageIcon } from 'lucide-react';
 import { resolveAsset, assetPath } from './siteAssets';
 import type { AssetRef } from './types';
-
-/** Czas ładowania między ekranami minigier M3 (ms): standard M2 to ok. 1,5–2 s. */
-export const LOADER_MS = 1700;
-/** Dłuższe ładowanie dla „ciężkich” akcji (kompilacja, zapis planu). */
-export const LOADER_LONG_MS = 2000;
 
 /**
  * Miejsce na grafikę: plik z assets/<group>/<name>.*, w dev zastępnik z opisem i ścieżką brakującego pliku.
