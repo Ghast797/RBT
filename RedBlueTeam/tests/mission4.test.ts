@@ -2,16 +2,66 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useMissionStore, __setBridgeDelayForTests } from '../src/engine/store/useMissionStore';
 import { getMission } from '../src/engine/registry/missionRegistry';
 import { appComponentRegistry } from '../src/engine/registry/appRegistry';
-import { mission4Definition, mission4Apps } from '../src/scenarios/mission_04_energy_rock';
-import type { ChoiceOutcome } from '../src/engine/types/mission';
+import { resolveDecisionCount } from '../src/engine/core/scoring';
+import type { ChoiceOutcome, ConversationBeat, MissionDefinition } from '../src/engine/types/mission';
 import { scorm2004, MockSCORM2004 } from '../src/engine/scorm/scorm2004';
 import { createMissionCompletionStatement, MockLRS } from '../src/engine/scorm/xapi';
+import {
+  virusLabConfig,
+  builderConfig,
+  mailConfig,
+  vpnConfig,
+  c2Config,
+  victimChatConfig
+} from '../src/scenarios/mission_04_energy_rock/stages';
 
-/** Przegrywa rozmowę mostkującą do końca: flushuje kwestie BYTE_MASTERA i klika kwestie gracza. */
-function driveBridge() {
-  for (let i = 0; i < 40; i++) {
+// ---------------------------------------------------------------------------
+// TESTY MISJI 4 (ENERGY ROCK), wzorzec B (porcja B: dane i struktura).
+// Stałe struktury (kolejność etapów, decyzje, poziomy, godziny) są wpisane w teście. Testy konkretnych tekstów
+// (1:1 z dokumentu) dopisuje koordynator po uzupełnieniu `TODO_VR`; logikę wnętrza minigier testują pliki
+// tests/m4-*.test.ts (porcje C–G).
+// ---------------------------------------------------------------------------
+
+const MISSION_ID = 'mission-4-energy-rock';
+const def = (): MissionDefinition => getMission(MISSION_ID) as MissionDefinition;
+const stages = () => def().stages ?? [];
+
+const EXPECTED_STAGE_ORDER = ['virus_database', 'ransomware_builder', 'mail', 'vpn_app', 'victim_workstation', 'negotiation'];
+
+const EXPECTED_DECISIONS_PER_STAGE: Record<string, number[]> = {
+  virus_database: [1],
+  ransomware_builder: [2, 3, 4],
+  mail: [5, 6],
+  vpn_app: [7],
+  victim_workstation: [8],
+  negotiation: [9, 10]
+};
+
+const EXPECTED_COMPONENTS = [
+  'chat',
+  'er_virus_lab',
+  'er_ransom_builder',
+  'er_phishing_mail',
+  'vpn_router',
+  'er_ransom_c2',
+  'er_victim_chat',
+  'debrief_app'
+];
+
+const beatKind = (b: ConversationBeat): string =>
+  b.from === 'time_jump' ? `time_jump ${b.clockFrom}->${b.clock}` : b.from;
+const bridgeKinds = (id: string) => (stages().find((s) => s.id === id)!.completion.conversation ?? []).map(beatKind);
+
+/** Przegrywa rozmowę mostkującą do końca (kwestie mentora, kliki kwestii gracza, przeskoki czasu). */
+function driveBridge(jumps?: Array<{ clockFrom?: string; clock?: string }>) {
+  for (let i = 0; i < 60; i++) {
     vi.runAllTimers();
     const st = useMissionStore.getState();
+    if (st.timeJump) {
+      jumps?.push({ clockFrom: st.timeJump.clockFrom, clock: st.timeJump.clock });
+      st.endTimeJump();
+      continue;
+    }
     if (!st.pendingBridge) return;
     const beat = st.chatAvailableChoices.find((c) => c.bridgeBeat);
     if (beat) useMissionStore.getState().chooseChatOption(beat.id);
@@ -19,204 +69,285 @@ function driveBridge() {
   }
 }
 
-describe('Mission 4: Energy Rock Scenario & SCORM Engine', () => {
+/** Zgłoszenie decyzji o danym poziomie (silnik liczy punkty z poziomu). */
+const report = (num: number, tier: ChoiceOutcome) =>
+  useMissionStore.getState().reportDecision({ num, question: `D${num}`, answer: 'X', tier, feedback: '' });
+
+describe('Misja 4 — metadane i raport', () => {
+  it('ładuje definicję z rejestru (10 decyzji, próg 80%, 3,79 BTC, akcent czerwony)', () => {
+    expect(def()).toBeDefined();
+    expect(def().mission.id).toBe(MISSION_ID);
+    expect(def().mission.title).toBe('MISJA 4 – ENERGY ROCK');
+    expect(def().mission.targetCompany).toBe('Energy Rock');
+    expect(def().mission.rewardBtc).toBe(3.79);
+    expect(def().mission.decisionCount).toBe(10);
+    expect(def().mission.passingScore).toBe(80);
+    expect(def().mission.accentColor).toBe('#FF0033');
+    expect(def().mission.date).toBe('19.05.2026');
+    expect(resolveDecisionCount(def())).toBe(10);
+  });
+
+  it('raport: 10 pozycji, bez educationalSlides, tytuł ZHAKOWANO ENERGY ROCK', () => {
+    expect(def().step6.choices.length).toBe(10);
+    expect(def().step6.educationalSlides).toBeUndefined();
+    expect(def().step6.summary).toMatchObject({
+      title: 'ZHAKOWANO ENERGY ROCK',
+      subtitle: 'UKOŃCZONO ZADANIE 4',
+      company: 'Energy Rock',
+      scorePercent: 100,
+      perfectChoices: 10,
+      goodChoices: 0,
+      criticalErrors: 0,
+      btcReward: 3.79
+    });
+    def().step6.choices.forEach((c) => expect(c.correct).toBe(true));
+  });
+
+  it('pytania raportu D1–D10 są pytaniami ekranów (jedno źródło)', () => {
+    const q = (k: number) => def().step6.choices.find((c) => c.num === k)!.question;
+    expect(virusLabConfig.virus.question).toBe(q(1));
+    expect(builderConfig.password.question).toBe(q(2));
+    expect(builderConfig.note.question).toBe(q(3));
+    expect(builderConfig.color.question).toBe(q(4));
+    expect(mailConfig.subject.question).toBe(q(5));
+    expect(mailConfig.body.question).toBe(q(6));
+    expect(vpnConfig.sender!.question).toBe(q(7));
+    expect(c2Config.exfil.question).toBe(q(8));
+    expect(victimChatConfig.dialogue.nodes[0].question).toBe(q(9));
+    expect(victimChatConfig.dialogue.nodes[1].question).toBe(q(10));
+  });
+
+  it('negocjacje w raporcie: transkrypt 3 tur przy pozycji 10, podpis rozmówcy SZEF IT', () => {
+    const d10 = def().step6.choices.find((c) => c.num === 10)!;
+    expect(d10.negotiationTranscript?.length).toBe(3);
+    d10.negotiationTranscript!.forEach((t) => expect(t.opponentLabel).toBe('SZEF IT'));
+  });
+
+  it('intro bez firstChoice (wzorzec M3), baza wirusów odblokowywana po BIOS, czat ma znaczek', () => {
+    const intro = def().intro as any;
+    expect(intro.firstChoice).toBeUndefined();
+    expect(intro.dialogue.length).toBe(5);
+    expect(intro.dialogue[4].playerResponse).toBeTruthy();
+    expect(intro.firstUnlock.unlockIcons).toContain('virus_database_unlocked');
+    expect(intro.firstUnlock.highlightTile).toBe('virus_database');
+  });
+});
+
+describe('Misja 4 — struktura etapów', () => {
+  it('kolejność etapów: wirus -> kreator -> mail -> VPN -> moduł ransomware -> czat z ofiarą', () => {
+    expect(stages().map((s) => s.id)).toEqual(EXPECTED_STAGE_ORDER);
+    expect(stages().map((s) => s.appId)).toEqual(EXPECTED_STAGE_ORDER);
+  });
+
+  it('decyzje rozłożone [1],[2,3,4],[5,6],[7],[8],[9,10]', () => {
+    stages().forEach((s) => expect(s.decisions).toEqual(EXPECTED_DECISIONS_PER_STAGE[s.appId]));
+    for (let k = 1; k <= 10; k++) {
+      expect(stages().filter((s) => (s.decisions ?? []).includes(k)).length).toBe(1);
+      expect(def().step6.choices.filter((c) => c.num === k).length).toBe(1);
+    }
+  });
+
+  it('pulpit: czat pierwszy, potem etapy, raport na końcu; komponenty zarejestrowane', () => {
+    expect(def().desktopApps.map((t) => t.id)).toEqual(['chat_shortcut', ...EXPECTED_STAGE_ORDER, 'debrief_app']);
+    expect(def().desktopApps.map((t) => t.componentId)).toEqual(EXPECTED_COMPONENTS);
+    def().desktopApps.forEach((t) => expect(appComponentRegistry[t.componentId], t.componentId).toBeDefined());
+    stages().forEach((s) => {
+      const tile = def().desktopApps.find((t) => t.id === s.appId);
+      expect(tile, s.appId).toBeDefined();
+      expect(tile!.unlockedOnly).toBe(true);
+      expect(def().blocks![s.appId], `blocks.${s.appId}`).toBeDefined();
+    });
+    expect(def().desktopApps.filter((t) => !t.unlockedOnly).map((t) => t.id)).toEqual(['chat_shortcut']);
+    expect(def().desktopApps.find((t) => t.id === 'victim_workstation')!.color).toBe('#8A2BE2');
+  });
+
+  it('poziomy opcji wg planu: D1, D4, D5, D6, D7, D9, D10', () => {
+    const tiers = (opts: Array<{ id: string; tier: ChoiceOutcome }>) => Object.fromEntries(opts.map((o) => [o.id, o.tier]));
+    expect(tiers(virusLabConfig.virus.options)).toEqual({ ransomware: 'ideal', rat: 'suboptimal', keylogger: 'critical' });
+    expect(tiers(builderConfig.color.options)).toEqual({ red: 'ideal', white: 'suboptimal', green: 'suboptimal' });
+    expect(tiers(mailConfig.subject.options)).toEqual({ subj_cv_wilk: 'ideal', subj_wilk_cv: 'suboptimal', subj_analyst: 'critical' });
+    expect(tiers(mailConfig.body.options)).toEqual({ body_formal: 'ideal', body_casual: 'suboptimal', body_no_pwd: 'critical' });
+    expect(tiers(vpnConfig.sender!.options)).toEqual({ sender_wilk: 'ideal', sender_alex: 'suboptimal', sender_spam: 'critical' });
+    const [n1, n2, n3] = victimChatConfig.dialogue.nodes;
+    expect(tiers(n1.options)).toEqual({ firm_stance: 'ideal', aggression: 'suboptimal', surrender: 'critical' });
+    expect(tiers(n2.options)).toEqual({ btc_demand: 'ideal', troll: 'suboptimal', reveal_motive: 'critical' });
+    expect(n3.options.length).toBe(1);
+  });
+
+  it('D3: tytuł i czas to kafelki z poziomami (30 s critical), 4 kafelki stałe bez poziomu', () => {
+    const t = Object.fromEntries(builderConfig.note.tiles.map((x) => [x.id, x]));
+    expect(builderConfig.note.tiles.length).toBe(8);
+    expect(builderConfig.note.slots.map((s) => s.id)).toEqual(['icon', 'title', 'time', 'amount', 'address', 'contact']);
+    expect(t.title_encrypted.tier).toBe('ideal');
+    expect(t.title_casual.tier).toBe('suboptimal');
+    expect(t.time_30h.tier).toBe('ideal');
+    expect(t.time_30s.tier).toBe('critical');
+    builderConfig.note.tiles.filter((x) => x.tier === undefined).forEach((x) => expect(['icon', 'amount', 'address', 'contact']).toContain(x.slot));
+  });
+
+  it('D2: suwak 8–24 (domyślnie 8), 6 kafelków z 2 zakazanymi, progi z planu', () => {
+    const p = builderConfig.password;
+    expect([p.minLength, p.maxLength, p.defaultLength, p.criticalLength, p.idealLength, p.idealSets]).toEqual([8, 24, 8, 8, 24, 4]);
+    expect(p.tiles.length).toBe(6);
+    expect(p.tiles.filter((x) => x.forbidden).map((x) => x.id)).toEqual(['pw_space', 'pw_national']);
+  });
+
+  it('D8: 12 plików, dokładnie 3 cele, cztery serwery baz i 8 węzłów sieci, bez pułapek honeypot', () => {
+    expect(c2Config.exfil.files.length).toBe(12);
+    expect(c2Config.exfil.files.filter((f) => f.role === 'target').length).toBe(3);
+    expect(c2Config.exfil.requiredTargets).toBe(3);
+    expect(c2Config.encrypt.nodes.length).toBe(8);
+    expect(c2Config.encrypt.nodes.filter((n) => n.kind === 'database').length).toBe(4);
+    expect(c2Config.encrypt.nodes.filter((n) => n.kind === 'workstation').length).toBe(2);
+    expect(c2Config.start.host).toBe('ENERGY_ROCK_01_PC');
+    expect(c2Config.start.ip).toBe('151.89.159.52');
+  });
+
+  it('D7: IP jest bramką bez decisionNum, nadawca niesie decyzję 7 z IP w odpowiedzi, brak timeJump w klocku', () => {
+    expect(vpnConfig.vpn!.decisionNum).toBeUndefined();
+    expect(vpnConfig.vpn!.targetIp).toBe('109.43.200.124');
+    expect(vpnConfig.vpn!.initialIp).toBe('106.55.202.120');
+    expect(vpnConfig.sender!.decisionNum).toBe(7);
+    expect(vpnConfig.sender!.includeIpInAnswer).toBe(true);
+    expect(vpnConfig.sender!.confirmLabel).toBe('WYŚLIJ MAILA');
+    expect(vpnConfig.timeJump).toBeUndefined();
+  });
+
+  it('negocjacje per-węzeł: D9 na węźle 1, D10 na węźle 2, węzeł 3 bez oceny, bez closingMessage i trybu agregującego', () => {
+    const d = victimChatConfig.dialogue;
+    expect(d.nodes.map((n) => [n.id, n.decisionNum])).toEqual([['neg_1', 9], ['neg_2', 10], ['neg_3', undefined]]);
+    expect(d.closingMessage).toBeUndefined();
+    expect(d.decisionNum).toBeUndefined();
+    expect(victimChatConfig.preview.fallback.colorId).toBe('red');
+  });
+
+  it('mostki: kształt kolejności beatów, przeskoki czasu i banery połączeń', () => {
+    expect(bridgeKinds('virus_database')).toEqual(['player']);
+    expect(bridgeKinds('ransomware_builder')).toEqual(['byte_master', 'player', 'byte_master']);
+    expect(bridgeKinds('mail')).toEqual(['player']);
+    expect(bridgeKinds('vpn_app')).toEqual(['player', 'byte_master', 'time_jump 16:40->09:10']);
+    expect(bridgeKinds('victim_workstation')).toEqual(['player', 'byte_master', 'time_jump 09:10->11:35']);
+    expect(bridgeKinds('negotiation')).toEqual(['player', 'byte_master', 'player', 'byte_master']);
+    const call = (id: string) => stages().find((s) => s.id === id)!.completion.incomingCall;
+    expect(call('vpn_app')).toEqual({ appId: 'victim_workstation', label: 'MALWARE ZOSTAŁ AKTYWOWANY' });
+    expect(call('victim_workstation')).toEqual({ appId: 'negotiation', label: 'OFIARA WYŚWIETLIŁA WIADOMOŚĆ – PROŚBA O KONTAKT' });
+    expect(JSON.stringify(stages())).not.toContain('WEJDŹ NA STACJĘ OFIARY');
+  });
+});
+
+describe('Misja 4 — przepływ przez silnik', () => {
   beforeEach(() => {
     scorm2004.reset();
     useMissionStore.getState().resetGame();
     MockLRS.clear();
+    vi.useFakeTimers();
+    __setBridgeDelayForTests(0);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    __setBridgeDelayForTests(2000);
   });
 
-  it('correctly loads Mission 4 definition from registry with proper metadata', () => {
-    const mission = getMission('mission-4-energy-rock');
-    expect(mission).toBeDefined();
-    expect(mission?.mission.id).toBe('mission-4-energy-rock');
-    expect(mission?.mission.title).toBe('MISJA 4 – ENERGY ROCK');
-    expect(mission?.mission.targetCompany).toBe('Energy Rock');
-    expect(mission?.mission.rewardBtc).toBe(3.79);
-    expect(mission?.mission.decisionCount).toBe(10);
-    expect(mission?.step6.choices.length).toBe(10);
-    expect(mission?.step6.educationalSlides.length).toBe(3);
-  });
-
-  it('loads Mission 4 into useMissionStore and resets state properly', () => {
-    const store = useMissionStore.getState();
-    store.loadMission('mission-4-energy-rock');
-    const state = useMissionStore.getState();
-    expect(state.activeMission.mission.id).toBe('mission-4-energy-rock');
-    expect(state.score).toBe(100);
-    expect(state.playerChoices.length).toBe(10);
-    expect(state.systemDate).toBe('19.05.2026');
-  });
-
-  it('intro przenosi się do logu czatu, a aplikacje są zablokowane do pierwszej kwestii gracza', () => {
-    const store = useMissionStore.getState();
-    store.loadMission('mission-4-energy-rock');
-    store.finishBiosBoot();
-
+  it('ładuje misję do store (wynik 100, 10 wpisów, data 19.05.2026)', () => {
+    useMissionStore.getState().loadMission(MISSION_ID);
     const s = useMissionStore.getState();
-    expect(s.bootStage).toBe('desktop');
-    // Rozmowa intro w logu czatu (bez wymyślonego greetingu).
-    expect(s.chatMessages.some(m => m.text.includes('FREEVOLT'))).toBe(true);
-    expect(s.chatMessages.some(m => m.text.includes('ENERGY ROCK'))).toBe(true);
-    // Pierwszy wybór to kwestia gracza z VR w rozmowie mostkującej; baza wirusów jeszcze zablokowana.
-    const first = s.chatAvailableChoices[0];
-    expect(first?.bridgeBeat).toBe(true);
-    expect(first?.openAppId).toBeUndefined();
-    expect(s.highlightedTileId).toBeNull();
-    expect(s.unlockedIcons).not.toContain('virus_database_unlocked');
+    expect(s.activeMission.mission.id).toBe(MISSION_ID);
+    expect(s.score).toBe(100);
+    expect(s.playerChoices.length).toBe(10);
+    expect(s.systemDate).toBe('19.05.2026');
   });
 
-  it('rejestruje minigry M4 i mapuje negocjacje na klocek katalogu', () => {
-    expect(mission4Apps['ransomware_virus_scanner']).toBeDefined();
-    expect(mission4Apps['ransomware_builder']).toBeDefined();
-    expect(mission4Apps['mail']).toBeDefined();
-    expect(mission4Apps['vpn_app']).toBeDefined();
-    expect(mission4Apps['victim_workstation']).toBeDefined();
-    expect(appComponentRegistry['ransomware_virus_scanner']).toBeDefined();
-    expect(appComponentRegistry['victim_workstation']).toBeDefined();
-    const negotiationTile = mission4Definition.desktopApps.find(t => t.id === 'negotiation');
-    expect(negotiationTile?.componentId).toBe('dialogue_tree');
-  });
-
-  describe('przepływ z rozmowami mostkującymi', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-      __setBridgeDelayForTests(0);
-    });
-    afterEach(() => {
-      vi.useRealTimers();
-      __setBridgeDelayForTests(2000);
-    });
-
-    it('kwestia gracza w czacie odblokowuje aplikację (apps locked) i nie otwiera okna', () => {
-      const store = useMissionStore.getState();
-      store.loadMission('mission-4-energy-rock');
-      store.finishBiosBoot();
-
-      const first = useMissionStore.getState().chatAvailableChoices[0];
-      expect(first.bridgeBeat).toBe(true);
-
-      store.chooseChatOption(first.id);
-      driveBridge();
-
-      const after = useMissionStore.getState();
-      expect(after.activeApp).toBeNull(); // czat nie otwiera aplikacji
-      expect(after.chatMessages.some(m => m.sender === 'PLAYER' && m.text === first.label)).toBe(true);
-      expect(after.unlockedIcons).toContain('virus_database_unlocked'); // dopiero teraz odblokowane
-      expect(after.highlightedTileId).toBe('virus_database');
-    });
-
-    it('completeStage uruchamia rozmowę; odblokowanie następuje PO kwestii gracza', () => {
-      const store = useMissionStore.getState();
-      store.loadMission('mission-4-energy-rock');
-      store.finishBiosBoot();
-      store.openApp('virus_database');
-
-      store.completeStage('virus_database');
-      const mid = useMissionStore.getState();
-      expect(mid.activeApp).toBeNull(); // powrót na pulpit
-      expect(mid.unlockedIcons).not.toContain('ransomware_builder'); // jeszcze nie — rozmowa trwa
-
-      driveBridge();
-      const done = useMissionStore.getState();
-      expect(done.unlockedIcons).toContain('ransomware_builder');
-      expect(done.highlightedTileId).toBe('ransomware_builder');
-    });
-
-    it('przechodzi wzorcem B przez 10 decyzji i składa paczkę SCORM', () => {
-      const store = useMissionStore.getState();
-      store.loadMission('mission-4-energy-rock');
-      store.finishBiosBoot();
-      driveBridge(); // intro → odblokowanie bazy wirusów
-
-      const ideal = (num: number, question: string, answer: string) =>
-        store.reportDecision({ num, question, answer, tier: 'ideal' as ChoiceOutcome, feedback: '' });
-
-      ideal(1, 'Wybierz odpowiedniego wirusa:', 'RANSOMWARE');
-      store.completeStage('virus_database'); driveBridge();
-      expect(useMissionStore.getState().unlockedIcons).toContain('ransomware_builder');
-
-      ideal(2, 'Siła hasła:', '5/5'); ideal(3, 'Komunikat okupu:', 'OK'); ideal(4, 'Kolor:', 'CZERWONY');
-      store.completeStage('ransomware_builder'); driveBridge();
-      expect(useMissionStore.getState().unlockedIcons).toContain('mail');
-
-      ideal(5, 'Temat maila:', 'CV MICHAŁ WILK'); ideal(6, 'Treść maila:', 'WARIANT B');
-      store.completeStage('mail'); driveBridge();
-      expect(useMissionStore.getState().unlockedIcons).toContain('vpn_app');
-
-      ideal(7, 'VPN:', '109.43.200.124'); ideal(8, 'Nadawca:', 'm.wilk@priv.com');
-      store.completeStage('vpn_app'); driveBridge();
-      expect(useMissionStore.getState().unlockedIcons).toContain('victim_workstation');
-
-      expect(useMissionStore.getState().incomingCall).toBeNull();
-      ideal(9, 'Pliki:', '3 Freevolt');
-      store.completeStage('victim_workstation'); driveBridge();
-      expect(useMissionStore.getState().unlockedIcons).toContain('negotiation');
-      // Baner połączenia przychodzącego pochodzi z danych etapu, nie z kodu pulpitu.
-      expect(useMissionStore.getState().incomingCall).toEqual({ appId: 'negotiation', label: 'SZEF IT ENERGY ROCK' });
-
-      ideal(10, 'Negocjacje:', 'Limit 3h + BTC');
-      store.completeStage('negotiation'); driveBridge();
-      const finalState = useMissionStore.getState();
-      expect(finalState.incomingCall).toBeNull();
-      expect(finalState.unlockedIcons).toContain('mission_completed');
-      expect(finalState.unlockedIcons).toContain('debrief_app');
-      expect(finalState.score).toBe(100);
-      expect(finalState.playerChoices.filter(c => c.outcome === 'ideal').length).toBe(10);
-      expect(finalState.playerChoices.find(c => c.num === 10)?.negotiationTranscript?.length).toBe(3);
-
-      const submitResult = store.submitScormAndExit();
-      expect(submitResult.success).toBe(true);
-      const api = scorm2004.getApi() as MockSCORM2004;
-      expect(api.GetValue('cmi.success_status')).toBe('passed');
-      expect(api.GetValue('cmi.score.raw')).toBe('100');
-
-      const statement = createMissionCompletionStatement(
-        { name: 'Agent Wilk', mbox: 'mailto:m.wilk@priv.com' },
-        100, 'Mission 4: Energy Rock completed', mission4Definition.mission
-      );
-      expect(statement.result.success).toBe(true);
-    });
-  });
-
-  it('błąd krytyczny w eksfiltracji otwiera ekran wykrycia', () => {
+  it('completeStage uruchamia mostek; kafelek odblokowuje się PO kwestii gracza', () => {
     const store = useMissionStore.getState();
-    store.loadMission('mission-4-energy-rock');
-    store.reportDecision({
-      num: 9,
-      question: 'Wybór plików do kradzieży:',
-      answer: 'Pobrano plik-pułapkę',
-      tier: 'critical',
-      feedback: 'Honeypot uruchomił odcięcie transferu.'
-    });
-    const state = useMissionStore.getState();
-    expect(state.isDetectedModalOpen).toBe(true);
-    expect(state.criticalErrorsCount).toBe(1);
-    expect(state.score).toBeLessThan(100);
+    store.loadMission(MISSION_ID);
+    store.finishBiosBoot();
+    driveBridge();
+    store.openApp('virus_database');
+    store.completeStage('virus_database');
+    const mid = useMissionStore.getState();
+    expect(mid.activeApp).toBeNull();
+    expect(mid.unlockedIcons).not.toContain('ransomware_builder');
+    driveBridge();
+    const done = useMissionStore.getState();
+    expect(done.unlockedIcons).toContain('ransomware_builder');
+    expect(done.highlightedTileId).toBe('ransomware_builder');
   });
 
-  it('decyzja D10 w debriefie zawiera mini-transkrypt negocjacji z 3 turami i analizą psychologiczną', () => {
+  it('10 idealnych decyzji = 100% i paczka SCORM; przeskoki 16:40->09:10 i 09:10->11:35; banery połączeń', () => {
     const store = useMissionStore.getState();
-    store.loadMission('mission-4-energy-rock');
-    const state = useMissionStore.getState();
+    store.loadMission(MISSION_ID);
+    store.finishBiosBoot();
+    driveBridge();
+    const jumps: Array<{ clockFrom?: string; clock?: string }> = [];
+    const stage = (id: string, decisions: number[]) => {
+      decisions.forEach((n) => report(n, 'ideal'));
+      useMissionStore.getState().completeStage(id);
+      driveBridge(jumps);
+    };
 
-    const d10 = state.playerChoices.find((c) => c.num === 10);
-    expect(d10).toBeDefined();
-    expect(d10?.negotiationTranscript).toBeDefined();
-    expect(d10?.negotiationTranscript?.length).toBe(3);
+    stage('virus_database', [1]);
+    stage('ransomware_builder', [2, 3, 4]);
+    stage('mail', [5, 6]);
+    expect(useMissionStore.getState().unlockedIcons).toContain('vpn_app');
+    expect(useMissionStore.getState().incomingCall).toBeNull();
+    stage('vpn_app', [7]);
+    expect(useMissionStore.getState().unlockedIcons).toContain('victim_workstation');
+    expect(useMissionStore.getState().incomingCall).toEqual({ appId: 'victim_workstation', label: 'MALWARE ZOSTAŁ AKTYWOWANY' });
+    stage('victim_workstation', [8]);
+    expect(useMissionStore.getState().incomingCall).toEqual({
+      appId: 'negotiation',
+      label: 'OFIARA WYŚWIETLIŁA WIADOMOŚĆ – PROŚBA O KONTAKT'
+    });
+    stage('negotiation', [9, 10]);
 
-    const [turn1, turn2, turn3] = d10!.negotiationTranscript!;
-    expect(turn1.title).toContain('Tura 1');
-    expect(turn1.opponent).toContain('SŁUŻBY');
-    expect(turn1.player).toContain('NIE ODSZYFRUJĄ');
-    expect(turn1.psychology.length).toBeGreaterThan(15);
+    expect(jumps).toEqual([
+      { clockFrom: '16:40', clock: '09:10' },
+      { clockFrom: '09:10', clock: '11:35' }
+    ]);
+    const fin = useMissionStore.getState();
+    expect(fin.incomingCall).toBeNull();
+    expect(fin.unlockedIcons).toContain('debrief_app');
+    expect(fin.unlockedIcons).toContain('mission_completed');
+    expect(fin.score).toBe(100);
+    expect(fin.playerChoices.filter((c) => c.outcome === 'ideal').length).toBe(10);
+    expect(fin.playerChoices.find((c) => c.num === 10)?.negotiationTranscript?.length).toBe(3);
 
-    expect(turn2.title).toContain('Tura 2');
-    expect(turn2.player).toContain('BITCOINY');
-    expect(turn2.psychology.length).toBeGreaterThan(15);
+    const submit = store.submitScormAndExit();
+    expect(submit.success).toBe(true);
+    const api = scorm2004.getApi() as MockSCORM2004;
+    expect(api.GetValue('cmi.success_status')).toBe('passed');
+    expect(api.GetValue('cmi.score.raw')).toBe('100');
+    const statement = createMissionCompletionStatement(
+      { name: 'Agent Wilk', mbox: 'mailto:agent@example.com' },
+      100,
+      'Mission 4: Energy Rock completed',
+      def().mission
+    );
+    expect(statement.result.success).toBe(true);
+  });
 
-    expect(turn3.title).toContain('Tura 3');
-    expect(turn3.player).toContain('3 H');
-    expect(turn3.psychology.length).toBeGreaterThan(15);
+  it.each([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])('błąd krytyczny w D%i otwiera ekran wykrycia i obniża wynik', (num) => {
+    useMissionStore.getState().loadMission(MISSION_ID);
+    report(num, 'critical');
+    const s = useMissionStore.getState();
+    expect(s.isDetectedModalOpen).toBe(true);
+    expect(s.criticalErrorsCount).toBe(1);
+    expect(s.score).toBeLessThan(100);
+  });
+
+  it.each([3, 4, 8])('wybór suboptymalny w D%i obniża wynik bez ekranu wykrycia', (num) => {
+    useMissionStore.getState().loadMission(MISSION_ID);
+    report(num, 'suboptimal');
+    const s = useMissionStore.getState();
+    expect(s.isDetectedModalOpen).toBe(false);
+    expect(s.score).toBeLessThan(100);
+  });
+});
+
+describe('Misja 4 — teksty do uzupełnienia', () => {
+  // Włączyć (zmienić `it.skip` na `it`) po uzupełnieniu wszystkich `TODO_VR` w stages.ts i mission4.json.
+  it.skip('w danych nie ma znacznika TODO_VR', () => {
+    const json = JSON.stringify({ def: def(), blocks: def().blocks });
+    expect(json).not.toContain('TODO_VR');
   });
 });

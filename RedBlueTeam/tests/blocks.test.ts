@@ -54,7 +54,7 @@ describe('Mission 4: nowy model (etapy + klocki)', () => {
     expect(mission4Definition.stages?.length).toBeGreaterThan(0);
     expect(mission4Definition.blocks).toBeDefined();
     const negotiationTile = mission4Definition.desktopApps.find((t) => t.id === 'negotiation');
-    expect(negotiationTile?.componentId).toBe('dialogue_tree');
+    expect(negotiationTile?.componentId).toBe('er_victim_chat');
   });
 
   it('reportDecision zapisuje decyzję i nie karze wyboru idealnego', () => {

@@ -5,17 +5,17 @@
     "subTitle": "Atak ransomware i eksfiltracja technologii Freevolt",
     "systemOs": "//HACKERS.OS",
     "date": "19.05.2026",
-    "accentColor": "#a855f7",
+    "accentColor": "#FF0033",
     "rewardBtc": 3.79,
     "maxScore": 100,
-    "passingScore": 70,
+    "passingScore": 80,
     "decisionCount": 10,
     "targetCompany": "Energy Rock",
     "description": "Scenariusz szkoleniowy SCORM symulujący atak ransomware i spear-phishing na firmę Energy Rock w celu podniesienia świadomości zagrożeń i procedur obronnych."
   },
   "intro": {
     "callerName": "BYTE_MASTER",
-    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE (HACKER.OS)",
+    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE",
     "dialogue": [
       {
         "id": "node_1",
@@ -44,7 +44,8 @@
       {
         "id": "node_5",
         "sender": "BYTE_MASTER",
-        "text": "BĘDĄ Z CIEBIE LUDZIE"
+        "text": "BĘDĄ Z CIEBIE LUDZIE",
+        "playerResponse": "DOBRA. ZABIERAM SIĘ ZA TWORZENIE WIRUSA"
       }
     ],
     "biosLines": [
@@ -65,34 +66,43 @@
       "",
       "WELCOME... HACKER"
     ],
-    "firstChoice": { "id": "m4_reply_intro", "label": "DOBRA. ZABIERAM SIĘ ZA TWORZENIE WIRUSA." },
-    "firstUnlock": { "unlockIcons": ["virus_database_unlocked"], "badges": { "virus_database": 1 }, "highlightTile": "virus_database" },
-    "startBadges": { "chat": 1 }
+    "firstUnlock": {
+      "unlockIcons": [
+        "virus_database_unlocked"
+      ],
+      "badges": {
+        "virus_database": 1
+      },
+      "highlightTile": "virus_database"
+    },
+    "startBadges": {
+      "chat": 1
+    }
   },
   "desktopApps": [
     {
-      "id": "virus_database",
-      "label": "//BAZA_WIRUSÓW",
-      "color": "#ec4899",
-      "icon": "ShieldAlert",
-      "componentId": "ransomware_virus_scanner",
-      "unlockedOnly": true,
-      "requiredUnlockId": "virus_database_unlocked"
-    },
-    {
       "id": "chat_shortcut",
-      "label": "//CHAT: BYTE_MASTER",
+      "label": "//KOMUNIKATOR: BYTE_MASTER",
       "color": "#00ff66",
       "icon": "MessageSquareCode",
       "componentId": "chat",
       "isChatFocus": true
     },
     {
+      "id": "virus_database",
+      "label": "//BAZA_WIRUSÓW",
+      "color": "#ec4899",
+      "icon": "Bug",
+      "componentId": "er_virus_lab",
+      "unlockedOnly": true,
+      "requiredUnlockId": "virus_database_unlocked"
+    },
+    {
       "id": "ransomware_builder",
-      "label": "//WIRUS: RANSOMWARE",
+      "label": "//KREATOR: RANSOMWARE",
       "color": "#a855f7",
       "icon": "Lock",
-      "componentId": "ransomware_builder",
+      "componentId": "er_ransom_builder",
       "unlockedOnly": true,
       "requiredUnlockId": "ransomware_compiled"
     },
@@ -101,41 +111,41 @@
       "label": "//MAIL",
       "color": "#38bdf8",
       "icon": "Mail",
-      "componentId": "mail",
+      "componentId": "er_phishing_mail",
       "unlockedOnly": true,
       "requiredUnlockId": "mail_unlocked"
     },
     {
       "id": "vpn_app",
-      "label": "//TUNEL_VPN",
-      "color": "#a855f7",
+      "label": "//VPN",
+      "color": "#22d3ee",
       "icon": "Wifi",
-      "componentId": "vpn_app",
+      "componentId": "vpn_router",
       "unlockedOnly": true,
       "requiredUnlockId": "vpn_unlocked"
     },
     {
       "id": "victim_workstation",
-      "label": "//STACJA OFIARY",
-      "color": "#ef4444",
+      "label": "//MODUŁ_RANSOMWARE",
+      "color": "#8A2BE2",
       "icon": "Server",
-      "componentId": "victim_workstation",
+      "componentId": "er_ransom_c2",
       "unlockedOnly": true,
       "requiredUnlockId": "victim_workstation_unlocked"
     },
     {
       "id": "negotiation",
-      "label": "//NEGOCJACJE: SZEF IT",
+      "label": "//CZAT_Z_OFIARĄ",
       "color": "#f59e0b",
       "icon": "MessageSquareCode",
-      "componentId": "negotiation",
+      "componentId": "er_victim_chat",
       "unlockedOnly": true,
       "requiredUnlockId": "negotiation_unlocked"
     },
     {
       "id": "debrief_app",
-      "label": "//PODSUMOWANIE",
-      "color": "#10b981",
+      "label": "//RAPORT POOPERACYJNY",
+      "color": "#facc15",
       "icon": "Award",
       "componentId": "debrief_app",
       "unlockedOnly": true,
@@ -144,7 +154,7 @@
   ],
   "step6": {
     "summary": {
-      "title": "SUKCES",
+      "title": "ZHAKOWANO ENERGY ROCK",
       "subtitle": "UKOŃCZONO ZADANIE 4",
       "company": "Energy Rock",
       "scorePercent": 100,
@@ -156,77 +166,98 @@
     "choices": [
       {
         "num": 1,
-        "question": "Wybierz odpowiedniego wirusa:",
+        "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA",
         "answer": "RANSOMWARE",
         "correct": true,
-        "details": "Zaszyfrowanie danych i blokada operacyjna umożliwia wywołanie presji szantażem i odwrócenie uwagi od kradzieży dokumentacji."
+        "details": "Zaszyfrowanie danych i blokada operacyjna umożliwia wywołanie presji szantażem i odwrócenie uwagi od kradzieży dokumentacji.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 2,
-        "question": "Siła wygenerowanego hasła:",
-        "answer": "5/5 (24 znaki, pełny charset)",
+        "question": "SIŁA WYGENEROWANEGO HASŁA (SKALA DO 5)",
+        "answer": "5 (DŁUGOŚĆ 24, 4 ZESTAWY ZNAKÓW)",
         "correct": true,
-        "details": "Maksymalna długość 24 znaki oraz znaki specjalne uniemożliwiają przełamanie klucza metodami brute-force."
+        "details": "Maksymalna długość 24 znaki oraz znaki specjalne uniemożliwiają przełamanie klucza metodami brute-force.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 3,
-        "question": "Skomponuj komunikat żądania okupu:",
-        "answer": "Tytuł ostrzegawczy + realny limit czasu",
+        "question": "KOMPONENTY WIADOMOŚCI",
+        "answer": "OSTRZEŻENIE + LIMIT 30 H",
         "correct": true,
-        "details": "Jasny komunikat i wiarygodny zegar budują presję, a jednocześnie pozwalają ofierze zebrać okup."
+        "details": "Jasny komunikat i wiarygodny zegar budują presję, a jednocześnie pozwalają ofierze zebrać okup.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 4,
-        "question": "Wybierz kolor okna i elementów:",
+        "question": "WYBIERZ KOLOR OKNA / ELEMENTÓW",
         "answer": "CZERWONY",
         "correct": true,
-        "details": "Kolor alarmowy wywołuje natychmiastową presję psychologiczną i poczucie zagrożenia."
+        "details": "Kolor alarmowy wywołuje natychmiastową presję psychologiczną i poczucie zagrożenia.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 5,
-        "question": "Wybierz temat maila:",
+        "question": "WYBIERZ TEMAT MAILA",
         "answer": "CV MICHAŁ WILK",
         "correct": true,
-        "details": "Temat precyzyjnie wpisuje się w wymagania działu HR i nie budzi podejrzeń filtrów rekrutacyjnych."
+        "details": "Temat precyzyjnie wpisuje się w wymagania działu HR i nie budzi podejrzeń filtrów rekrutacyjnych.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 6,
-        "question": "Wybierz treść maila:",
-        "answer": "Formalna treść na analityka z hasłem do pliku",
+        "question": "WYBIERZ TREŚĆ MAILA",
+        "answer": "TREŚĆ Z HASŁEM WILK NA STANOWISKO ANALITYKA RYNKÓW ENERGETYCZNYCH",
         "correct": true,
-        "details": "Szyfrowanie załącznika hasłem uniemożliwia bramce pocztowej automatyczne wykrycie ładunku złośliwego."
+        "details": "Szyfrowanie załącznika hasłem uniemożliwia bramce pocztowej automatyczne wykrycie ładunku złośliwego.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 7,
-        "question": "Ukrycie tożsamości / dopasowanie IP (VPN):",
-        "answer": "IP 109.43.200.124 (podsieć Energy Rock)",
+        "question": "ZABEZPIECZENIE TOŻSAMOŚCI (VPN / NADAWCA)",
+        "answer": "109.43.200.124 + M.WILK@PRIV.COM",
         "correct": true,
-        "details": "Adres IP tunelu zgodny z podsiecią celu omija geolokalizacyjne reguły filtrów poczty."
+        "details": "Adres IP tunelu zgodny z podsiecią celu omija geolokalizacyjne reguły filtrów poczty.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 8,
-        "question": "Wybór adresu nadawcy:",
-        "answer": "m.wilk@priv.com",
+        "question": "EKSFILTRACJA PLIKÓW",
+        "answer": "3 PLIKI FREEVOLT (DOCX, PDF, XCF)",
         "correct": true,
-        "details": "Pełna spójność tożsamości nadawcy z nazwiskiem kandydata w treści i załączniku."
+        "details": "Precyzyjne pobranie celów zlecenia bez uruchamiania pułapek honeypot.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 9,
-        "question": "Wybór plików do kradzieży:",
-        "answer": "Kompletny zestaw dokumentacji technologii Freevolt (3 pliki)",
+        "question": "JAK ODPOWIESZ SZEFOWI IT NA INFORMACJĘ O SŁUŻBACH?",
+        "answer": "TODO_VR",
         "correct": true,
-        "details": "Precyzyjne pobranie celów zlecenia bez uruchamiania pułapek honeypot."
+        "details": "Konfrontacja z technologiczną bezradnością organów ścigania wobec silnej kryptografii natychmiast rozbija złudzenie pomocy z zewnątrz i paraliżuje decyzyjność ofiary.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR"
       },
       {
         "num": 10,
-        "question": "Negocjacje z ofiarą:",
-        "answer": "Narzucenie limitu 3h i konsekwentne żądanie Bitcoinów",
+        "question": "CZEGO CHCESZ W ZAMIAN ZA ODSZYFROWANIE DANYCH?",
+        "answer": "INTERESUJĄ MNIE TYLKO BITCOINY (OKUP WYŁUDZONY: TAK)",
         "correct": true,
         "details": "Presja czasowa uniemożliwia ofierze odzyskanie danych z procedur zapasowych i kontakt z zewnętrznymi ekspertami.",
+        "attack": "TODO_VR",
+        "defense": "TODO_VR",
         "negotiationTranscript": [
           {
             "turn": 1,
             "title": "Tura 1 (Reakcja na szantaż)",
+            "opponentLabel": "SZEF IT",
             "opponent": "Szef IT grozi policją: „ROZWIĄZUJEMY PROBLEM RANSOMWARE! ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE”",
             "player": "Twarde stanowisko techniczne: „ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW. ZASTANÓW SIĘ DOBRZE, CO CHCESZ ZROBIĆ”",
             "psychology": "Konfrontacja z technologiczną bezradnością organów ścigania wobec silnej kryptografii natychmiast rozbija złudzenie pomocy z zewnątrz i paraliżuje decyzyjność ofiary."
@@ -234,6 +265,7 @@
           {
             "turn": 2,
             "title": "Tura 2 (Żądanie motywu)",
+            "opponentLabel": "SZEF IT",
             "opponent": "Szef IT sonduje cel ataku: „CZEGO CHCESZ W ZAMIAN ZA ODSZYFROWANIE DANYCH?”",
             "player": "Żądanie Bitcoinów (kamuflaż): „TAK, JAK NAPISAŁEM W WIADOMOŚCI - INTERESUJĄ MNIE TYLKO BITCOINY”",
             "psychology": "Utrzymanie narracji o czysto finansowym motywie maskuje rzeczywisty cel szpiegowski (kradzież technologii Freevolt) i uśpiło czujność zespołu bezpieczeństwa."
@@ -241,25 +273,12 @@
           {
             "turn": 3,
             "title": "Tura 3 (Presja czasu)",
+            "opponentLabel": "SZEF IT",
             "opponent": "Szef IT gra na zwłokę: „POTRZEBUJEMY CZASU NA ICH ZDOBYCIE”",
             "player": "Twardy limit 3h na przelew: „MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA”",
             "psychology": "Ekstremalny limit czasowy uniemożliwia ofierze odzyskanie danych z kopii zapasowych lub powiadomienie zespołu reagowania na incydenty (CSIRT/SOC)."
           }
         ]
-      }
-    ],
-    "educationalSlides": [
-      {
-        "title": "RANSOMWARE",
-        "desc": "Malware, który szyfruje dane i żąda okupu. Upewnij się, że dane są zabezpieczone systematycznymi backupami oraz regularnymi aktualizacjami systemów."
-      },
-      {
-        "title": "BACKUPY DANYCH",
-        "desc": "Skuteczny backup to taki, który można odtworzyć. Stosuj politykę reguły 3-2-1 (3 kopie, 2 różne nośniki, 1 kopia off-site). Sprawdzaj cyklicznie procedurę przywracania."
-      },
-      {
-        "title": "SILNE HASŁA",
-        "desc": "Do generowania używaj menedżera haseł. Menedżer przechowuje bezpiecznie unikalne i skomplikowane hasła w zaszyfrowanej bazie, eliminując ryzyko ataków słownikowych."
       }
     ]
   }
