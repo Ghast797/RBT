@@ -65,9 +65,10 @@ export interface VpnRouterConfig {
 
   // Post-send loaders / jumps
   sendLoaderLabel?: string;
+  /** Przeskok czasu po wysyłce: bez tekstów to sama wirująca tarcza; `label`/`sublabel` to mały podpis. */
   timeJump?: {
-    label: string;
-    sublabel: string;
+    label?: string;
+    sublabel?: string;
     durationMs?: number;
   };
 }
@@ -276,8 +277,8 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   if (screen === 'timejump') {
     return (
       <TimeJump
-        label={config.timeJump?.label || "MIJA KILKA GODZIN…"}
-        sublabel={config.timeJump?.sublabel || "CZEKAMY, AŻ ADRESAT OTWORZY WIADOMOŚĆ I AKTYWUJE ŁADUNEK."}
+        label={config.timeJump?.label}
+        sublabel={config.timeJump?.sublabel}
         durationMs={config.timeJump?.durationMs || 3200}
         accent={accent}
         onDone={onComplete}

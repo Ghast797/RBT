@@ -186,6 +186,52 @@ describe('Mostek etapu: beat time_jump i unlockDelayMs', () => {
     expect(useMissionStore.getState().systemTime).toBe('08:12');
   });
 
+  it('clockFrom z beatu trafia do przeskoku razem z clock', () => {
+    load({
+      conversation: [{ from: 'time_jump', durationMs: 1000, clockFrom: '22:15', clock: '06:02' }]
+    });
+    useMissionStore.getState().completeStage('stage_x');
+    expect(useMissionStore.getState().timeJump).toEqual({
+      durationMs: 1000,
+      clockFrom: '22:15',
+      clock: '06:02'
+    });
+    useMissionStore.getState().endTimeJump();
+    expect(useMissionStore.getState().systemTime).toBe('06:02');
+  });
+
+  it('bez clockFrom start przeskoku to bieżący systemTime; kolejny przeskok startuje od poprzedniego celu', () => {
+    load({
+      conversation: [
+        { from: 'time_jump', durationMs: 1000, clock: '06:02' },
+        { from: 'time_jump', durationMs: 1000, clock: '08:12' }
+      ]
+    });
+    useMissionStore.setState({ systemTime: '22:15' });
+    useMissionStore.getState().completeStage('stage_x');
+    expect(useMissionStore.getState().timeJump?.clockFrom).toBe('22:15');
+    useMissionStore.getState().endTimeJump();
+    expect(useMissionStore.getState().timeJump?.clockFrom).toBe('06:02');
+    expect(useMissionStore.getState().timeJump?.clock).toBe('08:12');
+  });
+
+  it('bez clockFrom i bez systemTime clockFrom jest puste (komponent bierze wtedy cel minus 3 h)', () => {
+    load({ conversation: [{ from: 'time_jump', durationMs: 1000, clock: '08:12' }] });
+    useMissionStore.getState().completeStage('stage_x');
+    expect(useMissionStore.getState().timeJump?.clockFrom).toBeUndefined();
+  });
+
+  it('przeskok bez clock nie przenosi clockFrom (wariant bez cyfr) i nie wymaga etykiet', () => {
+    load({ conversation: [{ from: 'time_jump', clockFrom: '22:15' }] });
+    useMissionStore.setState({ systemTime: '05:00' });
+    useMissionStore.getState().completeStage('stage_x');
+    const jump = useMissionStore.getState().timeJump;
+    expect(jump).not.toBeNull();
+    expect(jump?.clock).toBeUndefined();
+    expect(jump?.clockFrom).toBeUndefined();
+    expect(jump?.label).toBeUndefined();
+  });
+
   it('powtórka resetuje zegar systemowy', () => {
     for (const reset of ['retryFromChoices', 'retryFromScratch', 'resetGame'] as const) {
       useMissionStore.getState().loadMission(missionWith(jumpBridge));

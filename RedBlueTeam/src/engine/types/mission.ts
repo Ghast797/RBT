@@ -252,10 +252,23 @@ export type ConversationBeat =
   /**
    * Przeskok czasu (pełnoekranowy `TimeJump`) — pokazuje „czekanie” z VR, np. aż ofiary
    * otworzą maila. Mostek czeka na koniec animacji, potem gra dalej.
-   * `clock` (np. `'06:02'`) ustawia po przeskoku zegar systemowy pulpitu (`systemTime`);
-   * bez niego zegar się nie zmienia.
+   * Z `clock` (godzina docelowa, np. `'06:02'`) nakładka pokazuje lecący zegar, który
+   * przewija się od `clockFrom` do `clock`; po przeskoku `clock` ustawia też zegar
+   * systemowy pulpitu (`systemTime`). Bez `clockFrom` start to bieżący `systemTime`.
+   * Bez `clock` jest sama wirująca tarcza (bez cyfr), a zegar pulpitu się nie zmienia.
+   * `label` i `sublabel` to opcjonalny, mały podpis pod zegarem — silnik nie dopisuje
+   * własnych tekstów.
    */
-  | { from: 'time_jump'; label: string; sublabel?: string; durationMs?: number; clock?: string };
+  | {
+      from: 'time_jump';
+      label?: string;
+      sublabel?: string;
+      durationMs?: number;
+      /** Godzina startowa przeskoku („HH:MM”); działa tylko razem z `clock`. */
+      clockFrom?: string;
+      /** Godzina docelowa („HH:MM”). */
+      clock?: string;
+    };
 
 /** Co dzieje się po ukończeniu etapu: rozmowa z mentorem, a na jej końcu odblokowania. */
 export interface StageCompletion {

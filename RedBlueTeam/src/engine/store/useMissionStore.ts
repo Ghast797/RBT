@@ -92,7 +92,7 @@ export interface MissionState {
     timeJumpEndedAt?: number;
   } | null;
   /** Trwający przeskok czasu (nakładka na pulpicie); `null`, gdy nic nie trwa. */
-  timeJump: { label: string; sublabel?: string; durationMs?: number; clock?: string } | null;
+  timeJump: { label?: string; sublabel?: string; durationMs?: number; clockFrom?: string; clock?: string } | null;
   /** Wywoływane przez nakładkę po zakończeniu animacji — mostek gra dalej. */
   endTimeJump: () => void;
 
@@ -596,7 +596,14 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       set((s) => ({
         isByteMasterTyping: false,
         chatAvailableChoices: [],
-        timeJump: { label: beat.label, sublabel: beat.sublabel, durationMs: beat.durationMs, clock: beat.clock },
+        timeJump: {
+          label: beat.label,
+          sublabel: beat.sublabel,
+          durationMs: beat.durationMs,
+          // Start zegara: z beatu, a gdy go brak — bieżąca godzina pulpitu (sprzed skoku).
+          clockFrom: beat.clock ? beat.clockFrom ?? (s.systemTime || undefined) : undefined,
+          clock: beat.clock
+        },
         pendingBridge: s.pendingBridge ? { ...s.pendingBridge, hadTimeJump: true } : null
       }));
       return;

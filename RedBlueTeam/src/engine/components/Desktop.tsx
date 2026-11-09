@@ -123,6 +123,8 @@ export const Desktop: React.FC = () => {
             label={timeJump.label}
             sublabel={timeJump.sublabel}
             durationMs={timeJump.durationMs}
+            clockFrom={timeJump.clockFrom}
+            clockTo={timeJump.clock}
             accent={activeMission.mission.accentColor || '#00ff66'}
             onDone={endTimeJump}
           />
