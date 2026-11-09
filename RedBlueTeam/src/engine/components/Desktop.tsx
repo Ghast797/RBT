@@ -166,7 +166,7 @@ export const Desktop: React.FC = () => {
             </div>
             <div className="flex items-center space-x-3 text-[0.6875rem]">
               <span className="text-[#00ff66]/70">CEL: {activeMission.mission.targetCompany?.toUpperCase()}</span>
-              <span className="font-bold text-[#00ff66]">{systemTime !== '00:00' ? systemTime : systemDate}</span>
+              <span className="font-bold text-[#00ff66]">{[systemDate, systemTime].filter(Boolean).join(' ')}</span>
               <button
                 onClick={toggleMute}
                 className="p-1 rounded text-[#00ff66]/70 hover:text-[#00ff66] transition-colors border border-transparent hover:border-[#00ff66]/40 cursor-pointer ml-1"

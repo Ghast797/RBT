@@ -99,6 +99,43 @@ describe('Mostek etapu: beat time_jump i unlockDelayMs', () => {
     expect(useMissionStore.getState().highlightedTileId).toBe('vpn_app');
   });
 
+  it('beat time_jump z polem clock ustawia zegar systemowy po przeskoku (nie w jego trakcie)', () => {
+    load({
+      conversation: [{ from: 'time_jump', label: '06:02 — MIJA CZAS…', durationMs: 1000, clock: '06:02' }],
+      highlightTile: 'vpn_app'
+    });
+    expect(useMissionStore.getState().systemTime).toBe('');
+    useMissionStore.getState().completeStage('stage_x');
+    expect(useMissionStore.getState().timeJump?.clock).toBe('06:02');
+    expect(useMissionStore.getState().systemTime).toBe('');
+    useMissionStore.getState().endTimeJump();
+    expect(useMissionStore.getState().systemTime).toBe('06:02');
+  });
+
+  it('przeskok bez clock nie zmienia zegara; kolejny przeskok z clock go nadpisuje', () => {
+    load({
+      conversation: [
+        { from: 'time_jump', label: 'MIJA CZAS…', durationMs: 1000 },
+        { from: 'time_jump', label: 'I JESZCZE…', durationMs: 1000, clock: '08:12' }
+      ]
+    });
+    useMissionStore.setState({ systemTime: '05:00' });
+    useMissionStore.getState().completeStage('stage_x');
+    useMissionStore.getState().endTimeJump();
+    expect(useMissionStore.getState().systemTime).toBe('05:00');
+    useMissionStore.getState().endTimeJump();
+    expect(useMissionStore.getState().systemTime).toBe('08:12');
+  });
+
+  it('powtórka resetuje zegar systemowy', () => {
+    for (const reset of ['retryFromChoices', 'retryFromScratch', 'resetGame'] as const) {
+      useMissionStore.getState().loadMission(missionWith(jumpBridge));
+      useMissionStore.setState({ systemTime: '06:02' });
+      useMissionStore.getState()[reset]();
+      expect(useMissionStore.getState().systemTime).toBe('');
+    }
+  });
+
   it('powtórka czyści trwający przeskok i oczekujące odblokowanie', () => {
     for (const reset of ['retryFromChoices', 'retryFromScratch', 'loadMission', 'resetGame'] as const) {
       load(jumpBridge);

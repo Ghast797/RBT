@@ -61,6 +61,7 @@ export interface MissionState {
   setNotificationBadge: (id: string, count: number) => void;
   clearNotificationBadge: (id: string) => void;
   systemDate: string;
+  /** Zegar systemowy pulpitu („HH:MM”); pusty, dopóki żaden przeskok czasu (`clock`) go nie ustawił. */
   systemTime: string;
 
   // Czat z mentorem
@@ -89,7 +90,7 @@ export interface MissionState {
     hadTimeJump?: boolean;
   } | null;
   /** Trwający przeskok czasu (nakładka na pulpicie); `null`, gdy nic nie trwa. */
-  timeJump: { label: string; sublabel?: string; durationMs?: number } | null;
+  timeJump: { label: string; sublabel?: string; durationMs?: number; clock?: string } | null;
   /** Wywoływane przez nakładkę po zakończeniu animacji — mostek gra dalej. */
   endTimeJump: () => void;
 
@@ -260,7 +261,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     unlockedIcons: initialUnlocked,
     notificationBadges: {} as Record<string, number>,
     systemDate: mission.mission?.date || '',
-    systemTime: '00:00',
+    systemTime: '',
     customState: {} as Record<string, any>,
 
     // Czat
@@ -589,7 +590,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       set((s) => ({
         isByteMasterTyping: false,
         chatAvailableChoices: [],
-        timeJump: { label: beat.label, sublabel: beat.sublabel, durationMs: beat.durationMs },
+        timeJump: { label: beat.label, sublabel: beat.sublabel, durationMs: beat.durationMs, clock: beat.clock },
         pendingBridge: s.pendingBridge ? { ...s.pendingBridge, hadTimeJump: true } : null
       }));
       return;
@@ -619,7 +620,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   endTimeJump: () => {
     const { timeJump, pendingBridge } = get();
     if (!timeJump) return;
-    set({ timeJump: null, pendingBridge: pendingBridge ? { ...pendingBridge, index: pendingBridge.index + 1 } : null });
+    set((s) => ({
+      timeJump: null,
+      // Po przeskoku zegar pulpitu pokazuje godzinę z beatu (jeśli ją podano).
+      systemTime: timeJump.clock ?? s.systemTime,
+      pendingBridge: pendingBridge ? { ...pendingBridge, index: pendingBridge.index + 1 } : null
+    }));
     get().advanceBridge();
   },
 

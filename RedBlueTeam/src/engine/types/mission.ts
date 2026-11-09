@@ -252,8 +252,10 @@ export type ConversationBeat =
   /**
    * Przeskok czasu (pełnoekranowy `TimeJump`) — pokazuje „czekanie” z VR, np. aż ofiary
    * otworzą maila. Mostek czeka na koniec animacji, potem gra dalej.
+   * `clock` (np. `'06:02'`) ustawia po przeskoku zegar systemowy pulpitu (`systemTime`);
+   * bez niego zegar się nie zmienia.
    */
-  | { from: 'time_jump'; label: string; sublabel?: string; durationMs?: number };
+  | { from: 'time_jump'; label: string; sublabel?: string; durationMs?: number; clock?: string };
 
 /** Co dzieje się po ukończeniu etapu: rozmowa z mentorem, a na jej końcu odblokowania. */
 export interface StageCompletion {
