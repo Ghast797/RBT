@@ -343,6 +343,7 @@ export const pendriveConfig: PendriveConfig = {
   },
   armTexts: {
     taskFile: "PRZECIĄGNIJ NA PENDRIVE'A PLIK PASUJĄCY DO TWOJEGO PLANU.",
+    planPrefix: 'PLAN:',
     taskPayload: 'PRZECIĄGNIJ //WIRUS: RAT NA PLIK NA PENDRIVIE, ŻEBY ZAPAKOWAĆ GO RAZEM W ARCHIWUM.',
     payloadLabel: '//WIRUS: RAT',
     slotLabel: '//E: USB',

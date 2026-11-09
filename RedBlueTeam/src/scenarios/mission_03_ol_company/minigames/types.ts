@@ -254,6 +254,8 @@ export interface PendriveConfig {
   armTexts: {
     taskFile: string;
     taskPayload: string;
+    /** Przedrostek przypomnienia planu z D3 nad panelami: „PLAN:” (+ `planLabel` reguły). */
+    planPrefix: string;
     /** Podpis przeciąganego elementu „//WIRUS: RAT”. */
     payloadLabel: string;
     /** Podpis slotu pendrive'a: „//E: USB”. */

@@ -87,6 +87,14 @@ describe('M3 //DYSK E: logika pendrive', () => {
     );
   });
 
+  it('przypomnienie planu na ekranie przygotowania: przedrostek i opis planu dla każdej reguły', () => {
+    expect(cfg.armTexts.planPrefix).toBe('PLAN:');
+    cfg.plan
+      .filter((r) => r.fileIds.length > 0)
+      .forEach((r) => expect(r.planLabel.length, r.vectorOptionId).toBeGreaterThan(10));
+    expect(cfg.plan.find((r) => r.vectorOptionId === 'vector_party_zip')!.planLabel).toBe('NAWIĄŻĘ DO IMPREZY DZIAŁU SPRZEDAŻY');
+  });
+
   it('plan z D3 leży we wspólnym stanie pod kluczem m3_plan', () => {
     expect(PLAN_STATE_KEY).toBe('m3_plan');
   });

@@ -83,6 +83,9 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   const [wrongMsg, setWrongMsg] = useState<string | null>(null);
   const [volumeId, setVolumeId] = useState<string | null>(null);
   const [signatureId, setSignatureId] = useState<string | null>(null);
+  // Po zgłoszeniu D4 jako critical silnik pokazuje ekran wykrycia; do powtórki wybór jest zablokowany
+  // (podwójny klik nie zgłasza D4 drugi raz).
+  const [locked, setLocked] = useState(false);
   const [volumeConfirmedId, setVolumeConfirmedId] = useState<string | null>(null);
   const wrongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const completedRef = useRef(false);
@@ -144,12 +147,13 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
 
   const confirmVolume = () => {
     const opt = config.volume.options.find((o) => o.id === volumeId);
-    if (!opt) return;
+    if (!opt || locked) return;
     sounds.playSuccess();
     setVolumeConfirmedId(opt.id);
     const critical = buildVolumeCriticalReport(config.signature, opt);
     if (critical) {
       // Nazwa krytyczna zgłasza D4 od razu; silnik pokazuje wykrycie i powtórkę.
+      setLocked(true);
       onDecision(critical);
       return;
     }
@@ -157,11 +161,12 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   };
 
   const confirmSignature = () => {
-    if (!volume || !signature || !usbFile) return;
+    if (!volume || !signature || !usbFile || locked) return;
     sounds.playSuccess();
     setCustomState(USB_STATE_KEY, buildUsbState(volume, usbFile, signature));
     onDecision(buildD4Report(config.signature, volume, signature, config.reportLabels));
-    if (signature.tier !== 'critical') setScreen('eject');
+    if (signature.tier === 'critical') setLocked(true);
+    else setScreen('eject');
   };
 
   const taskFor = (): string | undefined => {
@@ -234,108 +239,120 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
     return (
       <>
         {wrap(
-          <div className="flex-1 min-h-0 grid grid-cols-[1.1fr_1fr_0.7fr] gap-4">
-            {/* panel ZAŁĄCZNIKI */}
+          <>
+            {/* Przypomnienie planu z D3: wyjaśnia komunikat „TEN PLIK NIE PASUJE DO TWOJEGO PLANU”. */}
             <div
-              className="min-h-0 rounded-xl border bg-[#08101a] p-3 flex flex-col gap-2.5"
-              style={{ borderColor: `${ACCENT}55` }}
+              className="shrink-0 mb-3 flex items-center gap-3 px-4 py-2 rounded-lg border text-sm font-bold tracking-wide text-white"
+              style={{ borderColor: `${ACCENT}55`, backgroundColor: `${ACCENT}10` }}
             >
-              <div className="text-xs font-black tracking-widest" style={{ color: ACCENT }}>
-                {config.startTexts.panelTitle}
-              </div>
-              {available.map((a) => (
-                <div
-                  key={a.id}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') placeFile(a.id);
-                  }}
-                  {...drag.getDragProps(a.id)}
-                  className={`flex items-center gap-3 p-2.5 rounded-lg border-2 bg-[#0b1724] cursor-grab transition-all hover:-translate-y-0.5 ${
-                    drag.draggedId === a.id ? 'opacity-40' : ''
-                  }`}
-                  style={{ ...drag.getDragProps(a.id).style, borderColor: `${ACCENT}66` }}
-                >
-                  <div className="w-16 h-12 rounded border border-gray-700 overflow-hidden shrink-0 flex items-center justify-center bg-black/40 text-gray-300">
-                    {a.thumb ? <ImageSlot asset={a.thumb} label={a.name} /> : fileIcon(a.name, 24)}
-                  </div>
-                  <span className="text-sm font-bold text-white break-all leading-snug">{a.name}</span>
-                </div>
-              ))}
-              {wrongMsg && (
-                <div className="text-xs font-black tracking-wider text-red-400 border border-red-500/60 bg-red-500/10 rounded-lg px-3 py-2 animate-in fade-in duration-150">
-                  {wrongMsg}
-                </div>
-              )}
+              <span className="font-black tracking-widest" style={{ color: ACCENT }}>
+                {config.armTexts.planPrefix}
+              </span>
+              <span>{rule?.planLabel}</span>
             </div>
-
-            {/* slot pendrive'a */}
-            <div
-              ref={drag.zoneRef('usb')}
-              className="min-h-0 rounded-xl border-2 border-dashed p-4 flex flex-col items-center justify-center gap-4 transition-colors"
-              style={{
-                borderColor: slotHot || drag.isDropTarget('usb') ? ACCENT : `${ACCENT}55`,
-                backgroundColor: slotHot ? `${ACCENT}22` : `${ACCENT}0a`
-              }}
-            >
-              <Usb size={56} style={{ color: ACCENT }} />
-              <div className="text-sm font-black tracking-widest text-white">{config.armTexts.slotLabel}</div>
-              {usbFile && (
-                <div
-                  ref={drag.zoneRef('usbfile')}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-colors"
-                  style={{
-                    borderColor: drag.isOver('usbfile') ? '#00ff66' : drag.isDropTarget('usbfile') ? ACCENT : `${ACCENT}88`,
-                    backgroundColor: drag.isOver('usbfile') ? '#00ff6622' : '#0b1724'
-                  }}
-                >
-                  {packed ? <Package size={22} style={{ color: '#00ff66' }} /> : fileIcon(usbFile.name, 22)}
-                  <span className="text-sm font-bold text-white break-all text-center">
-                    {packed ? usbFile.archive : usbFile.name}
-                  </span>
-                </div>
-              )}
-              {packing && (
-                <PackingBar
-                  label={config.armTexts.packing}
-                  onDone={() => {
-                    setPacked(true);
-                    setScreen('prep');
-                  }}
-                />
-              )}
-            </div>
-
-            {/* kafelek ładunku */}
-            <div
-              className="min-h-0 rounded-xl border bg-[#08101a] p-3 flex flex-col items-center justify-center"
-              style={{ borderColor: `${ACCENT}55` }}
-            >
+            <div className="flex-1 min-h-0 grid grid-cols-[1.1fr_1fr_0.7fr] gap-4">
+              {/* panel ZAŁĄCZNIKI */}
               <div
-                role="button"
-                tabIndex={payloadActive ? 0 : -1}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') packPayload();
-                }}
-                {...drag.getDragProps(PAYLOAD_ID)}
-                className={`w-full flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                  payloadActive ? 'cursor-grab hover:-translate-y-0.5' : 'opacity-40'
-                } ${drag.draggedId === PAYLOAD_ID ? 'opacity-40' : ''}`}
+                className="min-h-0 rounded-xl border bg-[#08101a] p-3 flex flex-col gap-2.5"
+                style={{ borderColor: `${ACCENT}55` }}
+              >
+                <div className="text-xs font-black tracking-widest" style={{ color: ACCENT }}>
+                  {config.startTexts.panelTitle}
+                </div>
+                {available.map((a) => (
+                  <div
+                    key={a.id}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') placeFile(a.id);
+                    }}
+                    {...drag.getDragProps(a.id)}
+                    className={`flex items-center gap-3 p-2.5 rounded-lg border-2 bg-[#0b1724] cursor-grab transition-all hover:-translate-y-0.5 ${
+                      drag.draggedId === a.id ? 'opacity-40' : ''
+                    }`}
+                    style={{ ...drag.getDragProps(a.id).style, borderColor: `${ACCENT}66` }}
+                  >
+                    <div className="w-16 h-12 rounded border border-gray-700 overflow-hidden shrink-0 flex items-center justify-center bg-black/40 text-gray-300">
+                      {a.thumb ? <ImageSlot asset={a.thumb} label={a.name} /> : fileIcon(a.name, 24)}
+                    </div>
+                    <span className="text-sm font-bold text-white break-all leading-snug">{a.name}</span>
+                  </div>
+                ))}
+                {wrongMsg && (
+                  <div className="text-xs font-black tracking-wider text-red-400 border border-red-500/60 bg-red-500/10 rounded-lg px-3 py-2 animate-in fade-in duration-150">
+                    {wrongMsg}
+                  </div>
+                )}
+              </div>
+
+              {/* slot pendrive'a */}
+              <div
+                ref={drag.zoneRef('usb')}
+                className="min-h-0 rounded-xl border-2 border-dashed p-4 flex flex-col items-center justify-center gap-4 transition-colors"
                 style={{
-                  ...drag.getDragProps(PAYLOAD_ID).style,
-                  borderColor: payloadActive ? '#ef4444' : '#374151',
-                  backgroundColor: payloadActive ? '#ef444418' : '#0b1724',
-                  boxShadow: payloadActive ? '0 0 18px #ef444455' : undefined
+                  borderColor: slotHot || drag.isDropTarget('usb') ? ACCENT : `${ACCENT}55`,
+                  backgroundColor: slotHot ? `${ACCENT}22` : `${ACCENT}0a`
                 }}
               >
-                <Package size={34} className={payloadActive ? 'text-red-400' : 'text-gray-500'} />
-                <span className="text-sm font-black tracking-wider text-white text-center">
-                  {config.armTexts.payloadLabel}
-                </span>
+                <Usb size={56} style={{ color: ACCENT }} />
+                <div className="text-sm font-black tracking-widest text-white">{config.armTexts.slotLabel}</div>
+                {usbFile && (
+                  <div
+                    ref={drag.zoneRef('usbfile')}
+                    className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-colors"
+                    style={{
+                      borderColor: drag.isOver('usbfile') ? '#00ff66' : drag.isDropTarget('usbfile') ? ACCENT : `${ACCENT}88`,
+                      backgroundColor: drag.isOver('usbfile') ? '#00ff6622' : '#0b1724'
+                    }}
+                  >
+                    {packed ? <Package size={22} style={{ color: '#00ff66' }} /> : fileIcon(usbFile.name, 22)}
+                    <span className="text-sm font-bold text-white break-all text-center">
+                      {packed ? usbFile.archive : usbFile.name}
+                    </span>
+                  </div>
+                )}
+                {packing && (
+                  <PackingBar
+                    label={config.armTexts.packing}
+                    onDone={() => {
+                      setPacked(true);
+                      setScreen('prep');
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* kafelek ładunku */}
+              <div
+                className="min-h-0 rounded-xl border bg-[#08101a] p-3 flex flex-col items-center justify-center"
+                style={{ borderColor: `${ACCENT}55` }}
+              >
+                <div
+                  role="button"
+                  tabIndex={payloadActive ? 0 : -1}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') packPayload();
+                  }}
+                  {...drag.getDragProps(PAYLOAD_ID)}
+                  className={`w-full flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                    payloadActive ? 'cursor-grab hover:-translate-y-0.5' : 'opacity-40'
+                  } ${drag.draggedId === PAYLOAD_ID ? 'opacity-40' : ''}`}
+                  style={{
+                    ...drag.getDragProps(PAYLOAD_ID).style,
+                    borderColor: payloadActive ? '#ef4444' : '#374151',
+                    backgroundColor: payloadActive ? '#ef444418' : '#0b1724',
+                    boxShadow: payloadActive ? '0 0 18px #ef444455' : undefined
+                  }}
+                >
+                  <Package size={34} className={payloadActive ? 'text-red-400' : 'text-gray-500'} />
+                  <span className="text-sm font-black tracking-wider text-white text-center">
+                    {config.armTexts.payloadLabel}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </>
         )}
         <DragGhost dragging={drag.dragging}>
           {drag.draggedId === PAYLOAD_ID ? config.armTexts.payloadLabel : draggedFile?.name}
@@ -353,11 +370,18 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
           label={config.volume.choiceLabel}
           options={volumeOptions}
           selectedId={volumeId}
-          onSelect={setVolumeId}
+          onSelect={(id) => {
+            if (!locked) setVolumeId(id);
+          }}
           columns={2}
           className="mt-4"
         />
-        <ConfirmButton accent={ACCENT} label={config.volume.confirmLabel} enabled={!!volumeId} onClick={confirmVolume} />
+        <ConfirmButton
+          accent={ACCENT}
+          label={config.volume.confirmLabel}
+          enabled={!!volumeId && !locked}
+          onClick={confirmVolume}
+        />
       </div>
     );
   }
@@ -383,7 +407,9 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
             label={config.signature.choiceLabel}
             options={signatureOptions}
             selectedId={signatureId}
-            onSelect={setSignatureId}
+            onSelect={(id) => {
+              if (!locked) setSignatureId(id);
+            }}
             columns={2}
             className="mt-4 self-start"
           />
@@ -391,7 +417,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
         <ConfirmButton
           accent={ACCENT}
           label={config.signature.confirmLabel}
-          enabled={!!signatureId}
+          enabled={!!signatureId && !locked}
           onClick={confirmSignature}
         />
       </div>
