@@ -536,7 +536,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     // Etap już zaliczony (gracz wrócił do zapamiętanej aplikacji) — tylko powrót na pulpit.
     if (get().completedStages.includes(stageId)) {
-      if (stage.completion.closeActiveApp !== false) set({ activeApp: null });
+      if (stage.completion.closeActiveApp !== false && get().activeApp === stage.appId) set({ activeApp: null });
       return;
     }
 
@@ -549,7 +549,9 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     // Powrót na pulpit; start rozmowy mostkującej (odblokowania DOPIERO po jej zakończeniu).
     set((s) => ({
-      activeApp: completion.closeActiveApp === false ? s.activeApp : null,
+      // Zamykamy tylko aplikację tego etapu: minigra kończy się sama po komunikacie sukcesu,
+      // więc gracz mógł już wyjść na pulpit i otworzyć inną aplikację.
+      activeApp: completion.closeActiveApp === false || s.activeApp !== stage.appId ? s.activeApp : null,
       completedStages: [...s.completedStages, stageId],
       // Zaliczony etap aplikacji, do której prowadził baner połączenia, gasi baner.
       incomingCall: s.incomingCall && s.incomingCall.appId === stage.appId ? null : s.incomingCall,

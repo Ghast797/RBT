@@ -60,4 +60,25 @@ describe('Silnik: pamięć stanu aplikacji pulpitu', () => {
     expect(after.pendingBridge).toBe(before.pendingBridge);
     expect(after.completedStages).toEqual(['app_target_petrolog']);
   });
+  it('zaliczenie etapu zamkniętej już aplikacji nie zamyka innej, otwartej w międzyczasie', () => {
+    const store = useMissionStore.getState();
+    store.openApp('app_target_petrolog');
+    // Gracz wychodzi krzyżykiem, otwiera inną aplikację; minigra kończy się sama po komunikacie.
+    store.closeApp();
+    store.openApp('app_osint_search');
+    store.completeStage('app_target_petrolog');
+    expect(useMissionStore.getState().completedStages).toEqual(['app_target_petrolog']);
+    expect(useMissionStore.getState().activeApp).toBe('app_osint_search');
+
+    // Powtórne zaliczenie (etap już zaliczony) też nie rusza cudzej aplikacji.
+    store.completeStage('app_target_petrolog');
+    expect(useMissionStore.getState().activeApp).toBe('app_osint_search');
+  });
+
+  it('zaliczenie etapu własnej, otwartej aplikacji nadal wraca na pulpit', () => {
+    const store = useMissionStore.getState();
+    store.openApp('app_target_petrolog');
+    store.completeStage('app_target_petrolog');
+    expect(useMissionStore.getState().activeApp).toBeNull();
+  });
 });
