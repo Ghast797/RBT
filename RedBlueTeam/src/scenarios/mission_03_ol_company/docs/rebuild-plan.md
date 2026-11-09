@@ -1,6 +1,8 @@
 # Misja 3 (O&L Company) — plan przebudowy wg dokumentu scenariusza
 
-Źródło prawdy: `docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md` (6 decyzji, D1–D6). Obecna implementacja (8 decyzji) powstała bez dokumentu i ma być z nim zgodna. Standard: `RedBlueTeam/docs/mission-standard.md`, kontrakt: `docs/scenario-engine.md` (sekcje 3 i 5). Uwagi właściciela z testu (tabela w sekcji 0) są wiążące. Ten plik nie zmienia kodu.
+Źródło prawdy: `docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md` (6 decyzji, D1–D6). Obecna implementacja (8 decyzji) powstała bez dokumentu i ma być z nim zgodna. Standard: `RedBlueTeam/docs/mission-standard.md`, kontrakt: `docs/scenario-engine.md` (sekcje 3 i 5). Uwagi właściciela z testu (tabela w sekcji 0) są wiążące.
+
+**Status:** porcje A (silnik) i B (dane i struktura) zrobione. Sekcja 9 („Kontrakt porcji B”) opisuje faktyczne nazwy pól configów, assetów i `componentId` i jest **nadrzędna** wobec sekcji 3 i 6 tam, gdzie nazwy się różnią (plan powstał przed kodem). Odpowiedzi właściciela na pytania P1–P10: sekcja 8.
 
 Skróty: **BM** = Byte_Master, **czat** = czat BM na prawym monitorze (aplikacja nie przejmuje go przez `SideMonitor`).
 
@@ -285,8 +287,8 @@ Każdy agent: osobny commit po zakończeniu, `npx vitest run` i `npx tsc -p tsco
 
 | Krok | Porcja | Pliki (własne) | Zależności / uwagi |
 |---|---|---|---|
-| 1 | **A. Silnik** | `src/engine/components/TimeJump.tsx`, `src/engine/core/clock.ts`, `src/engine/components/Desktop.tsx` (przekazanie propsów), `src/engine/store/useMissionStore.ts` (`timeJump.clockFrom`, `openingConversation` w `openApp`, czyszczenie przy powtórce), `src/engine/types/mission.ts`, `src/engine/components/usePointerDrag.ts`, `tests/clock.test.ts`, `tests/timeJump.test.ts`, `docs/scenario-engine.md` (sekcje 5 i 9) | Pierwsza: dostarcza typy (`clockFrom`, `openingConversation`) dla B. Bez zmian w `scenarios/`. M2 i M4 muszą zostać zielone. |
-| 2 | **B. Dane i struktura** | `stages.ts`, `minigames/types.ts`, `minigames/ui.tsx` (`ImageSlot`, helpery), `minigames/siteAssets.ts`, `assets/<grupa>/.gitkeep` (6 grup), `data/mission3.json`, `index.ts` (bez zmiany eksportów), `tests/mission3.test.ts`; usunięcie `builderLogic.ts` | Po A. Zastępuje 5 komponentów minigier **tymczasowymi zaślepkami** (te same nazwy eksportów, `AppHeader` + przycisk wołający `onComplete`), żeby `tsc` i testy przepływu przechodziły przed porcjami C–G. Wspólne pliki (`stages.ts`, `types.ts`, `mission3.json`, testy struktury) należą **tylko** do B. |
+| 1 | **A. Silnik** (**zrobiona**) | `src/engine/components/TimeJump.tsx`, `src/engine/core/clock.ts`, `src/engine/components/Desktop.tsx` (przekazanie propsów), `src/engine/store/useMissionStore.ts` (`timeJump.clockFrom`, `openingConversation` w `openApp`, czyszczenie przy powtórce), `src/engine/types/mission.ts`, `src/engine/components/usePointerDrag.ts`, `tests/clock.test.ts`, `tests/timeJump.test.ts`, `docs/scenario-engine.md` (sekcje 5 i 9) | Pierwsza: dostarcza typy (`clockFrom`, `openingConversation`) dla B. Bez zmian w `scenarios/`. M2 i M4 muszą zostać zielone. |
+| 2 | **B. Dane i struktura** (**zrobiona**, sekcja 9) | `stages.ts`, `minigames/types.ts`, `minigames/ui.tsx` (`ImageSlot`, helpery), `minigames/siteAssets.ts`, `assets/<grupa>/.gitkeep` (6 grup), `data/mission3.json`, `index.ts` (bez zmiany eksportów), `tests/mission3.test.ts`; usunięcie `builderLogic.ts` | Po A. Zastępuje 5 komponentów minigier **tymczasowymi zaślepkami** (te same nazwy eksportów, `AppHeader` + przycisk wołający `onComplete`), żeby `tsc` i testy przepływu przechodziły przed porcjami C–G. Wspólne pliki (`stages.ts`, `types.ts`, `mission3.json`, testy struktury) należą **tylko** do B. |
 | 3 ‖ | **C. //BAZA_WIRUSÓW** | `minigames/VirusLabApp.tsx`, `ScratchMatrix.tsx`, `matrixLogic.ts`, `tests/m3-matrix.test.ts` | Po B. |
 | 3 ‖ | **D. //TOR** | `minigames/OsintBrowserApp.tsx`, `SiteView.tsx`, `osintLogic.ts`, `tests/m3-osint.test.ts` | Po B. |
 | 3 ‖ | **E. //DYSK E** | `minigames/PendriveApp.tsx`, `usbLogic.ts`, `tests/m3-usb.test.ts` | Po B (kontrakt `m3_usb` w `types.ts`). Używa `usePointerDrag` z A. |
@@ -314,9 +316,15 @@ Kolejność wymuszona: A → B → (C ‖ D ‖ E ‖ F ‖ G) → H → I → J
 | O8 | Matryca ma cztery podpisane części wirusa i próg 92% pola jako 100% paska; dokument podaje tylko zdrapkę i pasek. Etykieta `//TOR: PRZEGLĄDARKA` (dokument: `TOR: PRZEGLĄDARKA`). | Uwaga 1 (zrozumiałość dla laika); spójność etykiet kafelków. |
 | O9 | Parking ma 8 aut (dokument: 5); pierwszy przeskok czasu startuje z 22:15 (dokument: „upływ czasu do poranka” bez godziny startu). Podpisy pod zegarem przeskoków: „DO PORANKA…” i „DO GODZIN PRACY BIURA…” (dokument bez tekstu). | Opis auta ma wymagać uwagi; zegar potrzebuje punktu startu. |
 | O10 | Folder FREEVOLT z 4 plikami do przeciągnięcia (nieoceniane). Zdanie BM „PRZESYŁAM CI ZDJĘCIE” pominięte. Opisy pracowników, „W O&L OD: …”, wpisy bez dat rocznych. | Uwagi właściciela 4, 5 i 2; dokument nie podaje opisów i lat. |
-| O11 | Wyraźne literówki w kwestiach 1:1 („ZOSTAWIE”, „NAM POBICIE”, „B&O”): przepisujemy dosłownie z wyjątkiem „ZOSTAWIE” → „ZOSTAWIĘ” (P6). Kod pocztowy adresu z dokumentu 53-034 (stary kod miał 53-234). | Wierność dokumentowi. |
+| O11 | Wyraźne literówki w kwestiach 1:1 („ZOSTAWIE”, „NAM POBICIE”, „B&O”): przepisujemy dosłownie z wyjątkiem „ZOSTAWIE” → „ZOSTAWIĘ” (P6; dotyczy D3 opcja 3 i kwestii gracza w mostku 3). Kod pocztowy adresu z dokumentu 53-034 (stary kod miał 53-234). | Wierność dokumentowi. |
+| O12 | Intro: ostatnia kwestia gracza „DAJ MI CHWILĘ” jest kwestią intro (przed BIOS); `intro.firstChoice` usunięty, więc po starcie pulpitu //BAZA_WIRUSÓW jest od razu odblokowana (jak „Wzorzec B bez kwestii w czacie” w `resolveOpeningChat`). Dawny spójnik „NAJPIERW STWORZĘ WIRUSA.” usunięty. | Dokument kończy intro kwestią „DAJ MI CHWILĘ”. |
+| O13 | `reportAnswer` opcji spoza ścieżki 100% wymyślone (tabela debriefu podaje tylko ścieżkę ideal): D2 = stanowisko osoby (`SPECJALISTKA DS. LOGISTYKI`, `SZEFOWA DZIAŁU SPRZEDAŻY`, `SZEF DZIAŁU CYBERBEZPIECZEŃSTWA`, `CEO`), D3 suboptimal `PODRZUCĘ PENDRIVE Z DOKUMENTAMI HR O ZWOLNIENIACH`, D3 critical `PUSTY PENDRIVE Z PODPISEM KEYLOGGER`, D4 critical nazwa dysku `NAZWA DYSKU: KEYLOGGER`. Pozostałe opcje: odpowiedź = etykieta. | Raport musi pokazać, co gracz wybrał. |
+| O14 | Opcja D6 „zrzut na inny samochód” rozpisana na 7 aut suboptimal (po jednym na każde inne auto, w tym 3 łudząco podobne), „pusty asfalt” (critical) to opcja `asphalt` (kliknięcie w tło sceny). Opcja D5 `OŁAWSKA 51B` (dokument: „Oławska”; stary kod miał „Ołbińska”). | Dokument zlicza opcje zbiorczo; minigra potrzebuje po jednej na element sceny. |
+| O15 | Ikony pulpitu ofiary: dokument podaje `FREEVOLT` z trójkątem; folder z 4 plikami do przeciągnięcia i napis `PULPIT HAKERA` to dodatek (uwaga 5, P7). Stacje w schemacie sieci mają nazwy `MATEUSZ_BIURO_O&L`, `STACJA-02`, `STACJA-03` (dokument: „3 zainfekowane stacje”). Zdanie „W O&L OD: …” i opisy pracowników wymyślone (uwaga 2), bez słowa o szkoleniach. | Dokument ich nie podaje. |
 
-### Pytania do właściciela
+### Pytania do właściciela (rozstrzygnięte: właściciel przyjął propozycje domyślne P1–P10, bez zmian)
+
+Rozstrzygnięcia: P1 oceniana nazwa dysku + podpis, poziom D4 = gorszy z dwóch kroków; P2 Ransomware zostaje suboptimal, gra toczy się jako RAT; P3 z ekranu celu nie ma powrotu do strony; P4 parking 8 aut; P5 `openingConversation` (zrobione w A); P6 poprawione tylko „ZOSTAWIĘ”; P7 4 pliki FREEVOLT bez dystraktorów; P8 M2 bez zmian; P9 pasek certyfikatu i portfel poza zakresem; P10 slajdy tylko jako lekcje `attack`/`defense` i baza Moodle (H). Dodatkowo (decyzja 9): przeskok nocny 22:15 → 06:02, poranny 06:02 → 08:12. Tabela poniżej zostaje jako zapis pytań.
 
 | # | Pytanie | Propozycja domyślna |
 |---|---|---|
@@ -330,3 +338,52 @@ Kolejność wymuszona: A → B → (C ‖ D ‖ E ‖ F ‖ G) → H → I → J
 | P8 | Czy dopisać godziny (`clock`) do przeskoku czasu w M2, żeby też miał lecący zegar z cyframi? | Nie w tym planie; M2 dostaje wariant bez cyfr. |
 | P9 | Pasek „postępu certyfikatu 4/10” i stan portfela (5,50 → 9,52 BTC) z dokumentu: czy mają trafić do raportu? Silnik ma dziś tylko `rewardBtc`. | Poza zakresem tej przebudowy. |
 | P10 | Slajdy „CO POWINIENEŚ ZAPAMIĘTAĆ?”: tylko jako lekcje `attack`/`defense` i baza Moodle, bez osobnej karuzeli w grze (pole jest przestarzałe)? | Tak. |
+
+## 9. Kontrakt porcji B (stan po wykonaniu; obowiązuje agentów C–G)
+
+Porcja B zrobiona w gałęzi `refactor/missions-2-4-standard`. Wszystkie dane są w `stages.ts` (źródło: dokument scenariusza, 1:1), typy w `minigames/types.ts`. **Agenci C–G nie edytują** `stages.ts`, `types.ts`, `data/mission3.json`, `ui.tsx`, `siteAssets.ts`, `report.ts`, `index.ts` ani `tests/mission3.test.ts`: potrzebną zmianę zgłaszają osobie koordynującej. Każdy dopisuje tylko własne pliki z sekcji 7 oraz `tests/m3-*.test.ts`.
+
+### 9.1 Co zrobiono
+
+- `stages.ts`: 5 etapów, `decisions` `[1]`, `[2,3]`, `[4]`, `[5,6]`, `[]`; 6 decyzji z poziomami wg dokumentu; 5 mostków 1:1 (w tym dwie kwestie gracza z rzędu w mostku 3, adres 53-034, dwie osobne kwestie BM w mostkach 2 i 5); beaty `time_jump`: noc `clockFrom 22:15 → clock 06:02` (podpis „DO PORANKA…”), poranek `06:02 → 08:12` („DO GODZIN PRACY BIURA…”); `incomingCall.label` „MALWARE ZOSTAŁ AKTYWOWANY”; `drone_app.openingConversation` (2 kwestie BM, bez „PRZESYŁAM CI ZDJĘCIE”); stare podpisy „MIJA KILKA GODZIN…” usunięte.
+- `data/mission3.json`: `decisionCount: 6`, `passingScore: 80`, `subTitle` z dokumentu, intro 1:1 wersalikami (bez `firstChoice`, O12), etykiety kafelków (`//TOR: PRZEGLĄDARKA`, `//WIRUS: RAT (C2)`), `step6.summary` („ZHAKOWANO O&L”, 6 idealnych, 4,02 BTC), `step6.choices` D1–D6 wg kanonicznej tabeli z `attack`/`defense` (D3 dostaje wątek ZIP/RAR i prośby do IT, D4 wątek niewkładania znalezionych pendrive'ów i skanowania nośników, D2 myśl o informacjach o sobie w sieci).
+- `minigames/`: `types.ts` (nowe typy), `siteAssets.ts` (mechanizm grafik), `report.ts` (`buildReport`, `reportAnswerOf`), `ui.tsx` (`ImageSlot`, `LOADER_MS`, `LOADER_LONG_MS`; `NoteSection`/`MentorNote` usunięte), `stub.tsx` (tymczasowy wspólny ekran), 5 zaślepek, `index.ts`.
+- `assets/<grupa>/.gitkeep` dla `virus`, `employees`, `events`, `usb`, `drone`, `rat`.
+- `tests/mission3.test.ts` przepisany (41 testów); stare `builderLogic.ts` i `osintLogic.ts` usunięte (stare minigry zastąpione zaślepkami; kod zostaje w historii gita).
+
+### 9.2 Wspólne dla minigier
+
+| Rzecz | Gdzie | Użycie |
+|---|---|---|
+| Raport decyzji | `minigames/report.ts` | `onDecision(buildReport(config.virus, option))`; `answer` = `reportAnswer ?? label`; trzeci argument nadpisuje `tier`/`feedback`/`answer` (D4) |
+| Grafika | `ui.tsx` `ImageSlot` | `<ImageSlot asset={ref} label="opis" fit="cover" />` (`fit`: `cover` albo `contain`), wypełnia rodzica; zastępnik w dev z `GRAFIKA: <opis>` i ścieżką |
+| Rozwiązanie assetu | `siteAssets.ts` | `resolveAsset(group, name)`, `assetPath(group, name)`, `ASSETS_DIR`; glob `../assets/*/*.{png,jpg,jpeg,webp}` (WebP 1024 px) i `{gif,svg}` |
+| Ładowanie | `ui.tsx` | `LOADER_MS` (1700), `LOADER_LONG_MS` (2000) z `ModuleLoader` |
+| Stan między etapami | `types.ts` | `USB_STATE_KEY = 'm3_usb'`, `UsbState { volume, archive, signature }` w `customState` (`setCustomState`): pisze //DYSK E, czytają //DRON i //RAT (z fallbackiem `usbFallback` z configu) |
+| Losowa kolejność opcji | silnik | `useShuffled` z `engine/core/shuffle.ts` (zaślepki NIE tasują; pełne minigry tak) |
+
+Kontrakt `BlockProps<Config>`: `config`, `onDecision`, `onComplete`. Żadna minigra nie wywołuje `SideMonitor` (prawy monitor = czat). `AppHeader`, `ChoiceZone`, `ConfirmButton`, `ModuleLoader`, `usePointerDrag` z silnika.
+
+Typy wspólne: `ReportableOption extends ChoiceOption { reportAnswer? }`; `GradedDecision { decisionNum, question, options }`; `GradedStep { question, options }` (bez numeru); `AssetRef { group, name }`.
+
+### 9.3 Per minigra
+
+Teksty ekranów (ZADANIE, przyciski, napisy loaderów) są w configu: nie wpisuj ich w JSX. Poniżej najważniejsze pola; pełne typy w `types.ts`.
+
+| Porcja | Plik (do przepisania) | `componentId` / klucz `blocks` | Typ configu | Kluczowe pola | Assety |
+|---|---|---|---|---|---|
+| C | `VirusLabApp.tsx` (+ `ScratchMatrix.tsx`, `matrixLogic.ts`) | `ol_virus_lab` / `virus_database` | `VirusLabConfig` | `virus` (D1: `rat` ideal, `ransomware` suboptimal, `keylogger` critical; `desc` = opis karty), `virusTexts {task, choiceLabel, confirmLabel}`, `matrix {heading, loaderText, revealThreshold 0.92, segments 10, image, parts[4] {id,label,desc}, doneMessage, continueLabel}` | `virus/rat` |
+| D | `OsintBrowserApp.tsx` (+ `SiteView.tsx`, nowy `osintLogic.ts`) | `ol_osint_browser` / `browser` | `OsintBrowserConfig` | `site {url, title, tabs {home, events}, heroHeadline, heroSubheadline, contact, employeesHeading, employees[5] {id,name,role,tenure,bio,photo,optionId}, events[2] {id,headline,body?,hashtags?,photos[]}}`, `siteTexts {task, continueLabel, readLabel}`, `loaders {target, targetSave, vectorSave}`, `target` (D2: 5 opcji, `label` = imię i nazwisko, bez `desc`, `reportAnswer` = stanowisko), `targetTexts`, `vector` (D3, 3 opcje), `vectorTexts` | `employees/<id pracownika>` (`jan_lukasiewicz`, `slawomir_bialek`, `wiktoria_galecka`, `agnieszka_leman`, `mateusz_klimowicz`), `events/` (`party_sales_1..3`, `meeting_logistics_1..2`) |
+| E | `PendriveApp.tsx` (+ `usbLogic.ts`) | `ol_pendrive` / `pendrive_app` | `PendriveConfig` | `planDecisionNum` (3), `plan[] {vectorOptionId, answer, fileIds[]}` (odpowiedź D3 z `playerChoices` → pasujące pliki; `planFallbackVectorOptionId` gdy brak D3), `attachments[3] {id,name,archive,thumb?}`, `startTexts`, `armTexts`, `envelopeImage`, `volume` (krok nazwy: `question`, `options[4]` z poziomami do agregacji D4, brak `decisionNum`; `KEYLOGGER` ma `reportAnswer` „NAZWA DYSKU: KEYLOGGER” i zgłasza D4 od razu), `signature` (D4, `decisionNum 4`, 4 opcje, `confirmLabel` „WYSUŃ PAMIĘĆ USB”), `successMessage`. Zapis `customState.m3_usb` | `usb/party_photos` (`attachments[0].thumb`), `usb/envelope` (`envelopeImage`) |
+| F | `DroneApp.tsx` (+ `DroneMap.tsx`, `DroneCamera.tsx`, `droneLogic.ts`) | `ol_drone` / `drone_app` | `DroneConfig` | `droneStats {model, video, speed, connection}`, `statuses {idle, awaitingPayload, awaitingCoordinates, flying}`, `texts {…Label, payloadCaption, payloadAttaching, flightCaption, tasks {activate,payload,map,camera,aim,done}}`, `hud {batteryPercent 48, transmissionLabel}`, `address` (D5, opcje z `mapLocations`), `car` (D6, opcje z `parkingCars` + `asphalt`), `mapLocations[4] {id,number,address,district,x,y,tier}`, `parkingCars[8] {id,desc,shape,body,roof,tier}` (kolejność = miejsca, 2 rzędy po 4), `asphalt {id,label,tier}`, `images {cityMap, parking}`, `successDrop`, `usbFallback` | `drone/city_map`, `drone/parking` (opcjonalne, brak = SVG) |
+| G | `RatSessionApp.tsx` (+ `FreevoltFiles.tsx`, `NetworkDiagram.tsx`) | `ol_rat_session` / `rat_session` | `RatSessionConfig` | `host {name, ip}`, `usbFallback`, `alert {label,status,hostLabel,ipLabel,archiveLabel,volumeLabel,takeoverLabel}`, `desktop {banner, icons[3] {id,label,warning?}, wallpaper}`, `files {folderTitle, hackerDesktopLabel, items[4] {id,name,kind}, copyingLabel}`, `network {nodes[5] {id,label,kind: hacker, relay albo infected}, headline, endLabel}`, `loaders {desktop, network}`, `tasks {alert,desktop,files,network}`. Brak decyzji; czyta `m3_usb` | `rat/victim_wallpaper` (opcjonalna) |
+
+Id opcji (stabilne, testowane w `mission3.test.ts`): D1 `rat`/`ransomware`/`keylogger`; D2 `choose_mateusz`/`choose_logistics` (Wiktoria)/`choose_sales` (Agnieszka)/`choose_ciso`/`choose_ceo`; D3 `vector_party_zip`/`vector_hr_docs`/`vector_empty_keylogger`; D4 podpisy `env_afterparty`/`env_bo`/`env_lost_docs`/`env_termination`, nazwy dysku `vol_impreza`/`vol_bo`/`vol_new_disk`/`vol_keylogger`; D5 `loc_1..4` (4 = Ołtaszyńska); D6 `car_*` i `asphalt` (idealne `car_target`).
+
+Logika ocen po stronie minigry: D2 `critical` (CEO, szef cyberbezpieczeństwa) → `onDecision` od razu, bez cofania. D4 = gorszy z poziomów nazwy i podpisu (`buildReport(config.signature, option, { tier, feedback, answer })`); nazwa `KEYLOGGER` zgłasza D4 `critical` natychmiast.
+
+### 9.4 Zaślepki i sprzątanie
+
+- Zaślepki (`stub.tsx` + 5 komponentów) mają te same nazwy eksportów, pokazują dane z configu jako przyciski i wołają `onDecision`/`onComplete`. Nie tasują opcji. Każdy agent zastępuje swój komponent całkowicie i przestaje importować `stub.tsx`; po ostatniej z porcji C–G plik `stub.tsx` należy usunąć (porcja H).
+- Nowe pliki logiki (`matrixLogic.ts`, `osintLogic.ts`, `usbLogic.ts`, `droneLogic.ts`) tworzą agenci; stare `builderLogic.ts` i `osintLogic.ts` usunięto w B.
+- Uruchomienie: `?mission=3&dev=1`, `window.__STORE__` w dev; zaślepka //DYSK E zapisuje `m3_usb` z wartościami ścieżki ideal.
