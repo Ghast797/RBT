@@ -15,6 +15,9 @@ import { InfoCard, NameCards } from './ui';
 
 type Screen = 'virus_select' | 'code_edit' | 'compiling' | 'ready';
 
+/** Jak długo gracz widzi komunikat o gotowym wirusie, zanim etap zakończy się sam. */
+const READY_MS = 1400;
+
 export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
   config,
   onDecision,
@@ -28,6 +31,9 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
   const [enabledInstructions, setEnabledInstructions] = useState<string[]>([]);
 
   const virusOptions = useShuffled(config.virus.options);
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
   const selectedVirus = config.virus.options.find((o) => o.id === selectedVirusId);
 
   // Przeciąganie segmentów kodu (zdarzenia wskaźnika: mysz i dotyk, także między prawym monitorem a lewym ekranem).
@@ -69,6 +75,17 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
     sounds.playClick();
     setDrag({ id, x: e.clientX, y: e.clientY, over: false });
   };
+
+  // Krok bez decyzji: po komunikacie o gotowym wirusie etap kończy się sam (jeden raz).
+  useEffect(() => {
+    if (screen !== 'ready') return;
+    const id = setTimeout(() => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      onCompleteRef.current();
+    }, READY_MS);
+    return () => clearTimeout(id);
+  }, [screen]);
 
   const handleVirusConfirm = () => {
     if (!selectedVirus) return;
@@ -263,7 +280,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
 
       {screen === 'ready' && (
         <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
-          {header('WIRUS GOTOWY', 'Zapisz wirusa i wróć na pulpit.', 'FINALIZACJA')}
+          {header('WIRUS GOTOWY', 'Wirus jest gotowy. Za chwilę wrócisz na pulpit.', 'FINALIZACJA')}
           <InfoCard accent={accent} className="text-center my-auto">
             <div
               className="w-12 h-12 rounded-full border mx-auto flex items-center justify-center"
@@ -278,17 +295,6 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
               AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY
             </p>
           </InfoCard>
-          <div className="flex justify-end">
-            <ConfirmButton
-              accent={accent}
-              label="ZAPISZ WIRUSA I PRZEJDŹ DALEJ"
-              onClick={() => {
-                sounds.playSuccess();
-                onComplete();
-              }}
-              className="w-auto px-6"
-            />
-          </div>
         </div>
       )}
     </div>

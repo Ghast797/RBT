@@ -3,7 +3,7 @@
 // zły zestaw blokuje kompilację komunikatem (bez onDecision i bez wykrycia),
 // poprawny kończy etap przez onComplete. Spec: docs/migration-spec.md, sekcja 1.
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ShieldAlert, CheckCircle2, Cpu, AlertTriangle } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
@@ -20,6 +20,9 @@ type Screen = 'virus_select' | 'loading' | 'builder' | 'compiling' | 'ready';
 type GroupKey = 'modules' | 'masking' | 'package';
 
 const ACCENT = '#ec4899'; // kolor kafelka //BAZA_WIRUSÓW
+
+/** Jak długo gracz widzi komunikat o gotowym ładunku, zanim etap zakończy się sam. */
+const READY_MS = 1400;
 
 const GROUP_KEYS: GroupKey[] = ['modules', 'masking', 'package'];
 
@@ -68,6 +71,9 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
   const [error, setError] = useState<string | null>(null);
 
   const virusOptions = useShuffled(config.virus.options);
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
   const virus = config.virus.options.find((o) => o.id === virusId);
   const allPicked = GROUP_KEYS.every((k) => picked[k]);
 
@@ -89,6 +95,17 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
     // critical: zostajemy na ekranie wyboru (zablokowanym) — silnik pokazuje wykrycie.
     if (virus.tier !== 'critical') setScreen('loading');
   };
+
+  // Krok bez decyzji: po komunikacie o gotowym ładunku etap kończy się sam (jeden raz).
+  useEffect(() => {
+    if (screen !== 'ready') return;
+    const id = setTimeout(() => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      onCompleteRef.current();
+    }, READY_MS);
+    return () => clearTimeout(id);
+  }, [screen]);
 
   const setGroup = (key: GroupKey, id: string) => {
     setError(null);
@@ -227,7 +244,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
 
       {screen === 'ready' && (
         <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
-          {header('ŁADUNEK SKOMPILOWANY', 'Zapisz ładunek i wróć na pulpit.', 'FINALIZACJA')}
+          {header('ŁADUNEK SKOMPILOWANY', 'Ładunek jest gotowy. Za chwilę wrócisz na pulpit.', 'FINALIZACJA')}
           <div
             className="p-5 rounded-xl border space-y-3 text-center my-auto"
             style={{ borderColor: `${ACCENT}66`, backgroundColor: `${ACCENT}12` }}
@@ -239,17 +256,6 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
               <CheckCircle2 size={28} />
             </div>
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">{config.builder.successMessage}</h3>
-          </div>
-          <div className="flex justify-end">
-            <ConfirmButton
-              accent={ACCENT}
-              label="ZAPISZ ŁADUNEK I PRZEJDŹ DALEJ"
-              onClick={() => {
-                sounds.playSuccess();
-                onComplete();
-              }}
-              className="w-auto px-6"
-            />
           </div>
         </div>
       )}

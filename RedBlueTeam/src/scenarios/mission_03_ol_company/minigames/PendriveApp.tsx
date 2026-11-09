@@ -3,7 +3,7 @@
 // karty na dużym ekranie, prawy monitor jako SidePanel). UI nie podpowiada oceny.
 // Spec: docs/migration-spec.md, sekcja 3.
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HardDrive, Usb, Archive, FileText, CheckCircle2, Mail } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
@@ -27,6 +27,8 @@ type Screen =
   | 'done';
 
 const BIND_DURATION_MS = 1600;
+/** Jak długo gracz widzi komunikat „RAT ukryty w archiwum”, zanim krok przejdzie sam. */
+const BOUND_MS = 1300;
 const ACCENT = '#f59e0b'; // kolor kafelka //DYSK E na pulpicie
 
 /** Nazwa archiwum wynikająca z wgranego pliku (neutralna, nie zdradza oceny). */
@@ -79,12 +81,25 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
     if (isBinding || isBound) return;
     sounds.playClick();
     setIsBinding(true);
-    setTimeout(() => {
+  };
+
+  // Podpięcie RAT do archiwum: pakowanie, komunikat sukcesu, potem krok sam przechodzi dalej.
+  // Timery czyszczą się przy odmontowaniu; zaliczony krok nie uruchamia się drugi raz (isBound zostaje).
+  useEffect(() => {
+    if (!isBinding) return;
+    const id = setTimeout(() => {
       sounds.playSuccess();
       setIsBinding(false);
       setIsBound(true);
     }, BIND_DURATION_MS);
-  };
+    return () => clearTimeout(id);
+  }, [isBinding]);
+
+  useEffect(() => {
+    if (!isBound || screen !== 'bind') return;
+    const id = setTimeout(() => setScreen('load_volume'), BOUND_MS);
+    return () => clearTimeout(id);
+  }, [isBound, screen]);
 
   const confirmVolume = () => {
     const o = find(config.volume, volumeId);
@@ -147,7 +162,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
         <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
           {header(
             'PRZYGOTOWANIE NOŚNIKA: ŁADUNEK',
-            isBound ? 'Archiwum jest gotowe. Przejdź do nazwy nośnika.' : config.bindPrompt,
+            isBound ? 'Archiwum jest gotowe. Za chwilę przejdziesz do nazwy nośnika.' : config.bindPrompt,
             'KROK 2/4'
           )}
           <div className="flex-1 min-h-0 flex items-center justify-center">
@@ -184,18 +199,6 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
                 />
               )}
             </div>
-          </div>
-          <div className="flex justify-end">
-            <ConfirmButton
-              accent={ACCENT}
-              label="DALEJ"
-              enabled={isBound}
-              onClick={() => {
-                sounds.playClick();
-                setScreen('load_volume');
-              }}
-              className="w-auto px-6"
-            />
           </div>
         </div>
       )}
