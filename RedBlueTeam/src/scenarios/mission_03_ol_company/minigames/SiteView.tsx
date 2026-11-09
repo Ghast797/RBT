@@ -29,6 +29,8 @@ interface SiteViewProps {
   /** Zapamiętana pozycja przewinięcia zakładki (pamięć stanu aplikacji po zamknięciu i otwarciu okna). */
   getScroll: (tab: SiteTab) => number;
   setScroll: (tab: SiteTab, scrollTop: number) => void;
+  /** Zwarty pasek po prawej stronie rzędu zakładek (wskaźniki „PRZECZYTANO” i przycisk dalej), żeby nie zabierał wysokości stronie. */
+  toolbar?: React.ReactNode;
 }
 
 export const SiteView: React.FC<SiteViewProps> = ({
@@ -39,7 +41,8 @@ export const SiteView: React.FC<SiteViewProps> = ({
   read,
   onTabRead,
   getScroll,
-  setScroll
+  setScroll,
+  toolbar
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const active = useIsActiveApp();
@@ -122,6 +125,7 @@ export const SiteView: React.FC<SiteViewProps> = ({
               </button>
             );
           })}
+          {toolbar && <div className="ml-auto flex items-center gap-3 pb-1.5 min-w-0">{toolbar}</div>}
         </div>
       </div>
 

@@ -90,7 +90,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   };
 
   const header = (task: string | undefined, step: string | undefined) => (
-    <AppHeader icon={Globe} accent={ACCENT} title={config.title} subtitle={config.site.url} task={task} step={step} />
+    <AppHeader icon={Globe} accent={ACCENT} title={config.title} task={task} step={step} />
   );
 
   const loader = (label: string, durationMs: number, onDone: () => void) => (
@@ -111,29 +111,31 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
             onTabRead={handleTabRead}
             getScroll={getScroll}
             setScroll={setScroll}
+            toolbar={
+              !done && (
+                <>
+                  <div className="flex items-center gap-3 text-[0.6875rem] font-bold tracking-wider">
+                    <span className="text-gray-400">{config.siteTexts.readLabel}</span>
+                    {SITE_TABS.map((t) => (
+                      <span key={t} className={read[t] ? 'text-[#00ff66]' : 'text-gray-500'}>
+                        {read[t] ? '✓' : '○'} {t === 'home' ? config.site.tabs.home : config.site.tabs.events}
+                      </span>
+                    ))}
+                  </div>
+                  <ConfirmButton
+                    accent={ACCENT}
+                    label={config.siteTexts.continueLabel}
+                    enabled={canProceedToTarget(read)}
+                    onClick={() => {
+                      sounds.playClick();
+                      setScreen('load_target');
+                    }}
+                    className="w-auto !px-4 !py-1.5"
+                  />
+                </>
+              )
+            }
           />
-          {!done && (
-            <div className="shrink-0 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-4 text-xs font-bold tracking-wider text-gray-300">
-                <span className="text-gray-400">{config.siteTexts.readLabel}</span>
-                {SITE_TABS.map((t) => (
-                  <span key={t} className={read[t] ? 'text-[#00ff66]' : 'text-gray-500'}>
-                    {read[t] ? '✓' : '○'} {t === 'home' ? config.site.tabs.home : config.site.tabs.events}
-                  </span>
-                ))}
-              </div>
-              <ConfirmButton
-                accent={ACCENT}
-                label={config.siteTexts.continueLabel}
-                enabled={canProceedToTarget(read)}
-                onClick={() => {
-                  sounds.playClick();
-                  setScreen('load_target');
-                }}
-                className="w-auto px-6"
-              />
-            </div>
-          )}
         </div>
       )}
 
