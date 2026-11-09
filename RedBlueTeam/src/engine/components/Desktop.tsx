@@ -405,10 +405,10 @@ export const Desktop: React.FC = () => {
 
             <div className="space-y-1">
               <div className="text-xs font-black tracking-widest text-[#ff3366] uppercase animate-pulse">
-                ⚠️ OPERACJA SPALONA // ZOSTAŁEŚ WYKRYTY!
+                ⚠️ OPERACJA SPALONA
               </div>
               <h2 className="text-lg sm:text-xl font-black text-white tracking-wide">
-                {detectionReason?.title || "ALARM SYSTEMÓW BEZPIECZEŃSTWA"}
+                {detectionReason?.title || "ZOSTAŁEŚ WYKRYTY!"}
               </h2>
             </div>
 
@@ -425,7 +425,7 @@ export const Desktop: React.FC = () => {
                 className="flex-1 py-3 px-4 bg-[#00ff66] text-[#05080c] font-black text-xs uppercase tracking-wider rounded-xl hover:bg-[#00ff66]/90 transition-all shadow-[0_0_20px_#00ff66] flex items-center justify-center space-x-2"
               >
                 <Play size={15} />
-                <span>POWTÓRZ OD WYBORÓW (SZYBKI POWRÓT)</span>
+                <span>ZACZNIJ MISJĘ OD NOWA (BEZ INTRO)</span>
               </button>
               <button
                 onClick={retryFromScratch}
@@ -473,7 +473,7 @@ export const Desktop: React.FC = () => {
                   <RefreshCw size={15} className="group-hover:rotate-180 transition-transform duration-300" />
                   <span>OD POCZĄTKU</span>
                 </div>
-                <span className="text-[0.625rem] text-gray-400 group-hover:text-gray-900 font-normal">Intro + BIOS + Fabuła</span>
+                <span className="text-xs text-gray-400 group-hover:text-gray-900 font-normal">Intro + BIOS + Fabuła</span>
               </button>
 
               <button
@@ -482,9 +482,9 @@ export const Desktop: React.FC = () => {
               >
                 <div className="flex items-center space-x-1.5">
                   <Play size={15} />
-                  <span>OD WYBORÓW</span>
+                  <span>BEZ INTRO</span>
                 </div>
-                <span className="text-[0.625rem] text-gray-900 font-normal">Pulpit + Baza Wirusów</span>
+                <span className="text-xs text-gray-900 font-normal">Pulpit, misja od pierwszego etapu</span>
               </button>
             </div>
           </div>
