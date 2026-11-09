@@ -88,6 +88,8 @@ export interface MissionState {
     unlockDelayMs?: number;
     /** Czy w mostku był beat `time_jump` (domyślne opóźnienie 3 s). */
     hadTimeJump?: boolean;
+    /** Kiedy (ms, `Date.now()`) skończył się ostatni przeskok czasu — od tej chwili liczy się opóźnienie odblokowań. */
+    timeJumpEndedAt?: number;
   } | null;
   /** Trwający przeskok czasu (nakładka na pulpicie); `null`, gdy nic nie trwa. */
   timeJump: { label: string; sublabel?: string; durationMs?: number; clock?: string } | null;
@@ -574,8 +576,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         else sounds.playNotification();
       };
       set({ isByteMasterTyping: false, pendingBridge: null });
-      const delay = scaledUnlockDelay(
-        pb.unlockDelayMs ?? (pb.hadTimeJump ? DEFAULT_UNLOCK_DELAY_AFTER_TIME_JUMP : 0)
+      // Opóźnienie liczy się od zniknięcia nakładki przeskoku (jeśli był), a nie od końca mostka:
+      // czas, który minął na kolejnych kwestiach mentora, jest już odjęty od odstępu.
+      const sinceJump = pb.timeJumpEndedAt !== undefined ? Date.now() - pb.timeJumpEndedAt : 0;
+      const delay = Math.max(
+        0,
+        scaledUnlockDelay(pb.unlockDelayMs ?? (pb.hadTimeJump ? DEFAULT_UNLOCK_DELAY_AFTER_TIME_JUMP : 0)) - sinceJump
       );
       clearUnlockTimer();
       if (delay > 0) unlockTimer = setTimeout(applyUnlock, delay);
@@ -624,7 +630,9 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       timeJump: null,
       // Po przeskoku zegar pulpitu pokazuje godzinę z beatu (jeśli ją podano).
       systemTime: timeJump.clock ?? s.systemTime,
-      pendingBridge: pendingBridge ? { ...pendingBridge, index: pendingBridge.index + 1 } : null
+      pendingBridge: pendingBridge
+        ? { ...pendingBridge, index: pendingBridge.index + 1, timeJumpEndedAt: Date.now() }
+        : null
     }));
     get().advanceBridge();
   },

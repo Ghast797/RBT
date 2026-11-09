@@ -99,6 +99,65 @@ describe('Mostek etapu: beat time_jump i unlockDelayMs', () => {
     expect(useMissionStore.getState().highlightedTileId).toBe('vpn_app');
   });
 
+  it('opóźnienie liczy się od końca przeskoku, nie od końca mostka (kwestie mentora po przeskoku skracają czekanie)', () => {
+    load({
+      conversation: [
+        { from: 'time_jump', label: 'MIJA CZAS…', durationMs: 1000 },
+        { from: 'byte_master', text: 'JUŻ CZAS' }
+      ],
+      unlockIcons: ['vpn_unlocked'],
+      badges: { vpn_app: 1 },
+      highlightTile: 'vpn_app'
+    });
+    useMissionStore.getState().completeStage('stage_x');
+    expect(useMissionStore.getState().timeJump).not.toBeNull();
+    useMissionStore.getState().endTimeJump();
+    // kwestia BM „pisze” 2 s po zniknięciu nakładki — kafelek jeszcze nie świeci
+    vi.advanceTimersByTime(2000);
+    expect(useMissionStore.getState().chatMessages.at(-1)?.text).toBe('JUŻ CZAS');
+    expect(useMissionStore.getState().highlightedTileId).toBeNull();
+    // do 3 s od końca przeskoku brakuje jeszcze 1 s (a nie kolejnych 3 s)
+    vi.advanceTimersByTime(999);
+    expect(useMissionStore.getState().highlightedTileId).toBeNull();
+    vi.advanceTimersByTime(1);
+    expect(useMissionStore.getState().highlightedTileId).toBe('vpn_app');
+    expect(useMissionStore.getState().unlockedIcons).toContain('vpn_unlocked');
+  });
+
+  it('gdy po przeskoku minęło już więcej niż opóźnienie (kwestia gracza), odblokowanie następuje od razu', () => {
+    load({
+      conversation: [
+        { from: 'time_jump', label: 'MIJA CZAS…', durationMs: 1000 },
+        { from: 'player', id: 'p1', label: 'DALEJ' }
+      ],
+      unlockIcons: ['vpn_unlocked'],
+      highlightTile: 'vpn_app'
+    });
+    useMissionStore.getState().completeStage('stage_x');
+    useMissionStore.getState().endTimeJump();
+    vi.advanceTimersByTime(10000); // gracz długo nie klika
+    expect(useMissionStore.getState().highlightedTileId).toBeNull();
+    useMissionStore.getState().chooseChatOption('p1');
+    expect(useMissionStore.getState().highlightedTileId).toBe('vpn_app');
+  });
+
+  it('unlockDelayMs też liczy się od końca przeskoku', () => {
+    load({
+      conversation: [
+        { from: 'time_jump', label: 'MIJA CZAS…', durationMs: 1000 },
+        { from: 'byte_master', text: 'JUŻ CZAS' }
+      ],
+      unlockDelayMs: 2500,
+      highlightTile: 'vpn_app'
+    });
+    useMissionStore.getState().completeStage('stage_x');
+    useMissionStore.getState().endTimeJump();
+    vi.advanceTimersByTime(2499);
+    expect(useMissionStore.getState().highlightedTileId).toBeNull();
+    vi.advanceTimersByTime(1);
+    expect(useMissionStore.getState().highlightedTileId).toBe('vpn_app');
+  });
+
   it('beat time_jump z polem clock ustawia zegar systemowy po przeskoku (nie w jego trakcie)', () => {
     load({
       conversation: [{ from: 'time_jump', label: '06:02 — MIJA CZAS…', durationMs: 1000, clock: '06:02' }],
