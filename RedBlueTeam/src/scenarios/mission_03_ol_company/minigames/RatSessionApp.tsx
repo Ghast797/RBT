@@ -67,10 +67,13 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
     setProgress((p) => startCopy(p, id));
   };
 
+  // Zawsze woła onComplete: dla etapu już zaliczonego (ponowne otwarcie) silnik tylko zamyka okno,
+  // więc przycisk nie może się „zablokować” po pierwszym kliknięciu. Dźwięk sukcesu tylko raz.
   const finish = () => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-    sounds.playSuccess();
+    if (!completedRef.current) {
+      completedRef.current = true;
+      sounds.playSuccess();
+    }
     onComplete();
   };
 
@@ -121,16 +124,19 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
     return shell(
       <div className="flex-1 min-h-0 flex items-center justify-center">
         <div
-          className="w-full max-w-xl rounded-xl border p-5 space-y-4 bg-black/40"
+          className="w-full rounded-xl border p-5 2xl:p-8 space-y-4 2xl:space-y-6 bg-black/40"
           style={{ borderColor: `${ACCENT}66`, boxShadow: `0 0 24px ${ACCENT}22` }}
         >
-          <div className="flex items-center gap-3 text-sm font-black tracking-wide text-red-300">
-            <AlertTriangle size={22} className="shrink-0 text-red-400" />
+          <div className="flex items-center gap-3 text-base 2xl:text-2xl font-black tracking-wide text-red-300">
+            <AlertTriangle size={26} className="shrink-0 text-red-400" />
             <span>{config.alert.status}</span>
           </div>
           <div className="space-y-2">
             {rows.map(([label, value]) => (
-              <div key={label} className="flex items-baseline justify-between gap-4 border-b border-gray-800 pb-1.5 text-xs">
+              <div
+                key={label}
+                className="flex items-baseline justify-between gap-4 border-b border-gray-800 pb-1.5 2xl:pb-2.5 text-sm 2xl:text-xl"
+              >
                 <span className="text-gray-400 tracking-wider">{label}</span>
                 <span className="font-bold text-white text-right break-all">{value}</span>
               </div>

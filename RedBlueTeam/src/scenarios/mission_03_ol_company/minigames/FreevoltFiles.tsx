@@ -51,8 +51,18 @@ export const FreevoltFiles: React.FC<{
             return (
               <div
                 key={f.id}
+                role="button"
+                tabIndex={locked ? -1 : 0}
+                aria-disabled={locked}
+                onKeyDown={(e) => {
+                  // Obsługa z klawiatury jak w //DYSK E: Enter (albo spacja) przenosi plik na pulpit hakera.
+                  if (!locked && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    onCopy(f.id);
+                  }
+                }}
                 {...dragProps}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${
                   locked
                     ? 'border-gray-700 bg-black/30'
                     : 'border-gray-600 bg-[#10243a] hover:border-white/60 cursor-grab active:cursor-grabbing'
