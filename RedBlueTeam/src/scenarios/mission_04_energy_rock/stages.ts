@@ -1,9 +1,8 @@
 // Etapy i dane klocków Misji 4 (Energy Rock) — wzorzec B, po przebudowie (porcja B).
 // Źródło prawdy: docs/Scenariusz Misja 4 - Energy Rock (Specyfikacja 2D).md; plan: docs/rebuild-plan.md (sekcje 2, 3, 5, 9).
 // Treść (teksty, feedback) mieszka tutaj, nie w kodzie minigry. Struktura i poziomy (`tier`) są wg planu.
-// Teksty, których nie było w poprzedniej wersji, mają wartość `TODO_VR` i komentarz `TODO(tekst-VR)`:
-// koordynator uzupełnia je z dokumentu. Istniejące stringi przeniesiono bez zmian (część do poprawy 1:1 z dokumentem
-// jest oznaczona tym samym komentarzem).
+// Teksty opcji, feedback i dialogi 1:1 z dokumentu (WERSALIKI w opcjach i dialogach); teksty interfejsu
+// spoza dokumentu (ZADANIE, loadery, podpisy) wg planu. Odchylenia: plan, sekcja 7.
 
 import type { DialogueTreeConfig, StageDefinition } from '../../engine/types/mission';
 import type { VpnRouterConfig } from '../../engine/blocks/VpnRouter';
@@ -20,16 +19,13 @@ import type {
   VirusLabConfig
 } from './minigames/types';
 
-/** Znacznik tekstu do uzupełnienia z dokumentu (test `mission4.test.ts` ma wyłączone sprawdzenie jego braku). */
-export const TODO = 'TODO_VR';
-
 // ---------------------------------------------------------------------------
 // ETAP 1: er_virus_lab — D1 + zdrapka (flavor bez oceny)
 // ---------------------------------------------------------------------------
 
 export const virusLabConfig: VirusLabConfig = {
   title: '//BAZA_WIRUSÓW',
-  subtitle: TODO, // TODO(tekst-VR): podtytuł aplikacji (kontekst, nie polecenie), plan 3.1
+  subtitle: 'WYBÓR I SKŁADANIE ZŁOŚLIWEGO OPROGRAMOWANIA',
   steps: ['KROK 1/2', 'KROK 2/2'],
   heading: 'BAZA WIRUSÓW - WYBIERZ ODPOWIEDNIEGO WIRUSA',
   virus: {
@@ -41,41 +37,41 @@ export const virusLabConfig: VirusLabConfig = {
         label: 'RANSOMWARE',
         desc: 'MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ',
         image: { group: 'virus', name: 'ransomware' },
-        imageAlt: TODO, // TODO(tekst-VR): tekst alternatywny grafiki karty Ransomware, plan 3.1
+        imageAlt: 'monitor skuty łańcuchem z kłódką (ransomware)',
         tier: 'ideal',
         feedback:
-          'Zgodnie z planem operacji paraliżuje serwery ofiary, dając doskonały kamuflaż pod kradzież technologii Freevolt pod płaszczykiem szantażu finansowego.' // TODO(tekst-VR): feedback 1:1 z dokumentu
+          'Blokuje infrastrukturę firmy, paraliżuje operacje i stwarza idealną przykrywkę finansową pod szantaż.'
       },
       {
         id: 'rat',
         label: 'RAT: REMOTE ACCESS TROJAN',
         desc: 'POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY',
         image: { group: 'virus', name: 'rat' },
-        imageAlt: TODO, // TODO(tekst-VR): tekst alternatywny grafiki karty RAT
+        imageAlt: 'zdalnie sterowany pulpit (RAT)',
         tier: 'suboptimal',
         feedback:
-          'RAT umożliwia cichy dostęp, lecz nie paraliżuje infrastruktury firmy ani nie stwarza natychmiastowej przykrywki pod żądanie okupu.' // TODO(tekst-VR): feedback 1:1 z dokumentu
+          'Pozwala na cichą infiltrację pulpitu, lecz nie paraliżuje całej organizacji i nie wywiera natychmiastowej presji na zarząd.'
       },
       {
         id: 'keylogger',
         label: 'KEYLOGGER',
         desc: 'POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE',
         image: { group: 'virus', name: 'keylogger' },
-        imageAlt: TODO, // TODO(tekst-VR): tekst alternatywny grafiki karty Keylogger
+        imageAlt: 'klawiatura pod lupą (keylogger)',
         tier: 'critical',
         feedback:
-          'Zupełnie chybiony wektor. Zbieranie haseł trwa tygodniami i nie pozwala na zablokowanie zasobów Energy Rock.' // TODO(tekst-VR): feedback 1:1 z dokumentu
+          'Zbiera wpisywane znaki, lecz nie daje natychmiastowego dostępu do serwerów ani nie uniemożliwia pracy firmie.'
       }
     ]
   },
   virusTexts: {
-    task: TODO, // TODO(tekst-VR): ZADANIE ekranu wyboru wirusa, plan 3.1
-    confirmLabel: TODO // TODO(tekst-VR): etykieta przycisku zatwierdzenia wyboru
+    task: 'WYBIERZ WIRUSA I ZATWIERDŹ WYBÓR.',
+    confirmLabel: 'ZATWIERDŹ WYBÓR'
   },
   matrix: {
     heading: 'WYSZUKAJ CZĘŚCI WIRUSA:',
-    programPrefix: TODO, // TODO(tekst-VR): przedrostek podtytułu „SKŁADASZ PROGRAM:” (plan 3.1)
-    loaderText: TODO, // TODO(tekst-VR): „PRZYGOTOWANIE MATRYCY KOMPILACJI…” (plan 3.1)
+    programPrefix: 'SKŁADASZ PROGRAM:',
+    loaderText: 'PRZYGOTOWANIE MATRYCY KOMPILACJI…',
     revealThreshold: 0.92,
     segments: 10,
     // Keylogger (critical) kończy misję przed zdrapką, więc nie ma wariantu.
@@ -83,31 +79,31 @@ export const virusLabConfig: VirusLabConfig = {
       ransomware: {
         programName: 'RANSOMWARE',
         image: { group: 'virus', name: 'matrix_ransomware' },
-        imageAlt: TODO, // TODO(tekst-VR): alt ikony monitora w łańcuchach
+        imageAlt: 'monitor skuty łańcuchami z kłódką',
         parts: [
-          { id: 'encrypt', label: TODO, desc: TODO }, // TODO(tekst-VR): 4 podpisane części (plan 3.1, wzorzec: M3 VirusLabApp)
-          { id: 'key', label: TODO, desc: TODO },
-          { id: 'spread', label: TODO, desc: TODO },
-          { id: 'ransom', label: TODO, desc: TODO }
+          { id: 'encrypt', label: 'SZYFROWANIE', desc: 'zamienia pliki w nieczytelne dane' },
+          { id: 'key', label: 'KLUCZ', desc: 'klucz do odszyfrowania zostaje u Ciebie' },
+          { id: 'spread', label: 'ROZPRZESTRZENIANIE', desc: 'sięga do innych komputerów w sieci' },
+          { id: 'ransom', label: 'ŻĄDANIE OKUPU', desc: 'wyświetla ofierze komunikat z żądaniem zapłaty' }
         ],
         barColor: '#8A2BE2'
       },
       rat: {
         programName: 'RAT',
         image: { group: 'virus', name: 'rat' },
-        imageAlt: TODO, // TODO(tekst-VR): alt grafiki RAT
+        imageAlt: 'zdalnie sterowany pulpit (RAT)',
         parts: [
-          { id: 'screen', label: TODO, desc: TODO }, // TODO(tekst-VR): 4 części RAT (można przenieść z M3)
-          { id: 'control', label: TODO, desc: TODO },
-          { id: 'stealth', label: TODO, desc: TODO },
-          { id: 'link', label: TODO, desc: TODO }
+          { id: 'screen', label: 'PODGLĄD EKRANU', desc: 'widzisz pulpit ofiary' },
+          { id: 'control', label: 'STEROWANIE', desc: 'używasz jej myszy i klawiatury' },
+          { id: 'stealth', label: 'CICHE TŁO', desc: 'działa jak zwykły proces, nikt go nie zauważa' },
+          { id: 'link', label: 'ŁĄCZNOŚĆ', desc: 'łączy się z Twoim komputerem' }
         ],
         barColor: '#8A2BE2'
       }
     },
-    doneMessage: TODO, // TODO(tekst-VR): krótki komunikat po 100% paska (plan 3.1, ekran 3)
-    task: TODO, // TODO(tekst-VR): ZADANIE zdrapki „PRZECIĄGAJ KURSOREM… ODSŁONIĆ WIRUSA.”
-    hint: TODO, // TODO(tekst-VR): „PRZECIĄGAJ TUTAJ”
+    doneMessage: 'ODNALEZIONO WSZYSTKIE CZĘŚCI WIRUSA',
+    task: 'PRZECIĄGAJ KURSOREM Z WCIŚNIĘTYM PRZYCISKIEM MYSZY PO CZARNYM POLU, ŻEBY ODSŁONIĆ WIRUSA.',
+    hint: 'PRZECIĄGAJ TUTAJ',
     maskColor: '#3b82f6'
   }
 };
@@ -120,47 +116,47 @@ const passwordTiles: PasswordTile[] = [
   { id: 'pw_upper', label: 'DUŻE LITERY A-Z', charset: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', forbidden: false },
   { id: 'pw_lower', label: 'MAŁE LITERY A-Z', charset: 'abcdefghijklmnopqrstuvwxyz', forbidden: false },
   { id: 'pw_digits', label: 'CYFRY 0-9', charset: '0123456789', forbidden: false },
-  { id: 'pw_special', label: 'ZNAKI SPECJALNE (!@#$%)', charset: '!@#$%^&*()_+', forbidden: false }, // TODO(tekst-VR): etykieta 1:1 „ZNAKI SPECJALNE !@#$%^&*()_+”
-  { id: 'pw_space', label: 'BIAŁE ZNAKI (np. SPACJA)', charset: ' ', forbidden: true }, // TODO(tekst-VR): etykieta 1:1 „BIAŁE ZNAKI NP. SPACJA”
-  { id: 'pw_national', label: 'ZNAKI NARODOWE (np. Ą, Ę...)', charset: 'ĄĘĆŹŚ', forbidden: true } // TODO(tekst-VR): etykieta 1:1 „ZNAKI NARODOWE ĘĆŹĄŚ”
+  { id: 'pw_special', label: 'ZNAKI SPECJALNE !@#$%^&*()_+', charset: '!@#$%^&*()_+', forbidden: false },
+  { id: 'pw_space', label: 'BIAŁE ZNAKI NP. SPACJA', charset: ' ', forbidden: true },
+  { id: 'pw_national', label: 'ZNAKI NARODOWE ĘĆŹĄŚ', charset: 'ĘĆŹĄŚ', forbidden: true }
 ];
 
 const noteTiles: NoteTile[] = [
-  { id: 'note_icon', slot: 'icon', label: TODO }, // TODO(tekst-VR): ikona (kłódka na niebieskim tle), plan 3.2 ekran 2; opis/alt
-  { id: 'note_amount', slot: 'amount', label: '$ 200 000' }, // TODO(tekst-VR): „KWOTA: $ 200 000” 1:1
-  { id: 'note_address', slot: 'address', label: 'XKAJI023KJDF93' }, // TODO(tekst-VR): „ADRES: XKAJ1023KJDf93” 1:1 (plan O16)
+  { id: 'note_icon', slot: 'icon', label: 'KŁÓDKA' }, // grafika: kłódka na niebieskim tle
+  { id: 'note_amount', slot: 'amount', label: 'KWOTA: $ 200 000' },
+  { id: 'note_address', slot: 'address', label: 'ADRES: XKAJ1023KJDf93' },
   { id: 'note_contact', slot: 'contact', label: 'NAPISZ DO NAS' },
   {
     id: 'title_encrypted',
     slot: 'title',
     label: 'TWOJE PLIKI ZOSTAŁY ZASZYFROWANE!',
     tier: 'ideal',
-    reportPart: TODO, // TODO(tekst-VR): „OSTRZEŻENIE” (plan 3.2: answer ideal „OSTRZEŻENIE + LIMIT 30 H”)
-    feedback: 'Jasny, stanowczy komunikat natychmiast sygnalizuje ofierze powagę sytuacji.' // TODO(tekst-VR): feedback 1:1 z dokumentu
+    reportPart: 'OSTRZEŻENIE',
+    feedback: 'Formalny, alarmujący ton nagłówka.'
   },
   {
     id: 'title_casual',
     slot: 'title',
     label: 'CZEKAM NA BITCOINY!',
     tier: 'suboptimal',
-    reportPart: TODO, // TODO(tekst-VR): „TYTUŁ: CZEKAM NA BITCOINY!” (plan O13)
-    feedback: 'Niepoważny ton osłabia presję i wiarygodność profesjonalnego ataku.' // TODO(tekst-VR)
+    reportPart: 'TYTUŁ: CZEKAM NA BITCOINY!',
+    feedback: 'Niepoważny nagłówek obniża autorytet i wiarygodność żądania.'
   },
   {
     id: 'time_30h',
     slot: 'time',
     label: 'POZOSTAŁY CZAS: 00:30:00:00',
     tier: 'ideal',
-    reportPart: TODO, // TODO(tekst-VR): „LIMIT 30 H”
-    feedback: 'Realny limit czasu buduje presję, a jednocześnie pozwala ofierze zebrać okup.' // TODO(tekst-VR)
+    reportPart: 'LIMIT 30 H',
+    feedback: 'Realny limit czasu: 30 godzin na zebranie okupu.'
   },
   {
     id: 'time_30s',
     slot: 'time',
     label: 'POZOSTAŁY CZAS: 00:00:30:00',
     tier: 'critical',
-    reportPart: TODO, // TODO(tekst-VR): „LIMIT 30 S”
-    feedback: '30 sekund to czas nierealistyczny — uniemożliwia kontakt i zapłatę, niszcząc cel szantażu.' // TODO(tekst-VR)
+    reportPart: 'LIMIT 30 S',
+    feedback: 'Czas 30 sekund uniemożliwia ofierze podjęcie negocjacji i zakup kryptowalut.'
   }
 ];
 
@@ -170,38 +166,38 @@ const colorOptions: ColorOption[] = [
     label: 'ZIELONY',
     swatch: '#22c55e',
     tier: 'suboptimal', // plan P4: zielony = suboptimal
-    feedback: 'Kolor kojarzony z poprawnością i sukcesem. Pracownicy mogą uznać komunikat za zwykłe powiadomienie IT.'
+    feedback: 'Kolor zielony podświadomie kojarzy się ze statusem bezpiecznym i poprawnym.'
   },
   {
     id: 'red',
     label: 'CZERWONY',
     swatch: '#ef4444',
     tier: 'ideal',
-    feedback: 'Kolor alarmowy. Maksymalizuje stres psychologiczny ofiary i zmusza decydentów do pośpiechu.'
+    feedback: 'Uniwersalny kolor alarmowy wywołujący silny stan zagrożenia i presję.'
   },
   {
     id: 'white',
-    label: 'BIAŁY', // TODO(tekst-VR): etykieta 1:1 „BIAŁY / SZARY”
+    label: 'BIAŁY / SZARY',
     swatch: '#e5e7eb',
     tier: 'suboptimal',
-    feedback: 'Neutralny, nie budzi poczucia natychmiastowego kryzysu ani pośpiechu.'
+    feedback: 'Neutralna barwa przypominająca standardowy błąd systemowy.'
   }
 ];
 
 export const builderConfig: BuilderConfig = {
   title: '//KREATOR: RANSOMWARE',
-  subtitle: TODO, // TODO(tekst-VR): podtytuł aplikacji
+  subtitle: 'KLUCZ SZYFRUJĄCY I KOMUNIKAT DLA OFIARY',
   steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   password: {
     decisionNum: 2,
     question: 'SIŁA WYGENEROWANEGO HASŁA (SKALA DO 5)',
-    task: TODO, // TODO(tekst-VR): ZADANIE „SKONFIGURUJ GENERATOR HASŁA W MENEDŻERZE HASEŁ.” (plan 3.2)
-    heading: TODO, // TODO(tekst-VR): „USTAW ZŁOŻONOŚĆ HASŁA:”
-    lengthLabel: TODO, // TODO(tekst-VR): „DŁUGOŚĆ HASŁA”
-    frameLabel: TODO, // TODO(tekst-VR): „CECHY HASŁA:”
-    previewLabel: TODO, // TODO(tekst-VR): „HASŁO:”
-    confirmLabel: TODO, // TODO(tekst-VR): „ZAPISZ W BAZIE I KONTYNUUJ”
-    resultLabel: TODO, // TODO(tekst-VR): „SIŁA HASŁA:”
+    task: 'SKONFIGURUJ GENERATOR HASŁA W MENEDŻERZE HASEŁ.',
+    heading: 'USTAW ZŁOŻONOŚĆ HASŁA:',
+    lengthLabel: 'DŁUGOŚĆ HASŁA',
+    frameLabel: 'CECHY HASŁA:',
+    previewLabel: 'HASŁO:',
+    confirmLabel: 'ZAPISZ W BAZIE I KONTYNUUJ',
+    resultLabel: 'SIŁA HASŁA:',
     minLength: 8,
     maxLength: 24,
     defaultLength: 8,
@@ -209,46 +205,53 @@ export const builderConfig: BuilderConfig = {
     idealLength: 24,
     idealSets: 4,
     tiles: passwordTiles,
-    strengthMessages: { 1: TODO, 2: TODO, 3: TODO, 4: TODO, 5: TODO }, // TODO(tekst-VR): komunikaty pod wynikiem x/5 (plan 3.2; dla 1–2 pokazywany ekran wykrycia)
+    strengthMessages: {
+      // 1–2 to poziom critical: zamiast wyniku silnik pokazuje ekran wykrycia.
+      1: 'HASŁO ZAWIERA ZNAKI NIEDOZWOLONE W KLUCZACH TECHNICZNYCH',
+      2: 'HASŁO MA MINIMALNĄ DŁUGOŚĆ',
+      3: 'HASŁO ŚREDNIEJ SIŁY',
+      4: 'SILNE HASŁO',
+      5: 'UŻYTO MAKSYMALNEJ ILOŚCI ZNAKÓW ORAZ ZNAKÓW SPECJALNYCH, JEDNOCZEŚNIE UNIKAJĄC TYCH NIEDOZWOLONYCH. STWORZONO NAPRAWDĘ BARDZO SILNE HASŁO'
+    },
     answers: {
-      ideal: TODO, // TODO(tekst-VR): „5 (DŁUGOŚĆ 24, 4 ZESTAWY ZNAKÓW)”
-      other: TODO // TODO(tekst-VR): szablon z `{score}`, `{length}`, `{sets}` (plan O13)
+      ideal: '5 (DŁUGOŚĆ 24, ZESTAWY ZNAKÓW: 4)',
+      other: '{score} (DŁUGOŚĆ {length}, ZESTAWY ZNAKÓW: {sets})'
     },
     feedback: {
       ideal:
-        'Maksymalna entropia klucza (24 znaki, pełny bezpieczny zestaw). Zespoły obronne nie mają szans na złamanie hasła brute-forcem.',
+        'Maksymalna długość i 4 dozwolone zestawy znaków, bez znaków niedozwolonych: klucza nie da się złamać w rozsądnym czasie.',
       suboptimal:
-        'Hasło silne, lecz w sprzyjających warunkach (np. klastry GPU) czas łamania ulega znacznemu skróceniu.',
+        'Krótsze hasło lub mniej zestawów znaków: klucz jest podatny na atak słownikowy i brute force.',
       critical:
-        'Hasło podatne na szybki atak słownikowy LUB błąd wykonania skryptu szyfrującego w systemie ofiary (znaki narodowe / spacje).'
+        'Zbyt słaby klucz (8 znaków) albo znaki niedozwolone (spacja, znaki narodowe), które powodują błąd parsera i uniemożliwiają odszyfrowanie.'
     }
   },
   note: {
     decisionNum: 3,
     question: 'KOMPONENTY WIADOMOŚCI',
-    task: TODO, // TODO(tekst-VR): „KROK 1: PRZECIĄGNIJ INFORMACJE I KOMPONENTY NA GŁÓWNYM EKRANIE”
-    confirmLabel: TODO, // TODO(tekst-VR): „ZATWIERDŹ KOMUNIKAT”
+    task: 'KROK 1: PRZECIĄGNIJ INFORMACJE I KOMPONENTY NA GŁÓWNYM EKRANIE',
+    confirmLabel: 'ZATWIERDŹ KOMUNIKAT',
     slots: [
-      { id: 'icon', label: TODO }, // TODO(tekst-VR): 6 podpisów slotów: [IKONA], [TYTUŁ WIADOMOŚCI], [CZAS], [KWOTA], [ADRES], [KONTAKT]
-      { id: 'title', label: TODO },
-      { id: 'time', label: TODO },
-      { id: 'amount', label: TODO },
-      { id: 'address', label: TODO },
-      { id: 'contact', label: TODO }
+      { id: 'icon', label: '[IKONA]' },
+      { id: 'title', label: '[TYTUŁ WIADOMOŚCI]' },
+      { id: 'time', label: '[CZAS]' },
+      { id: 'amount', label: '[KWOTA]' },
+      { id: 'address', label: '[ADRES]' },
+      { id: 'contact', label: '[KONTAKT]' }
     ],
     tiles: noteTiles,
     answerJoiner: ' + ',
-    idealFeedback: TODO // TODO(tekst-VR): feedback D3 ideal (tytuł + limit 30 h), 1:1 z dokumentu
+    idealFeedback: 'Formalny, alarmujący ton i realny limit czasu (30 godzin na zebranie okupu).'
   },
   color: {
     decisionNum: 4,
     question: 'WYBIERZ KOLOR OKNA / ELEMENTÓW',
-    task: TODO, // TODO(tekst-VR): „KROK 2: WYBIERZ KOLOR OKNA I ELEMENTÓW”
-    confirmLabel: TODO,
+    task: 'KROK 2: WYBIERZ KOLOR OKNA I ELEMENTÓW',
+    confirmLabel: 'ZATWIERDŹ KOLOR',
     options: colorOptions
   },
-  loaders: { note: TODO, color: TODO, compile: TODO }, // TODO(tekst-VR): „ŁADOWANIE KOMPONENTÓW KOMUNIKATU…”, „PRZYGOTOWANIE PALETY KOLORÓW…”, „KOMPILACJA WIRUSA…”
-  doneMessage: TODO // TODO(tekst-VR): „WIRUS GOTOWY! AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY”
+  loaders: { note: 'ŁADOWANIE KOMPONENTÓW KOMUNIKATU…', color: 'PRZYGOTOWANIE PALETY KOLORÓW…', compile: 'KOMPILACJA WIRUSA…' },
+  doneMessage: 'WIRUS GOTOWY! AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY'
 };
 
 // ---------------------------------------------------------------------------
@@ -257,76 +260,76 @@ export const builderConfig: BuilderConfig = {
 
 export const mailConfig: MailConfig = {
   title: '//MAIL',
-  subtitle: TODO, // TODO(tekst-VR): podtytuł aplikacji
+  subtitle: 'WIADOMOŚĆ DO DZIAŁU REKRUTACJI ENERGY ROCK',
   steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   recipient: 'rekrutacja@energyrock.com',
-  positionLabel: TODO, // TODO(tekst-VR): „STANOWISKO:”
-  position: 'Analityk rynków energetycznych', // TODO(tekst-VR): WERSALIKI wg dokumentu
+  positionLabel: 'STANOWISKO:',
+  position: 'ANALITYK RYNKÓW ENERGETYCZNYCH',
   attachment: 'CV_WILK.PDF',
   payloadLabel: '//WIRUS: RANSOMWARE',
   subject: {
     decisionNum: 5,
     question: 'WYBIERZ TEMAT MAILA',
-    fieldLabel: TODO, // TODO(tekst-VR): „TEMAT:”
-    task: TODO, // TODO(tekst-VR): ZADANIE ekranu tematu (plan 3.3)
+    fieldLabel: 'TEMAT:',
+    task: 'WYBIERZ TEMAT WIADOMOŚCI I PRZECIĄGNIJ GO DO POLA TEMAT.',
     options: [
       {
         id: 'subj_cv_wilk',
         label: 'CV MICHAŁ WILK',
         tier: 'ideal',
-        feedback: 'Zgodny z instrukcją rekrutacyjną. Format "CV [Imię Nazwisko]" bez problemu przechodzi przez filtry HR.'
+        feedback: 'Ściśle spełnia wytyczne rekrutacyjne: dopisek CV oraz imię i nazwisko.'
       },
       {
         id: 'subj_wilk_cv',
-        label: TODO, // TODO(tekst-VR): „WILK CV”
+        label: 'WILK CV',
         tier: 'suboptimal',
-        feedback: TODO // TODO(tekst-VR): feedback D5 „WILK CV” (brak imienia, nieprofesjonalny styl)
+        feedback: 'Brak imienia, nieprofesjonalny styl.'
       },
       {
         id: 'subj_analyst',
         label: 'ANALITYK MICHAŁ WILK',
         tier: 'critical', // plan: critical (dawniej suboptimal)
-        feedback: TODO // TODO(tekst-VR): feedback D5 „ANALITYK MICHAŁ WILK” (brak słowa „CV”, filtry HR)
+        feedback: 'Brak słowa kluczowego „CV” powoduje pominięcie wiadomości przez filtry działu HR.'
       }
     ]
   },
   body: {
     decisionNum: 6,
     question: 'WYBIERZ TREŚĆ MAILA',
-    fieldLabel: TODO, // TODO(tekst-VR): „TREŚĆ:”
-    task: TODO, // TODO(tekst-VR): ZADANIE ekranu treści
+    fieldLabel: 'TREŚĆ:',
+    task: 'WYBIERZ TREŚĆ WIADOMOŚCI I PRZECIĄGNIJ JĄ DO POLA TREŚĆ.',
     options: [
       {
         id: 'body_formal',
         label:
-          'Dzień dobry.\n\nPrzesyłam CV w związku z rekrutacją na stanowisko Analityka rynków energetycznych.\nHasło do pliku: WILK.\n\nPozdrawiam,\nMichał Wilk', // TODO(tekst-VR): WERSALIKI 1:1 z dokumentu
-        reportAnswer: TODO, // TODO(tekst-VR): „TREŚĆ Z HASŁEM WILK NA STANOWISKO ANALITYKA RYNKÓW ENERGETYCZNYCH”
+          'DZIEŃ DOBRY, PRZESYŁAM CV W ZWIĄZKU Z REKRUTACJĄ NA STANOWISKO ANALITYKA RYNKÓW ENERGETYCZNYCH. HASŁO DO PLIKU: WILK. POZDRAWIAM, MICHAŁ WILK',
+        reportAnswer: 'TREŚĆ Z HASŁEM WILK NA STANOWISKO ANALITYKA RYNKÓW ENERGETYCZNYCH',
         tier: 'ideal',
-        feedback: 'Formalny styl biznesowy. Szyfrowanie załącznika hasłem uniemożliwia bramkom pocztowym automatyczną detekcję ładunku.'
+        feedback: 'Profesjonalny ton, właściwe stanowisko i podane hasło do pliku: zaszyfrowanego załącznika nie sprawdzą piaskownice ani skanery antywirusowe.'
       },
       {
         id: 'body_casual',
-        label: 'Hej.\n\nW załączniku przesyłam cv.\n\nPozdrawiam,\nMichał Wilk', // TODO(tekst-VR): „HEJ, W ZAŁĄCZNIKU PRZESYŁAM CV. POZDRAWIAM, MICHAŁ WILK”
-        reportAnswer: TODO, // TODO(tekst-VR): odpowiedź w raporcie (plan O13)
+        label: 'HEJ, W ZAŁĄCZNIKU PRZESYŁAM CV. POZDRAWIAM, MICHAŁ WILK',
+        reportAnswer: 'LUŹNA TREŚĆ BEZ STANOWISKA I HASŁA',
         tier: 'suboptimal', // plan: „HEJ…” suboptimal (dawniej critical)
-        feedback: TODO // TODO(tekst-VR): feedback 1:1 (zbyt nieformalny zwrot, brak stanowiska i hasła)
+        feedback: 'Zbyt nieformalny zwrot, brak nazwy stanowiska i hasła.'
       },
       {
         id: 'body_no_pwd',
-        label: 'Cześć.\n\nPrzesyłam CV na stanowisko analityka usług energetycznych.\n\nPozdrawiam,\nMichał Wilk', // TODO(tekst-VR): „CZEŚĆ, PRZESYŁAM CV NA STANOWISKO ANALITYK USŁUG ENERGETYCZNYCH. POZDRAWIAM, MICHAŁ WILK”
-        reportAnswer: TODO, // TODO(tekst-VR): odpowiedź w raporcie (plan O13)
+        label: 'CZEŚĆ, PRZESYŁAM CV NA STANOWISKO ANALITYK USŁUG ENERGETYCZNYCH. POZDRAWIAM, MICHAŁ WILK',
+        reportAnswer: 'TREŚĆ NA STANOWISKO ANALITYK USŁUG ENERGETYCZNYCH, BEZ HASŁA',
         tier: 'critical', // plan: „USŁUG” critical (dawniej suboptimal)
-        feedback: TODO // TODO(tekst-VR): feedback 1:1 (błędna nazwa stanowiska, brak hasła)
+        feedback: 'Błędna nazwa stanowiska („usług” zamiast „rynków”) i brak hasła.'
       }
     ]
   },
-  confirmLabel: TODO, // TODO(tekst-VR): etykieta przycisków zatwierdzenia ekranów
-  loaders: { body: TODO, arm: TODO }, // TODO(tekst-VR): „ŁADOWANIE TREŚCI WIADOMOŚCI…”, „DODAWANIE ZAŁĄCZNIKA…”
+  confirmLabel: 'ZATWIERDŹ',
+  loaders: { body: 'ŁADOWANIE TREŚCI WIADOMOŚCI…', arm: 'DODAWANIE ZAŁĄCZNIKA…' },
   arm: {
-    task: TODO, // TODO(tekst-VR): „PRZECIĄGNIJ //WIRUS: RANSOMWARE NA ZAŁĄCZNIK CV_WILK.PDF.”
-    arming: TODO, // TODO(tekst-VR): „UZBRAJANIE ZAŁĄCZNIKA…”
-    armed: TODO, // TODO(tekst-VR): „ZAŁĄCZNIK ZAINFEKOWANY”
-    nextLabel: TODO // TODO(tekst-VR): „WŁĄCZ VPN”
+    task: 'PRZECIĄGNIJ //WIRUS: RANSOMWARE NA ZAŁĄCZNIK CV_WILK.PDF.',
+    arming: 'UZBRAJANIE ZAŁĄCZNIKA…',
+    armed: 'ZAŁĄCZNIK ZAINFEKOWANY',
+    nextLabel: 'WŁĄCZ VPN'
   }
 };
 
@@ -338,12 +341,12 @@ export const vpnConfig: VpnRouterConfig = {
   title: '//VPN',
   vpn: {
     // bez decisionNum: IP jest bramką bez oceny (zły adres blokuje, nie karze)
-    question: TODO, // TODO(tekst-VR): ewentualne pytanie kroku IP (nieraportowane)
+    question: 'USTAW ADRES IP TUNELU VPN',
     targetIp: '109.43.200.124',
     initialIp: '106.55.202.120',
     feedback: {
       ideal: 'POMYŚLNIE DOPASOWANO IP',
-      critical: TODO // TODO(tekst-VR): komunikat błędu złego adresu IP (bez kary)
+      critical: 'ADRES IP NIE ZGADZA SIĘ Z POŻĄDANYM. POPRAW OKTETY'
     }
   },
   sender: {
@@ -354,21 +357,21 @@ export const vpnConfig: VpnRouterConfig = {
     options: [
       {
         id: 'sender_wilk',
-        label: 'm.wilk@priv.com', // TODO(tekst-VR): WERSALIKI 1:1 „M.WILK@PRIV.COM”
+        label: 'M.WILK@PRIV.COM',
         tier: 'ideal',
-        feedback: 'Pełna spójność tożsamości nadawcy z nazwiskiem kandydata w treści i załączniku. Nie budzi podejrzeń rekrutera.'
+        feedback: 'Pełna spójność adresu z podpisem Michał Wilk.'
       },
       {
         id: 'sender_alex',
-        label: 'alex@priv.com', // TODO(tekst-VR): „ALEX@PRIV.COM”
+        label: 'ALEX@PRIV.COM',
         tier: 'suboptimal',
-        feedback: 'Niezgodność adresu nadawcy z podpisem pod mailem ("Michał Wilk"), co może zaalarmować czujnego pracownika.'
+        feedback: 'Rozbieżność imienia (Alex vs Michał Wilk) wzbudza podejrzenia.'
       },
       {
         id: 'sender_spam',
-        label: 'newrapgood@commercial.biz', // TODO(tekst-VR): „NEWRAWGOODS@COMMERCIAL.BIZ”
+        label: 'NEWRAWGOODS@COMMERCIAL.BIZ',
         tier: 'critical',
-        feedback: 'Domena o fatalnej reputacji, brak rekordów SPF/DKIM powiązanych z kandydatem. Wiadomość trafia do spamu.'
+        feedback: 'Domena komercyjna B2B całkowicie niezwiązana z kandydatem.'
       }
     ]
   }
@@ -384,62 +387,62 @@ const exfilFiles: ExfilFile[] = [
   { id: 'f_marek', name: 'MAREK.JPG', role: 'other' },
   { id: 'f_fvolt_tech', name: 'FVOLT_TECH.DOCX', role: 'target' },
   { id: 'f_kontrakty', name: 'KONTRAKTY.XCF', role: 'other' },
-  { id: 'f_tech_opis', name: TODO, role: 'other' }, // TODO(tekst-VR): „TECHNOLOGIA_OPIS.PDF”
+  { id: 'f_tech_opis', name: 'TECHNOLOGIA_OPIS.PDF', role: 'other' },
   { id: 'f_freevolt_schemat', name: 'FREEVOLT_SCHEMAT.PDF', role: 'target' },
-  { id: 'f_tech_schematy', name: TODO, role: 'other' }, // TODO(tekst-VR): „TECHNOLOGIA_SCHEMATY.PDF”
+  { id: 'f_tech_schematy', name: 'TECHNOLOGIA_SCHEMATY.PDF', role: 'other' },
   { id: 'f_materialy', name: 'MATERIALY.TXT', role: 'other' },
   { id: 'f_wazne_dane', name: 'WAZNE_DANE.DOCX', role: 'other' },
   { id: 'f_sekret', name: 'SEKRET.TXT', role: 'other' },
   { id: 'f_umowa', name: 'UMOWA2022.PDF', role: 'other' },
-  { id: 'f_energia_fvolt', name: 'ENERGIA_FVOLT.KCF', role: 'target' } // TODO(tekst-VR): „ENERGIA_FVOLT.XCF” (rozszerzenie wg dokumentu)
+  { id: 'f_energia_fvolt', name: 'ENERGIA_FVOLT.XCF', role: 'target' }
 ];
 
 // 8 węzłów: wektor (pendrive), 2 stacje, 4 serwery baz danych, serwer główny.
 const networkNodes: NetworkNode[] = [
-  { id: 'n_vector', label: TODO, kind: 'vector', x: 50, y: 50 }, // TODO(tekst-VR): podpisy węzłów (plan 3.5 ekran 2)
-  { id: 'n_ws1', label: TODO, kind: 'workstation', x: 20, y: 22 },
-  { id: 'n_ws2', label: TODO, kind: 'workstation', x: 80, y: 22 },
-  { id: 'n_db1', label: TODO, kind: 'database', x: 12, y: 60 },
-  { id: 'n_db2', label: TODO, kind: 'database', x: 30, y: 82 },
-  { id: 'n_db3', label: TODO, kind: 'database', x: 70, y: 82 },
-  { id: 'n_db4', label: TODO, kind: 'database', x: 88, y: 60 },
-  { id: 'n_main', label: TODO, kind: 'main', x: 50, y: 18 }
+  { id: 'n_vector', label: 'PUNKT WEJŚCIA', kind: 'vector', x: 50, y: 50 },
+  { id: 'n_ws1', label: 'STACJA ROBOCZA 01', kind: 'workstation', x: 20, y: 22 },
+  { id: 'n_ws2', label: 'STACJA ROBOCZA 02', kind: 'workstation', x: 80, y: 22 },
+  { id: 'n_db1', label: 'BAZA DANYCH 01', kind: 'database', x: 12, y: 60 },
+  { id: 'n_db2', label: 'BAZA DANYCH 02', kind: 'database', x: 30, y: 82 },
+  { id: 'n_db3', label: 'BAZA DANYCH 03', kind: 'database', x: 70, y: 82 },
+  { id: 'n_db4', label: 'BAZA DANYCH 04', kind: 'database', x: 88, y: 60 },
+  { id: 'n_main', label: 'SERWER GŁÓWNY', kind: 'main', x: 50, y: 18 }
 ];
 
 export const c2Config: C2Config = {
   title: '//MODUŁ_RANSOMWARE',
-  subtitle: TODO, // TODO(tekst-VR): podtytuł aplikacji
+  subtitle: 'ZDALNY PANEL ZAINFEKOWANEJ STACJI',
   steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   start: {
-    status: TODO, // TODO(tekst-VR): „CV ZOSTAŁO OTWARTE – MALWARE ZOSTAŁ AKTYWOWANY”
-    hostLabel: TODO, // TODO(tekst-VR): „NAZWA KOMPUTERA:”
+    status: 'CV ZOSTAŁO OTWARTE – MALWARE ZOSTAŁ AKTYWOWANY',
+    hostLabel: 'NAZWA KOMPUTERA:',
     host: 'ENERGY_ROCK_01_PC',
-    ipLabel: TODO, // TODO(tekst-VR): „AKTYWOWANE NA IP:”
+    ipLabel: 'AKTYWOWANE NA IP:',
     ip: '151.89.159.52',
-    button: TODO, // TODO(tekst-VR): „SZYFRUJ ZASOBY FIRMY”
-    loader: TODO // TODO(tekst-VR): „SKANOWANIE SIECI…”
+    button: 'SZYFRUJ ZASOBY FIRMY',
+    loader: 'SKANOWANIE SIECI…'
   },
   encrypt: {
-    task: TODO, // TODO(tekst-VR): „KLIKAJ ZIELONE WĘZŁY, ŻEBY JE ZASZYFROWAĆ.”
+    task: 'KLIKAJ ZIELONE WĘZŁY, ŻEBY JE ZASZYFROWAĆ.',
     nodes: networkNodes,
-    doneMessage: TODO, // TODO(tekst-VR): komunikat po zaszyfrowaniu wszystkich węzłów
-    nextLabel: TODO // TODO(tekst-VR): „POBIERZ PLIKI”
+    doneMessage: 'ZASOBY FIRMY ENERGY ROCK ZOSTAŁY POMYŚLNIE ZASZYFROWANE. UZYSKANO DOSTĘP DO SERWERÓW',
+    nextLabel: 'POBIERZ PLIKI'
   },
   exfil: {
     decisionNum: 8,
     question: 'EKSFILTRACJA PLIKÓW',
     // Brak `options`: poziom D8 wylicza minigra z reguł (cele/pozostałe), `answer` z `answers`, feedback z `feedback`.
-    task: TODO, // TODO(tekst-VR): „PRZECIĄGNIJ DO POLA PLIKI, PO KTÓRE PRZYSZEDŁEŚ.”
-    fieldLabel: TODO, // TODO(tekst-VR): „POBRANE PLIKI:”
-    confirmLabel: TODO, // TODO(tekst-VR): „POBIERZ ZAZNACZONE”
-    loader: TODO, // TODO(tekst-VR): „POBIERANIE PLIKÓW…”
+    task: 'PRZECIĄGNIJ DO POLA PLIKI, PO KTÓRE PRZYSZEDŁEŚ.',
+    fieldLabel: 'POBRANE PLIKI:',
+    confirmLabel: 'POBIERZ ZAZNACZONE',
+    loader: 'POBIERANIE PLIKÓW…',
     requiredTargets: 3,
     files: exfilFiles,
-    answers: { ideal: TODO }, // TODO(tekst-VR): „3 PLIKI FREEVOLT (DOCX, PDF, XCF)”
+    answers: { ideal: '3 PLIKI FREEVOLT (DOCX, PDF, XCF)' },
     feedback: {
-      ideal: 'Pobrano kompletny zestaw dokumentacji technologii Freevolt (3 pliki) bez pozostawiania śladów w logach.',
-      suboptimal: 'Pobrano pliki Freevolt, lecz także zbędne pliki decoy — niepotrzebny transfer zwiększa ryzyko detekcji.', // TODO(tekst-VR): feedback 1:1 (niekompletny zestaw lub nadmiar)
-      critical: 'Główny cel zlecenia nie został osiągnięty — brakuje kluczowych plików technologii Freevolt.'
+      ideal: 'Pozyskano kompletną dokumentację technologii Freevolt bez wzbudzania podejrzeń transferem zbędnych plików.',
+      suboptimal: 'Niekompletny zestaw danych lub zbyt duży transfer, który ułatwia analizę powłamaniową.',
+      critical: 'Żaden pobrany plik nie dotyczy Freevolt: całkowita porażka głównego celu operacji.'
     }
   }
 };
@@ -456,27 +459,27 @@ const negotiationDialogue: DialogueTreeConfig = {
       id: 'neg_1',
       decisionNum: 9,
       question: 'JAK ODPOWIESZ SZEFOWI IT NA INFORMACJĘ O SŁUŻBACH?',
-      incoming: 'ROZWIĄZUJEMY PROBLEM RANSOMWARE! ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE', // TODO(tekst-VR): bez wykrzyknika (dokument: „…RANSOMWARE I ODPOWIEDNIE SŁUŻBY…”)
+      incoming: 'ROZWIĄZUJEMY PROBLEM RANSOMWARE I ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE',
       options: [
         {
           id: 'firm_stance',
           label: 'ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW. ZASTANÓW SIĘ DOBRZE, CO CHCESZ ZROBIĆ',
           tier: 'ideal',
-          feedback: 'Rzeczowy argument techniczny paraliżujący decyzyjność ofiary.', // TODO(tekst-VR): feedback 1:1
+          feedback: 'Wskazanie na matematyczną nieodwracalność silnego szyfrowania łamie wiarę ofiary w pomoc z zewnątrz.',
           nextNode: 'neg_2'
         },
         {
           id: 'aggression',
           label: 'NIE BOJĘ SIĘ POLICJI',
           tier: 'suboptimal',
-          feedback: 'Pusta agresja bez argumentów technicznych.',
+          feedback: 'Emocjonalna reakcja bez technicznego argumentu o bezradności służb wobec silnego klucza.',
           nextNode: 'neg_2'
         },
         {
           id: 'surrender',
-          label: 'OKEJ, JUŻ WAM NIE PRZESZKADZAM', // TODO(tekst-VR): z kropką wg dokumentu „OKEJ, JUŻ WAM NIE PRZESZKADZAM.”
+          label: 'OKEJ, JUŻ WAM NIE PRZESZKADZAM.',
           tier: 'critical',
-          feedback: 'Kapitulacja i natychmiastowa rezygnacja z pozycji negocjacyjnej.'
+          feedback: 'Natychmiastowa kapitulacja pod wpływem blefu ofiary.'
         }
       ]
     },
@@ -490,21 +493,21 @@ const negotiationDialogue: DialogueTreeConfig = {
           id: 'btc_demand',
           label: 'TAK, JAK NAPISAŁEM W WIADOMOŚCI - INTERESUJĄ MNIE TYLKO BITCOINY',
           tier: 'ideal',
-          feedback: 'Podtrzymanie wiarygodnej przykrywki finansowej.',
+          feedback: 'Konsekwentne utrzymanie przykrywki ataku czysto finansowego ukrywa kradzież plików Freevolt.',
           nextNode: 'neg_3'
         },
         {
           id: 'troll',
           label: 'NICZEGO NIE ODSZYFRUJĘ, ROBIĘ TO DLA ZABAWY :D',
           tier: 'suboptimal',
-          feedback: 'Utrata wiarygodności profesjonalnego żądania.',
+          feedback: 'Niszczy szansę na okup i podważa wiarygodność grupy jako profesjonalnych szantażystów.',
           nextNode: 'neg_3'
         },
         {
           id: 'reveal_motive',
           label: 'CHCĘ DOSTĘPU DO PLIKÓW FREEVOLT',
           tier: 'critical',
-          feedback: 'Zdemaskowanie prawdziwego celu operacji zamiast przykrywki finansowej.'
+          feedback: 'Błąd dekonspiracyjny: zdradza szpiegowski charakter ataku i prawdziwy cel napastników.'
         }
       ]
     },
@@ -515,9 +518,9 @@ const negotiationDialogue: DialogueTreeConfig = {
       options: [
         {
           id: 'deadline_3h',
-          label: 'MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA', // TODO(tekst-VR): „…DO ODSZYFROWANIA” wg dokumentu
+          label: 'MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA DO ODSZYFROWANIA',
           tier: 'ideal',
-          feedback: 'Twardy limit czasu uniemożliwia ofierze procedury przywracania danych.'
+          feedback: 'Ultimatum (kwestia bez oceny).'
         }
       ]
     }
@@ -526,15 +529,15 @@ const negotiationDialogue: DialogueTreeConfig = {
 
 export const victimChatConfig: VictimChatConfig = {
   title: '//CZAT_Z_OFIARĄ',
-  subtitle: TODO, // TODO(tekst-VR): podtytuł aplikacji (komunikator „SZEF IT ENERGY ROCK”)
+  subtitle: 'KOMUNIKATOR: SZEF IT ENERGY ROCK',
   dialogue: negotiationDialogue,
   reportAnswers: {
-    firm_stance: TODO, // TODO(tekst-VR): „ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW…” (plan, tabela raportu, wiersz 9)
-    btc_demand: TODO // TODO(tekst-VR): „INTERESUJĄ MNIE TYLKO BITCOINY (OKUP WYŁUDZONY: TAK)”
+    firm_stance: 'ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW…',
+    btc_demand: 'INTERESUJĄ MNIE TYLKO BITCOINY (OKUP WYŁUDZONY: TAK)'
   },
   preview: {
-    heading: TODO, // TODO(tekst-VR): nagłówek miniatury okna żądania okupu
-    amountLabel: TODO, // TODO(tekst-VR): podpis kwoty
+    heading: 'OKNO WYŚWIETLONE OFIERZE',
+    amountLabel: 'PŁATNOŚĆ W BTC',
     amount: noteTiles.find((t) => t.id === 'note_amount')!.label,
     address: noteTiles.find((t) => t.id === 'note_address')!.label,
     contact: noteTiles.find((t) => t.id === 'note_contact')!.label,
@@ -592,7 +595,7 @@ export const mission4Stages: StageDefinition[] = [
           text: "ZNALAZŁEM INFORMACJE, ŻE PRIORYTET MAJĄ W TEJ CHWILI CV WYSYŁANE NA STANOWISKO 'ANALITYK RYNKÓW ENERGETYCZNYCH'. WŁĄCZ APLIKACJĘ MAILA"
         },
         { from: 'player', id: 'm4_reply_builder', label: 'MAJĄ JAKIEŚ WYTYCZNE DOTYCZĄCE TEMATU MAILA Z CV?' },
-        { from: 'byte_master', text: TODO } // TODO(tekst-VR): „TEMAT MAILA POWINIEN ZAWIERAĆ ODPOWIEDNIO NAZWISKO ORAZ IMIĘ Z DOPISKIEM CV” (plan, mostek 2)
+        { from: 'byte_master', text: 'TEMAT MAILA POWINIEN ZAWIERAĆ ODPOWIEDNIO NAZWISKO ORAZ IMIĘ Z DOPISKIEM CV' }
       ],
       unlockIcons: ['mail_unlocked', 'mail'],
       badges: { mail: 1, chat: 1 },
@@ -606,7 +609,7 @@ export const mission4Stages: StageDefinition[] = [
     decisions: [5, 6],
     completion: {
       // Spójnik (dokument milczy na tej granicy), plan, mostek 3.
-      conversation: [{ from: 'player', id: 'm4_reply_mail', label: TODO }], // TODO(tekst-VR): „ZAŁĄCZNIK GOTOWY. CZAS ZAMASKOWAĆ ADRES IP PRZED WYSŁANIEM”
+      conversation: [{ from: 'player', id: 'm4_reply_mail', label: 'ZAŁĄCZNIK GOTOWY. CZAS ZAMASKOWAĆ ADRES IP PRZED WYSŁANIEM' }],
       unlockIcons: ['vpn_unlocked', 'vpn_app'],
       badges: { vpn_app: 1, chat: 1 },
       highlightTile: 'vpn_app',
@@ -625,8 +628,8 @@ export const mission4Stages: StageDefinition[] = [
           label: 'WSZYSTKO ZROBIONE. CZEKAMY AŻ OTWORZĄ CV I AKTYWUJĄ RANSOMWARE. JAK NIE PRZYJMIECIE MNIE DO DARKSUN, TO MOŻE DOSTANĘ PRACĘ W ENERGY ROCK'
         },
         { from: 'byte_master', text: 'KTO WIE?' },
-        // Wysłanie późnym popołudniem, otwarcie CV rano (plan P7); podpis pod zegarem do uzupełnienia.
-        { from: 'time_jump', clockFrom: '16:40', clock: '09:10', label: TODO } // TODO(tekst-VR): podpis „DO GODZIN PRACY REKRUTERA…” (plan sekcja 2)
+        // Wysłanie późnym popołudniem, otwarcie CV rano (plan P7).
+        { from: 'time_jump', clockFrom: '16:40', clock: '09:10', label: 'DO GODZIN PRACY REKRUTERA…' }
       ],
       unlockIcons: ['victim_workstation_unlocked', 'victim_workstation'],
       badges: { victim_workstation: 1, chat: 1 },
@@ -641,9 +644,9 @@ export const mission4Stages: StageDefinition[] = [
     decisions: [8],
     completion: {
       conversation: [
-        { from: 'player', id: 'm4_reply_workstation', label: TODO }, // TODO(tekst-VR): „AKTYWOWALI RANSOMWARE I STRACILI DOSTĘP DO PLIKÓW. TERAZ CZEKAMY AŻ SIĘ ZE MNĄ SKONTAKTUJĄ”
+        { from: 'player', id: 'm4_reply_workstation', label: 'AKTYWOWALI RANSOMWARE I STRACILI DOSTĘP DO PLIKÓW. TERAZ CZEKAMY AŻ SIĘ ZE MNĄ SKONTAKTUJĄ' },
         { from: 'byte_master', text: 'PAMIĘTAJ TYLKO, ŻE POTRZEBUJEMY I PLIKÓW, I OKUPU' },
-        { from: 'time_jump', clockFrom: '09:10', clock: '11:35', label: TODO } // TODO(tekst-VR): podpis „DO REAKCJI SZEFA IT…”
+        { from: 'time_jump', clockFrom: '09:10', clock: '11:35', label: 'DO REAKCJI SZEFA IT…' }
       ],
       unlockIcons: ['negotiation_unlocked', 'negotiation'],
       badges: { negotiation: 1, chat: 1 },
