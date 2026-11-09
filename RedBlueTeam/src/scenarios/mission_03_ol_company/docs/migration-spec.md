@@ -104,8 +104,8 @@ przejścia; poprawny zestaw = kompilacja i mostek „GOTOWE. MASZ JAKIEŚ DANE�
   **etap:** `browser` · **decyzje:** D2 (cel), D3 (wektor).
 - **config:** `OsintBrowserConfig` (`osintBrowserConfig`). `target` (D2),
   `vector` (D3), `eventsHint`. **Pełne dane strony** (hero, pracownicy z bio,
-  wydarzenia) są dziś w `data/mission3.json.step2.browser` — przy pełnej wersji
-  przenieś je do `config.site` w `stages.ts` (jedno źródło) i wyświetl z niego.
+  wydarzenia) są w `config.site` w `stages.ts` (jedno źródło; stare klucze
+  `step1`–`step5` zostały usunięte z `data/mission3.json`).
 - **Stary widget:** `engine/widgets/TorBrowserApp.tsx`.
 
 ### Ekrany po kolei
