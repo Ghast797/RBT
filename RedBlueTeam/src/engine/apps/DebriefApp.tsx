@@ -172,7 +172,7 @@ export const DebriefApp: React.FC = () => {
     const transcript = selected.negotiationTranscript || lesson?.negotiationTranscript;
 
     return (
-      <div className={`flex-1 min-h-0 p-2.5 rounded-lg border flex flex-col gap-1.5 overflow-y-auto ${t.bg} ${t.border}`}>
+      <div className={`flex-1 min-h-0 px-2.5 py-2 rounded-lg border flex flex-col gap-1 overflow-y-auto ${t.bg} ${t.border}`}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className={`text-xs font-black uppercase tracking-wider ${t.text}`}>
             {hasLesson ? 'WYBÓR' : 'SZCZEGÓŁY: WYBÓR'} {selected.num}
@@ -195,7 +195,7 @@ export const DebriefApp: React.FC = () => {
         </div>
 
         <div
-          className={`p-2 rounded border text-xs leading-snug flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+          className={`px-2 py-1.5 rounded border text-xs leading-snug flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
             outcome === 'ideal'
               ? 'bg-[#050a0f] border-slate-800 text-gray-300'
               : outcome === 'suboptimal'
@@ -204,7 +204,7 @@ export const DebriefApp: React.FC = () => {
           }`}
         >
           <div className="flex-1">
-            <span className="block mb-0.5 font-black uppercase text-xs text-gray-400">Twoja decyzja</span>
+            <span className="mr-1.5 font-black uppercase text-xs text-gray-400">Twoja decyzja:</span>
             <span className="font-sans">{selected.details}</span>
           </div>
           {!selected.isCorrect && (
@@ -219,11 +219,11 @@ export const DebriefApp: React.FC = () => {
         </div>
 
         {lesson?.attack && (
-          <div className="p-2 rounded border border-[#ff3366]/40 bg-[#ff3366]/10 text-red-100 flex items-start gap-2 text-xs leading-snug">
+          <div className="px-2 py-1.5 rounded border border-[#ff3366]/40 bg-[#ff3366]/10 text-red-100 flex items-start gap-2 text-xs leading-snug">
             <Crosshair size={14} className="text-[#ff3366] shrink-0 mt-0.5" />
             <div>
-              <span className="block mb-0.5 font-black uppercase text-xs text-[#ff3366]">
-                Atak — dlaczego to zadziałało
+              <span className="mr-1.5 font-black uppercase text-xs text-[#ff3366]">
+                Atak — dlaczego to zadziałało:
               </span>
               <span className="font-sans">{lesson.attack}</span>
             </div>
@@ -231,11 +231,11 @@ export const DebriefApp: React.FC = () => {
         )}
 
         {lesson?.defense && (
-          <div className="p-2 rounded border border-[#3b82f6]/50 bg-[#3b82f6]/10 text-blue-100 flex items-start gap-2 text-xs leading-snug">
+          <div className="px-2 py-1.5 rounded border border-[#3b82f6]/50 bg-[#3b82f6]/10 text-blue-100 flex items-start gap-2 text-xs leading-snug">
             <ShieldCheck size={14} className="text-[#3b82f6] shrink-0 mt-0.5" />
             <div>
-              <span className="block mb-0.5 font-black uppercase text-xs text-[#60a5fa]">
-                Obrona — jak to rozpoznać i co zrobić
+              <span className="mr-1.5 font-black uppercase text-xs text-[#60a5fa]">
+                Obrona — jak to rozpoznać i co zrobić:
               </span>
               <span className="font-sans">{lesson.defense}</span>
             </div>
@@ -313,9 +313,9 @@ export const DebriefApp: React.FC = () => {
   };
 
   return (
-    <div className="relative flex flex-col h-full bg-[#050b10] rounded-lg overflow-hidden font-mono select-none border border-[#00ff66]/30 shadow-2xl p-3 gap-2">
+    <div className="relative flex flex-col h-full bg-[#050b10] rounded-lg overflow-hidden font-mono select-none border border-[#00ff66]/30 shadow-2xl p-2 gap-1.5">
       {/* Nagłówek: tytuł raportu + liczniki wyników w jednej linii */}
-      <div className="px-3 py-2 bg-gradient-to-r from-[#00ff66]/15 via-[#081219] to-[#00ff66]/15 border-2 border-[#00ff66] rounded-xl flex flex-col sm:flex-row items-center justify-between gap-2 shadow-[0_0_25px_rgba(0,255,102,0.25)] shrink-0">
+      <div className="px-3 py-1.5 bg-gradient-to-r from-[#00ff66]/15 via-[#081219] to-[#00ff66]/15 border-2 border-[#00ff66] rounded-xl flex flex-col sm:flex-row items-center justify-between gap-2 shadow-[0_0_25px_rgba(0,255,102,0.25)] shrink-0">
         <div className="min-w-0">
           <div className="text-xs text-[#00ff66]/70 uppercase tracking-widest font-black">
             {summary.company} // RAPORT KOŃCOWY
@@ -349,7 +349,7 @@ export const DebriefApp: React.FC = () => {
       </div>
 
       {/* Pasek wyniku, zapis w Moodle i BTC */}
-      <div className="px-3 py-1.5 bg-[#081219] border border-[#00ff66]/30 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-2 text-xs shrink-0">
+      <div className="px-3 py-1 bg-[#081219] border border-[#00ff66]/30 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-2 text-xs shrink-0">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
           <span className="font-bold text-[#00ff66] text-sm">{score}%</span>
           <div className="w-40 h-2.5 bg-[#050a0f] border border-[#00ff66]/40 rounded-full overflow-hidden">
@@ -432,7 +432,7 @@ export const DebriefApp: React.FC = () => {
       </div>
 
       {/* Dolna nawigacja */}
-      <div className="pt-2 border-t border-[#00ff66]/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
+      <div className="pt-1.5 border-t border-[#00ff66]/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
         <button
           onClick={openRetryModal}
           className="px-3.5 py-1.5 bg-[#ff3366]/20 hover:bg-[#ff3366]/30 border border-[#ff3366] text-[#ff3366] rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
