@@ -51,10 +51,16 @@ Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude
 - Dokumentacja: `scenario.md` przepisany wg `scenario-format.md` z listą odchyleń od VR, `docs/moodle-baza-wiedzy.md` (nośniki USB, polityka urządzeń, OSINT, zgłaszanie), `rebuild-plan.md` z oznaczonymi porcjami. Dawne „8 decyzji”, builder RAT i powrót mentora po złym celu D2 już nie obowiązują.
 - Do zrobienia przy M3: grafiki w `assets/<grupa>/` (zdjęcia pracowników, wydarzeń, wirus, parking, pendrive), porcje I (weryfikacja w przeglądarce) i J (niezależna recenzja).
 
+**M3 po testach i poprawkach (2026-11-09)**
+- Recenzja kodu (Opus) i test jak student (Sonnet): ścieżka idealna 100%, ścieżki błędów D1–D6 i pamięć stanu działają, 4 z 5 uwag właściciela spełnione, piąta (zdrapka „po co”) poprawiona.
+- Poprawki M3: plan z D3 przez `customState` (`m3_plan`), raport D4 z nazwą dysku, neutralne opisy D1, zdrapka z nazwą programu i wariantem Ransomware, daty WYDARZEŃ zgodne z fabułą, adres i opis auta razem w czacie //DRON, klawiatura i szersza karta w //RAT, podtytuły i nagłówki na ekranach ładowania.
+- Poprawki silnika: `completeStage` zamyka tylko własną aplikację, dwa `time_jump` pod rząd, większy podpis zegara, `pointercancel` z filtrem `pointerId`, zwarty raport (M3 przy 1366: 81 px zapasu), czat zawsze do dołu.
+- Stan: 271 testów, tsc czysty, 4 paczki SCORM izolowane.
+
 **Następne kroki**
-1. **Testy i audyt M3 przez właściciela** na przebudowanej wersji (M3 przebudowane wg dokumentu VR). Do akceptacji m.in.: odchylenia z `scenario.md` (zdrapka, 8 aut, WYDARZENIA przed D2, przeciąganie plików FREEVOLT, bez „WYŁĄCZ APLIKACJĘ DRONA”), `educationalSlides` usunięte z M3 (M2/M4 nadal je mają), nowy układ raportu pooperacyjnego (dotyczy wszystkich misji).
+1. **Audyt M3 przez właściciela.** Do akceptacji: odchylenia z `scenario.md` (zdrapka, 8 aut, WYDARZENIA przed D2, przeciąganie plików FREEVOLT, bez „WYŁĄCZ APLIKACJĘ DRONA”, D4 = nazwa + podpis), domyślne odpowiedzi P1–P10 z `docs/rebuild-plan.md` misji, mostki z VR zakładające ścieżkę idealną (kandydat na konsekwencje odroczone). Grafiki do wrzucenia: `mission_03_ol_company/assets/` (`employees/*`, `events/*`, `virus/rat`, `virus/ransomware`, `usb/*`, opcjonalnie `drone/*`, `rat/victim_wallpaper`).
 2. **M4** wg `mission-standard.md`: rozjazdy z PDF (9 vs 10 decyzji — układ wg oceny logiki), `scenario.md`, przeskok czasu w mostku po VPN, lekcje atak/obrona, wygląd M2.
-3. **Reguła dwóch:** builder M3 (`VirusLabApp`) i M2 (`WormBuilderApp`) mają ten sam przebieg — kandydat na klocek silnika.
+3. **Reguła dwóch:** mechanizm grafik (`ImageSlot` + resolver assetów) ma kopie w M1, M2, M3 → do silnika; przeciąganie segmentów M2 → hak `usePointerDrag`.
 4. **Do decyzji właściciela:** dopasowanie M1 do zasady „karty na dużym ekranie, wiersze na prawym” (POCZTA, KREATOR_STRONY); cykl importów w dev (zmiana startu store).
 5. Znane drobne: karty na 1920×1080 wypełniają górną połowę okna (M2 i M3 tak samo); commit `24a8af3` sam nie przechodzi tsc (pole `clock` przed typem z `6e406bb`).
 
