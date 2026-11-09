@@ -17,7 +17,7 @@ import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { SidePanel } from '../../../engine/components/SidePanel';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { OsintBrowserConfig, OsintEmployee } from './types';
-import { resolveTargetPick } from './osintLogic';
+import { resolveTargetPick, targetCardContent } from './osintLogic';
 import { MentorNote, NoteSection } from './ui';
 
 type Screen = 'site' | 'loading_target' | 'target' | 'loading_vector' | 'vector' | 'finishing';
@@ -62,6 +62,8 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
 
   const phase: 'site' | 'target' | 'vector' =
     screen === 'site' ? 'site' : screen === 'target' || screen === 'loading_target' ? 'target' : 'vector';
+  // Profil w panelu: na stronie — pracownik z PRZECZYTAJ, przy wyborze celu — pracownik zaznaczonej karty.
+  const profileEmployee = phase === 'target' ? (targetId ? employeeForOption(targetId) : undefined) : readEmployee;
 
   // --- D2: cel ---
   const handleTargetConfirm = () => {
@@ -140,21 +142,25 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
       <div className="space-y-4">
         <MentorNote accent={ACCENT} lines={mentorLines} />
 
-        {phase === 'site' && (
+        {(phase === 'site' || phase === 'target') && (
           <NoteSection title="Profil pracownika">
-            {readEmployee ? (
+            {profileEmployee ? (
               <div className="p-3 rounded-lg border border-gray-800 bg-black/20 space-y-2">
                 <div className="flex items-center gap-2.5">
-                  <Avatar color={readEmployee.avatarBg} size={34} />
+                  <Avatar color={profileEmployee.avatarBg} size={34} />
                   <div className="min-w-0">
-                    <div className="text-xs font-bold text-white">{readEmployee.name}</div>
-                    <div className="text-xs text-gray-400">{readEmployee.role}</div>
+                    <div className="text-sm font-bold text-white">{profileEmployee.name}</div>
+                    <div className="text-xs text-gray-400">{profileEmployee.role}</div>
                   </div>
                 </div>
-                <p className="text-xs text-gray-200 leading-relaxed font-sans">{readEmployee.bio}</p>
+                <p className="text-sm text-gray-200 leading-relaxed font-sans">{profileEmployee.bio}</p>
               </div>
             ) : (
-              <p className="text-xs text-gray-500 italic">Kliknij PRZECZYTAJ przy pracowniku, aby zobaczyć jego profil.</p>
+              <p className="text-sm text-gray-400 italic">
+                {phase === 'site'
+                  ? 'Kliknij PRZECZYTAJ przy pracowniku, aby zobaczyć jego profil.'
+                  : 'Zaznacz kartę pracownika, aby zobaczyć jego profil ze strony O&L.'}
+              </p>
             )}
           </NoteSection>
         )}
@@ -361,7 +367,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
     <div className="flex flex-col flex-1 min-h-0 space-y-3 animate-in fade-in duration-200">
       {header(
         'WYBÓR OFIARY',
-        'Wskaż pracownika O&L Company, którego zaatakujesz. Słowa mentora masz w notatkach na prawym monitorze.',
+        'Wskaż pracownika O&L Company, którego zaatakujesz. Zaznaczona karta pokazuje jego profil na prawym monitorze, tam też masz słowa mentora.',
         'KROK 2/3'
       )}
       {pushbacks.length > 0 && (
@@ -382,6 +388,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
         <div className="grid grid-cols-2 gap-3 h-full">
           {targetOptions.map((opt) => {
             const emp = employeeForOption(opt.id);
+            const card = targetCardContent(opt);
             return (
               <ChoiceTile
                 key={opt.id}
@@ -398,10 +405,8 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
                 <div className="flex items-center gap-4 pr-6">
                   {emp && <Avatar color={emp.avatarBg} size={56} />}
                   <div className="min-w-0 space-y-1">
-                    <h3 className="text-base font-black text-white tracking-wide leading-snug">{opt.label}</h3>
-                    {(emp?.bio ?? opt.desc) && (
-                      <p className="text-sm text-gray-200 leading-snug font-sans">{emp?.bio ?? opt.desc}</p>
-                    )}
+                    <h3 className="text-base font-black text-white tracking-wide leading-snug">{card.title}</h3>
+                    {card.desc && <p className="text-sm text-gray-200 leading-snug font-sans">{card.desc}</p>}
                   </div>
                 </div>
               </ChoiceTile>

@@ -5,7 +5,7 @@ import { appComponentRegistry } from '../src/engine/registry/appRegistry';
 import { resolveDecisionCount } from '../src/engine/core/scoring';
 import type { ChoiceOutcome, MissionDefinition } from '../src/engine/types/mission';
 import type { OsintBrowserConfig } from '../src/scenarios/mission_03_ol_company/minigames/types';
-import { resolveTargetPick } from '../src/scenarios/mission_03_ol_company/minigames/osintLogic';
+import { resolveTargetPick, targetCardContent } from '../src/scenarios/mission_03_ol_company/minigames/osintLogic';
 
 // ---------------------------------------------------------------------------
 // TEST CHARAKTERYZUJĄCY MISJĘ 3 (O&L COMPANY)
@@ -358,8 +358,20 @@ describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', ()
     expect(cfg.vector.options.map((o) => [o.id, o.tier])).toEqual(
       expect.arrayContaining([['vector_party_zip', 'ideal'], ['vector_fake_invoice', 'critical']])
     );
-    [...cfg.target.options, ...cfg.vector.options].forEach((o) => {
-      expect(o.desc ?? '', o.id).not.toMatch(/idealn|najsłabsz|natychmiast|omija|usypia|wzbudza/i);
+    const EVALUATIVE = /idealn|najsłabsz|najlepsz|najgorsz|natychmiast|omija|usypia|wzbudza|ostrożn|słabe ogniwo/i;
+    cfg.vector.options.forEach((o) => {
+      expect(o.desc ?? '', o.id).not.toMatch(EVALUATIVE);
+    });
+    // Karta celu D2 pokazuje to, co daje targetCardContent: nazwisko z rolą i neutralny opis,
+    // bez oceniającego bio. Bio z OSINT jest w panelu prawego monitora po zaznaczeniu karty.
+    cfg.target.options.forEach((o) => {
+      const card = targetCardContent(o);
+      const emp = cfg.site.employees.find((e) => e.optionId === o.id)!;
+      const shown = `${card.title} ${card.desc ?? ''}`;
+      expect(shown, o.id).not.toMatch(EVALUATIVE);
+      expect(shown, o.id).not.toContain(emp.bio);
+      expect(card.desc ?? '', o.id).not.toBe(emp.bio);
+      expect(shown, o.id).toContain(emp.name);
     });
   });
   it.todo('pendrive D4: tylko jeden załącznik można wgrać, potem wymagane podpięcie RAT do ZIP (flavor)');

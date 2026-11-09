@@ -22,3 +22,17 @@ export function resolveTargetPick(option: ChoiceOption, attempted: boolean): Tar
   if (option.tier === 'suboptimal') return { kind: 'retry', pushback: option.feedback };
   return { kind: 'proceed', tier: attempted ? 'suboptimal' : 'ideal' };
 }
+
+/** Treść karty celu D2: nazwisko z rolą (etykieta opcji) i neutralny opis opcji. */
+export interface TargetCardContent {
+  title: string;
+  desc?: string;
+}
+
+/**
+ * Co faktycznie trafia na kartę celu. Bio z OSINT nie jest częścią karty: gracz czyta je
+ * w panelu prawego monitora po zaznaczeniu karty (jak PRZECZYTAJ na stronie) i sam decyduje.
+ */
+export function targetCardContent(option: ChoiceOption): TargetCardContent {
+  return { title: option.label, desc: option.desc };
+}
