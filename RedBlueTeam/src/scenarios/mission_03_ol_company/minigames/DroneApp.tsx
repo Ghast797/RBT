@@ -359,7 +359,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
         <SidePanel
           accent={accent}
           heading="//DRON: KOORDYNATY"
-          sub={config.address.question}
+          sub="Wskaż adres na mapie albo na liście, a potem zatwierdź."
           footer={
             <ConfirmButton
               accent={accent}
@@ -509,7 +509,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
           {statusBar(screen === 'map' ? 'CZEKA NA WSPÓŁRZĘDNE' : `W LOCIE // ${flight}%`)}
           <ChoiceZone
             accent={accent}
-            label={screen === 'map' ? 'WSKAŻ ADRES NA MAPIE' : 'TRASA LOTU'}
+            label={screen === 'map' ? config.address.question : 'TRASA LOTU'}
             className="flex-1 min-h-0 flex flex-col"
           >
             <div className="flex-1 min-h-0 h-full">
@@ -547,7 +547,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
             : header('ZRZUT ŁADUNKU', config.successDrop, 'KROK 2/2')}
           <ChoiceZone
             accent={accent}
-            label={screen === 'camera' ? 'WSKAŻ POJAZD NA PARKINGU' : 'ŁADUNEK ZRZUCONY'}
+            label={screen === 'camera' ? config.car.question : 'ŁADUNEK ZRZUCONY'}
             className="flex-1 min-h-0 flex flex-col"
           >
             <div className="relative flex-1 min-h-0 h-full rounded-lg overflow-hidden border border-gray-800">

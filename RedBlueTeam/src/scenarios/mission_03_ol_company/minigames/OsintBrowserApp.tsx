@@ -384,7 +384,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
           </span>
         </div>
       )}
-      <ChoiceZone accent={ACCENT} label="WYBIERZ OFIARĘ" className="flex-1 min-h-0">
+      <ChoiceZone accent={ACCENT} label={config.target.question} className="flex-1 min-h-0">
         <div className="grid grid-cols-2 gap-3 h-full">
           {targetOptions.map((opt) => {
             const emp = employeeForOption(opt.id);
@@ -433,7 +433,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
         'Wybierz, w jaki sposób dostarczysz ładunek wybranej ofierze. Wydarzenia ze strony O&L i słowa mentora masz w notatkach na prawym monitorze.',
         'KROK 3/3'
       )}
-      <ChoiceZone accent={ACCENT} label="WYBIERZ WEKTOR" className="flex-1 min-h-0">
+      <ChoiceZone accent={ACCENT} label={config.vector.question} className="flex-1 min-h-0">
         <div className="grid grid-cols-2 gap-3 h-full">
           {vectorOptions.map((opt) => (
             <ChoiceTile

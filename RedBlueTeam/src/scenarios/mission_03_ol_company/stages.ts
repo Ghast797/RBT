@@ -466,7 +466,7 @@ export const mission3Stages: StageDefinition[] = [
         { from: 'player', id: 'm3_reply_pendrive', label: 'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. MAM NADZIEJĘ, ŻE TO DLA CIEBIE WYSTARCZAJĄCO KREATYWNE?' },
         { from: 'byte_master', text: BRIDGE_ADDRESS_LINE },
         { from: 'player', id: 'm3_reply_drone_wait', label: 'JASNE. SŁYSZYMY SIĘ ZA KILKA GODZIN.' },
-        { from: 'time_jump', label: '06:02 — MIJA KILKA GODZIN…', sublabel: 'DRON GOTOWY DO PORANNEGO LOTU.' },
+        { from: 'time_jump', label: '06:02 — MIJA KILKA GODZIN…', sublabel: 'DRON GOTOWY DO PORANNEGO LOTU.', clock: '06:02' },
         { from: 'byte_master', text: BRIDGE_DRONE_GO_LINE }
       ],
       unlockIcons: ['drone_unlocked', 'drone_app'],
@@ -482,7 +482,7 @@ export const mission3Stages: StageDefinition[] = [
     completion: {
       conversation: [
         { from: 'player', id: 'm3_reply_drop', label: 'KOPERTA NA SAMOCHODZIE OFIARY. DAM CI ZNAĆ, KIEDY MATEUSZ PODŁĄCZY PENDRIVE I AKTYWUJE WIRUSA.' },
-        { from: 'time_jump', label: '08:12 — MIJA KILKA GODZIN…', sublabel: 'CZEKAMY, AŻ MATEUSZ PODŁĄCZY PENDRIVE W BIURZE.' },
+        { from: 'time_jump', label: '08:12 — MIJA KILKA GODZIN…', sublabel: 'CZEKAMY, AŻ MATEUSZ PODŁĄCZY PENDRIVE W BIURZE.', clock: '08:12' },
         { from: 'byte_master', text: 'MALWARE AKTYWNY — MATEUSZ PODŁĄCZYŁ PENDRIVE NA SWOJEJ STACJI. WEJDŹ NA JEGO KOMPUTER.' }
       ],
       unlockIcons: ['rat_session_unlocked', 'rat_session'],

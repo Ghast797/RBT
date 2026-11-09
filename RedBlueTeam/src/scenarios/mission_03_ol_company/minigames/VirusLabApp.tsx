@@ -188,6 +188,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
           <ChoiceCardGrid
             accent={ACCENT}
             options={virusOptions}
+            label={config.virus.question}
             selectedId={virusId}
             onSelect={(id: string) => {
               if (decided) return;
