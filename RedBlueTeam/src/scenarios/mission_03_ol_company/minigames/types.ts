@@ -5,7 +5,7 @@
 // przez onDecision — poziom decyzji wynika z danych, a punkty liczy silnik
 // (core/scoring.ts). Zob. docs/scenario-engine.md i docs/migration-spec.md.
 
-import type { ChoiceOption } from '../../../engine/types/mission';
+import type { ChoiceOption, ChoiceOutcome } from '../../../engine/types/mission';
 
 /** Oceniana decyzja 1 z N (wspólny kształt dla wszystkich minigier M3). */
 export interface GradedDecision<O extends ChoiceOption = ChoiceOption> {
@@ -107,6 +107,10 @@ export interface PendriveConfig {
 }
 
 // --- Etap 4: //DRON: CONDOR MIT63 (D7 adres, D8 pojazd) --------------------
+/**
+ * Adres na mapie. Jedno źródło dla pinów mapy i opcji D7: `address`/`district` to etykieta i opis opcji,
+ * `tier` poziom decyzji (opcje `config.address.options` są z tej listy generowane w stages.ts).
+ */
 export interface DroneMapLocation {
   id: string;
   number: number;
@@ -114,14 +118,19 @@ export interface DroneMapLocation {
   district: string;
   x: number;
   y: number;
+  tier: ChoiceOutcome;
 }
 
+/**
+ * Samochód na parkingu. Jedno źródło dla slotów kamery, zdjęcia od mentora (pojazd `ideal`) i opcji D8:
+ * `id` jest identyfikatorem opcji, `desc` jej etykietą, `tier` poziomem decyzji.
+ */
 export interface DroneCar {
-  id: number;
+  id: string;
   desc: string;
   body: string;
   roof: string;
-  isTarget: boolean;
+  tier: ChoiceOutcome;
 }
 
 export interface DroneConfig {
@@ -131,8 +140,8 @@ export interface DroneConfig {
    * kwestie z mostka, potrzebne do D7 (adres) i D8 (pojazd). Te same teksty trafiają do czatu.
    */
   mentorNote: string[];
-  address: GradedDecision;        // D7 (options.id = loc_x)
-  car: GradedDecision;            // D8 (options.id = car_x)
+  address: GradedDecision;        // D7 (options generowane z mapLocations, id = loc_x)
+  car: GradedDecision;            // D8 (options generowane z parkingCars, id = car_x)
   mapLocations: DroneMapLocation[];
   parkingCars: DroneCar[];
   successDrop: string;

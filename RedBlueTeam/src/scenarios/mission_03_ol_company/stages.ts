@@ -3,13 +3,15 @@
 // Mostki (conversation) odtworzone 1:1 z tekstów starego przebiegu w
 // useMissionStore (chatStage / chooseChatOption). Zob. docs/migration-spec.md.
 
-import type { StageDefinition } from '../../engine/types/mission';
+import type { ChoiceOutcome, StageDefinition } from '../../engine/types/mission';
 import mission3Data from './data/mission3.json';
 import type {
   VirusLabConfig,
   OsintBrowserConfig,
   PendriveConfig,
   DroneConfig,
+  DroneMapLocation,
+  DroneCar,
   RatSessionConfig
 } from './minigames/types';
 
@@ -317,7 +319,35 @@ export const pendriveConfig: PendriveConfig = {
   successMessage: "PENDRIVE GOTOWY. WYSUNIĘTO PAMIĘĆ USB."
 };
 
-/** Etap 4: D7 adres domu ofiary + D8 pojazd ofiary. */
+/** Etap 4: D7 adres domu ofiary + D8 pojazd ofiary. Opcje decyzji powstają z listy mapy i parkingu (jedno źródło, `tier` w jednym miejscu). */
+const droneMapLocations: DroneMapLocation[] = [
+  { id: 'loc_1', number: 1, address: 'OŁBIŃSKA 51B', district: 'NADODRZE', x: 60, y: 16, tier: 'critical' },
+  { id: 'loc_2', number: 2, address: 'DRZYMAŁY 38D', district: 'PILCZYCE', x: 18, y: 24, tier: 'critical' },
+  { id: 'loc_3', number: 3, address: 'WYSTAWOWA 23A', district: 'ZALESIE', x: 82, y: 55, tier: 'critical' },
+  { id: 'loc_4', number: 4, address: 'OŁTASZYŃSKA 92C', district: 'PARTYNICE', x: 28, y: 78, tier: 'ideal' }
+];
+
+const droneParkingCars: DroneCar[] = [
+  { id: 'car_1', desc: 'GRANATOWY SEDAN', body: '#1e3a8a', roof: '#1e3a8a', tier: 'critical' },
+  { id: 'car_2', desc: 'SZARY SUV', body: '#475569', roof: '#475569', tier: 'critical' },
+  { id: 'car_3', desc: 'ZIELONY KOMBI', body: '#15803d', roof: '#15803d', tier: 'critical' },
+  { id: 'car_4', desc: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM', body: '#f8fafc', roof: '#dc2626', tier: 'ideal' },
+  { id: 'car_5', desc: 'CZERWONY HATCHBACK Z CZARNYM DACHEM', body: '#dc2626', roof: '#0f172a', tier: 'critical' },
+  { id: 'car_6', desc: 'BIAŁY SEDAN Z BIAŁYM DACHEM', body: '#f8fafc', roof: '#f8fafc', tier: 'critical' }
+];
+
+const ADDRESS_FEEDBACK: Record<ChoiceOutcome, string> = {
+  ideal: 'Właściwa lokalizacja uzyskana podczas fazy rekonesansu adresu Mateusza.',
+  suboptimal: 'Adres nie pasuje do danych od mentora.',
+  critical: 'Błędne współrzędne – dron wylądował pod niewłaściwym adresem!'
+};
+
+const CAR_FEEDBACK: Record<ChoiceOutcome, string> = {
+  ideal: 'Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera.',
+  suboptimal: 'Pojazd nie pasuje do zdjęcia od mentora.',
+  critical: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!'
+};
+
 export const droneConfig: DroneConfig = {
   droneStats: {
     model: '//DRON: CONDOR MIT63',
@@ -329,39 +359,26 @@ export const droneConfig: DroneConfig = {
   address: {
     decisionNum: 7,
     question: 'WSKAŻ DRONOWI ADRES DOMU OFIARY:',
-    options: [
-      { id: 'loc_1', label: 'OŁBIŃSKA 51B', desc: 'NADODRZE', tier: 'critical', feedback: 'Błędne współrzędne – dron wylądował pod niewłaściwym adresem!' },
-      { id: 'loc_2', label: 'DRZYMAŁY 38D', desc: 'PILCZYCE', tier: 'critical', feedback: 'Błędne współrzędne – dron wylądował pod niewłaściwym adresem!' },
-      { id: 'loc_3', label: 'WYSTAWOWA 23A', desc: 'ZALESIE', tier: 'critical', feedback: 'Błędne współrzędne – dron wylądował pod niewłaściwym adresem!' },
-      { id: 'loc_4', label: 'OŁTASZYŃSKA 92C', desc: 'PARTYNICE', tier: 'ideal', feedback: 'Właściwa lokalizacja uzyskana podczas fazy rekonesansu adresu Mateusza.' }
-    ]
+    options: droneMapLocations.map((l) => ({
+      id: l.id,
+      label: l.address,
+      desc: l.district,
+      tier: l.tier,
+      feedback: ADDRESS_FEEDBACK[l.tier]
+    }))
   },
   car: {
     decisionNum: 8,
     question: 'WYBIERZ MIEJSCE NA PARKINGU (POJAZD OFIARY):',
-    options: [
-      { id: 'car_1', label: 'GRANATOWY SEDAN', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_2', label: 'SZARY SUV', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_3', label: 'ZIELONY KOMBI', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_4', label: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM', tier: 'ideal', feedback: 'Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera.' },
-      { id: 'car_5', label: 'CZERWONY HATCHBACK Z CZARNYM DACHEM', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_6', label: 'BIAŁY SEDAN Z BIAŁYM DACHEM', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' }
-    ]
+    options: droneParkingCars.map((c) => ({
+      id: c.id,
+      label: c.desc,
+      tier: c.tier,
+      feedback: CAR_FEEDBACK[c.tier]
+    }))
   },
-  mapLocations: [
-    { id: 'loc_1', number: 1, address: 'OŁBIŃSKA 51B', district: 'NADODRZE', x: 60, y: 16 },
-    { id: 'loc_2', number: 2, address: 'DRZYMAŁY 38D', district: 'PILCZYCE', x: 18, y: 24 },
-    { id: 'loc_3', number: 3, address: 'WYSTAWOWA 23A', district: 'ZALESIE', x: 82, y: 55 },
-    { id: 'loc_4', number: 4, address: 'OŁTASZYŃSKA 92C', district: 'PARTYNICE', x: 28, y: 78 }
-  ],
-  parkingCars: [
-    { id: 1, desc: 'GRANATOWY SEDAN', body: '#1e3a8a', roof: '#1e3a8a', isTarget: false },
-    { id: 2, desc: 'SZARY SUV', body: '#475569', roof: '#475569', isTarget: false },
-    { id: 3, desc: 'ZIELONY KOMBI', body: '#15803d', roof: '#15803d', isTarget: false },
-    { id: 4, desc: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM', body: '#f8fafc', roof: '#dc2626', isTarget: true },
-    { id: 5, desc: 'CZERWONY HATCHBACK Z CZARNYM DACHEM', body: '#dc2626', roof: '#0f172a', isTarget: false },
-    { id: 6, desc: 'BIAŁY SEDAN Z BIAŁYM DACHEM', body: '#f8fafc', roof: '#f8fafc', isTarget: false }
-  ],
+  mapLocations: droneMapLocations,
+  parkingCars: droneParkingCars,
   successDrop: "POMYŚLNIE POZOSTAWIONO KOPERTĘ Z PENDRIVE'EM. DRON WRACA DO POKOJU HAKERA."
 };
 

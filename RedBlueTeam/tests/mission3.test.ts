@@ -401,24 +401,33 @@ describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', ()
     expect(new Set(labels).size).toBe(labels.length);
   });
   it.todo('pendrive D4: tylko jeden załącznik można wgrać, potem wymagane podpięcie RAT do ZIP (flavor)');
-  it('dron: adres i pojazd to osobne decyzje D7/D8, zły wybór = critical, dane mapy i parkingu spójne z opcjami', () => {
+  it('dron: adres i pojazd to osobne decyzje D7/D8, opcje generowane z mapy i parkingu (jedno źródło, tier w jednym miejscu)', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;
     const cfg = (def.blocks as Record<string, any>).drone_app;
     expect(cfg.address.decisionNum).toBe(7);
     expect(cfg.car.decisionNum).toBe(8);
-    // D7: tylko jeden adres ideal, reszta critical; każda opcja ma pin na mapie.
+    // D7: tylko jeden adres ideal, reszta critical; opcje 1:1 z pinami mapy (id, etykieta, dzielnica, tier).
     expect(cfg.address.options.filter((o: any) => o.tier === 'ideal')).toHaveLength(1);
     expect(cfg.address.options.filter((o: any) => o.tier === 'critical')).toHaveLength(3);
-    cfg.address.options.forEach((o: any) => {
-      expect(cfg.mapLocations.some((l: any) => l.id === o.id)).toBe(true);
+    expect(cfg.address.options).toHaveLength(cfg.mapLocations.length);
+    cfg.mapLocations.forEach((l: any) => {
+      const o = cfg.address.options.find((x: any) => x.id === l.id);
+      expect(o, `opcja dla pinu ${l.id}`).toBeDefined();
+      expect([o.label, o.desc, o.tier]).toEqual([l.address, l.district, l.tier]);
     });
-    // D8: tylko jeden pojazd ideal (cel ze zdjęcia), reszta critical; każda opcja = auto na parkingu (car_<id>).
+    // D8: tylko jeden pojazd ideal (cel ze zdjęcia), reszta critical; opcje 1:1 z autami na parkingu.
     const idealCar = cfg.car.options.filter((o: any) => o.tier === 'ideal');
     expect(idealCar).toHaveLength(1);
     expect(cfg.car.options.filter((o: any) => o.tier === 'critical')).toHaveLength(5);
-    cfg.car.options.forEach((o: any) => {
-      expect(cfg.parkingCars.some((c: any) => `car_${c.id}` === o.id)).toBe(true);
+    expect(cfg.car.options).toHaveLength(cfg.parkingCars.length);
+    cfg.parkingCars.forEach((c: any) => {
+      const o = cfg.car.options.find((x: any) => x.id === c.id);
+      expect(o, `opcja dla auta ${c.id}`).toBeDefined();
+      expect([o.label, o.tier]).toEqual([c.desc, c.tier]);
+      expect(c).not.toHaveProperty('isTarget');
     });
+    // Zdjęcie od mentora to auto ideal (jedyne w danych).
+    expect(cfg.parkingCars.filter((c: any) => c.tier === 'ideal').map((c: any) => c.id)).toEqual([idealCar[0].id]);
     // Notatka mentora na prawym monitorze cytuje kwestie z mostka (adres, poranny lot) z jednego źródła.
     const pendrive = (def.stages ?? []).find((s) => s.id === 'pendrive_app')!;
     const bridgeTexts = (pendrive.completion.conversation ?? [])
@@ -427,8 +436,5 @@ describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', ()
     expect(cfg.mentorNote.length).toBeGreaterThan(0);
     cfg.mentorNote.forEach((line: string) => expect(bridgeTexts).toContain(line));
     expect(cfg.mentorNote.join(' ')).toContain('OŁTASZYŃSKA 92C/6');
-    const target = cfg.parkingCars.filter((c: any) => c.isTarget);
-    expect(target).toHaveLength(1);
-    expect(`car_${target[0].id}`).toBe(idealCar[0].id);
   });
 });

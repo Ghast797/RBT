@@ -203,7 +203,7 @@ zdjęcia → ZIP → `IMPREZA` → `AFTERPARTY` = mostek z przeskokiem czasu 06:
 - **Plik:** `minigames/DroneApp.tsx` · **componentId:** `ol_drone` ·
   **etap:** `drone_app` · **decyzje:** D7 (adres), D8 (pojazd).
 - **config:** `DroneConfig` (`droneConfig`). `address` (D7), `car` (D8),
-  `droneStats`, `mapLocations` (mapa), `parkingCars` (kamera), `successDrop`.
+  `droneStats`, `mapLocations` (mapa) i `parkingCars` (kamera) są jedynym źródłem opcji D7/D8 (generowane w `stages.ts`), `successDrop`.
 - **Stary widget:** `engine/widgets/DroneApp.tsx`.
 
 ### Ekrany po kolei
@@ -211,7 +211,7 @@ zdjęcia → ZIP → `IMPREZA` → `AFTERPARTY` = mostek z przeskokiem czasu 06:
 2. **Mapa satelitarna (D7).** 4 lokalizacje; `loc_4` (OŁTASZYŃSKA 92C) ideal,
    reszta critical. `onDecision` D7 (`critical` blokuje, inaczej „lot”).
 3. **Kamera parkingu (D8).** 6 pojazdów; `car_4` (biały z czerwonym dachem,
-   `isTarget`) ideal, reszta critical. `onDecision` D8, potem `onComplete()`.
+   `tier: ideal` w `parkingCars`) ideal, reszta critical. `onDecision` D8, potem `onComplete()`.
    Cel identyfikujesz ze zdjęcia od mentora (biały samochód z czerwonym dachem).
 
 ### Decyzje

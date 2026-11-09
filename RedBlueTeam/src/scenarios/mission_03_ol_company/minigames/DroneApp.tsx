@@ -171,8 +171,8 @@ const SatelliteMap: React.FC<{
 const ParkingCamera: React.FC<{
   accent: string;
   cars: DroneCar[];
-  selectedId: number | null;
-  onSelect?: (id: number) => void;
+  selectedId: string | null;
+  onSelect?: (id: string) => void;
   dropped?: boolean;
 }> = ({ accent, cars, selectedId, onSelect, dropped }) => (
   <svg viewBox="0 0 360 220" className="w-full h-full" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Parking widziany z drona">
@@ -250,7 +250,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
 
   const [screen, setScreen] = useState<Screen>('attach');
   const [selectedLocId, setSelectedLocId] = useState<string | null>(null);
-  const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
+  const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [flight, setFlight] = useState(0);
   const [locked, setLocked] = useState(false);
   const completedRef = useRef(false);
@@ -261,7 +261,8 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
 
   const selectedLoc = config.address.options.find((o) => o.id === selectedLocId);
   const selectedCar = config.parkingCars.find((c) => c.id === selectedCarId);
-  const referenceCar = config.parkingCars.find((c) => c.isTarget);
+  // Zdjęcie od mentora to pojazd, który decyzja D8 uznaje za właściwy (jedno źródło: tier w parkingCars).
+  const referenceCar = config.parkingCars.find((c) => c.tier === 'ideal');
   const { droneStats } = config;
 
   // Lot: pasek postępu napędza dron na mapie; po dolocie — krótkie łączenie z kamerą.
@@ -312,8 +313,8 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
 
   const handleCarConfirm = () => {
     if (!selectedCar || locked) return;
-    const option = config.car.options.find((o) => o.id === `car_${selectedCar.id}`);
-    if (!option) return;
+    const option = config.car.options.find((o) => o.id === selectedCar.id);
+    if (!option) throw new Error(`//DRON: pojazd ${selectedCar.id} nie ma opcji w decyzji D8 (niespójny config)`);
     sounds.playSuccess();
     onDecision({
       num: config.car.decisionNum,
