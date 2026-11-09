@@ -4,7 +4,7 @@
 // ukończenia etapu; po nim strona jest dostępna w trybie do odczytu). Dane i teksty: stages.ts (osintBrowserConfig).
 // Interfejs nie ujawnia oceny: poziom i feedback trafiają do raportu przez onDecision. Prawy monitor to czat z mentorem.
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Globe } from 'lucide-react';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
@@ -33,6 +33,9 @@ type Screen = 'site' | 'load_target' | 'target' | 'save_target' | 'vector' | 'sa
 /** Akcent aplikacji = kolor kafelka //TOR na pulpicie (mission3.json). */
 const ACCENT = '#3b82f6';
 
+/** Po ilu ms bez postępu na stronie firmy pokazujemy podpowiedź przy przycisku „dalej”. */
+const IDLE_HINT_MS = 10_000;
+
 export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ config, onDecision, onComplete }) => {
   const setCustomState = useMissionStore((s) => s.setCustomState);
   const [screen, setScreen] = useState<Screen>('site');
@@ -47,6 +50,15 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   const completedRef = useRef(false);
   // Pozycje przewinięcia zakładek (okno zamknięte krzyżykiem traci przewinięcie, wracamy do zapamiętanego).
   const scrollMemory = useRef<Record<SiteTab, number>>({ home: 0, events: 0 });
+
+  // Podpowiedź przy przycisku „dalej”: po 10 s bez postępu w czytaniu strony (każde przewinięcie zakładki zeruje licznik).
+  const [idleHint, setIdleHint] = useState(false);
+  useEffect(() => {
+    setIdleHint(false);
+    if (screen !== 'site' || done || canProceedToTarget(read)) return;
+    const id = setTimeout(() => setIdleHint(true), IDLE_HINT_MS);
+    return () => clearTimeout(id);
+  }, [screen, done, read]);
 
   const targetOptions = useShuffled(config.target.options);
   const vectorOptions = useShuffled(config.vector.options);
@@ -132,16 +144,27 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
                       </span>
                     ))}
                   </div>
-                  <ConfirmButton
-                    accent={ACCENT}
-                    label={config.siteTexts.continueLabel}
-                    enabled={canProceedToTarget(read)}
-                    onClick={() => {
-                      sounds.playClick();
-                      setScreen('load_target');
-                    }}
-                    className="w-auto !px-4 !py-1.5"
-                  />
+                  <div className="relative shrink-0">
+                    <ConfirmButton
+                      accent={ACCENT}
+                      label={config.siteTexts.continueLabel}
+                      enabled={canProceedToTarget(read)}
+                      onClick={() => {
+                        sounds.playClick();
+                        setScreen('load_target');
+                      }}
+                      className="w-auto !px-4 !py-1.5"
+                    />
+                    {idleHint && !canProceedToTarget(read) && (
+                      <div
+                        role="status"
+                        className="absolute right-0 top-full mt-2 z-30 w-72 px-3 py-2 rounded-lg border-2 text-xs font-bold leading-snug text-white animate-in fade-in zoom-in-95 duration-200"
+                        style={{ borderColor: ACCENT, backgroundColor: '#0b1624', boxShadow: `0 0 18px ${ACCENT}66` }}
+                      >
+                        {config.siteTexts.idleHint}
+                      </div>
+                    )}
+                  </div>
                 </>
               )
             }

@@ -124,7 +124,7 @@ export interface VirusLabConfig {
   /** D1: wybór wirusa (RAT ideal, ransomware suboptimal, keylogger critical). */
   virus: GradedDecision;
   /** Teksty ekranu wyboru wirusa (ZADANIE, przycisk). Etykieta strefy wyboru to `virus.question` (jedno źródło: ekran = raport). */
-  virusTexts: { task: string; confirmLabel: string };
+  virusTexts: { task: string; confirmLabel: string; /** Przycisk po odkryciu wszystkich części wirusa. */ nextLabel: string };
   /** Matryca kompilacji (nieoceniana): zdrapka + pasek postępu. */
   matrix: VirusMatrixConfig;
 }
@@ -199,6 +199,8 @@ export interface OsintBrowserConfig {
     continueLabel: string;
     /** Wskaźnik „PRZECZYTANO:”. */
     readLabel: string;
+    /** Podpowiedź przy przycisku, gdy gracz przez ~10 s nie wie, co dalej (przycisk wciąż nieaktywny). */
+    idleHint: string;
   };
   /** Napisy ekranów ładowania. */
   loaders: { target: string; targetSave: string; vectorSave: string };
@@ -340,6 +342,8 @@ export interface DroneConfig {
     cameraLabel: string;
     dropLabel: string;
     payloadCaption: string;
+    /** Podpis nad kopertą: przeciągnij ją na drona (klik w kopertę robi to samo). */
+    payloadDragHint: string;
     /** Napisy ekranów ładowania: aktywacja drona, uruchomienie kamery, zrzut ładunku. */
     loaders: { activate: string; camera: string; drop: string };
     payloadAttaching: string;

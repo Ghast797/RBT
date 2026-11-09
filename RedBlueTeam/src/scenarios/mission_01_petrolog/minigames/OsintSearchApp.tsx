@@ -192,11 +192,10 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                       <div className="flex gap-3">
                         {/* Zdjęcie pracowniczki: assets/osint/<id profilu>.*; brak pliku = zastępnik */}
                         <div
-                          className="relative w-[44%] shrink-0 self-start aspect-[4/5] rounded-lg overflow-hidden border-2 flex items-center justify-center"
+                          className="relative w-[44%] shrink-0 self-start aspect-[4/5] rounded-lg overflow-hidden border border-gray-700 flex items-center justify-center"
                           style={{
-                            backgroundColor: profile.isPublic ? '#00ff6614' : '#ff336614',
-                            borderColor: profile.isPublic ? '#00ff66' : '#ff3366',
-                            color: profile.isPublic ? '#00ff66' : '#ff3366'
+                            backgroundColor: '#ffffff08',
+                            color: '#9ca3af'
                           }}
                         >
                           {resolveOsintImage(profile.id) ? (
@@ -218,10 +217,7 @@ export const OsintSearchApp: React.FC<BlockProps<OsintSearchConfig>> = ({
                           )}
                           <span
                             className="absolute top-2 right-2 text-[0.625rem] px-2 py-0.5 rounded font-black uppercase tracking-wider flex items-center space-x-1 backdrop-blur-sm"
-                            style={{
-                              backgroundColor: profile.isPublic ? '#00ff6633' : '#ff336633',
-                              color: profile.isPublic ? '#00ff66' : '#ff3366'
-                            }}
+                            style={{ backgroundColor: '#00000099', color: '#e5e7eb' }}
                           >
                             {profile.isPublic ? <Unlock size={12} /> : <Lock size={12} />}
                             <span>{profile.isPublic ? 'PUBLICZNY' : 'PRYWATNY'}</span>

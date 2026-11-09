@@ -476,7 +476,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
     it('posiada w emailSenderConfig opcje zgodne z VR: same adresy email bez podpowiedzi, tagów i opisów', async () => {
       const { emailSenderConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
       expect(emailSenderConfig.senderEmail.options.some((o) => o.label === 'K.KWIATKOWSKI@HACK.COM')).toBe(true);
-      expect(emailSenderConfig.senderEmail.options.some((o) => o.label === 'K.KWIATKOWSKI@PETROLOG.COM')).toBe(true);
+      expect(emailSenderConfig.senderEmail.options.some((o) => o.label === 'K.KWIATKOWSKI@PETR0LOG.COM')).toBe(true);
       expect(emailSenderConfig.senderEmail.options.some((o) => o.label === 'DARKSUN.JAKUB@GMAIL.COM')).toBe(true);
       for (const opt of emailSenderConfig.senderEmail.options) {
         expect(opt.tags || []).toHaveLength(0);

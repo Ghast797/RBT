@@ -14,6 +14,7 @@ import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone } from '../../../engine/components/ChoiceZone';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
+import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
 import type { BlockProps } from '../../../engine/types/mission';
 import { USB_STATE_KEY, type DroneConfig, type UsbState } from './types';
 import { buildReport } from './report';
@@ -113,6 +114,17 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
   // Miejsca aut na parkingu losuje się raz przy zamontowaniu (od nowa przy powtórce misji).
   const cars = useShuffled(config.parkingCars);
   const placed = useMemo(() => placeCars(cars), [cars]);
+
+  // Ładunek: przeciągnięcie koperty na drona (albo klik w kopertę) podwiesza ją i rusza dalej.
+  const attachEnvelope = () => {
+    sounds.playSuccess();
+    setPhase('attaching');
+  };
+  const drag = usePointerDrag<string>({
+    onDrop: attachEnvelope,
+    onTap: attachEnvelope,
+    canDrag: () => phase === 'payload' && prepared
+  });
 
   const { droneStats, texts } = config;
   const status = droneStatusFor(phase, prepared, config.statuses);
@@ -250,12 +262,22 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
   if (phase === 'payload') {
     return (
       <div className={shell}>
+        <DragGhost dragging={drag.dragging}>
+          <div className="w-40">
+            <EnvelopeCard accent={accent} caption={texts.payloadCaption} usb={usb} />
+          </div>
+        </DragGhost>
         {header(texts.tasks.payload)}
         <div className="flex-1 min-h-0 flex items-center justify-center">
           <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
             <div
-              className="rounded-2xl border-2 p-4 text-center space-y-2"
-              style={{ borderColor: `${accent}55`, backgroundColor: '#07131d' }}
+              ref={drag.zoneRef('drone')}
+              className="rounded-2xl border-2 p-4 text-center space-y-2 transition-all duration-150"
+              style={{
+                borderColor: drag.isOver('drone') ? '#00ff66' : drag.isDropTarget('drone') ? accent : `${accent}55`,
+                backgroundColor: drag.isOver('drone') ? '#00ff6622' : '#07131d',
+                borderStyle: drag.isDropTarget('drone') ? 'dashed' : 'solid'
+              }}
             >
               <DroneGlyph accent={accent} className="mx-auto h-28 w-auto" />
               <div className="text-sm font-black text-white tracking-widest">{droneStats.model}</div>
@@ -273,15 +295,16 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
                 />
               ) : (
                 <>
-                  <EnvelopeCard accent={accent} caption={texts.payloadCaption} usb={usb} />
-                  <ConfirmButton
-                    accent={accent}
-                    label={texts.confirmLabel}
-                    onClick={() => {
-                      sounds.playSuccess();
-                      setPhase('attaching');
-                    }}
-                  />
+                  <div
+                    {...drag.getDragProps('envelope')}
+                    className={`cursor-grab active:cursor-grabbing transition-opacity ${drag.draggedId === 'envelope' ? 'opacity-40' : ''}`}
+                    style={{ ...drag.getDragProps('envelope').style }}
+                  >
+                    <EnvelopeCard accent={accent} caption={texts.payloadCaption} usb={usb} />
+                  </div>
+                  <div className="text-center text-xs font-black tracking-widest animate-pulse" style={{ color: accent }}>
+                    {texts.payloadDragHint}
+                  </div>
                 </>
               )}
             </div>

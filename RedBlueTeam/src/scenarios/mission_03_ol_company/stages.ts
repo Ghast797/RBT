@@ -70,7 +70,8 @@ export const virusLabConfig: VirusLabConfig = {
   },
   virusTexts: {
     task: 'WYBIERZ WIRUSA I ZATWIERDŹ WYBÓR.',
-    confirmLabel: 'ZATWIERDŹ WIRUSA'
+    confirmLabel: 'ZATWIERDŹ WIRUSA',
+    nextLabel: 'DALEJ'
   },
   // Zdrapka (w danych `matrix` to nazwa wewnętrzna; graczowi nie pokazujemy żargonu „matryca kompilacji”).
   matrix: {
@@ -203,7 +204,8 @@ export const osintBrowserConfig: OsintBrowserConfig = {
   siteTexts: {
     task: 'PRZEJRZYJ STRONĘ FIRMY: PRZEWIŃ ZAKŁADKI STRONA GŁÓWNA I WYDARZENIA DO KOŃCA.',
     continueLabel: 'PRZEJDŹ DO WYBORU CELU',
-    readLabel: 'PRZECZYTANO:'
+    readLabel: 'PRZECZYTANO:',
+    idleHint: 'PRZEWIŃ W DÓŁ OBIE ZAKŁADKI STRONY (STRONA GŁÓWNA I WYDARZENIA) — WTEDY PRZYCISK SIĘ ODBLOKUJE.'
   },
   loaders: {
     target: 'ŁADOWANIE LISTY PRACOWNIKÓW…',
@@ -495,11 +497,12 @@ export const droneConfig: DroneConfig = {
       drop: 'ZRZUĆ ŁADUNEK…'
     },
     payloadCaption: "KOPERTA Z PENDRIVE'M",
+    payloadDragHint: 'PRZECIĄGNIJ KOPERTĘ NA DRONA',
     payloadAttaching: 'PODWIESZANIE ŁADUNKU…',
     flightCaption: 'LOT DO CELU…',
     tasks: {
       activate: 'AKTYWUJ DRONA.',
-      payload: 'PRZYGOTUJ DRONA DO WYLOTU I PODWIEŚ ŁADUNEK.',
+      payload: 'PRZYGOTUJ DRONA DO WYLOTU I PODWIEŚ ŁADUNEK: PRZECIĄGNIJ KOPERTĘ NA DRONA.',
       map: 'WSKAŻ NA PLANIE MIASTA ADRES, POD KTÓRY LECI DRON.',
       camera: 'URUCHOM KAMERĘ DRONA.',
       aim: 'NAPROWADŹ CELOWNIK NA WŁAŚCIWY SAMOCHÓD I ZRZUĆ ŁADUNEK.',

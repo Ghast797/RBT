@@ -767,10 +767,10 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
       },
       {
         id: 'kwiatkowski_petrolog',
-        label: 'K.KWIATKOWSKI@PETROLOG.COM',
+        label: 'K.KWIATKOWSKI@PETR0LOG.COM',
         tier: 'ideal',
         feedback:
-          'Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary bez podejrzeń.'
+          'Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”) – adres wygląda jak służbowy adres pracownika i usypia czujność ofiary, a Ty nie musisz włamywać się na serwer pocztowy firmy.'
       }
     ]
   }
@@ -788,7 +788,7 @@ export const emailSenderConfig: EmailSenderConfig = {
 
 export const victimMonitorConfig: VictimMonitorConfig = {
   senderName: 'Jakub Kwiatkowski',
-  senderEmail: 'k.kwiatkowski@petrolog.com',
+  senderEmail: 'k.kwiatkowski@petr0log.com',
   recipientName: 'Anita Klimek',
   recipientEmail: 'a.klimek@petrolog.com',
   emailSubject: 'Zobacz to!',

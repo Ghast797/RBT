@@ -42,7 +42,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
   );
 
   const senderName = senderChoice || config?.senderName || 'Jakub Kwiatkowski';
-  const senderEmail = senderEmailChoice || config?.senderEmail || 'k.kwiatkowski@petrolog.com';
+  const senderEmail = senderEmailChoice || config?.senderEmail || 'k.kwiatkowski@petr0log.com';
   const targetDomain = domainChoice || config?.targetDomain || 'dalekbieg.info';
   const payloadTitle =
     payloadChoice ||

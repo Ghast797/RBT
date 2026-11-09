@@ -320,7 +320,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               <div className="flex items-center justify-between text-xs text-gray-400 border-b border-gray-800 pb-2">
                 <span>
                   <strong>OD:</strong> {selectedSender?.label || 'Jakub Kwiatkowski'} &lt;
-                  <span className="text-purple-400 font-mono">{selectedEmail?.label || 'k.kwiatkowski@petrolog.com'}</span>&gt;
+                  <span className="text-purple-400 font-mono">{selectedEmail?.label || 'k.kwiatkowski@petr0log.com'}</span>&gt;
                 </span>
                 <span>
                   <strong>DO:</strong> Anita Klimek &lt;a.klimek@petrolog.com&gt;

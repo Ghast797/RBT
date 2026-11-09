@@ -18,9 +18,6 @@ import { ScratchMatrix } from './ScratchMatrix';
 
 type Screen = 'virus_select' | 'loader' | 'matrix';
 
-/** Jak długo gracz widzi komunikat „WIRUS GOTOWY!”, zanim etap zakończy się sam. */
-const DONE_MS = 2200;
-
 export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDecision, onComplete }) => {
   // Akcent = kolor kafelka //BAZA_WIRUSÓW na pulpicie (jak w Misji 2).
   const accent = '#ec4899';
@@ -40,17 +37,17 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
-  // Krok bez decyzji: po komunikacie sukcesu etap kończy się sam (jeden raz), bez przycisku „dalej”.
+  // Po odkryciu wszystkich części gracz ogląda wynik i sam zatwierdza przejście dalej (przycisk poniżej).
   useEffect(() => {
-    if (!done) return;
-    sounds.playSuccess();
-    const id = setTimeout(() => {
-      if (completedRef.current) return;
-      completedRef.current = true;
-      onCompleteRef.current();
-    }, DONE_MS);
-    return () => clearTimeout(id);
+    if (done) sounds.playSuccess();
   }, [done]);
+
+  const handleNext = () => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    sounds.playClick();
+    onCompleteRef.current();
+  };
 
   const handleConfirm = () => {
     if (!selected || locked) return;
@@ -123,6 +120,11 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
             step={config.steps[1]}
           />
           <ScratchMatrix config={config.matrix} variant={variant} accent={accent} done={done} onRevealed={() => setDone(true)} />
+          {done && (
+            <div className="flex justify-end shrink-0 animate-in fade-in duration-200">
+              <ConfirmButton accent={accent} label={config.virusTexts.nextLabel} onClick={handleNext} className="w-auto px-6" />
+            </div>
+          )}
         </div>
       )}
     </div>

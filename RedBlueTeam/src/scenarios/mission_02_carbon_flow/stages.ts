@@ -359,7 +359,7 @@ export const mission2Stages: StageDefinition[] = [
         },
         // „Czekanie” z VR pokazane jako przeskok czasu (wirująca tarcza, bez napisów);
         // kafelek monitora podświetla się 3 s po nim.
-        { from: 'time_jump' }
+        { from: 'time_jump', clockFrom: '09:40', clock: '14:25' }
       ],
       unlockIcons: ['botnet_monitor_unlocked', 'botnet_monitor'],
       badges: { botnet_monitor: 1, chat: 1 },
