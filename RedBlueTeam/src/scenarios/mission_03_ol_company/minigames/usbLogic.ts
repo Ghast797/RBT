@@ -14,25 +14,17 @@ export function worseTier(a: ChoiceOutcome, b: ChoiceOutcome): ChoiceOutcome {
   return TIER_RANK[b] > TIER_RANK[a] ? b : a;
 }
 
-/** Odpowiedź gracza w decyzji o danym numerze (z `playerChoices`) albo `undefined`. */
-export function planAnswerFromChoices(
-  choices: ReadonlyArray<{ num: number; answer: string }>,
-  decisionNum: number
-): string | undefined {
-  return choices.find((c) => c.num === decisionNum)?.answer;
-}
-
 /**
- * Reguła planu dla odpowiedzi D3. Gdy odpowiedzi brak (np. tryb deweloperski) albo nie pasuje do żadnej reguły,
- * obowiązuje reguła opcji zapasowej.
+ * Reguła planu dla opcji D3 wybranej przez gracza (`customState.m3_plan` = id opcji). Gdy id brak
+ * (np. tryb deweloperski) albo nie pasuje do żadnej reguły, obowiązuje reguła opcji zapasowej.
  */
 export function resolvePlanRule(
   plan: readonly UsbPlanRule[],
   fallbackVectorOptionId: string,
-  answer: string | undefined
+  vectorOptionId: string | undefined
 ): UsbPlanRule | undefined {
   return (
-    (answer !== undefined ? plan.find((r) => r.answer === answer) : undefined) ??
+    (vectorOptionId !== undefined ? plan.find((r) => r.vectorOptionId === vectorOptionId) : undefined) ??
     plan.find((r) => r.vectorOptionId === fallbackVectorOptionId)
   );
 }

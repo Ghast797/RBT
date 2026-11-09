@@ -333,11 +333,10 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
   it('reguła „plik pasuje do planu”: każda opcja D3 ma regułę z odpowiedzią i plikami z załączników', () => {
     const vectorIds = osintBrowserConfig.vector.options.map((o) => o.id).sort();
     expect(pendriveConfig.plan.map((r) => r.vectorOptionId).sort()).toEqual(vectorIds);
-    expect(pendriveConfig.planDecisionNum).toBe(osintBrowserConfig.vector.decisionNum);
     const fileIds = pendriveConfig.attachments.map((a) => a.id);
     pendriveConfig.plan.forEach((rule) => {
       const opt = osintBrowserConfig.vector.options.find((o) => o.id === rule.vectorOptionId)!;
-      expect(rule.answer).toBe(reportAnswerOf(opt));
+      expect(rule.planLabel).toBe(reportAnswerOf(opt));
       rule.fileIds.forEach((f) => expect(fileIds).toContain(f));
     });
     const rule = (id: string) => pendriveConfig.plan.find((r) => r.vectorOptionId === id)!;

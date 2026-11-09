@@ -293,13 +293,12 @@ const vectorAnswer = (optionId: string): string => {
 export const pendriveConfig: PendriveConfig = {
   title: '//DYSK E: PENDRIVE',
   steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
-  planDecisionNum: osintBrowserConfig.vector.decisionNum,
   // Ideal D3 -> zdjęcia; suboptimal D3 -> dokumenty HR lub wypowiedzenie; critical D3 kończy się wykryciem
   // (do //DYSK E nie dochodzi), więc reguła nie ma plików.
   plan: [
-    { vectorOptionId: 'vector_party_zip', answer: vectorAnswer('vector_party_zip'), fileIds: ['party_photos'] },
-    { vectorOptionId: 'vector_hr_docs', answer: vectorAnswer('vector_hr_docs'), fileIds: ['hr_docs', 'termination'] },
-    { vectorOptionId: 'vector_empty_keylogger', answer: vectorAnswer('vector_empty_keylogger'), fileIds: [] }
+    { vectorOptionId: 'vector_party_zip', planLabel: vectorAnswer('vector_party_zip'), fileIds: ['party_photos'] },
+    { vectorOptionId: 'vector_hr_docs', planLabel: vectorAnswer('vector_hr_docs'), fileIds: ['hr_docs', 'termination'] },
+    { vectorOptionId: 'vector_empty_keylogger', planLabel: vectorAnswer('vector_empty_keylogger'), fileIds: [] }
   ],
   planFallbackVectorOptionId: 'vector_party_zip',
   attachments: [

@@ -8,9 +8,9 @@ import {
   buildVolumeCriticalReport,
   buildUsbState,
   fileMatchesPlan,
-  planAnswerFromChoices,
   resolvePlanRule
 } from '../src/scenarios/mission_03_ol_company/minigames/usbLogic';
+import { PLAN_STATE_KEY } from '../src/scenarios/mission_03_ol_company/minigames/types';
 
 const vol = (id: string) => cfg.volume.options.find((o) => o.id === id)!;
 const sig = (id: string) => cfg.signature.options.find((o) => o.id === id)!;
@@ -60,27 +60,34 @@ describe('M3 //DYSK E: logika pendrive', () => {
   });
 
   it('plik pasujący do planu D3', () => {
-    const answer = (id: string) => cfg.plan.find((r) => r.vectorOptionId === id)!.answer;
-    const party = resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, answer('vector_party_zip'));
+    const party = resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, 'vector_party_zip');
     expect(fileMatchesPlan(party, 'party_photos')).toBe(true);
     expect(fileMatchesPlan(party, 'hr_docs')).toBe(false);
-    const hr = resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, answer('vector_hr_docs'));
+    const hr = resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, 'vector_hr_docs');
     expect(fileMatchesPlan(hr, 'hr_docs')).toBe(true);
     expect(fileMatchesPlan(hr, 'termination')).toBe(true);
     expect(fileMatchesPlan(hr, 'party_photos')).toBe(false);
   });
 
-  it('brak D3 albo nieznana odpowiedź = reguła zapasowa', () => {
+  it('reguła wybierana po id opcji D3, nie po tekście odpowiedzi', () => {
+    const hr = resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, 'vector_hr_docs');
+    expect(hr?.vectorOptionId).toBe('vector_hr_docs');
+    // Tekst odpowiedzi nie jest kluczem: to samo, co brak planu.
+    const text = cfg.plan.find((r) => r.vectorOptionId === 'vector_hr_docs')!.planLabel;
+    expect(resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, text)?.vectorOptionId).toBe(
+      cfg.planFallbackVectorOptionId
+    );
+  });
+
+  it('plan z D3 leży we wspólnym stanie pod kluczem m3_plan', () => {
+    expect(PLAN_STATE_KEY).toBe('m3_plan');
+  });
+
+  it('brak D3 albo nieznane id = reguła zapasowa', () => {
     const fb = cfg.plan.find((r) => r.vectorOptionId === cfg.planFallbackVectorOptionId);
     expect(resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, undefined)).toBe(fb);
     expect(resolvePlanRule(cfg.plan, cfg.planFallbackVectorOptionId, 'coś innego')).toBe(fb);
     expect(fileMatchesPlan(undefined, 'party_photos')).toBe(false);
-  });
-
-  it('planAnswerFromChoices czyta odpowiedź po numerze decyzji', () => {
-    const choices = [{ num: 2, answer: 'A' }, { num: 3, answer: 'B' }];
-    expect(planAnswerFromChoices(choices, cfg.planDecisionNum)).toBe('B');
-    expect(planAnswerFromChoices([], 3)).toBeUndefined();
   });
 
   it('buildUsbState składa UsbState', () => {

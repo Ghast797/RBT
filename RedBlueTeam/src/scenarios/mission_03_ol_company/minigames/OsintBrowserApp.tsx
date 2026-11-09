@@ -12,8 +12,9 @@ import { AppHeader } from '../../../engine/components/AppHeader';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { ChoiceCardGrid, ChoiceTile, ChoiceZone } from '../../../engine/components/ChoiceZone';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
-import type { OsintBrowserConfig, ReportableOption } from './types';
+import { PLAN_STATE_KEY, type OsintBrowserConfig, type ReportableOption } from './types';
 import { buildReport } from './report';
 import { LOADER_LONG_MS, LOADER_MS } from './ui';
 import { SiteView } from './SiteView';
@@ -33,6 +34,7 @@ type Screen = 'site' | 'load_target' | 'target' | 'save_target' | 'vector' | 'sa
 const ACCENT = '#3b82f6';
 
 export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ config, onDecision, onComplete }) => {
+  const setCustomState = useMissionStore((s) => s.setCustomState);
   const [screen, setScreen] = useState<Screen>('site');
   const [tab, setTab] = useState<SiteTab>('home');
   const [read, setRead] = useState<ReadState>(INITIAL_READ_STATE);
@@ -72,6 +74,8 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   const handleVectorConfirm = () => {
     if (!vector || locked) return;
     sounds.playSuccess();
+    // Plan z D3 we wspólnym stanie: //DYSK E dobiera po nim pliki pasujące do planu.
+    setCustomState(PLAN_STATE_KEY, vector.id);
     onDecision(buildReport(config.vector, vector));
     if (afterDecision(vector.tier) === 'stop') {
       setLocked(true);

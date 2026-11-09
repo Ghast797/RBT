@@ -14,14 +14,13 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
-import { USB_STATE_KEY, type PendriveConfig, type UsbAttachment } from './types';
+import { PLAN_STATE_KEY, USB_STATE_KEY, type PendriveConfig, type UsbAttachment } from './types';
 import { LOADER_LONG_MS, LOADER_MS, ImageSlot } from './ui';
 import {
   buildD4Report,
   buildUsbState,
   buildVolumeCriticalReport,
   fileMatchesPlan,
-  planAnswerFromChoices,
   resolvePlanRule
 } from './usbLogic';
 
@@ -74,7 +73,8 @@ const PackingBar: React.FC<{ label: string; onDone: () => void }> = ({ label, on
 
 export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDecision, onComplete }) => {
   const setCustomState = useMissionStore((s) => s.setCustomState);
-  const playerChoices = useMissionStore((s) => s.playerChoices);
+  // Plan z D3 (id opcji wektora) zapisany przez //TOR we wspólnym stanie.
+  const planVectorId = useMissionStore((s) => s.customState[PLAN_STATE_KEY]) as string | undefined;
 
   const [screen, setScreen] = useState<Screen>('start');
   const [usbFileId, setUsbFileId] = useState<string | null>(null);
@@ -91,11 +91,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   const volumeOptions = useShuffled(config.volume.options);
   const signatureOptions = useShuffled(config.signature.options);
 
-  const rule = resolvePlanRule(
-    config.plan,
-    config.planFallbackVectorOptionId,
-    planAnswerFromChoices(playerChoices, config.planDecisionNum)
-  );
+  const rule = resolvePlanRule(config.plan, config.planFallbackVectorOptionId, planVectorId);
   const usbFile: UsbAttachment | undefined = config.attachments.find((a) => a.id === usbFileId);
   const volume = config.volume.options.find((o) => o.id === volumeConfirmedId);
   const signature = config.signature.options.find((o) => o.id === signatureId);

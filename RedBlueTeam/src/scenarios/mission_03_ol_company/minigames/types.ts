@@ -58,6 +58,12 @@ export interface UsbState {
 /** Klucz w `customState` (`useMissionStore.setCustomState`) dla `UsbState`. */
 export const USB_STATE_KEY = 'm3_usb';
 
+/**
+ * Klucz w `customState` dla planu z D3: id wybranej opcji wektora (np. `vector_party_zip`).
+ * Zapisuje go //TOR po zatwierdzeniu D3, czyta //DYSK E (wybór reguły „plik pasuje do planu”).
+ */
+export const PLAN_STATE_KEY = 'm3_plan';
+
 // ---------------------------------------------------------------------------
 // Etap 1: //BAZA_WIRUSÓW (D1 + matryca kompilacji jako flavor bez oceny)
 // ---------------------------------------------------------------------------
@@ -200,15 +206,15 @@ export interface UsbAttachment {
 }
 
 /**
- * Reguła „plik pasuje do planu D3”: dla odpowiedzi gracza w D3 (`reportAnswer ?? label` wybranej opcji
- * z `OsintBrowserConfig.vector`) wskazuje pliki, które wolno wgrać na pendrive'a. Błędny plik wraca
- * na listę z komunikatem `wrongFileMessage` (bez kary, aktywność nieoceniana).
+ * Reguła „plik pasuje do planu D3”: dla opcji D3 wybranej przez gracza (id z `customState[PLAN_STATE_KEY]`)
+ * wskazuje pliki, które wolno wgrać na pendrive'a. Błędny plik wraca na listę z komunikatem
+ * `wrongFileMessage` (bez kary, aktywność nieoceniana).
  */
 export interface UsbPlanRule {
   /** Id opcji D3 (np. `vector_party_zip`). */
   vectorOptionId: string;
-  /** Odpowiedź zapisana w `playerChoices` dla tej opcji D3 (do dopasowania w czasie gry). */
-  answer: string;
+  /** Opis planu pokazywany graczowi w przypomnieniu (odpowiedź D3 z raportu: `reportAnswer ?? label` opcji). */
+  planLabel: string;
   /** Id plików z `attachments`, które pasują do planu. */
   fileIds: string[];
 }
@@ -218,11 +224,9 @@ export interface PendriveConfig {
   title: string;
   /** Plakietki kroków: [uzbrajanie, nazwa dysku, podpis] (`KROK 1/3` …). */
   steps: [string, string, string];
-  /** Numer decyzji D3, której odpowiedź (z `playerChoices`) wybiera regułę z `plan`. */
-  planDecisionNum: number;
   /** Reguły dopasowania pliku do planu D3, po jednej na opcję D3. */
   plan: UsbPlanRule[];
-  /** Gdy brak zapisanego D3 (np. wejście wprost w trybie deweloperskim): id opcji D3, której reguła obowiązuje. */
+  /** Gdy brak zapisanego planu (np. wejście wprost w trybie deweloperskim): id opcji D3, której reguła obowiązuje. */
   planFallbackVectorOptionId: string;
   /** Pliki w panelu ZAŁĄCZNIKI (trzy z dokumentu). */
   attachments: UsbAttachment[];
