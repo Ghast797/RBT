@@ -32,7 +32,7 @@ const USB_FALLBACK: UsbState = {
 };
 
 // ---------------------------------------------------------------------------
-// ETAP 1: //BAZA_WIRUSÓW — D1 + matryca kompilacji (flavor bez oceny)
+// ETAP 1: //BAZA_WIRUSÓW — D1 + zdrapka składania programu (flavor bez oceny)
 // ---------------------------------------------------------------------------
 
 export const virusLabConfig: VirusLabConfig = {
@@ -75,20 +75,40 @@ export const virusLabConfig: VirusLabConfig = {
     choiceLabel: 'WYBIERZ ODPOWIEDNIEGO WIRUSA',
     confirmLabel: 'ZATWIERDŹ WIRUSA'
   },
+  // Zdrapka (w danych `matrix` to nazwa wewnętrzna; graczowi nie pokazujemy żargonu „matryca kompilacji”).
   matrix: {
     heading: 'WYSZUKAJ CZĘŚCI WIRUSA:',
-    loaderText: 'PRZYGOTOWANIE MATRYCY KOMPILACJI…',
+    programPrefix: 'SKŁADASZ PROGRAM:',
+    loaderText: 'PRZYGOTOWANIE PROGRAMU DO SKŁADANIA…',
     revealThreshold: 0.92,
     segments: 10,
-    image: { group: 'virus', name: 'rat' },
-    parts: [
-      { id: 'screen', label: 'PODGLĄD EKRANU', desc: 'widzisz pulpit ofiary' },
-      { id: 'control', label: 'STEROWANIE', desc: 'używasz jej myszy i klawiatury' },
-      { id: 'stealth', label: 'CICHE TŁO', desc: 'działa jak zwykły proces, nikt go nie zauważa' },
-      { id: 'link', label: 'ŁĄCZNOŚĆ', desc: 'łączy się z Twoim komputerem' }
-    ],
+    // Wariant wg wyboru z D1. Keylogger (critical) kończy misję przed zdrapką, więc nie ma wariantu.
+    variants: {
+      rat: {
+        programName: 'RAT',
+        image: { group: 'virus', name: 'rat' },
+        imageAlt: 'głowa szczura z cybernetycznymi elementami (RAT)',
+        parts: [
+          { id: 'screen', label: 'PODGLĄD EKRANU', desc: 'widzisz pulpit ofiary' },
+          { id: 'control', label: 'STEROWANIE', desc: 'używasz jej myszy i klawiatury' },
+          { id: 'stealth', label: 'CICHE TŁO', desc: 'działa jak zwykły proces, nikt go nie zauważa' },
+          { id: 'link', label: 'ŁĄCZNOŚĆ', desc: 'łączy się z Twoim komputerem' }
+        ]
+      },
+      ransomware: {
+        programName: 'RANSOMWARE',
+        image: { group: 'virus', name: 'ransomware' },
+        imageAlt: 'zamknięta na kłódkę teczka z żądaniem okupu (ransomware)',
+        parts: [
+          { id: 'encrypt', label: 'SZYFROWANIE', desc: 'zamienia pliki w nieczytelne dane' },
+          { id: 'key', label: 'KLUCZ', desc: 'klucz do odszyfrowania zostaje u Ciebie' },
+          { id: 'spread', label: 'ROZPRZESTRZENIANIE', desc: 'sięga do innych komputerów w sieci' },
+          { id: 'ransom', label: 'ŻĄDANIE OKUPU', desc: 'wyświetla ofierze komunikat z żądaniem zapłaty' }
+        ]
+      }
+    },
     doneMessage: 'WIRUS GOTOWY! AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY',
-    task: 'PRZECIĄGAJ KURSOREM Z WCIŚNIĘTYM PRZYCISKIEM MYSZY PO CZARNYM POLU, ŻEBY ODSŁONIĆ WIRUSA.',
+    task: 'PRZECIĄGAJ KURSOREM Z WCIŚNIĘTYM PRZYCISKIEM MYSZY PO CZARNYM POLU, ŻEBY ODSŁONIĆ PROGRAM.',
     hint: 'PRZECIĄGAJ TUTAJ'
   }
 };

@@ -9,13 +9,10 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { CheckCircle2, MousePointer2 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { ImageSlot } from './ui';
-import type { VirusMatrixConfig } from './types';
+import type { MatrixVariant, VirusMatrixConfig } from './types';
 import {
   createGrid,
-  isMatrixComplete,
-  litParts,
-  litSegments,
-  matrixProgress,
+  matrixView,
   revealStroke,
   revealedFraction,
   type NormPoint
@@ -58,12 +55,14 @@ function drawMask(ctx: CanvasRenderingContext2D, accent: string) {
 
 export const ScratchMatrix: React.FC<{
   config: VirusMatrixConfig;
+  /** Wariant wybrany w D1: grafika, tekst alternatywny i cztery podpisy części. */
+  variant: MatrixVariant;
   accent: string;
   /** Matryca zakończona i komunikat sukcesu widoczny (VirusLabApp zaraz kończy etap). */
   done: boolean;
   /** Pasek doszedł do 100% (wołane raz). */
   onRevealed: () => void;
-}> = ({ config, accent, done, onRevealed }) => {
+}> = ({ config, variant, accent, done, onRevealed }) => {
   const gridRef = useRef(createGrid());
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -78,10 +77,12 @@ export const ScratchMatrix: React.FC<{
   const [hint, setHint] = useState(false);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const progress = matrixProgress(fraction, config.revealThreshold);
-  const complete = isMatrixComplete(fraction, config.revealThreshold);
-  const segmentsLit = litSegments(progress, config.segments);
-  const partsLit = litParts(progress, config.parts.length);
+  const { complete, segmentsLit, partsLit, percent } = matrixView(
+    fraction,
+    config.revealThreshold,
+    config.segments,
+    variant.parts.length
+  );
 
   // Wskazówka po bezczynności (zdrapywanie ją chowa i odlicza od nowa).
   const armHint = useCallback(() => {
@@ -186,8 +187,6 @@ export const ScratchMatrix: React.FC<{
     pointerRef.current = { active: false, last: null };
   };
 
-  const percent = complete ? 100 : Math.min(99, Math.floor(progress * 100));
-
   return (
     <div className="flex flex-col flex-1 min-h-0 gap-3">
       <style>{`@keyframes m3-scratch-hint { 0% { transform: translate(-30%, 25%); opacity: 0 } 15% { opacity: 1 } 80% { opacity: 1 } 100% { transform: translate(30%, -25%); opacity: 0 } }`}</style>
@@ -224,13 +223,13 @@ export const ScratchMatrix: React.FC<{
                 className="absolute inset-0"
                 style={{ background: `radial-gradient(circle at 50% 50%, ${accent}55 0%, #16263b 60%, #0e1a2a 100%)` }}
               >
-                <ImageSlot asset={config.image} label="głowa szczura z cybernetycznymi elementami (RAT)" fit="contain" />
+                <ImageSlot asset={variant.image} label={variant.imageAlt} fit="contain" />
               </div>
               <canvas
                 ref={attachCanvas}
                 width={CANVAS_W}
                 height={CANVAS_H}
-                className="absolute inset-0 w-full h-full cursor-crosshair transition-opacity duration-500"
+                className="absolute inset-0 w-full h-full cursor-crosshair transition-opacity duration-300"
                 style={{ touchAction: 'none', opacity: complete ? 0 : 1, pointerEvents: complete ? 'none' : 'auto' }}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
@@ -259,12 +258,12 @@ export const ScratchMatrix: React.FC<{
 
         {/* Cztery podpisane części wirusa: zapalają się w trakcie odsłaniania. */}
         <div className="w-[38%] max-w-[22rem] shrink-0 min-h-0 flex flex-col justify-center gap-2.5">
-          {config.parts.map((part, i) => {
+          {variant.parts.map((part, i) => {
             const lit = i < partsLit;
             return (
               <div
                 key={part.id}
-                className="flex items-start gap-3 px-3 py-2.5 rounded-xl border-2 transition-all duration-300"
+                className="flex items-start gap-3 px-3 py-2.5 rounded-xl border-2 transition-all duration-150"
                 style={{
                   borderColor: lit ? accent : '#1f2937',
                   backgroundColor: lit ? `${accent}1f` : '#0b1724',
@@ -273,7 +272,7 @@ export const ScratchMatrix: React.FC<{
                 }}
               >
                 <span
-                  className="mt-1 w-3 h-3 rounded-full shrink-0 transition-all duration-300"
+                  className="mt-1 w-3 h-3 rounded-full shrink-0 transition-all duration-150"
                   style={{
                     backgroundColor: lit ? '#00ff66' : '#374151',
                     boxShadow: lit ? '0 0 10px #00ff66' : undefined

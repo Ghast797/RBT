@@ -7,6 +7,7 @@ import {
   litParts,
   litSegments,
   matrixProgress,
+  matrixView,
   revealDisc,
   revealStroke,
   revealedCount,
@@ -95,15 +96,69 @@ describe('matrixLogic: postęp, segmenty i podpisy', () => {
   });
 });
 
-describe('matryca w configu M3', () => {
+describe('matrixView: pasek, podpisy i „gotowe” z jednego źródła', () => {
+  const T = 0.92;
+
+  it('gotowe dokładnie wtedy, gdy zapalone są wszystkie segmenty i wszystkie 4 podpisy', () => {
+    for (let f = 0; f <= 1.0001; f += 0.001) {
+      const v = matrixView(Math.min(1, f), T, 10, 4);
+      if (v.complete) {
+        expect(v.partsLit, `f=${f}`).toBe(4);
+        expect(v.segmentsLit, `f=${f}`).toBe(10);
+        expect(v.percent).toBe(100);
+      } else {
+        expect(v.partsLit, `f=${f}`).toBeLessThan(4);
+        expect(v.segmentsLit, `f=${f}`).toBeLessThan(10);
+        expect(v.percent, `f=${f}`).toBeLessThan(100);
+      }
+    }
+  });
+
+  it('próg: przy 92% pola zdrapka jest domknięta z czterema podpisami, tuż poniżej jeszcze nie', () => {
+    const at = matrixView(0.92, T, 10, 4);
+    expect(at.complete).toBe(true);
+    expect(at.partsLit).toBe(4);
+    const below = matrixView(0.919, T, 10, 4);
+    expect(below.complete).toBe(false);
+    expect(below.partsLit).toBe(3);
+  });
+});
+
+describe('zdrapka w configu M3', () => {
   const m = virusLabConfig.matrix;
 
-  it('próg i segmenty są sensowne, części cztery', () => {
+  it('próg i segmenty są sensowne', () => {
     expect(m.revealThreshold).toBeGreaterThan(0.5);
     expect(m.revealThreshold).toBeLessThanOrEqual(1);
     expect(m.segments).toBeGreaterThanOrEqual(4);
-    expect(m.parts).toHaveLength(4);
-    expect(m.image).toEqual({ group: 'virus', name: 'rat' });
+  });
+
+  it('każda opcja D1 prowadząca do zdrapki (nie critical) ma wariant: nazwa, grafika z alt i cztery podpisy', () => {
+    const reachable = virusLabConfig.virus.options.filter((o) => o.tier !== 'critical');
+    expect(reachable.length).toBeGreaterThanOrEqual(2);
+    for (const o of reachable) {
+      const v = m.variants[o.id];
+      expect(v, `wariant ${o.id}`).toBeDefined();
+      expect(v.parts).toHaveLength(4);
+      expect(v.programName.length).toBeGreaterThan(0);
+      expect(v.imageAlt.length).toBeGreaterThan(0);
+    }
+    expect(m.variants.rat.image).toEqual({ group: 'virus', name: 'rat' });
+  });
+
+  it('ransomware nie dostaje grafiki ani podpisów RAT-a', () => {
+    const rat = m.variants.rat;
+    const ransom = m.variants.ransomware;
+    expect(ransom.image).not.toEqual(rat.image);
+    expect(ransom.programName).toBe('RANSOMWARE');
+    expect(ransom.parts.map((p) => p.id)).not.toEqual(rat.parts.map((p) => p.id));
+    const text = JSON.stringify(ransom).toUpperCase();
+    expect(text).not.toMatch(/PODGLĄD EKRANU|STEROWANIE|RAT/);
+  });
+
+  it('żargon „matryca kompilacji” nie trafia do widocznych tekstów', () => {
+    const visible = [m.heading, m.programPrefix, m.loaderText, m.doneMessage, m.task, m.hint].join(' ').toLowerCase();
+    expect(visible).not.toMatch(/matryc/);
   });
 
   it('przejechanie po całym polu pędzlem daje pełny postęp przy progu z configu', () => {

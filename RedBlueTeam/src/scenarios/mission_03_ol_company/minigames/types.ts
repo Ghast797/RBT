@@ -68,7 +68,7 @@ export const PLAN_STATE_KEY = 'm3_plan';
 // Etap 1: //BAZA_WIRUSÓW (D1 + matryca kompilacji jako flavor bez oceny)
 // ---------------------------------------------------------------------------
 
-/** Jedna część wirusa podpisana pod matrycą (zapala się w miarę odsłaniania). */
+/** Jedna część programu podpisana pod zdrapką (zapala się w miarę odsłaniania). */
 export interface MatrixPart {
   id: string;
   /** Krótka nazwa, np. `PODGLĄD EKRANU`. */
@@ -77,19 +77,35 @@ export interface MatrixPart {
   desc: string;
 }
 
+/**
+ * Wariant ekranu zdrapki dla wybranego w D1 programu: nazwa programu, grafika pod maską (z tekstem
+ * alternatywnym) i cztery podpisy części. Dzięki temu po wyborze Ransomware (suboptimal, gra idzie dalej)
+ * ekran nie sugeruje, że powstaje RAT.
+ */
+export interface MatrixVariant {
+  /** Nazwa składanego programu, np. `RAT`. */
+  programName: string;
+  /** Grafika pod maską: `{ group: 'virus', name: 'rat' }`. */
+  image: AssetRef;
+  /** Tekst alternatywny grafiki. */
+  imageAlt: string;
+  /** Cztery podpisane części programu. */
+  parts: MatrixPart[];
+}
+
 export interface VirusMatrixConfig {
   /** Nagłówek ekranu: „WYSZUKAJ CZĘŚCI WIRUSA:”. */
   heading: string;
-  /** Napis na ekranie ładowania przed matrycą. */
+  /** Przedrostek podtytułu z nazwą składanego programu: „SKŁADASZ PROGRAM:” (+ `variant.programName`). */
+  programPrefix: string;
+  /** Napis na ekranie ładowania przed zdrapką (bez żargonu). */
   loaderText: string;
   /** Odsłonięta część pola (0..1), od której pasek liczy się jako 100% (z dokumentu: 100%, w danych 0,92). */
   revealThreshold: number;
   /** Liczba segmentów paska postępu. */
   segments: number;
-  /** Grafika pod maską: `{ group: 'virus', name: 'rat' }`. */
-  image: AssetRef;
-  /** Cztery podpisane części wirusa. */
-  parts: MatrixPart[];
+  /** Warianty ekranu wg id opcji D1 (każda opcja prowadząca do zdrapki, czyli niekrytyczna, ma wariant). */
+  variants: Record<string, MatrixVariant>;
   /** Komunikat po 100%: „WIRUS GOTOWY! AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY”. */
   doneMessage: string;
   /** Polecenie ZADANIE ekranu zdrapki. */

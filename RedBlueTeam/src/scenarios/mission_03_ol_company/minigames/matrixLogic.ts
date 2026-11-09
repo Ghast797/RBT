@@ -111,6 +111,34 @@ export function litSegments(progress: number, segments: number): number {
   return Math.max(0, Math.min(segments, Math.floor(progress * segments + 1e-9)));
 }
 
+/** Widok zdrapki wyprowadzony z jednego źródła (odsłonięta część pola + próg): pasek, podpisy i „gotowe” zawsze zgodne. */
+export interface MatrixView {
+  /** Postęp 0..1 względem progu. */
+  progress: number;
+  /** Zdrapka zakończona: pasek 100%, wszystkie podpisy zapalone, komunikat „gotowy”. */
+  complete: boolean;
+  segmentsLit: number;
+  partsLit: number;
+  /** Procent na pasku (99 maks. przed końcem, żeby nie pokazać „100%” przedwcześnie). */
+  percent: number;
+}
+
+/**
+ * Jedno miejsce, z którego liczą się pasek, cztery podpisy i komunikat końcowy. Po przekroczeniu progu
+ * zdrapka jest domknięta (wszystko zapalone naraz), więc „WIRUS GOTOWY!” nigdy nie pojawia się przy niezapalonym podpisie.
+ */
+export function matrixView(fraction: number, revealThreshold: number, segments: number, partCount: number): MatrixView {
+  const progress = matrixProgress(fraction, revealThreshold);
+  const complete = isMatrixComplete(fraction, revealThreshold);
+  return {
+    progress,
+    complete,
+    segmentsLit: complete ? segments : litSegments(progress, segments),
+    partsLit: complete ? partCount : Math.min(partCount - 1, litParts(progress, partCount)),
+    percent: complete ? 100 : Math.min(99, Math.floor(progress * 100))
+  };
+}
+
 /** Ile z `partCount` podpisanych części jest zapalonych: część k (od 1) zapala się przy postępie k/partCount, ostatnia przy 100%. */
 export function litParts(progress: number, partCount: number): number {
   return litSegments(progress, partCount);

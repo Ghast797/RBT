@@ -405,7 +405,7 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
     refs.forEach((r) => (byGroup[r.group] = [...(byGroup[r.group] ?? []), r.name]));
     Object.values(byGroup).forEach((names) => names.sort());
     expect(byGroup).toEqual({
-      virus: ['rat'],
+      virus: ['ransomware', 'rat'],
       employees: ['agnieszka_leman', 'jan_lukasiewicz', 'mateusz_klimowicz', 'slawomir_bialek', 'wiktoria_galecka'],
       events: ['meeting_logistics_1', 'meeting_logistics_2', 'party_sales_1', 'party_sales_2', 'party_sales_3'],
       usb: ['envelope', 'party_photos'],
