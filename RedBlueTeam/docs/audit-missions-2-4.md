@@ -25,7 +25,7 @@ Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude
   - etapy w `stages.ts`;
   - raport z lekcjami;
   - `scenario.md`;
-  - spec w `mission_03_ol_company/docs/migration-spec.md`;
+  - plan przebudowy w `mission_03_ol_company/docs/rebuild-plan.md` (dawny `migration-spec.md` zastąpiony notką);
   - `tests/mission3.test.ts`.
 - **Sprzątanie legacy M3 w silniku** (zacommitowane): stare widgety, maszyna stanów w store, przyciski w `ChatView`, test `missionStore`, neutralna domyślna misja, zaślepki `Stub*`.
 
@@ -46,12 +46,13 @@ Gałąź `refactor/missions-2-4-standard`, niewypchnięta. Kolejna sesja (Claude
 - Poprawki silnika (wszystkie misje): raport pooperacyjny w dwóch panelach bez przewijania do 10 decyzji, pole `clock` w beacie `time_jump` (zegar pulpitu), podświetlenie kafelka 3 s od końca przeskoku, napis powtórki „ZACZNIJ MISJĘ OD NOWA (BEZ INTRO)”.
 - Stan: 138 testów zielonych (1 `it.todo` o pendrive), tsc czysty, 4 paczki SCORM izolowane.
 
+**M3 przebudowane wg dokumentu VR (2026-11-09)**
+- Przebudowa wg `docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md` i `rebuild-plan.md`: porcje A–H zrobione (silnik: lecący zegar `clockFrom`, `openingConversation`, `usePointerDrag`; 6 decyzji D1–D6; matryca kompilacji jako zdrapka; //TOR z przewijaną stroną firmy; //DYSK E z przeciąganiem; //DRON z mapą i szukaniem auta po opisie mentora; folder FREEVOLT przeciągany na pulpit hakera).
+- Dokumentacja: `scenario.md` przepisany wg `scenario-format.md` z listą odchyleń od VR, `docs/moodle-baza-wiedzy.md` (nośniki USB, polityka urządzeń, OSINT, zgłaszanie), `rebuild-plan.md` z oznaczonymi porcjami. Dawne „8 decyzji”, builder RAT i powrót mentora po złym celu D2 już nie obowiązują.
+- Do zrobienia przy M3: grafiki w `assets/<grupa>/` (zdjęcia pracowników, wydarzeń, wirus, parking, pendrive), porcje I (weryfikacja w przeglądarce) i J (niezależna recenzja).
+
 **Następne kroki**
-1. **Audyt M3 przez właściciela.** Do akceptacji:
-   - builder RAT bez oceny (8 decyzji);
-   - zły cel D2 → `suboptimal` po powrocie mentora;
-   - `educationalSlides` usunięte z M3 (M2/M4 nadal je mają);
-   - nowy układ raportu pooperacyjnego (dotyczy wszystkich misji).
+1. **Testy i audyt M3 przez właściciela** na przebudowanej wersji (M3 przebudowane wg dokumentu VR). Do akceptacji m.in.: odchylenia z `scenario.md` (zdrapka, 8 aut, WYDARZENIA przed D2, przeciąganie plików FREEVOLT, bez „WYŁĄCZ APLIKACJĘ DRONA”), `educationalSlides` usunięte z M3 (M2/M4 nadal je mają), nowy układ raportu pooperacyjnego (dotyczy wszystkich misji).
 2. **M4** wg `mission-standard.md`: rozjazdy z PDF (9 vs 10 decyzji — układ wg oceny logiki), `scenario.md`, przeskok czasu w mostku po VPN, lekcje atak/obrona, wygląd M2.
 3. **Reguła dwóch:** builder M3 (`VirusLabApp`) i M2 (`WormBuilderApp`) mają ten sam przebieg — kandydat na klocek silnika.
 4. **Do decyzji właściciela:** dopasowanie M1 do zasady „karty na dużym ekranie, wiersze na prawym” (POCZTA, KREATOR_STRONY); cykl importów w dev (zmiana startu store).
