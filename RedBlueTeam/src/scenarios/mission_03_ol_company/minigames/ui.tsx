@@ -5,6 +5,11 @@
 import React from 'react';
 import { MessageSquareQuote } from 'lucide-react';
 
+/** Czas ładowania między ekranami minigier M3 (ms): standard M2 to ok. 1,5–2 s. */
+export const LOADER_MS = 1700;
+/** Dłuższe ładowanie dla „ciężkich” akcji (kompilacja, zapis planu). */
+export const LOADER_LONG_MS = 2000;
+
 /** Sekcja panelu prawego monitora z nagłówkiem. */
 export const NoteSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="space-y-1.5">

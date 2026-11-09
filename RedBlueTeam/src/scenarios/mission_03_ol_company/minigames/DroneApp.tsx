@@ -15,11 +15,11 @@ import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { SidePanel } from '../../../engine/components/SidePanel';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { DroneConfig, DroneCar, DroneMapLocation } from './types';
-import { MentorNote } from './ui';
+import { MentorNote, LOADER_MS } from './ui';
 
-type Screen = 'attach' | 'attaching' | 'map' | 'flying' | 'load_camera' | 'camera' | 'dropped';
+type Screen = 'attach' | 'attaching' | 'map' | 'flying' | 'load_camera' | 'camera' | 'dropping' | 'dropped';
 
-/** Czas lotu drona do celu (ms) i pauza na „zrzut” przed zakończeniem etapu. */
+/** Czas lotu drona do celu (ms) i czas komunikatu o zrzucie przed zakończeniem etapu. */
 const FLIGHT_MS = 3200;
 const DROP_MS = 1600;
 
@@ -327,7 +327,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
       setLocked(true);
       return;
     }
-    setScreen('dropped');
+    setScreen('dropping');
   };
 
   const header = (subtitle: string, task: string, step: string) => (
@@ -408,7 +408,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
         </SidePanel>
       );
     }
-    if (screen === 'camera' || screen === 'dropped') {
+    if (screen === 'camera' || screen === 'dropping' || screen === 'dropped') {
       return (
         <SidePanel
           accent={accent}
@@ -496,7 +496,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
       {screen === 'attaching' && (
         <ModuleLoader
           label="MOCOWANIE KOPERTY Z PENDRIVE'EM DO DRONA…"
-          durationMs={1500}
+          durationMs={LOADER_MS}
           accent={accent}
           onDone={() => setScreen('map')}
         />
@@ -534,7 +534,16 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
       )}
 
       {screen === 'load_camera' && (
-        <ModuleLoader label="ŁĄCZENIE Z KAMERĄ PARKINGU…" durationMs={1100} accent={accent} onDone={() => setScreen('camera')} />
+        <ModuleLoader label="ŁĄCZENIE Z KAMERĄ PARKINGU…" durationMs={LOADER_MS} accent={accent} onDone={() => setScreen('camera')} />
+      )}
+
+      {screen === 'dropping' && (
+        <ModuleLoader
+          label="ZRZUT ŁADUNKU NA SAMOCHÓD OFIARY…"
+          durationMs={LOADER_MS}
+          accent={accent}
+          onDone={() => setScreen('dropped')}
+        />
       )}
 
       {(screen === 'camera' || screen === 'dropped') && (

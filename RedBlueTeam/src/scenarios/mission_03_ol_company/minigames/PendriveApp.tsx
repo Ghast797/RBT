@@ -15,6 +15,7 @@ import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { ChoiceCardGrid } from '../../../engine/components/ChoiceZone';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { AttachmentOption, GradedDecision, PendriveConfig } from './types';
+import { LOADER_MS } from './ui';
 
 type Screen =
   | 'attach'
@@ -26,7 +27,7 @@ type Screen =
   | 'eject'
   | 'done';
 
-const BIND_DURATION_MS = 1600;
+const BIND_DURATION_MS = 1800;
 /** Jak długo gracz widzi komunikat „RAT ukryty w archiwum”, zanim krok przejdzie sam. */
 const BOUND_MS = 1300;
 const ACCENT = '#f59e0b'; // kolor kafelka //DYSK E na pulpicie
@@ -42,6 +43,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   const [envelopeSet, setEnvelopeSet] = useState<ChoiceOption | null>(null);
   const [isBinding, setIsBinding] = useState(false);
   const [isBound, setIsBound] = useState(false);
+  const [bindPct, setBindPct] = useState(0);
   // Po decyzji krytycznej silnik pokazuje wykrycie; do czasu powtórki nic już nie klikamy.
   const [locked, setLocked] = useState(false);
 
@@ -76,16 +78,22 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
     setIsBinding(true);
   };
 
-  // Podpięcie RAT do archiwum: pakowanie, komunikat sukcesu, potem krok sam przechodzi dalej.
+  // Podpięcie RAT do archiwum: pasek z licznikiem procentów, komunikat sukcesu, potem krok sam przechodzi dalej.
   // Timery czyszczą się przy odmontowaniu; zaliczony krok nie uruchamia się drugi raz (isBound zostaje).
   useEffect(() => {
     if (!isBinding) return;
-    const id = setTimeout(() => {
-      sounds.playSuccess();
-      setIsBinding(false);
-      setIsBound(true);
-    }, BIND_DURATION_MS);
-    return () => clearTimeout(id);
+    const started = Date.now();
+    const id = setInterval(() => {
+      const pct = Math.min(100, Math.round(((Date.now() - started) / BIND_DURATION_MS) * 100));
+      setBindPct(pct);
+      if (pct >= 100) {
+        clearInterval(id);
+        sounds.playSuccess();
+        setIsBinding(false);
+        setIsBound(true);
+      }
+    }, 50);
+    return () => clearInterval(id);
   }, [isBinding]);
 
   useEffect(() => {
@@ -167,13 +175,14 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
               <div className="text-sm font-bold text-white">{zip}</div>
               {isBinding ? (
                 <div className="space-y-2">
-                  <div className="text-xs font-bold tracking-widest animate-pulse" style={{ color: ACCENT }}>
-                    PAKOWANIE //WIRUS: RAT DO ARCHIWUM…
+                  <div className="flex items-center justify-between text-xs font-bold tracking-widest" style={{ color: ACCENT }}>
+                    <span>PAKOWANIE //WIRUS: RAT DO ARCHIWUM…</span>
+                    <span>{bindPct}%</span>
                   </div>
                   <div className="h-3 rounded bg-black/60 border overflow-hidden" style={{ borderColor: `${ACCENT}55` }}>
                     <div
-                      className="h-full w-full origin-left animate-pulse"
-                      style={{ backgroundColor: ACCENT, boxShadow: `0 0 12px ${ACCENT}` }}
+                      className="h-full origin-left transition-[width] duration-75"
+                      style={{ width: `${bindPct}%`, backgroundColor: ACCENT, boxShadow: `0 0 12px ${ACCENT}` }}
                     />
                   </div>
                 </div>
@@ -199,7 +208,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
       {screen === 'load_volume' && (
         <ModuleLoader
           label="Formatowanie nośnika USB..."
-          durationMs={900}
+          durationMs={LOADER_MS}
           accent={ACCENT}
           onDone={() => setScreen('volume')}
         />
@@ -235,7 +244,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
       {screen === 'load_envelope' && (
         <ModuleLoader
           label="Przygotowywanie koperty..."
-          durationMs={900}
+          durationMs={LOADER_MS}
           accent={ACCENT}
           onDone={() => setScreen('envelope')}
         />
@@ -271,7 +280,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
       {screen === 'eject' && (
         <ModuleLoader
           label="Bezpieczne wysuwanie pamięci USB..."
-          durationMs={1200}
+          durationMs={LOADER_MS}
           accent={ACCENT}
           onDone={() => {
             setScreen('done');

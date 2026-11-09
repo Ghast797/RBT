@@ -15,6 +15,7 @@ import { SidePanel } from '../../../engine/components/SidePanel';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VirusLabConfig, BuilderGroup } from './types';
+import { LOADER_MS, LOADER_LONG_MS } from './ui';
 
 type Screen = 'virus_select' | 'loading' | 'builder' | 'compiling' | 'ready';
 type GroupKey = 'modules' | 'masking' | 'package';
@@ -212,7 +213,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
       {screen === 'loading' && (
         <ModuleLoader
           label="Ładowanie buildera ładunku RAT..."
-          durationMs={900}
+          durationMs={LOADER_MS}
           accent={ACCENT}
           onDone={() => setScreen('builder')}
         />
@@ -237,7 +238,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
       {screen === 'compiling' && (
         <ModuleLoader
           label="Kompilacja ładunku RAT i pakowanie..."
-          durationMs={1400}
+          durationMs={LOADER_LONG_MS}
           accent={ACCENT}
           onDone={handleCompileDone}
         />

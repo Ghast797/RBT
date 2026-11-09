@@ -18,7 +18,7 @@ import { SidePanel } from '../../../engine/components/SidePanel';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { OsintBrowserConfig, OsintEmployee } from './types';
 import { resolveTargetPick, targetCardContent } from './osintLogic';
-import { MentorNote, NoteSection } from './ui';
+import { MentorNote, NoteSection, LOADER_MS, LOADER_LONG_MS } from './ui';
 
 type Screen = 'site' | 'loading_target' | 'target' | 'loading_vector' | 'vector' | 'finishing';
 type SiteTab = 'home' | 'events';
@@ -483,19 +483,19 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
       {screen === 'site' && siteView}
 
       {screen === 'loading_target' && (
-        <ModuleLoader label="ŁADOWANIE LISTY PRACOWNIKÓW…" durationMs={1000} accent={ACCENT} onDone={() => setScreen('target')} />
+        <ModuleLoader label="ŁADOWANIE LISTY PRACOWNIKÓW…" durationMs={LOADER_MS} accent={ACCENT} onDone={() => setScreen('target')} />
       )}
 
       {screen === 'target' && targetView}
 
       {screen === 'loading_vector' && (
-        <ModuleLoader label="ŁADOWANIE MODUŁU SOCJOTECHNIKI…" durationMs={1000} accent={ACCENT} onDone={() => setScreen('vector')} />
+        <ModuleLoader label="ŁADOWANIE MODUŁU SOCJOTECHNIKI…" durationMs={LOADER_MS} accent={ACCENT} onDone={() => setScreen('vector')} />
       )}
 
       {screen === 'vector' && vectorView}
 
       {screen === 'finishing' && (
-        <ModuleLoader label="ZAPISYWANIE PLANU ATAKU…" durationMs={1300} accent={ACCENT} onDone={finish} />
+        <ModuleLoader label="ZAPISYWANIE PLANU ATAKU…" durationMs={LOADER_LONG_MS} accent={ACCENT} onDone={finish} />
       )}
     </div>
   );

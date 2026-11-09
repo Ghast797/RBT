@@ -14,6 +14,7 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { RatSessionConfig } from './types';
+import { LOADER_MS } from './ui';
 
 const ACCENT = '#00f0ff';
 
@@ -101,7 +102,7 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
           <ModuleLoader
             key="loading_desktop"
             label={texts.loaders.desktop}
-            durationMs={1500}
+            durationMs={LOADER_MS}
             accent={ACCENT}
             onDone={() => setPhase('desktop')}
           />
@@ -193,7 +194,7 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
           <ModuleLoader
             key="loading_network"
             label={texts.loaders.network}
-            durationMs={1500}
+            durationMs={LOADER_MS}
             accent={ACCENT}
             onDone={() => setPhase('network')}
           />
