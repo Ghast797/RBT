@@ -340,12 +340,12 @@ export const droneConfig: DroneConfig = {
     decisionNum: 8,
     question: 'WYBIERZ MIEJSCE NA PARKINGU (POJAZD OFIARY):',
     options: [
-      { id: 'car_1', label: 'Granatowy Sedan', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_2', label: 'Szary SUV', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_3', label: 'Zielony Kombi', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_4', label: 'Biały samochód z czerwonym dachem', tier: 'ideal', feedback: 'Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera.' },
-      { id: 'car_5', label: 'Czerwony Hatchback z czarnym dachem', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
-      { id: 'car_6', label: 'Biały Sedan z białym dachem', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' }
+      { id: 'car_1', label: 'GRANATOWY SEDAN', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
+      { id: 'car_2', label: 'SZARY SUV', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
+      { id: 'car_3', label: 'ZIELONY KOMBI', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
+      { id: 'car_4', label: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM', tier: 'ideal', feedback: 'Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera.' },
+      { id: 'car_5', label: 'CZERWONY HATCHBACK Z CZARNYM DACHEM', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' },
+      { id: 'car_6', label: 'BIAŁY SEDAN Z BIAŁYM DACHEM', tier: 'critical', feedback: 'Błędny pojazd – koperta trafiła na samochód osoby postronnej!' }
     ]
   },
   mapLocations: [
@@ -355,12 +355,12 @@ export const droneConfig: DroneConfig = {
     { id: 'loc_4', number: 4, address: 'OŁTASZYŃSKA 92C', district: 'PARTYNICE', x: 28, y: 78 }
   ],
   parkingCars: [
-    { id: 1, desc: 'Granatowy Sedan', body: '#1e3a8a', roof: '#1e3a8a', isTarget: false },
-    { id: 2, desc: 'Szary SUV', body: '#475569', roof: '#475569', isTarget: false },
-    { id: 3, desc: 'Zielony Kombi', body: '#15803d', roof: '#15803d', isTarget: false },
-    { id: 4, desc: 'Biały samochód z czerwonym dachem', body: '#f8fafc', roof: '#dc2626', isTarget: true },
-    { id: 5, desc: 'Czerwony Hatchback z czarnym dachem', body: '#dc2626', roof: '#0f172a', isTarget: false },
-    { id: 6, desc: 'Biały Sedan z białym dachem', body: '#f8fafc', roof: '#f8fafc', isTarget: false }
+    { id: 1, desc: 'GRANATOWY SEDAN', body: '#1e3a8a', roof: '#1e3a8a', isTarget: false },
+    { id: 2, desc: 'SZARY SUV', body: '#475569', roof: '#475569', isTarget: false },
+    { id: 3, desc: 'ZIELONY KOMBI', body: '#15803d', roof: '#15803d', isTarget: false },
+    { id: 4, desc: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM', body: '#f8fafc', roof: '#dc2626', isTarget: true },
+    { id: 5, desc: 'CZERWONY HATCHBACK Z CZARNYM DACHEM', body: '#dc2626', roof: '#0f172a', isTarget: false },
+    { id: 6, desc: 'BIAŁY SEDAN Z BIAŁYM DACHEM', body: '#f8fafc', roof: '#f8fafc', isTarget: false }
   ],
   successDrop: "POMYŚLNIE POZOSTAWIONO KOPERTĘ Z PENDRIVE'EM. DRON WRACA DO POKOJU HAKERA."
 };

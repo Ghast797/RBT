@@ -110,12 +110,12 @@ Decyzja D7: "WSKAŻ DRONOWI ADRES DOMU OFIARY:"
 - OŁTASZYŃSKA 92C (PARTYNICE) | ideal | Właściwa lokalizacja uzyskana podczas fazy rekonesansu adresu Mateusza.
 
 Decyzja D8: "WYBIERZ MIEJSCE NA PARKINGU (POJAZD OFIARY):"
-- Granatowy Sedan | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
-- Szary SUV | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
-- Zielony Kombi | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
-- Biały samochód z czerwonym dachem | ideal | Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera.
-- Czerwony Hatchback z czarnym dachem | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
-- Biały Sedan z białym dachem | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
+- GRANATOWY SEDAN | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
+- SZARY SUV | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
+- ZIELONY KOMBI | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
+- BIAŁY SAMOCHÓD Z CZERWONYM DACHEM | ideal | Precyzyjna identyfikacja pojazdu na podstawie zdjęcia przesłanego przez Byte_Mastera.
+- CZERWONY HATCHBACK Z CZARNYM DACHEM | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
+- BIAŁY SEDAN Z BIAŁYM DACHEM | critical | Błędny pojazd – koperta trafiła na samochód osoby postronnej!
 
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "KOPERTA NA SAMOCHODZIE OFIARY. DAM CI ZNAĆ, KIEDY MATEUSZ PODŁĄCZY PENDRIVE I AKTYWUJE WIRUSA."
@@ -138,7 +138,7 @@ Mostek (rozmowa końcowa):
 Lekcje przy decyzjach (rozwijane w raporcie pooperacyjnym; treść w `data/mission3.json`, `step6.choices[].attack` / `.defense`):
 
 D1:
-- Atak: RAT daje atakującemu zdalny pulpit na stacji pracownika, działa w tle jak zwykła usługa, więc nie wywołuje alarmu, a z jednego komputera można sięgnąć do dokumentacji w sieci firmy.
+- Atak: RAT (Remote Access Trojan) daje atakującemu zdalny pulpit na stacji pracownika, działa w tle jak zwykła usługa systemowa, więc nie wywołuje alarmu, a z jednego komputera można sięgnąć do dokumentacji w sieci firmy. Keylogger widziałby tylko klawisze, a ransomware zaalarmowałby firmę od razu.
 - Obrona: Sygnały: nieznany proces startujący z systemem, ruch wychodzący na obcy adres, pulpit „sam się rusza”. Zasada najmniejszych uprawnień, EDR i monitoring ruchu wychodzącego; przy podejrzeniu odłącz stację i zgłoś do IT.
 
 D2:
@@ -180,6 +180,6 @@ Misja nie ma dokumentu VR; poniżej zmiany względem starego przebiegu M3 (widge
 - [DO DECYZJI] Standard M2 w minigrach: `AppHeader` z paskiem ZADANIE, karty na dużym ekranie, wiersze na prawym monitorze (`SideMonitor`), `ModuleLoader` między ekranami, pamięć stanu aplikacji (`AppHost`); mapa //DRON skalowana do ekranu, zdjęcie pojazdu od mentora na prawym monitorze.
 - [DO DECYZJI] Sesja //WIRUS: RAT — SESJA bez oceny (finał wizualny); etykiety przycisków bez nawiasów kwadratowych.
 - [SPÓJNIK] Po intro brak kwestii gracza odblokowującej pierwszy kafelek; dodana „NAJPIERW STWORZĘ WIRUSA.”
-- [NIEPEWNE] Wygląd raportu: pytania w `step6.choices` ujednolicono z pytaniami z ekranu (wcześniej odpowiedzi w D1–D4 i D7–D8 różniły się od etykiet opcji; odpowiedzi to teraz etykiety opcji).
+- [NIEPEWNE] Wygląd raportu: pytania i odpowiedzi w `step6.choices` ujednolicono z ekranem (wcześniej odpowiedzi w D1–D4 i D7–D8 różniły się od etykiet opcji). Odpowiedź idealna każdej decyzji to dosłownie etykieta opcji `ideal` z `stages.ts` (D1 „RAT: REMOTE ACCESS TROJAN”, D2 „MATEUSZ KLIMOWICZ (JUNIOR WSPARCIA)”, D7 „OŁTASZYŃSKA 92C”, D8 „BIAŁY SAMOCHÓD Z CZERWONYM DACHEM”); test pilnuje zgodności. Etykiety D8 pisane są wersalikami jak reszta interfejsu, a `mission.decisionCount` wynosi 8.
 - [DO ZAPROJEKTOWANIA] Lekcje atak/obrona (D1–D8) nie istniały w starym M3; propozycja do recenzji właściciela.
 - Szczegóły kafelków: //BAZA_WIRUSÓW, //CHAT: BYTE_MASTER, //TOR: PRZEGLĄDARKA, //DYSK E: PENDRIVE, //DRON: CONDOR MIT63, //WIRUS: RAT — SESJA, //RAPORT POOPERACYJNY.

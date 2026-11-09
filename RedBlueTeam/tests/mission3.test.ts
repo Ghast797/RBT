@@ -94,19 +94,15 @@ describe('Misja 3 — dane, które przetrwają migrację', () => {
     expect(resolveDecisionCount(def)).toBe(8);
   });
 
-  it('raport końcowy: numery, pytania i odpowiedzi idealne 8 decyzji (step6.choices)', () => {
+  it('raport końcowy: odpowiedź idealna każdej decyzji to dosłownie etykieta opcji ideal z klocków', () => {
     const def = getMission(MISSION_ID) as MissionDefinition;
-    const byNum = Object.fromEntries(def.step6.choices.map((c: any) => [c.num, c]));
-    expect(byNum[1].answer).toBe('RAT');
-    expect(byNum[1].question).toBe('WYBIERZ ODPOWIEDNIEGO WIRUSA:');
-    expect(byNum[2].answer).toBe('MATEUSZ KLIMOWICZ');
-    expect(byNum[3].answer).toContain('IMPREZY');
-    expect(byNum[4].answer).toContain('IMG_00034521');
-    expect(byNum[5].answer).toBe('IMPREZA');
-    expect(byNum[6].answer).toContain('AFTERPARTY');
-    expect(byNum[7].answer).toContain('OŁTASZYŃSKA 92C');
-    expect(byNum[8].answer).toContain('BIAŁY SAMOCHÓD');
-    for (let k = 1; k <= 8; k++) expect(byNum[k]).toBeDefined();
+    const decisions = collectDecisions((def.blocks ?? {}) as Record<string, any>);
+    for (let k = 1; k <= 8; k++) {
+      const choice = def.step6.choices.find((c: any) => c.num === k) as any;
+      expect(choice, `step6.choices D${k}`).toBeDefined();
+      const ideal = decisions[k].options.find((o) => o.tier === 'ideal')!;
+      expect(choice.answer, `D${k}: odpowiedź idealna w raporcie`).toBe(ideal.label);
+    }
   });
 
   it('intro z BYTE_MASTEREM zawiera kluczowe kwestie mentora (FREEVOLT, kreatywność)', () => {
@@ -202,18 +198,33 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
   });
 });
 
-/** Wyciąga opcje {id,tier} per numer decyzji z `blocks` niezależnie od kształtu minigry. */
-function collectOptionsByDecision(blocks: Record<string, any>): Record<number, Array<{ id: string; tier: ChoiceOutcome }>> {
-  const result: Record<number, Array<{ id: string; tier: ChoiceOutcome }>> = {};
+interface DecisionData {
+  question: string;
+  options: Array<{ id: string; label: string; tier: ChoiceOutcome }>;
+}
+
+/** Wyciąga pytanie i opcje {id,label,tier} per numer decyzji z `blocks` niezależnie od kształtu minigry. */
+function collectDecisions(blocks: Record<string, any>): Record<number, DecisionData> {
+  const result: Record<number, DecisionData> = {};
   const visit = (node: any) => {
     if (!node || typeof node !== 'object') return;
     if (typeof node.decisionNum === 'number' && Array.isArray(node.options)) {
-      result[node.decisionNum] = node.options.map((o: any) => ({ id: o.id, tier: o.tier }));
+      result[node.decisionNum] = {
+        question: node.question,
+        options: node.options.map((o: any) => ({ id: o.id, label: o.label, tier: o.tier }))
+      };
     }
     Object.values(node).forEach(visit);
   };
   Object.values(blocks).forEach(visit);
   return result;
+}
+
+/** Wyciąga opcje {id,tier} per numer decyzji z `blocks`. */
+function collectOptionsByDecision(blocks: Record<string, any>): Record<number, Array<{ id: string; tier: ChoiceOutcome }>> {
+  return Object.fromEntries(
+    Object.entries(collectDecisions(blocks)).map(([num, d]) => [num, d.options.map(({ id, tier }) => ({ id, tier }))])
+  );
 }
 
 // ---------------------------------------------------------------------------
