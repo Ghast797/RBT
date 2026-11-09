@@ -43,9 +43,9 @@ export function createMissionCompletionStatement(
   const isPassed = scoreRaw >= 80;
   const activityId = missionMeta?.id 
     ? `https://cybersec-training.internal/activities/${missionMeta.id}`
-    : "https://cybersec-training.internal/activities/mission-3-ol-company";
-  const missionTitle = missionMeta?.title || "Mission 3: O&L Company Social Engineering Infiltration";
-  const missionDesc = missionMeta?.description || "Spear phishing, Baiting, Trojan RAT payload & Reconnaissance training simulation";
+    : "https://cybersec-training.internal/activities/mission-unknown";
+  const missionTitle = missionMeta?.title || "Misja szkoleniowa HACKERS.OS";
+  const missionDesc = missionMeta?.description || "Symulacja szkoleniowa z cyberbezpieczeństwa";
 
   return {
     actor,
