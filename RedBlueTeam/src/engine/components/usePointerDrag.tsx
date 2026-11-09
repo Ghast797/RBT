@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   DEFAULT_DRAG_THRESHOLD,
+  isForeignPointer,
   moveDrag,
   pressDrag,
   releaseDrag,
@@ -104,14 +105,14 @@ export function usePointerDrag<T extends string = string>(options: UsePointerDra
     if (!active) return;
 
     const onMove = (e: PointerEvent) => {
-      if (pointerIdRef.current !== null && e.pointerId !== pointerIdRef.current) return;
+      if (isForeignPointer(pointerIdRef.current, e.pointerId)) return;
       const cur = stateRef.current;
       if (!cur) return;
       commit(moveDrag(cur, e.clientX, e.clientY, readZones(), acceptsFn, threshold()));
     };
 
     const onUp = (e: PointerEvent) => {
-      if (pointerIdRef.current !== null && e.pointerId !== pointerIdRef.current) return;
+      if (isForeignPointer(pointerIdRef.current, e.pointerId)) return;
       const cur = stateRef.current;
       if (!cur) return;
       const outcome = releaseDrag(cur, e.clientX, e.clientY, readZones(), acceptsFn, threshold());
@@ -132,18 +133,23 @@ export function usePointerDrag<T extends string = string>(options: UsePointerDra
       pointerIdRef.current = null;
       if (cur?.moved) optionsRef.current.onCancel?.(cur.itemId);
     };
+    // `pointercancel` drugiego wskaźnika nie przerywa przeciągania pierwszego.
+    const onPointerCancel = (e: PointerEvent) => {
+      if (isForeignPointer(pointerIdRef.current, e.pointerId)) return;
+      cancel();
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') cancel();
     };
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', cancel);
+    window.addEventListener('pointercancel', onPointerCancel);
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', cancel);
+      window.removeEventListener('pointercancel', onPointerCancel);
       window.removeEventListener('keydown', onKey);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   DEFAULT_DRAG_THRESHOLD,
+  isForeignPointer,
   moveDrag,
   pickDropZone,
   pressDrag,
@@ -93,5 +94,16 @@ describe('pressDrag / moveDrag / releaseDrag', () => {
     const s = moveDrag(pressDrag('file_a', 0, 0), 10, 0, zones, accepts, 20);
     expect(s.moved).toBe(false);
     expect(releaseDrag(pressDrag('file_a', 0, 0), 25, 0, zones, accepts, 20).kind).toBe('miss');
+  });
+});
+
+describe('isForeignPointer', () => {
+  it('rozpoznaje zdarzenia innego wskaźnika (np. pointercancel drugiego palca)', () => {
+    expect(isForeignPointer(1, 2)).toBe(true);
+    expect(isForeignPointer(1, 1)).toBe(false);
+  });
+
+  it('bez aktywnego wskaźnika nic nie jest obce', () => {
+    expect(isForeignPointer(null, 5)).toBe(false);
   });
 });

@@ -93,3 +93,11 @@ export function releaseDrag<T extends string>(
   if (last.overZone) return { kind: 'drop', itemId: state.itemId, zoneId: last.overZone, x, y };
   return { kind: 'miss', itemId: state.itemId, x, y };
 }
+
+/**
+ * Czy zdarzenie pochodzi od INNEGO wskaźnika niż ten, który trzyma przeciąganie
+ * (drugi palec, mysz obok rysika). Takie zdarzenia — także `pointercancel` — ignorujemy.
+ */
+export function isForeignPointer(activePointerId: number | null, eventPointerId: number): boolean {
+  return activePointerId !== null && eventPointerId !== activePointerId;
+}
