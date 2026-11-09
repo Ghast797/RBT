@@ -97,7 +97,7 @@ Decyzja D5: "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:"
 
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "GOTOWE. TERAZ MUSIMY POCZEKAĆ, AŻ RYBKA CHWYCI HACZYK"
-- PRZESKOK CZASU: "MIJA KILKA GODZIN…" | "CZEKAMY, AŻ PRACOWNICY OTWORZĄ ANKIETĘ I AKTYWUJĄ ŁADUNEK."
+- PRZESKOK CZASU: (sama wirująca tarcza, bez godzin i napisów)
 - odblokuj: //MONITOR_BOTNETU (po przeskoku z opóźnieniem 3 s)
 
 ## Etap 5: //MONITOR_BOTNETU
@@ -150,7 +150,7 @@ D5:
 - [DO DECYZJI] S01, ekran startowy: VR podaje tytuł „NOWA KAMPANIA PHISHINGOWA” i przycisk „KONTYNUUJ”. W webie tytuł jest samym dużym przyciskiem startu (bez osobnego „KONTYNUUJ”, na prośbę właściciela); reszta ekranu (nagłówek aplikacji, ikona) to standard aplikacji z M1.
 - [DO DECYZJI] S06: VR opisuje alert „MALWARE ZOSTAŁ AKTYWOWANY” i monitor z komunikatem „ROBAK – …” jako osobne ekrany; w webie to jeden ekran (tytuł = alert, treść = komunikat monitora, przycisk „PODGLĄD”).
 - [DO DECYZJI] S06: topologia sieci (nazwy stacji CF-*, role, podział 10 zainfekowanych / 2 zabezpieczone) nie pochodzi z VR; VR podaje tylko „schemat sieci zakażonej w firmie CarbonFlow”.
-- [DO DECYZJI] Mostek S05 -> S06: VR nie opisuje upływu czasu, tylko kwestię gracza o czekaniu („…AŻ RYBKA CHWYCI HACZYK”). Czekanie pokazano przeskokiem czasu (`time_jump`, ekran „MIJA KILKA GODZIN…”) po tej kwestii; kafelek //MONITOR_BOTNETU odblokowuje się i podświetla 3 s po jego końcu. Tekst przeskoku to dodatek kodu.
+- [DO DECYZJI] Mostek S05 -> S06: VR nie opisuje upływu czasu, tylko kwestię gracza o czekaniu („…AŻ RYBKA CHWYCI HACZYK”). Czekanie pokazano przeskokiem czasu (`time_jump`, wirująca tarcza bez napisów i godzin) po tej kwestii; kafelek //MONITOR_BOTNETU odblokowuje się i podświetla 3 s po jego końcu. Sam przeskok to dodatek kodu.
 - [DO DECYZJI] S05: wysyłka i potwierdzenie mają wizualizację (pasek postępu, licznik dostarczonych, skrzynki, słupki) — dodatek kodu; liczby z `recipientsCount`/`targetDomain`.
 - [DO DECYZJI] S05: ekran potwierdzenia po „WYŚLIJ” (podsumowanie wysyłki, „POWRÓT DO PULPITU”) to dodatek kodu; VR kończy się na kliknięciu „WYŚLIJ”.
 - [DO DECYZJI] S04, D4: VR podaje opcje jako „NAZWA – opis”. W webie to karty w siatce: duża nazwa na środku i neutralna definicja pod spodem (pole `desc`: robak – samoreplikujący się program rozprzestrzeniający się po sieci; keylogger – program rejestrujący naciśnięcia klawiszy; ransomware – program szyfrujący dane w celu okupu). Opisy z VR („tworzy komputery zombie”, „pokaże wszystko…”) zastąpiono neutralnymi, bo wskazywały odpowiedź; etykieta w raporcie to sama nazwa typu.

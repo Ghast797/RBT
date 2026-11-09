@@ -50,8 +50,11 @@ Mostek (rozmowa do kolejnego etapu):
 - BM: "<kwestia mentora, 1:1 z VR>"
 - GRACZ: "<kwestia gracza, 1:1 z VR — ostatnia kwestia gracza odblokowuje kolejny kafelek>"
 - BM: "<ewentualna odpowiedź mentora>"
-- PRZESKOK CZASU: "<MIJA KILKA GODZIN…>" | "<podtekst, np. CZEKAMY, AŻ OFIARY OTWORZĄ MAILA>"   (opcjonalnie)
+- PRZESKOK CZASU: <od HH:MM> → <do HH:MM>   (opcjonalnie; godziny tylko gdy VR je podaje; bez nich sama wirująca tarcza; ewentualny mały podpis w cudzysłowie)
 - odblokuj: <//IKONA kolejnej aplikacji> (po przeskoku z opóźnieniem 3 s)
+
+Rozmowa przy otwarciu (opcjonalnie; gra raz w czacie, gdy gracz pierwszy raz otworzy aplikację etapu):
+- BM: "<kwestia mentora o tym, czego gracz szuka w aplikacji>"
 ```
 
 Reguły:
@@ -59,7 +62,8 @@ Reguły:
 - Etap bez oceny (sam przerywnik) ma `Cel dydaktyczny` i mechanikę, bez bloku `Decyzja`.
 - Etap może mieć kilka decyzji (np. temat + treść maila = D5, D6).
 - **Mostek to rozmowa (naprzemiennie BM / GRACZ), 1:1 z VR** — także wielobeatowa (np. meldunek). Czat nie otwiera aplikacji; to kwestia gracza odblokowuje kolejny kafelek. Gdy VR milczy na granicy etapów, dodaj krótką kwestię-spójnik gracza i oznacz `[SPÓJNIK]`.
-- **Czekanie z VR = przeskok czasu.** Gdy VR na granicy etapów mówi o czekaniu (np. na otwarcie maila przez ofiarę), dodaj w mostku wiersz `PRZESKOK CZASU` (beat `time_jump`) po kwestii gracza. Kafelek następnego etapu odblokowuje się i podświetla ok. 3 s po zniknięciu nakładki przeskoku (`unlockDelayMs`, domyślnie 3000; liczone od końca przeskoku, także gdy po nim mówi jeszcze mentor). Jeśli przeskok mówi o godzinie („06:02 — MIJA KILKA GODZIN…”), podaj ją w polu `clock` — po przeskoku zegar pulpitu pokaże tę godzinę. Tekst przeskoku jest dodatkiem kodu — zapisz go w „Odchylenia od VR”.
+- **Czekanie z VR = przeskok czasu.** Gdy VR na granicy etapów mówi o czekaniu (np. na otwarcie maila przez ofiarę), dodaj w mostku wiersz `PRZESKOK CZASU` (beat `time_jump`) po kwestii gracza. Kafelek następnego etapu odblokowuje się i podświetla ok. 3 s po zniknięciu nakładki przeskoku (`unlockDelayMs`, domyślnie 3000; liczone od końca przeskoku, także gdy po nim mówi jeszcze mentor). Przeskok to **lecący zegar**: gdy VR podaje godziny (np. „06:02”), wpisz godzinę docelową w `clock` i startową w `clockFrom` (np. `22:15` → `06:02`; bez `clockFrom` start to bieżąca godzina pulpitu), a po przeskoku zegar pulpitu pokaże godzinę docelową. Bez godzin w VR przeskok to sama wirująca tarcza bez cyfr. Silnik nie dopisuje napisów typu „mija kilka godzin”; opcjonalny mały podpis (`label`/`sublabel`) jest dodatkiem kodu — zapisz go w „Odchylenia od VR”.
+- **Rozmowa przy otwarciu aplikacji.** Gdy VR każe mentorowi powiedzieć coś dopiero w trakcie pracy w aplikacji (np. opis tego, czego gracz szuka), zapisz ją w etapie jako blok `Rozmowa przy otwarciu:` (wiersze `BM:` / `GRACZ:` jak w mostku) — silnik zagra ją w czacie raz, przy pierwszym otwarciu aplikacji (`openingConversation`; reguły: `scenario-engine.md`, sekcja 5). Nie służy do odblokowywania czegokolwiek, od tego jest mostek.
 - **`critical` oszczędnie** — tylko dekonspiracja / pułapka kończąca operację (honeypot, zdradzenie celu, rażąca niespójność). Wybór słaby, ale działający = `suboptimal` (gra toczy się dalej, werdykt w debriefie). Nie blokuj gracza na każdym niedoskonałym wyborze.
 - **Nie podpowiadaj odpowiedzi na ekranie** minigry (np. nie etykietuj puli plików nazwą celu). Gracz identyfikuje cele z fikcji i kwestii mentora.
 - Tempa (loadery, przeskoki czasu, animacje, delaye) **nie opisuj** — daje je silnik (`scenario-engine.md`, sekcja 9).
