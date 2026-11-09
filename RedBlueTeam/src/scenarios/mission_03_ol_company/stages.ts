@@ -1,7 +1,7 @@
-// Etapy i dane klocków Misji 3 (O&L Company) — wzorzec B (szkielet migracji).
+// Etapy i dane klocków Misji 3 (O&L Company) — wzorzec B.
 // Treść (teksty, poziomy, feedback) mieszka tutaj, nie w kodzie minigry.
-// Mostki (conversation) odtworzone 1:1 z tekstów starego przebiegu w
-// useMissionStore (chatStage / chooseChatOption). Zob. docs/migration-spec.md.
+// Mostki (conversation) to rozmowy po zaliczeniu etapu; kafelek następnego etapu
+// odblokowuje się dopiero po kwestii gracza (i po przeskoku czasu). Źródło prawdy: scenario.md.
 
 import type { ChoiceOutcome, StageDefinition } from '../../engine/types/mission';
 import mission3Data from './data/mission3.json';

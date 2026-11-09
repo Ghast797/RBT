@@ -124,8 +124,8 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
 
   const row = (label: string, value: React.ReactNode) => (
     <div className="p-2.5 rounded bg-[#09111c] border border-gray-800 space-y-0.5">
-      <div className="text-[0.6875rem] text-gray-400 uppercase tracking-wide">{label}</div>
-      <div className="text-xs font-bold text-gray-100 break-words">{value}</div>
+      <div className="text-xs text-gray-400 uppercase tracking-wide">{label}</div>
+      <div className="text-sm font-bold text-gray-100 break-words">{value}</div>
     </div>
   );
   const empty = <span className="text-gray-500 font-normal">— jeszcze nie ustawiono</span>;
@@ -312,7 +312,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
           sub="Notatnik przygotowania pendrive'a. Wpisy pojawiają się po zatwierdzeniu kolejnych kroków."
         >
           <div className="space-y-3">
-            <div className="flex items-center space-x-2 text-xs font-bold" style={{ color: ACCENT }}>
+            <div className="flex items-center space-x-2 text-sm font-bold" style={{ color: ACCENT }}>
               <Usb size={16} />
               <span>DYSK E: PODŁĄCZONY</span>
             </div>

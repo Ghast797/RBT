@@ -15,15 +15,11 @@ import {
 import type { VirusLabConfig } from '../src/scenarios/mission_03_ol_company/minigames/types';
 
 // ---------------------------------------------------------------------------
-// TEST CHARAKTERYZUJĄCY MISJĘ 3 (O&L COMPANY)
+// TESTY MISJI 3 (O&L COMPANY), wzorzec B (etapy + klocki/minigry, jak M2/M4)
 //
-// Utrwala zachowanie M3, które MA PRZETRWAĆ migrację ze starego modelu (logika
-// w useMissionStore: `chatStage` / `chooseChatOption` + widgety z engine/widgets)
-// na nowy silnik (etapy + klocki/minigry, wzorzec B jak M2/M4).
-//
-// Opisuje CO ma się dziać, a nie JAK robi to stary store. Bloki `describe.skip`
-// (struktura etapów, przepływ wzorca B) włącza commit ze szkieletem `stages.ts`.
-// Fragmenty zależne od pełnych minigier (nie od stubów) są jako `it.todo`.
+// Opisują CO ma się dziać w misji: spójność danych (etapy, decyzje, raport),
+// przepływ przez silnik (decyzje, mostki, przeskoki czasu) i czystą logikę
+// minigier (cel D2, builder RAT). Szczegóły UI sprawdza się w przeglądarce.
 // ---------------------------------------------------------------------------
 
 const MISSION_ID = 'mission-3-ol-company';
@@ -122,7 +118,7 @@ describe('Misja 3 — dane, które przetrwają migrację', () => {
 });
 
 // ---------------------------------------------------------------------------
-// STRUKTURA ETAPÓW — włączana przez commit ze szkieletem `stages.ts` / `blocks`.
+// STRUKTURA ETAPÓW — kolejność, decyzje, kafelki i dane klocków (`stages.ts` / `blocks`).
 // ---------------------------------------------------------------------------
 describe('Misja 3 — struktura etapów (wzorzec B)', () => {
   it('kolejność etapów: wirus -> OSINT -> pendrive -> dron -> sesja RAT', () => {
@@ -235,8 +231,8 @@ function collectOptionsByDecision(blocks: Record<string, any>): Record<number, A
 }
 
 // ---------------------------------------------------------------------------
-// PRZEPŁYW WZORCA B — włączany przez commit ze szkieletem (silnik: completeStage
-// + reportDecision + rozmowy mostkujące). Niezależny od wewnętrznej UI minigier.
+// PRZEPŁYW WZORCA B — silnik: completeStage + reportDecision + rozmowy mostkujące.
+// Niezależny od wewnętrznej UI minigier.
 // ---------------------------------------------------------------------------
 describe('Misja 3 — przepływ wzorca B przez silnik', () => {
   beforeEach(() => {
@@ -285,10 +281,9 @@ describe('Misja 3 — przepływ wzorca B przez silnik', () => {
 });
 
 // ---------------------------------------------------------------------------
-// WEWNĘTRZNE MECHANIKI MINIGIER — do uzupełnienia, gdy kolejni agenci przeniosą
-// pełne minigry (stuby nie odwzorowują jeszcze tych szczegółów).
+// MECHANIKI MINIGIER — czyste funkcje i dane, bez renderowania UI.
 // ---------------------------------------------------------------------------
-describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', () => {
+describe('Misja 3 — mechaniki minigier', () => {
   describe('builder RAT (validateBuilder)', () => {
     const builder = (): VirusLabConfig['builder'] =>
       ((getMission(MISSION_ID) as MissionDefinition).blocks as Record<string, any>).virus_database.builder;

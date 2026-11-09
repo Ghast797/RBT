@@ -391,7 +391,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
     if (screen === 'flying' || screen === 'load_camera') {
       return (
         <SidePanel accent={accent} heading="//DRON: TELEMETRIA" sub="Lot do wskazanego adresu.">
-          <div className="space-y-2.5 text-xs">
+          <div className="space-y-2.5 text-sm">
             <div className="p-3 rounded-lg border border-gray-800 bg-black/20">
               <span className="text-xs text-gray-400 block tracking-wider">CEL</span>
               <span className="font-bold text-white font-mono">{selectedLoc?.label}</span>
@@ -433,7 +433,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
                 </svg>
               </div>
             )}
-            <div className="p-3 rounded-lg border border-gray-800 bg-black/20 text-xs">
+            <div className="p-3 rounded-lg border border-gray-800 bg-black/20 text-sm">
               <span className="text-xs text-gray-400 block tracking-wider">WYBRANY POJAZD</span>
               <span className="font-bold text-white">{selectedCar ? selectedCar.desc : '—'}</span>
             </div>

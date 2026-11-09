@@ -1,5 +1,5 @@
-// Minigry Misji 3 (O&L Company) — cienkie stuby szkieletu wzorca B.
-// Pełne wersje przeniosą kolejni agenci wg docs/migration-spec.md.
+// Minigry Misji 3 (O&L Company) — unikalne dla tej misji (kontrakt silnika: config, onDecision, onComplete).
+// Rejestruje je index.ts misji. Wspólne elementy interfejsu: ui.tsx.
 
 export { VirusLabApp } from './VirusLabApp';
 export { OsintBrowserApp } from './OsintBrowserApp';

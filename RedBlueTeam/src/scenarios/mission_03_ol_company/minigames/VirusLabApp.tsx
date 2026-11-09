@@ -159,10 +159,10 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
         />
       }
     >
-      <div className="space-y-3 text-xs leading-snug">
+      <div className="space-y-3 text-sm leading-snug">
         {GROUP_KEYS.map((k) => (
           <div key={k} className="space-y-0.5">
-            <div className="text-[0.6875rem] font-black tracking-widest text-gray-400 uppercase">
+            <div className="text-xs font-black tracking-widest text-gray-400 uppercase">
               {config.builder[k].title.replace(/:$/, '')}
             </div>
             <div className={summary(k) ? 'text-white font-bold' : 'text-gray-500 italic'}>

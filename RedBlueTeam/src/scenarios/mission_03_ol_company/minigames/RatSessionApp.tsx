@@ -156,17 +156,17 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
                 <FolderOpen size={14} className="shrink-0" />
                 <span className="truncate">E:\ {volume}</span>
               </div>
-              <div className="text-[0.6875rem] bg-blue-900 px-1.5 py-0.5 rounded font-mono shrink-0">FAT32</div>
+              <div className="text-xs bg-blue-900 px-1.5 py-0.5 rounded font-mono shrink-0">FAT32</div>
             </div>
             <div className="p-3 font-mono text-xs space-y-2">
               <div className="flex items-center gap-2 p-2 rounded bg-amber-500/15 border border-amber-500/50 text-amber-300">
                 <FileArchive size={20} className="text-amber-400 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="font-bold">{archive}</div>
-                  <div className="text-[0.6875rem] text-green-400">{texts.desktop.extractedStatus}</div>
+                  <div className="text-xs text-green-400">{texts.desktop.extractedStatus}</div>
                 </div>
               </div>
-              <p className="text-[0.6875rem] text-gray-300 leading-relaxed">
+              <p className="text-xs text-gray-300 leading-relaxed">
                 {texts.desktop.extractedNote}
               </p>
             </div>

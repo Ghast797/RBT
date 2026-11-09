@@ -174,10 +174,10 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
             <div className="space-y-2">
               {site.news.map((item) => (
                 <div key={item.id} className="p-2.5 rounded-lg border border-gray-800 bg-black/20 space-y-1">
-                  <div className="text-xs font-bold text-white">
+                  <div className="text-sm font-bold text-white">
                     {item.title} <span className="text-gray-400 font-medium">— {item.date}</span>
                   </div>
-                  <p className="text-xs text-gray-300 leading-snug font-sans">
+                  <p className="text-sm text-gray-300 leading-snug font-sans">
                     {item.boxText} {item.content}
                   </p>
                 </div>
@@ -206,7 +206,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
       {icon}
       <span>{label}</span>
       {badge && (
-        <span className="px-1.5 py-0.5 rounded text-[0.6875rem] font-black border bg-[#00ff66]/15 border-[#00ff66]/60 text-[#00ff66]">
+        <span className="px-1.5 py-0.5 rounded text-xs font-black border bg-[#00ff66]/15 border-[#00ff66]/60 text-[#00ff66]">
           {badge}
         </span>
       )}
@@ -230,7 +230,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
             <Lock size={12} />
             <span>{site.url.toUpperCase()}</span>
           </div>
-          <span className="text-[0.6875rem] text-[#00ff66]/60">TOR ONION ROUTER // SSL VERIFIED</span>
+          <span className="text-xs text-[#00ff66]/60">TOR ONION ROUTER // SSL VERIFIED</span>
         </div>
 
         {/* Nawigacja strony */}
