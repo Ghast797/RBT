@@ -189,41 +189,25 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
     </div>
   );
 
-  const header = (task: string) => (
-    <AppHeader icon={Crosshair} accent={accent} title={config.title} aside={statusBadge} task={task} />
+  const header = (task?: string) => (
+    <AppHeader icon={Crosshair} accent={accent} title={config.title} subtitle={config.subtitle} aside={statusBadge} task={task} />
   );
 
-  // --- ekrany ładowania (każda akcja ma widoczny odzew) ---
-  if (phase === 'activating') {
-    return (
-      <div className="h-full min-h-0 overflow-hidden">
-        <ModuleLoader label={texts.loaders.activate} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('payload')} />
-      </div>
-    );
-  }
-  if (phase === 'attaching') {
-    return (
-      <div className="h-full min-h-0 overflow-hidden">
-        <ModuleLoader label={texts.payloadAttaching} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('map')} />
-      </div>
-    );
-  }
-  if (phase === 'cameraLoading') {
-    return (
-      <div className="h-full min-h-0 overflow-hidden">
-        <ModuleLoader label={texts.loaders.camera} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('camera')} />
-      </div>
-    );
-  }
-  if (phase === 'dropping') {
-    return (
-      <div className="h-full min-h-0 overflow-hidden">
-        <ModuleLoader label={texts.loaders.drop} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('done')} />
-      </div>
-    );
-  }
-
   const shell = 'flex flex-col h-full min-h-0 overflow-hidden bg-[#05090f] text-gray-200 font-mono select-none p-4 gap-3 animate-in fade-in duration-200';
+
+  // --- ekrany ładowania (każda akcja ma widoczny odzew; nagłówek aplikacji zostaje nad paskiem) ---
+  const loading = (label: string, onDone: () => void) => (
+    <div className={shell}>
+      {header()}
+      <div className="flex-1 min-h-0">
+        <ModuleLoader label={label} durationMs={LOADER_MS} accent={accent} onDone={onDone} />
+      </div>
+    </div>
+  );
+  if (phase === 'activating') return loading(texts.loaders.activate, () => setPhase('payload'));
+  if (phase === 'attaching') return loading(texts.payloadAttaching, () => setPhase('map'));
+  if (phase === 'cameraLoading') return loading(texts.loaders.camera, () => setPhase('camera'));
+  if (phase === 'dropping') return loading(texts.loaders.drop, () => setPhase('done'));
 
   if (phase === 'activate') {
     return (

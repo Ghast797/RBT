@@ -220,9 +220,10 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
       expect(tile, `kafelek dla etapu ${s.appId}`).toBeDefined();
       expect(appComponentRegistry[tile!.componentId], `komponent ${tile!.componentId}`).toBeDefined();
     });
+    // Czat BYTE_MASTER jest pierwszym kafelkiem (jak w M2).
     expect(def().desktopApps.map((t) => t.label)).toEqual([
-      '//BAZA_WIRUSÓW',
       '//CHAT: BYTE_MASTER',
+      '//BAZA_WIRUSÓW',
       '//TOR: PRZEGLĄDARKA',
       '//DYSK E: PENDRIVE',
       '//DRON: CONDOR MIT63',
@@ -230,8 +231,8 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
       '//RAPORT POOPERACYJNY'
     ]);
     expect(def().desktopApps.map((t) => t.componentId)).toEqual([
-      'ol_virus_lab',
       'chat',
+      'ol_virus_lab',
       'ol_osint_browser',
       'ol_pendrive',
       'ol_drone',
@@ -418,6 +419,38 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
       );
       expect(fs.existsSync(keep), `assets/${g}/.gitkeep`).toBe(true);
     });
+  });
+});
+
+describe('Misja 3 — spójność interfejsu z M2 (nagłówki, kafelki, czytelność)', () => {
+  it('pulpit: czat BYTE_MASTER jest pierwszym kafelkiem (jak w M2), potem etapy w kolejności Kill Chain, raport na końcu', () => {
+    const ids = def().desktopApps.map((a) => a.id);
+    expect(ids[0]).toBe('chat_shortcut');
+    expect(ids.slice(1)).toEqual([...EXPECTED_STAGE_ORDER, 'debrief_app']);
+  });
+
+  it('każda minigra ma podtytuł nagłówka z configu (kontekst aplikacji, nie polecenie)', () => {
+    for (const cfg of [virusLabConfig, osintBrowserConfig, pendriveConfig, droneConfig, ratSessionConfig]) {
+      expect(cfg.subtitle.length).toBeGreaterThan(10);
+    }
+  });
+
+  it('każda minigra przekazuje podtytuł do AppHeader (ekrany ładowania mają ten sam nagłówek)', () => {
+    const dir = fileURLToPath(new URL('../src/scenarios/mission_03_ol_company/minigames/', import.meta.url));
+    for (const f of ['VirusLabApp', 'OsintBrowserApp', 'PendriveApp', 'DroneApp', 'RatSessionApp']) {
+      const src = fs.readFileSync(`${dir}${f}.tsx`, 'utf8');
+      expect(src, f).toMatch(/subtitle=/);
+    }
+  });
+
+  it('tekst nie jest mniejszy niż text-xs (0,75 rem) w minigrach M3 (poza zastępnikiem grafiki w trybie dev)', () => {
+    const dir = fileURLToPath(new URL('../src/scenarios/mission_03_ol_company/minigames/', import.meta.url));
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.tsx') && f !== 'ui.tsx');
+    for (const f of files) {
+      const src = fs.readFileSync(`${dir}${f}`, 'utf8');
+      const small = [...src.matchAll(/text-\[(\d*\.?\d+)rem\]/g)].filter((m) => parseFloat(m[1]) < 0.75).map((m) => m[0]);
+      expect(small, f).toEqual([]);
+    }
   });
 });
 

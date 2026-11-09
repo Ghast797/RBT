@@ -79,7 +79,7 @@ export const FreevoltFiles: React.FC<{
                           style={{ width: `${progress[f.id]}%`, backgroundColor: accent, boxShadow: `0 0 8px ${accent}` }}
                         />
                       </div>
-                      <span className="text-[0.625rem] font-mono shrink-0" style={{ color: accent }}>
+                      <span className="text-xs font-mono shrink-0" style={{ color: accent }}>
                         {files.copyingLabel} {progress[f.id]}%
                       </span>
                     </div>
@@ -122,8 +122,8 @@ export const FreevoltFiles: React.FC<{
                 style={{ borderColor: `${accent}66`, backgroundColor: `${accent}12` }}
               >
                 <FileIcon kind={f.kind} size={28} />
-                <span className="text-[0.625rem] font-mono text-white break-all leading-tight">{f.name}</span>
-                <span className="text-[0.625rem] font-mono" style={{ color: isCopied(progress, f.id) ? '#4ade80' : accent }}>
+                <span className="text-xs font-mono text-white break-all leading-tight">{f.name}</span>
+                <span className="text-xs font-mono" style={{ color: isCopied(progress, f.id) ? '#4ade80' : accent }}>
                   {`${progress[f.id]}%`}
                 </span>
               </div>

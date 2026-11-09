@@ -184,31 +184,40 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
     }
   };
 
-  const stepBadge: Partial<Record<Screen, string>> = { arm: config.steps[0], name: config.steps[1], sign: config.steps[2] };
+  const stepBadge: Partial<Record<Screen, string>> = {
+    arm: config.steps[0],
+    prep: config.steps[0],
+    name: config.steps[1],
+    save: config.steps[1],
+    sign: config.steps[2],
+    eject: config.steps[2]
+  };
 
   const wrap = (children: React.ReactNode) => (
     <div className="flex flex-col h-full min-h-0 overflow-hidden bg-[#05090f] text-gray-200 font-mono select-none p-4 gap-3">
-      <AppHeader icon={HardDrive} accent={ACCENT} title={config.title} step={stepBadge[screen]} task={taskFor()} />
+      <AppHeader
+        icon={HardDrive}
+        accent={ACCENT}
+        title={config.title}
+        subtitle={config.subtitle}
+        step={stepBadge[screen]}
+        task={taskFor()}
+      />
       <div className="flex-1 min-h-0 flex flex-col">{children}</div>
     </div>
   );
 
-  // --- ładowania (każda akcja ma pasek) ---
-  if (screen === 'dl')
-    return <ModuleLoader accent={ACCENT} label={config.startTexts.loader} durationMs={LOADER_MS} onDone={() => setScreen('arm')} />;
-  if (screen === 'prep')
-    return <ModuleLoader accent={ACCENT} label={config.armTexts.loader} durationMs={LOADER_MS} onDone={() => setScreen('name')} />;
-  if (screen === 'save')
-    return <ModuleLoader accent={ACCENT} label={config.volume.loader} durationMs={LOADER_MS} onDone={() => setScreen('sign')} />;
-  if (screen === 'eject')
-    return (
-      <ModuleLoader
-        accent={ACCENT}
-        label={`${config.signature.confirmLabel}…`}
-        durationMs={1500}
-        onDone={() => setScreen('done')}
-      />
+  // --- ładowania (każda akcja ma pasek; nagłówek aplikacji zostaje nad nim) ---
+  const loading = (label: string, durationMs: number, onDone: () => void) =>
+    wrap(
+      <div className="flex-1 min-h-0">
+        <ModuleLoader accent={ACCENT} label={label} durationMs={durationMs} onDone={onDone} />
+      </div>
     );
+  if (screen === 'dl') return loading(config.startTexts.loader, LOADER_MS, () => setScreen('arm'));
+  if (screen === 'prep') return loading(config.armTexts.loader, LOADER_MS, () => setScreen('name'));
+  if (screen === 'save') return loading(config.volume.loader, LOADER_MS, () => setScreen('sign'));
+  if (screen === 'eject') return loading(`${config.signature.confirmLabel}…`, 1500, () => setScreen('done'));
 
   // --- 1. start ---
   if (screen === 'start') {

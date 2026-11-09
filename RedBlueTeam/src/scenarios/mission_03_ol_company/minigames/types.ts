@@ -117,6 +117,8 @@ export interface VirusMatrixConfig {
 export interface VirusLabConfig {
   /** Tytuł aplikacji w nagłówku (`//BAZA_WIRUSÓW`). */
   title: string;
+  /** Podtytuł nagłówka (kontekst aplikacji, nie polecenie); na ekranie zdrapki zastępuje go „SKŁADASZ PROGRAM: X”. */
+  subtitle: string;
   /** Plakietki kroków: [wybór wirusa, zdrapka] (`KROK 1/2`, `KROK 2/2`). */
   steps: [string, string];
   /** D1: wybór wirusa (RAT ideal, ransomware suboptimal, keylogger critical). */
@@ -184,6 +186,8 @@ export interface OsintSite {
 export interface OsintBrowserConfig {
   /** Tytuł aplikacji w nagłówku (`//TOR: PRZEGLĄDARKA`). */
   title: string;
+  /** Podtytuł nagłówka (kontekst aplikacji, nie polecenie). */
+  subtitle: string;
   /** Plakietki kroków: [strona, wybór celu, wybór wektora] (`KROK 1/3` …). */
   steps: [string, string, string];
   /** Dane strony (hero, pracownicy, wydarzenia) — materiał OSINT, ekran 1. */
@@ -240,6 +244,8 @@ export interface UsbPlanRule {
 export interface PendriveConfig {
   /** Tytuł aplikacji w nagłówku (`//DYSK E: PENDRIVE`). */
   title: string;
+  /** Podtytuł nagłówka (kontekst aplikacji, nie polecenie). */
+  subtitle: string;
   /** Plakietki kroków: [uzbrajanie, nazwa dysku, podpis] (`KROK 1/3` …). */
   steps: [string, string, string];
   /** Reguły dopasowania pliku do planu D3, po jednej na opcję D3. */
@@ -318,6 +324,8 @@ export interface DroneCar {
 export interface DroneConfig {
   /** Tytuł aplikacji w nagłówku (`//DRON: CONDOR MIT63`). */
   title: string;
+  /** Podtytuł nagłówka (kontekst aplikacji, nie polecenie). */
+  subtitle: string;
   /** Ekran 1: specyfikacja z dokumentu. */
   droneStats: { model: string; video: string; speed: string; connection: string };
   /** Napisy statusów drona (kolejne ekrany). */
@@ -380,6 +388,8 @@ export interface NetworkNode {
 }
 
 export interface RatSessionConfig {
+  /** Podtytuł nagłówka (kontekst aplikacji, nie polecenie). Tytuł to `alert.label`. */
+  subtitle: string;
   /** Stacja ofiary (ekran 1). */
   host: { name: string; ip: string };
   usbFallback: UsbState;

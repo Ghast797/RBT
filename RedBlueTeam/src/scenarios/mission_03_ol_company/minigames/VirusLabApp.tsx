@@ -64,7 +64,14 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
     <div className="flex flex-col h-full min-h-0 overflow-hidden bg-[#05090f] text-gray-200 font-mono select-none p-4 gap-3">
       {screen === 'virus_select' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
-          <AppHeader icon={Bug} accent={accent} title={config.title} task={config.virusTexts.task} step={config.steps[0]} />
+          <AppHeader
+            icon={Bug}
+            accent={accent}
+            title={config.title}
+            subtitle={config.subtitle}
+            task={config.virusTexts.task}
+            step={config.steps[0]}
+          />
           <div className="flex-1 min-h-0 flex flex-col justify-center">
             <ChoiceCardGrid
               accent={accent}
@@ -92,12 +99,17 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
       )}
 
       {screen === 'loader' && (
-        <ModuleLoader
-          label={config.matrix.loaderText}
-          durationMs={LOADER_LONG_MS}
-          accent={accent}
-          onDone={() => setScreen('matrix')}
-        />
+        <>
+          <AppHeader icon={Bug} accent={accent} title={config.title} subtitle={config.subtitle} step={config.steps[1]} />
+          <div className="flex-1 min-h-0">
+            <ModuleLoader
+              label={config.matrix.loaderText}
+              durationMs={LOADER_LONG_MS}
+              accent={accent}
+              onDone={() => setScreen('matrix')}
+            />
+          </div>
+        </>
       )}
 
       {screen === 'matrix' && variant && (

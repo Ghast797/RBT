@@ -88,29 +88,23 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
 
   const shell = (children: React.ReactNode) => (
     <div className="flex flex-col h-full min-h-0 overflow-hidden bg-[#05090f] text-gray-200 font-mono select-none p-4 gap-3">
-      <AppHeader icon={Radio} accent={ACCENT} title={config.alert.label} task={taskFor[screen]} />
+      <AppHeader icon={Radio} accent={ACCENT} title={config.alert.label} subtitle={config.subtitle} task={taskFor[screen]} />
       {children}
     </div>
   );
 
-  if (screen === 'loader_desktop') {
-    return (
-      <ModuleLoader
-        label={config.loaders.desktop}
-        durationMs={LOADER_MS}
-        accent={ACCENT}
-        onDone={() => setScreen('desktop')}
-      />
-    );
-  }
-  if (screen === 'loader_network') {
-    return (
-      <ModuleLoader
-        label={config.loaders.network}
-        durationMs={LOADER_MS}
-        accent={ACCENT}
-        onDone={() => setScreen('network')}
-      />
+  // Ładowania z nagłówkiem aplikacji nad paskiem.
+  if (screen === 'loader_desktop' || screen === 'loader_network') {
+    const toDesktop = screen === 'loader_desktop';
+    return shell(
+      <div className="flex-1 min-h-0">
+        <ModuleLoader
+          label={toDesktop ? config.loaders.desktop : config.loaders.network}
+          durationMs={LOADER_MS}
+          accent={ACCENT}
+          onDone={() => setScreen(toDesktop ? 'desktop' : 'network')}
+        />
+      </div>
     );
   }
 
@@ -200,14 +194,14 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
                       />
                     )}
                   </span>
-                  <span className="text-[0.6875rem] font-bold text-white drop-shadow leading-tight">{icon.label}</span>
+                  <span className="text-xs font-bold text-white drop-shadow leading-tight">{icon.label}</span>
                   {isFolder && opening && <Loader2 size={14} className="animate-spin text-orange-300" />}
                 </button>
               );
             })}
           </div>
           <div className="absolute bottom-0 inset-x-0 h-7 bg-black/60 border-t border-white/10 flex items-center px-3">
-            <span className="text-[0.625rem] text-gray-300">{config.host.name}</span>
+            <span className="text-xs text-gray-300">{config.host.name}</span>
           </div>
         </div>
       </div>

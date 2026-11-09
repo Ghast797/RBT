@@ -94,11 +94,17 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   };
 
   const header = (task: string | undefined, step: string | undefined) => (
-    <AppHeader icon={Globe} accent={ACCENT} title={config.title} task={task} step={step} />
+    <AppHeader icon={Globe} accent={ACCENT} title={config.title} subtitle={config.subtitle} task={task} step={step} />
   );
 
-  const loader = (label: string, durationMs: number, onDone: () => void) => (
-    <ModuleLoader label={label} durationMs={durationMs} accent={ACCENT} onDone={onDone} />
+  // Ekran ładowania z nagłówkiem aplikacji nad paskiem (gracz zawsze wie, w której aplikacji jest).
+  const loader = (label: string, durationMs: number, onDone: () => void, step: string) => (
+    <>
+      {header(undefined, step)}
+      <div className="flex-1 min-h-0">
+        <ModuleLoader label={label} durationMs={durationMs} accent={ACCENT} onDone={onDone} />
+      </div>
+    </>
   );
 
   return (
@@ -118,7 +124,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
             toolbar={
               !done && (
                 <>
-                  <div className="flex items-center gap-3 text-[0.6875rem] font-bold tracking-wider">
+                  <div className="flex items-center gap-3 text-xs font-bold tracking-wider">
                     <span className="text-gray-400">{config.siteTexts.readLabel}</span>
                     {SITE_TABS.map((t) => (
                       <span key={t} className={read[t] ? 'text-[#00ff66]' : 'text-gray-500'}>
@@ -143,7 +149,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
         </div>
       )}
 
-      {screen === 'load_target' && loader(config.loaders.target, LOADER_MS, () => setScreen('target'))}
+      {screen === 'load_target' && loader(config.loaders.target, LOADER_MS, () => setScreen('target'), config.steps[1])}
 
       {screen === 'target' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
@@ -174,7 +180,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
         </div>
       )}
 
-      {screen === 'save_target' && loader(config.loaders.targetSave, LOADER_LONG_MS, () => setScreen('vector'))}
+      {screen === 'save_target' && loader(config.loaders.targetSave, LOADER_LONG_MS, () => setScreen('vector'), config.steps[1])}
 
       {screen === 'vector' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
@@ -203,7 +209,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
         </div>
       )}
 
-      {screen === 'save_vector' && loader(config.loaders.vectorSave, LOADER_LONG_MS, finish)}
+      {screen === 'save_vector' && loader(config.loaders.vectorSave, LOADER_LONG_MS, finish, config.steps[2])}
     </div>
   );
 };

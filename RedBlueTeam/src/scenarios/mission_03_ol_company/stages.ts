@@ -37,6 +37,7 @@ const USB_FALLBACK: UsbState = {
 
 export const virusLabConfig: VirusLabConfig = {
   title: '//BAZA_WIRUSÓW',
+  subtitle: 'WYBÓR I SKŁADANIE ZŁOŚLIWEGO OPROGRAMOWANIA',
   steps: ['KROK 1/2', 'KROK 2/2'],
   virus: {
     decisionNum: 1,
@@ -119,6 +120,7 @@ export const virusLabConfig: VirusLabConfig = {
 
 export const osintBrowserConfig: OsintBrowserConfig = {
   title: '//TOR: PRZEGLĄDARKA',
+  subtitle: 'REKONESANS: STRONA FIRMY I DOBÓR OFIARY',
   steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   site: {
     url: 'https://olcompany.cloud',
@@ -316,6 +318,7 @@ const vectorAnswer = (optionId: string): string => {
 
 export const pendriveConfig: PendriveConfig = {
   title: '//DYSK E: PENDRIVE',
+  subtitle: 'PRZYGOTOWANIE NOŚNIKA Z PRZYNĘTĄ',
   steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   // Ideal D3 -> zdjęcia; suboptimal D3 -> dokumenty HR lub wypowiedzenie; critical D3 kończy się wykryciem
   // (do //DYSK E nie dochodzi), więc reguła nie ma plików.
@@ -474,6 +477,7 @@ const droneAsphalt = {
 
 export const droneConfig: DroneConfig = {
   title: '//DRON: CONDOR MIT63',
+  subtitle: 'DOSTARCZENIE KOPERTY POD DOM I SAMOCHÓD OFIARY',
   droneStats: {
     model: 'CONDOR MIT63',
     video: 'STAŁE PRZEKAZYWANIE WIDEO',
@@ -552,6 +556,7 @@ export const droneConfig: DroneConfig = {
 // ---------------------------------------------------------------------------
 
 export const ratSessionConfig: RatSessionConfig = {
+  subtitle: 'SESJA ZDALNA NA KOMPUTERZE OFIARY',
   host: { name: 'MATEUSZ_BIURO_O&L', ip: '161.185.160.93' },
   usbFallback: USB_FALLBACK,
   alert: {

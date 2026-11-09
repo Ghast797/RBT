@@ -77,6 +77,14 @@
   },
   "desktopApps": [
     {
+      "id": "chat_shortcut",
+      "label": "//CHAT: BYTE_MASTER",
+      "color": "#00ff66",
+      "icon": "MessageSquareCode",
+      "componentId": "chat",
+      "isChatFocus": true
+    },
+    {
       "id": "virus_database",
       "label": "//BAZA_WIRUSÓW",
       "color": "#ec4899",
@@ -84,14 +92,6 @@
       "componentId": "ol_virus_lab",
       "unlockedOnly": true,
       "requiredUnlockId": "virus_database_unlocked"
-    },
-    {
-      "id": "chat_shortcut",
-      "label": "//CHAT: BYTE_MASTER",
-      "color": "#00ff66",
-      "icon": "MessageSquareCode",
-      "componentId": "chat",
-      "isChatFocus": true
     },
     {
       "id": "browser",
