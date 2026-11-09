@@ -14,7 +14,7 @@ import type { BlockProps } from '../../../engine/types/mission';
 import type { VirusLabConfig } from './types';
 import { buildReport } from './report';
 import { LOADER_LONG_MS } from './ui';
-import { ScratchMatrix, MATRIX_TASK } from './ScratchMatrix';
+import { ScratchMatrix } from './ScratchMatrix';
 
 type Screen = 'virus_select' | 'loader' | 'matrix';
 
@@ -62,7 +62,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
     <div className="flex flex-col h-full min-h-0 overflow-hidden bg-[#05090f] text-gray-200 font-mono select-none p-4 gap-3">
       {screen === 'virus_select' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
-          <AppHeader icon={Bug} accent={accent} title="//BAZA_WIRUSÓW" task={config.virusTexts.task} step="KROK 1/2" />
+          <AppHeader icon={Bug} accent={accent} title={config.title} task={config.virusTexts.task} step={config.steps[0]} />
           <div className="flex-1 min-h-0 flex flex-col justify-center">
             <ChoiceCardGrid
               accent={accent}
@@ -100,7 +100,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
 
       {screen === 'matrix' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
-          <AppHeader icon={Bug} accent={accent} title="//BAZA_WIRUSÓW" task={MATRIX_TASK} step="KROK 2/2" />
+          <AppHeader icon={Bug} accent={accent} title={config.title} task={config.matrix.task} step={config.steps[1]} />
           <ScratchMatrix config={config.matrix} accent={accent} done={done} onRevealed={() => setDone(true)} />
         </div>
       )}

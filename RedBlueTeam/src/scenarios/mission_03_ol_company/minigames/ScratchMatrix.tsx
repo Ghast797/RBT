@@ -30,10 +30,6 @@ const BRUSH_RADIUS = 0.07;
 /** Po tylu ms bez zdrapywania pojawia się wskazówka z przesuwającą się ręką. */
 const HINT_AFTER_MS = 4000;
 
-/** Polecenie ZADANIE tego ekranu i podpis wskazówki (config matrycy ich nie zawiera; tekst z dokumentu scenariusza). */
-export const MATRIX_TASK = 'PRZECIĄGAJ KURSOREM Z WCIŚNIĘTYM PRZYCISKIEM MYSZY PO CZARNYM POLU, ŻEBY ODSŁONIĆ WIRUSA.';
-const HINT_TEXT = 'PRZECIĄGAJ TUTAJ';
-
 /** Maska: ciemne pole z siatką i dużym „?”. */
 function drawMask(ctx: CanvasRenderingContext2D, accent: string) {
   ctx.globalCompositeOperation = 'source-over';
@@ -253,7 +249,7 @@ export const ScratchMatrix: React.FC<{
                     className="px-3 py-1 rounded-full text-xs font-black tracking-widest animate-pulse"
                     style={{ backgroundColor: accent, color: '#05090f' }}
                   >
-                    {HINT_TEXT}
+                    {config.hint}
                   </span>
                 </div>
               )}

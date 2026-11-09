@@ -36,6 +36,8 @@ const USB_FALLBACK: UsbState = {
 // ---------------------------------------------------------------------------
 
 export const virusLabConfig: VirusLabConfig = {
+  title: '//BAZA_WIRUSÓW',
+  steps: ['KROK 1/2', 'KROK 2/2'],
   virus: {
     decisionNum: 1,
     question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA',
@@ -85,7 +87,8 @@ export const virusLabConfig: VirusLabConfig = {
       { id: 'link', label: 'ŁĄCZNOŚĆ', desc: 'łączy się z Twoim komputerem' }
     ],
     doneMessage: 'WIRUS GOTOWY! AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY',
-    continueLabel: 'KONTYNUUJ'
+    task: 'PRZECIĄGAJ KURSOREM Z WCIŚNIĘTYM PRZYCISKIEM MYSZY PO CZARNYM POLU, ŻEBY ODSŁONIĆ WIRUSA.',
+    hint: 'PRZECIĄGAJ TUTAJ'
   }
 };
 
@@ -94,6 +97,8 @@ export const virusLabConfig: VirusLabConfig = {
 // ---------------------------------------------------------------------------
 
 export const osintBrowserConfig: OsintBrowserConfig = {
+  title: '//TOR: PRZEGLĄDARKA',
+  steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   site: {
     url: 'https://olcompany.cloud',
     title: 'O&L COMPANY',
@@ -286,6 +291,8 @@ const vectorAnswer = (optionId: string): string => {
 };
 
 export const pendriveConfig: PendriveConfig = {
+  title: '//DYSK E: PENDRIVE',
+  steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   planDecisionNum: osintBrowserConfig.vector.decisionNum,
   // Ideal D3 -> zdjęcia; suboptimal D3 -> dokumenty HR lub wypowiedzenie; critical D3 kończy się wykryciem
   // (do //DYSK E nie dochodzi), więc reguła nie ma plików.
@@ -441,6 +448,7 @@ const droneAsphalt = {
 };
 
 export const droneConfig: DroneConfig = {
+  title: '//DRON: CONDOR MIT63',
   droneStats: {
     model: 'CONDOR MIT63',
     video: 'STAŁE PRZEKAZYWANIE WIDEO',
@@ -459,7 +467,11 @@ export const droneConfig: DroneConfig = {
     confirmLabel: 'ZATWIERDŹ',
     cameraLabel: 'URUCHOM KAMERĘ',
     dropLabel: 'ZRZUĆ ŁADUNEK',
-    shutdownLabel: 'WYŁĄCZ APLIKACJĘ DRONA',
+    loaders: {
+      activate: 'POŁĄCZENIE Z ODBIORNIKIEM HAKERA…',
+      camera: 'STAŁE PRZEKAZYWANIE WIDEO…',
+      drop: 'ZRZUĆ ŁADUNEK…'
+    },
     payloadCaption: "KOPERTA Z PENDRIVE'M",
     payloadAttaching: 'PODWIESZANIE ŁADUNKU…',
     flightCaption: 'LOT DO CELU…',
@@ -469,7 +481,7 @@ export const droneConfig: DroneConfig = {
       map: 'WSKAŻ NA PLANIE MIASTA ADRES, POD KTÓRY LECI DRON.',
       camera: 'URUCHOM KAMERĘ DRONA.',
       aim: 'NAPROWADŹ CELOWNIK NA WŁAŚCIWY SAMOCHÓD I ZRZUĆ ŁADUNEK.',
-      done: 'WYŁĄCZ APLIKACJĘ DRONA.'
+      done: 'ŁADUNEK DOSTARCZONY.'
     }
   },
   hud: { batteryPercent: 48, transmissionLabel: 'TRANSMISJA' },

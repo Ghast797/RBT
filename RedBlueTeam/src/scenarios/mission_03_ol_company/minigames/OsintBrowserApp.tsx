@@ -90,7 +90,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   };
 
   const header = (task: string | undefined, step: string | undefined) => (
-    <AppHeader icon={Globe} accent={ACCENT} title="//TOR: PRZEGLĄDARKA" subtitle={config.site.url} task={task} step={step} />
+    <AppHeader icon={Globe} accent={ACCENT} title={config.title} subtitle={config.site.url} task={task} step={step} />
   );
 
   const loader = (label: string, durationMs: number, onDone: () => void) => (
@@ -101,7 +101,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
     <div className="flex flex-col h-full min-h-0 overflow-hidden bg-[#05090f] text-gray-200 font-mono select-none p-4 gap-3">
       {screen === 'site' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
-          {header(done ? undefined : config.siteTexts.task, done ? undefined : 'KROK 1/3')}
+          {header(done ? undefined : config.siteTexts.task, done ? undefined : config.steps[0])}
           <SiteView
             site={config.site}
             accent={ACCENT}
@@ -141,7 +141,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
 
       {screen === 'target' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
-          {header(config.targetTexts.task, 'KROK 2/3')}
+          {header(config.targetTexts.task, config.steps[1])}
           <div className="flex-1 min-h-0 flex flex-col justify-center">
             <ChoiceCardGrid
               accent={ACCENT}
@@ -172,7 +172,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
 
       {screen === 'vector' && (
         <div className="flex flex-col flex-1 min-h-0 gap-3 animate-in fade-in duration-200">
-          {header(config.vectorTexts.task, 'KROK 3/3')}
+          {header(config.vectorTexts.task, config.steps[2])}
           <div className="flex-1 min-h-0 flex flex-col justify-center">
             <VectorRows
               options={vectorOptions}

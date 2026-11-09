@@ -86,11 +86,17 @@ export interface VirusMatrixConfig {
   parts: MatrixPart[];
   /** Komunikat po 100%: „WIRUS GOTOWY! AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY”. */
   doneMessage: string;
-  /** Przycisk po komunikacie: „KONTYNUUJ” (→ `onComplete`). */
-  continueLabel: string;
+  /** Polecenie ZADANIE ekranu zdrapki. */
+  task: string;
+  /** Podpis wskazówki, która pojawia się po chwili bez zdrapywania („PRZECIĄGAJ TUTAJ”). */
+  hint: string;
 }
 
 export interface VirusLabConfig {
+  /** Tytuł aplikacji w nagłówku (`//BAZA_WIRUSÓW`). */
+  title: string;
+  /** Plakietki kroków: [wybór wirusa, zdrapka] (`KROK 1/2`, `KROK 2/2`). */
+  steps: [string, string];
   /** D1: wybór wirusa (RAT ideal, ransomware suboptimal, keylogger critical). */
   virus: GradedDecision;
   /** Teksty ekranu wyboru wirusa (ZADANIE, etykieta strefy wyboru, przycisk). */
@@ -152,6 +158,10 @@ export interface OsintSite {
 }
 
 export interface OsintBrowserConfig {
+  /** Tytuł aplikacji w nagłówku (`//TOR: PRZEGLĄDARKA`). */
+  title: string;
+  /** Plakietki kroków: [strona, wybór celu, wybór wektora] (`KROK 1/3` …). */
+  steps: [string, string, string];
   /** Dane strony (hero, pracownicy, wydarzenia) — materiał OSINT, ekran 1. */
   site: OsintSite;
   /** Teksty ekranu strony: ZADANIE, przycisk przejścia i wskaźniki „PRZECZYTANO”. */
@@ -204,6 +214,10 @@ export interface UsbPlanRule {
 }
 
 export interface PendriveConfig {
+  /** Tytuł aplikacji w nagłówku (`//DYSK E: PENDRIVE`). */
+  title: string;
+  /** Plakietki kroków: [uzbrajanie, nazwa dysku, podpis] (`KROK 1/3` …). */
+  steps: [string, string, string];
   /** Numer decyzji D3, której odpowiedź (z `playerChoices`) wybiera regułę z `plan`. */
   planDecisionNum: number;
   /** Reguły dopasowania pliku do planu D3, po jednej na opcję D3. */
@@ -276,6 +290,8 @@ export interface DroneCar {
 }
 
 export interface DroneConfig {
+  /** Tytuł aplikacji w nagłówku (`//DRON: CONDOR MIT63`). */
+  title: string;
   /** Ekran 1: specyfikacja z dokumentu. */
   droneStats: { model: string; video: string; speed: string; connection: string };
   /** Napisy statusów drona (kolejne ekrany). */
@@ -287,8 +303,9 @@ export interface DroneConfig {
     confirmLabel: string;
     cameraLabel: string;
     dropLabel: string;
-    shutdownLabel: string;
     payloadCaption: string;
+    /** Napisy ekranów ładowania: aktywacja drona, uruchomienie kamery, zrzut ładunku. */
+    loaders: { activate: string; camera: string; drop: string };
     payloadAttaching: string;
     flightCaption: string;
     tasks: { activate: string; payload: string; map: string; camera: string; aim: string; done: string };

@@ -190,14 +190,14 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
   );
 
   const header = (task: string) => (
-    <AppHeader icon={Crosshair} accent={accent} title={`//DRON: ${droneStats.model}`} aside={statusBadge} task={task} />
+    <AppHeader icon={Crosshair} accent={accent} title={config.title} aside={statusBadge} task={task} />
   );
 
   // --- ekrany ładowania (każda akcja ma widoczny odzew) ---
   if (phase === 'activating') {
     return (
       <div className="h-full min-h-0 overflow-hidden">
-        <ModuleLoader label={`${droneStats.connection}…`} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('payload')} />
+        <ModuleLoader label={texts.loaders.activate} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('payload')} />
       </div>
     );
   }
@@ -211,14 +211,14 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
   if (phase === 'cameraLoading') {
     return (
       <div className="h-full min-h-0 overflow-hidden">
-        <ModuleLoader label={`${droneStats.video}…`} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('camera')} />
+        <ModuleLoader label={texts.loaders.camera} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('camera')} />
       </div>
     );
   }
   if (phase === 'dropping') {
     return (
       <div className="h-full min-h-0 overflow-hidden">
-        <ModuleLoader label={`${texts.dropLabel}…`} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('done')} />
+        <ModuleLoader label={texts.loaders.drop} durationMs={LOADER_MS} accent={accent} onDone={() => setPhase('done')} />
       </div>
     );
   }

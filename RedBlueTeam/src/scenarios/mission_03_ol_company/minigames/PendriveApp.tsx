@@ -30,7 +30,6 @@ const ACCENT = '#f59e0b';
 const PAYLOAD_ID = 'payload';
 
 type Screen = 'start' | 'dl' | 'arm' | 'prep' | 'name' | 'save' | 'sign' | 'eject' | 'done';
-const STEP_BADGE: Partial<Record<Screen, string>> = { arm: 'KROK 1/3', name: 'KROK 2/3', sign: 'KROK 3/3' };
 
 const fileIcon = (name: string, size: number) =>
   /\.(jpg|jpeg|png)/i.test(name) ? <ImageIcon size={size} /> : <FileText size={size} />;
@@ -184,9 +183,11 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
     }
   };
 
+  const stepBadge: Partial<Record<Screen, string>> = { arm: config.steps[0], name: config.steps[1], sign: config.steps[2] };
+
   const wrap = (children: React.ReactNode) => (
     <div className="flex flex-col h-full min-h-0 overflow-hidden bg-[#05090f] text-gray-200 font-mono select-none p-4 gap-3">
-      <AppHeader icon={HardDrive} accent={ACCENT} title="//DYSK E: PENDRIVE" step={STEP_BADGE[screen]} task={taskFor()} />
+      <AppHeader icon={HardDrive} accent={ACCENT} title={config.title} step={stepBadge[screen]} task={taskFor()} />
       <div className="flex-1 min-h-0 flex flex-col">{children}</div>
     </div>
   );
