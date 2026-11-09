@@ -280,20 +280,21 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
     }
   });
 
-  it('D1: RAT ideal, Ransomware suboptimal, Keylogger critical; opisy opcji 1:1', () => {
+  it('D1: RAT ideal, Ransomware suboptimal, Keylogger critical; etykiety z dokumentu, opisy to neutralne definicje', () => {
     const byId = Object.fromEntries(virusLabConfig.virus.options.map((o) => [o.id, o]));
     expect(byId.rat.tier).toBe('ideal');
     expect(byId.ransomware.tier).toBe('suboptimal');
     expect(byId.keylogger.tier).toBe('critical');
-    expect(`${byId.rat.label} – ${byId.rat.desc}`).toBe(
-      'RAT: REMOTE ACCESS TROJAN – POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY'
-    );
-    expect(`${byId.ransomware.label} – ${byId.ransomware.desc}`).toBe(
-      'RANSOMWARE – MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ'
-    );
-    expect(`${byId.keylogger.label} – ${byId.keylogger.desc}`).toBe(
-      'KEYLOGGER – POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE'
-    );
+    expect(byId.rat.label).toBe('RAT: REMOTE ACCESS TROJAN');
+    expect(byId.ransomware.label).toBe('RANSOMWARE');
+    expect(byId.keylogger.label).toBe('KEYLOGGER');
+    // Opisy z VR oceniały przydatność („POKAŻE WSZYSTKO…”): na ekranie jest tylko definicja typu programu.
+    expect(byId.rat.desc).toBe('PROGRAM POZWALAJĄCY ZDALNIE STEROWAĆ ZAINFEKOWANYM KOMPUTEREM, JAK GDYBY SIEDZIAŁO SIĘ PRZY NIM');
+    expect(byId.ransomware.desc).toBe('PROGRAM SZYFRUJĄCY DANE NA KOMPUTERZE I W SIECI, ŻEBY ZAŻĄDAĆ OKUPU ZA ICH ODBLOKOWANIE');
+    expect(byId.keylogger.desc).toBe('PROGRAM REJESTRUJĄCY WSZYSTKIE KLAWISZE WCIŚNIĘTE NA ZAINFEKOWANYM KOMPUTERZE');
+    for (const o of Object.values(byId) as any[]) {
+      expect(o.desc, `desc ${o.id} bez oceny przydatności`).not.toMatch(/POZWOLI|POKAŻE|MOŻE ZASZYFROWAĆ|CICH|NIEZAUWAŻ/);
+    }
   });
 
   it('D3: trzy opcje 1:1 z dokumentu, literówka „ZOSTAWIE” poprawiona na „ZOSTAWIĘ”', () => {

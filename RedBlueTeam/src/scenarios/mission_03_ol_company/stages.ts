@@ -45,7 +45,8 @@ export const virusLabConfig: VirusLabConfig = {
       {
         id: 'rat',
         label: 'RAT: REMOTE ACCESS TROJAN',
-        desc: 'POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY',
+        // Opisy to neutralne definicje typu programu (bez oceny przydatności), jak w M2; opisy z VR zdradzały odpowiedź.
+        desc: 'PROGRAM POZWALAJĄCY ZDALNIE STEROWAĆ ZAINFEKOWANYM KOMPUTEREM, JAK GDYBY SIEDZIAŁO SIĘ PRZY NIM',
         reportAnswer: 'RAT',
         tier: 'ideal',
         feedback:
@@ -54,7 +55,7 @@ export const virusLabConfig: VirusLabConfig = {
       {
         id: 'ransomware',
         label: 'RANSOMWARE',
-        desc: 'MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ',
+        desc: 'PROGRAM SZYFRUJĄCY DANE NA KOMPUTERZE I W SIECI, ŻEBY ZAŻĄDAĆ OKUPU ZA ICH ODBLOKOWANIE',
         tier: 'suboptimal',
         feedback:
           'Zablokowanie stacji ofiary natychmiast postawi na nogi dział IT i zablokuje możliwość cichego wykradzenia dokumentacji Freevolt.'
@@ -62,7 +63,7 @@ export const virusLabConfig: VirusLabConfig = {
       {
         id: 'keylogger',
         label: 'KEYLOGGER',
-        desc: 'POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE',
+        desc: 'PROGRAM REJESTRUJĄCY WSZYSTKIE KLAWISZE WCIŚNIĘTE NA ZAINFEKOWANYM KOMPUTERZE',
         tier: 'critical',
         feedback:
           'Samo przechwytywanie wciśnięć klawiszy nie gwarantuje dostępu do zgromadzonych na dyskach plików projektowych i schematów.'
