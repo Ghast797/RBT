@@ -121,6 +121,11 @@ export interface DroneCar {
 
 export interface DroneConfig {
   droneStats: { model: string; video: string; speed: string; connection: string };
+  /**
+   * Notatka od mentora na prawym monitorze (zastępuje czat, który przejmuje SideMonitor):
+   * kwestie z mostka, potrzebne do D7 (adres) i D8 (pojazd). Te same teksty trafiają do czatu.
+   */
+  mentorNote: string[];
   address: GradedDecision;        // D7 (options.id = loc_x)
   car: GradedDecision;            // D8 (options.id = car_x)
   mapLocations: DroneMapLocation[];

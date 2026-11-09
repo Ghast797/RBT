@@ -20,6 +20,14 @@ import type {
 /** Kwestia mentora z mostka etapu 1 — ta sama trafia do czatu i do notatki w //TOR (prawy monitor). */
 const BRIDGE_BROWSER_LINE = 'ZAJRZYJ NA ICH STRONĘ INTERNETOWĄ: HTTPS://OLCOMPANY.CLOUD';
 
+/** Kwestia mentora z mostka etapu 3 (adres ofiary) — ta sama trafia do czatu i do notatki w //DRON (prawy monitor). */
+const BRIDGE_ADDRESS_LINE =
+  'JEST OK. WYSYŁAM CI ADRES OFIARY: UL. OŁTASZYŃSKA 92C/6, 53-234 WROCŁAW. DRONA WYŚLIJ Z SAMEGO RANA, ŻEBY OFIARA ZNALAZŁA KOPERTĘ NA SAMOCHODZIE PRZED WYJAZDEM DO BIURA.';
+
+/** Kwestia mentora po przeskoku czasu (poranny lot) — czat i notatka w //DRON. */
+const BRIDGE_DRONE_GO_LINE =
+  'JUŻ CZAS. WSKAŻ DOM MATEUSZA NA MAPIE. GOŚĆ JEŹDZI BIAŁYM SAMOCHODEM Z CZERWONYM DACHEM.';
+
 /** Kwestia mentora z intro (data/mission3.json), cytowana w notatce na prawym monitorze. */
 const introLine = (id: string): string => {
   const line = mission3Data.intro.dialogue.find((d) => d.id === id);
@@ -314,6 +322,7 @@ export const droneConfig: DroneConfig = {
     speed: 'MAKSYMALNA PRĘDKOŚĆ 25 KM/H',
     connection: 'POŁĄCZONY Z ODBIORNIKIEM HAKERA'
   },
+  mentorNote: [BRIDGE_ADDRESS_LINE, BRIDGE_DRONE_GO_LINE],
   address: {
     decisionNum: 7,
     question: 'WSKAŻ DRONOWI ADRES DOMU OFIARY:',
@@ -412,10 +421,10 @@ export const mission3Stages: StageDefinition[] = [
     completion: {
       conversation: [
         { from: 'player', id: 'm3_reply_pendrive', label: 'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. MAM NADZIEJĘ, ŻE TO DLA CIEBIE WYSTARCZAJĄCO KREATYWNE?' },
-        { from: 'byte_master', text: 'JEST OK. WYSYŁAM CI ADRES OFIARY: UL. OŁTASZYŃSKA 92C/6, 53-234 WROCŁAW. DRONA WYŚLIJ Z SAMEGO RANA, ŻEBY OFIARA ZNALAZŁA KOPERTĘ NA SAMOCHODZIE PRZED WYJAZDEM DO BIURA.' },
+        { from: 'byte_master', text: BRIDGE_ADDRESS_LINE },
         { from: 'player', id: 'm3_reply_drone_wait', label: 'JASNE. SŁYSZYMY SIĘ ZA KILKA GODZIN.' },
         { from: 'time_jump', label: '06:02 — MIJA KILKA GODZIN…', sublabel: 'DRON GOTOWY DO PORANNEGO LOTU.' },
-        { from: 'byte_master', text: 'JUŻ CZAS. WSKAŻ DOM MATEUSZA NA MAPIE. GOŚĆ JEŹDZI BIAŁYM SAMOCHODEM Z CZERWONYM DACHEM.' }
+        { from: 'byte_master', text: BRIDGE_DRONE_GO_LINE }
       ],
       unlockIcons: ['drone_unlocked', 'drone_app'],
       badges: { drone_app: 1, chat: 1 },

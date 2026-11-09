@@ -15,6 +15,7 @@ import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { SidePanel } from '../../../engine/components/SidePanel';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { DroneConfig, DroneCar, DroneMapLocation } from './types';
+import { MentorNote } from './ui';
 
 type Screen = 'attach' | 'attaching' | 'map' | 'flying' | 'load_camera' | 'camera' | 'dropped';
 
@@ -369,17 +370,20 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
             />
           }
         >
-          <ChoiceRows
-            accent={accent}
-            options={addressRows}
-            selectedId={selectedLocId}
-            onSelect={(id) => {
-              sounds.playClick();
-              setSelectedLocId(id);
-            }}
-            label="WYBIERZ ADRES"
-            mono
-          />
+          <div className="space-y-4">
+            <MentorNote accent={accent} lines={config.mentorNote} />
+            <ChoiceRows
+              accent={accent}
+              options={addressRows}
+              selectedId={selectedLocId}
+              onSelect={(id) => {
+                sounds.playClick();
+                setSelectedLocId(id);
+              }}
+              label="WYBIERZ ADRES"
+              mono
+            />
+          </div>
         </SidePanel>
       );
     }

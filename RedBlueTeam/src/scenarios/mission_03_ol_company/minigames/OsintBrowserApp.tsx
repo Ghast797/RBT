@@ -18,6 +18,7 @@ import { SidePanel } from '../../../engine/components/SidePanel';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { OsintBrowserConfig, OsintEmployee } from './types';
 import { resolveTargetPick } from './osintLogic';
+import { MentorNote, NoteSection } from './ui';
 
 type Screen = 'site' | 'loading_target' | 'target' | 'loading_vector' | 'vector' | 'finishing';
 type SiteTab = 'home' | 'events';
@@ -31,14 +32,6 @@ const Avatar: React.FC<{ color: string; size?: number }> = ({ color, size = 40 }
     style={{ backgroundColor: color, width: size, height: size }}
   >
     <User size={Math.round(size / 2)} />
-  </div>
-);
-
-/** Sekcja panelu prawego monitora. */
-const NoteSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="space-y-1.5">
-    <div className="text-[0.6875rem] font-black tracking-widest text-gray-400 uppercase">{title}</div>
-    {children}
   </div>
 );
 
@@ -145,20 +138,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
       sub="Notatki z rekonesansu O&L Company."
     >
       <div className="space-y-4">
-        <NoteSection title="Od BYTE_MASTERA">
-          <div className="space-y-2">
-            {mentorLines.map((line) => (
-              <div
-                key={line}
-                className="flex gap-2 p-2.5 rounded-lg border bg-black/20 text-xs text-gray-200 leading-snug font-sans"
-                style={{ borderColor: `${ACCENT}55` }}
-              >
-                <MessageSquareQuote size={15} className="shrink-0 mt-0.5" style={{ color: ACCENT }} />
-                <span>{line}</span>
-              </div>
-            ))}
-          </div>
-        </NoteSection>
+        <MentorNote accent={ACCENT} lines={mentorLines} />
 
         {phase === 'site' && (
           <NoteSection title="Profil pracownika">

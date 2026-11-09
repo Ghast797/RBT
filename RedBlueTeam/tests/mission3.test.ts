@@ -381,6 +381,14 @@ describe('Misja 3 — mechaniki minigier (po przeniesieniu pełnych wersji)', ()
     cfg.car.options.forEach((o: any) => {
       expect(cfg.parkingCars.some((c: any) => `car_${c.id}` === o.id)).toBe(true);
     });
+    // Notatka mentora na prawym monitorze cytuje kwestie z mostka (adres, poranny lot) z jednego źródła.
+    const pendrive = (def.stages ?? []).find((s) => s.id === 'pendrive_app')!;
+    const bridgeTexts = (pendrive.completion.conversation ?? [])
+      .filter((b: any) => b.from === 'byte_master')
+      .map((b: any) => b.text);
+    expect(cfg.mentorNote.length).toBeGreaterThan(0);
+    cfg.mentorNote.forEach((line: string) => expect(bridgeTexts).toContain(line));
+    expect(cfg.mentorNote.join(' ')).toContain('OŁTASZYŃSKA 92C/6');
     const target = cfg.parkingCars.filter((c: any) => c.isTarget);
     expect(target).toHaveLength(1);
     expect(`car_${target[0].id}`).toBe(idealCar[0].id);
