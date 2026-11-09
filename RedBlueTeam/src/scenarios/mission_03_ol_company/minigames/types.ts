@@ -123,8 +123,8 @@ export interface VirusLabConfig {
   steps: [string, string];
   /** D1: wybór wirusa (RAT ideal, ransomware suboptimal, keylogger critical). */
   virus: GradedDecision;
-  /** Teksty ekranu wyboru wirusa (ZADANIE, etykieta strefy wyboru, przycisk). */
-  virusTexts: { task: string; choiceLabel: string; confirmLabel: string };
+  /** Teksty ekranu wyboru wirusa (ZADANIE, przycisk). Etykieta strefy wyboru to `virus.question` (jedno źródło: ekran = raport). */
+  virusTexts: { task: string; confirmLabel: string };
   /** Matryca kompilacji (nieoceniana): zdrapka + pasek postępu. */
   matrix: VirusMatrixConfig;
 }
@@ -204,12 +204,12 @@ export interface OsintBrowserConfig {
   loaders: { target: string; targetSave: string; vectorSave: string };
   /** D2: wybór celu. 5 kart tylko z imieniem i nazwiskiem (label = imię i nazwisko, bez `desc`). */
   target: GradedDecision;
-  /** Teksty D2: etykieta strefy („KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?”), ZADANIE, przycisk. */
-  targetTexts: { task: string; choiceLabel: string; confirmLabel: string };
+  /** Teksty D2: ZADANIE, przycisk. Etykieta strefy to `target.question` („KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?”). */
+  targetTexts: { task: string; confirmLabel: string };
   /** D3: wektor socjotechniczny (3 wiersze, rozmowa = wiersze). */
   vector: GradedDecision;
-  /** Teksty D3: etykieta strefy („JAK GO OSZUKASZ?”), ZADANIE, przycisk. */
-  vectorTexts: { task: string; choiceLabel: string; confirmLabel: string };
+  /** Teksty D3: ZADANIE, przycisk. Etykieta strefy to `vector.question` („JAK GO OSZUKASZ?”). */
+  vectorTexts: { task: string; confirmLabel: string };
 }
 
 // ---------------------------------------------------------------------------
@@ -272,14 +272,16 @@ export interface PendriveConfig {
   };
   /** Grafika koperty: `{ group: 'usb', name: 'envelope' }`. */
   envelopeImage: AssetRef;
+  /** Tekst alternatywny grafiki koperty. */
+  envelopeImageAlt: string;
   /**
    * Krok „WYBIERZ NAZWĘ PENDRIVE'A:” (4 karty). Poziomy nazw wchodzą do agregacji D4
    * (poziom D4 = najgorszy z dwóch kroków: nazwa, podpis). To NIE jest osobna decyzja SCORM.
    * `KEYLOGGER` (critical) zgłasza D4 od razu z `answer`: „NAZWA DYSKU: KEYLOGGER”.
    */
-  volume: GradedStep & { choiceLabel: string; confirmLabel: string; loader: string; task: string };
+  volume: GradedStep & { confirmLabel: string; loader: string; task: string };
   /** D4: podpis na kopercie (4 wiersze). `confirmLabel` = „WYSUŃ PAMIĘĆ USB” zatwierdza D4 i wysuwa nośnik. */
-  signature: GradedDecision & { choiceLabel: string; confirmLabel: string; task: string };
+  signature: GradedDecision & { confirmLabel: string; task: string };
   /** Przedrostki odpowiedzi D4 w raporcie, gdy ocenę obniżyła nazwa dysku: `NAZWA DYSKU: X / PODPIS: Y`. */
   reportLabels: { volume: string; signature: string };
   /** Komunikat po wysunięciu nośnika (→ `onComplete`). */
@@ -354,7 +356,7 @@ export interface DroneConfig {
   parkingCars: DroneCar[];
   /** Pusty asfalt między miejscami parkingowymi (opcja D6 critical, kliknięcie w tło sceny). */
   asphalt: { id: string; label: string; tier: ChoiceOutcome };
-  /** Siatka drona w trakcie: grafiki `drone/city_map`, `drone/parking` (opcjonalne, domyślnie SVG). */
+  /** Grafiki drona (opcjonalne; brak pliku = SVG): plan miasta w `DroneMap`, parking w `DroneCamera`. */
   images: { cityMap: AssetRef; parking: AssetRef };
   /** Komunikat po zrzucie: „POMYŚLNIE POZOSTAWIONO KOPERTĘ Z PENDRIVE'M. DRON WRACA DO POKOJU HAKERA”. */
   successDrop: string;
@@ -409,6 +411,8 @@ export interface RatSessionConfig {
     icons: RatDesktopIcon[];
     /** Tapeta: `{ group: 'rat', name: 'victim_wallpaper' }` (brak pliku = tło wektorowe). */
     wallpaper: AssetRef;
+    /** Tekst alternatywny tapety. */
+    wallpaperAlt: string;
   };
   /** Ekran 3 (dodatek): folder FREEVOLT i pulpit hakera. */
   files: {

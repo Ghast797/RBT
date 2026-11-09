@@ -312,6 +312,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
               }
               flightPct={flying ? flight : undefined}
               originLabel={config.statuses.idle}
+              image={config.images.cityMap}
             />
           </div>
         </ChoiceZone>
@@ -381,6 +382,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
             batteryPercent={config.hud.batteryPercent}
             transmissionLabel={config.hud.transmissionLabel}
             videoLabel={droneStats.video}
+            image={config.images.parking}
           />
         </div>
       </ChoiceZone>

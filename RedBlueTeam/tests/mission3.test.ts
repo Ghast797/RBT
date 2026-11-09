@@ -454,6 +454,40 @@ describe('Misja 3 — spójność interfejsu z M2 (nagłówki, kafelki, czytelno
   });
 });
 
+describe('Misja 3 — jedno źródło tekstów (pytania, grafiki)', () => {
+  it('pytanie decyzji to jedyne źródło etykiety na ekranie i w raporcie: dane nie mają osobnych pól choiceLabel', () => {
+    const found: string[] = [];
+    const visit = (node: any, path: string) => {
+      if (!node || typeof node !== 'object') return;
+      for (const [k, v] of Object.entries(node)) {
+        if (k === 'choiceLabel') found.push(`${path}.${k}`);
+        visit(v, `${path}.${k}`);
+      }
+    };
+    Object.entries(blocks()).forEach(([id, cfg]) => visit(cfg, id));
+    expect(found).toEqual([]);
+    // Ekrany czytają etykietę strefy z `question` (to samo trafia do raportu).
+    const dir = fileURLToPath(new URL('../src/scenarios/mission_03_ol_company/minigames/', import.meta.url));
+    for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.tsx'))) {
+      expect(fs.readFileSync(`${dir}${f}`, 'utf8'), f).not.toMatch(/choiceLabel/);
+    }
+  });
+
+  it('teksty alternatywne grafik pochodzą z configu (bez literałów w komponentach), grafiki drona podłączone', () => {
+    const dir = fileURLToPath(new URL('../src/scenarios/mission_03_ol_company/minigames/', import.meta.url));
+    for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.tsx'))) {
+      const src = fs.readFileSync(`${dir}${f}`, 'utf8');
+      expect(src, `${f}: ImageSlot z literałem label`).not.toMatch(/<ImageSlot[^>]*\slabel="/);
+    }
+    expect(pendriveConfig.envelopeImageAlt.length).toBeGreaterThan(5);
+    expect(ratSessionConfig.desktop.wallpaperAlt.length).toBeGreaterThan(5);
+    Object.values(virusLabConfig.matrix.variants).forEach((v) => expect(v.imageAlt.length).toBeGreaterThan(5));
+    const drone = fs.readFileSync(`${dir}DroneApp.tsx`, 'utf8');
+    expect(drone).toMatch(/config\.images\.cityMap/);
+    expect(drone).toMatch(/config\.images\.parking/);
+  });
+});
+
 describe('Misja 3 — dane strony //TOR (OSINT)', () => {
   const site = osintBrowserConfig.site;
 

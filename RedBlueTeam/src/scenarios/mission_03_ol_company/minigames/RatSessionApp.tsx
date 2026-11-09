@@ -160,7 +160,7 @@ export const RatSessionApp: React.FC<BlockProps<RatSessionConfig>> = ({ config, 
         </div>
         <div className="relative flex-1 min-h-0 bg-gradient-to-br from-[#0b3a6b] via-[#0f5fa8] to-[#0a2a4d]">
           <div className="absolute inset-0 opacity-90">
-            <ImageSlot asset={config.desktop.wallpaper} label="tapeta pulpitu ofiary" />
+            <ImageSlot asset={config.desktop.wallpaper} label={config.desktop.wallpaperAlt} />
           </div>
           <div className="relative p-4 flex flex-col gap-3 items-start">
             {config.desktop.icons.map((icon) => {

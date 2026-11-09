@@ -164,7 +164,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
                 sounds.playClick();
                 setTargetId(id);
               }}
-              label={config.targetTexts.choiceLabel}
+              label={config.target.question}
               columns={3}
             />
           </div>
@@ -189,7 +189,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
             <VectorRows
               options={vectorOptions}
               selectedId={vectorId}
-              label={config.vectorTexts.choiceLabel}
+              label={config.vector.question}
               onSelect={(id) => {
                 if (locked) return;
                 sounds.playClick();

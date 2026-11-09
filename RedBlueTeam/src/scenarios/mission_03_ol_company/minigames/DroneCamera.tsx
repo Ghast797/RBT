@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { BatteryMedium } from 'lucide-react';
-import type { CarShape } from './types';
+import type { AssetRef, CarShape } from './types';
 import {
   CAR_DIMS,
   LANE_Y,
@@ -95,8 +95,8 @@ interface DroneCameraProps {
   transmissionLabel: string;
   /** Podpis łącza wideo przy znaczniku REC. */
   videoLabel: string;
-  /** Opcjonalna grafika parkingu (`assets/drone/parking.*`) jako tło asfaltu. */
-  parkingName?: string;
+  /** Grafika parkingu z configu (`config.images.parking`) jako tło asfaltu; brak pliku = asfalt wektorowy. */
+  image?: AssetRef;
 }
 
 export const DroneCamera: React.FC<DroneCameraProps> = ({
@@ -108,7 +108,7 @@ export const DroneCamera: React.FC<DroneCameraProps> = ({
   batteryPercent,
   transmissionLabel,
   videoLabel,
-  parkingName = 'parking'
+  image
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [hover, setHover] = useState<Point | null>(null);
@@ -128,7 +128,7 @@ export const DroneCamera: React.FC<DroneCameraProps> = ({
   };
 
   const slots = parkingSlots(placed.length);
-  const imageUrl = resolveAsset('drone', parkingName);
+  const imageUrl = image ? resolveAsset(image.group, image.name) : undefined;
   const { width, height } = PARKING_SCENE;
 
   return (

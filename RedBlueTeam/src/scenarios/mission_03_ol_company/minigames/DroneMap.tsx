@@ -3,7 +3,7 @@
 // czytelny rozmiar niezależnie od okna. Samo kliknięcie w pin wybiera adres; ocena idzie tylko przez onDecision.
 
 import React from 'react';
-import type { DroneMapLocation } from './types';
+import type { AssetRef, DroneMapLocation } from './types';
 import { DRONE_ORIGIN, flightPosition, locationPoint } from './droneLogic';
 import { resolveAsset } from './siteAssets';
 
@@ -17,8 +17,8 @@ interface DroneMapProps {
   flightPct?: number;
   /** Podpis punktu startu (np. „POKÓJ HAKERA”). */
   originLabel: string;
-  /** Opcjonalna grafika planu (`assets/drone/city_map.*`); brak pliku = plan wektorowy. */
-  cityMapName?: string;
+  /** Grafika planu z configu (`config.images.cityMap`); brak pliku w `assets/drone/` = plan wektorowy. */
+  image?: AssetRef;
 }
 
 /** Plan miasta (rzeka, ulice, bloki) rysowany jako tło; `non-scaling-stroke`, żeby linie nie pęczniały przy rozciąganiu. */
@@ -77,7 +77,7 @@ export const DroneMap: React.FC<DroneMapProps> = ({
   onSelect,
   flightPct,
   originLabel,
-  cityMapName = 'city_map'
+  image
 }) => {
   const target = locations.find((l) => l.id === selectedId);
   const flying = flightPct !== undefined && !!target;
@@ -86,7 +86,7 @@ export const DroneMap: React.FC<DroneMapProps> = ({
 
   return (
     <div className="relative w-full h-full min-h-0 rounded-lg overflow-hidden border border-gray-800 bg-[#06101a]">
-      <MapBackdrop imageUrl={resolveAsset('drone', cityMapName)} />
+      <MapBackdrop imageUrl={image ? resolveAsset(image.group, image.name) : undefined} />
 
       {/* Trasa lotu (współrzędne w procentach pola) */}
       {flying && targetPos && (

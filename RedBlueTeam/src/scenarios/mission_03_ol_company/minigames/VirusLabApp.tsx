@@ -82,7 +82,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
                 sounds.playClick();
                 setSelectedId(id);
               }}
-              label={config.virusTexts.choiceLabel}
+              label={config.virus.question}
               size="lg"
             />
           </div>

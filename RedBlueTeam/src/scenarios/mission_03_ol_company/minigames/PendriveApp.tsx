@@ -376,7 +376,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
       <div className="flex-1 min-h-0 flex flex-col justify-between gap-3">
         <ChoiceCardGrid
           accent={ACCENT}
-          label={config.volume.choiceLabel}
+          label={config.volume.question}
           options={volumeOptions}
           selectedId={volumeId}
           onSelect={(id) => {
@@ -404,7 +404,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
             className="relative min-h-0 rounded-xl border overflow-hidden bg-black/40"
             style={{ borderColor: `${ACCENT}55` }}
           >
-            <ImageSlot asset={config.envelopeImage} label="Koperta z pendrive'em" fit="cover" />
+            <ImageSlot asset={config.envelopeImage} label={config.envelopeImageAlt} fit="cover" />
             {signature && (
               <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/85 to-transparent text-center">
                 <span className="text-sm font-black tracking-wider text-white break-words">{signature.label}</span>
@@ -413,7 +413,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
           </div>
           <ChoiceCardGrid
             accent={ACCENT}
-            label={config.signature.choiceLabel}
+            label={config.signature.question}
             options={signatureOptions}
             selectedId={signatureId}
             onSelect={(id) => {

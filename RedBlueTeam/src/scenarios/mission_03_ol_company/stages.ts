@@ -13,16 +13,13 @@ import type {
   DroneMapLocation,
   DroneCar,
   RatSessionConfig,
-  ReportableOption,
   UsbState
 } from './minigames/types';
+import { reportAnswerOf } from './minigames/report';
 
 // ---------------------------------------------------------------------------
 // WSPÓLNE STAŁE (jedno źródło prawdy dla danych powtarzanych w kilku klockach)
 // ---------------------------------------------------------------------------
-
-/** Odpowiedź w raporcie: `reportAnswer` opcji albo jej etykieta (jak w minigrze: `reportAnswer ?? label`). */
-const answerOf = (o: ReportableOption): string => o.reportAnswer ?? o.label;
 
 /** Wartości pendrive'a, gdy gracz wszedł w //DRON lub //RAT bez przejścia //DYSK E (tylko tryb deweloperski). */
 const USB_FALLBACK: UsbState = {
@@ -73,7 +70,6 @@ export const virusLabConfig: VirusLabConfig = {
   },
   virusTexts: {
     task: 'WYBIERZ WIRUSA I ZATWIERDŹ WYBÓR.',
-    choiceLabel: 'WYBIERZ ODPOWIEDNIEGO WIRUSA',
     confirmLabel: 'ZATWIERDŹ WIRUSA'
   },
   // Zdrapka (w danych `matrix` to nazwa wewnętrzna; graczowi nie pokazujemy żargonu „matryca kompilacji”).
@@ -263,7 +259,6 @@ export const osintBrowserConfig: OsintBrowserConfig = {
   },
   targetTexts: {
     task: 'WYBIERZ OSOBĘ, KTÓRĄ ZAATAKUJESZ.',
-    choiceLabel: 'KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?',
     confirmLabel: 'ZATWIERDŹ CEL'
   },
   vector: {
@@ -300,7 +295,6 @@ export const osintBrowserConfig: OsintBrowserConfig = {
   },
   vectorTexts: {
     task: 'WYBIERZ SPOSÓB, W JAKI OSZUKASZ OFIARĘ.',
-    choiceLabel: 'JAK GO OSZUKASZ?',
     confirmLabel: 'ZATWIERDŹ PLAN'
   }
 };
@@ -313,7 +307,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
 const vectorAnswer = (optionId: string): string => {
   const opt = osintBrowserConfig.vector.options.find((o) => o.id === optionId);
   if (!opt) throw new Error(`Brak opcji D3: ${optionId}`);
-  return answerOf(opt);
+  return reportAnswerOf(opt);
 };
 
 export const pendriveConfig: PendriveConfig = {
@@ -355,9 +349,9 @@ export const pendriveConfig: PendriveConfig = {
     loader: 'PRZYGOTOWANIE NOŚNIKA…'
   },
   envelopeImage: { group: 'usb', name: 'envelope' },
+  envelopeImageAlt: "Koperta z pendrive'em",
   volume: {
     question: "WYBIERZ NAZWĘ PENDRIVE'A",
-    choiceLabel: "WYBIERZ NAZWĘ PENDRIVE'A:",
     confirmLabel: 'ZATWIERDŹ NAZWĘ',
     loader: 'ZAPIS ETYKIETY…',
     task: "WYBIERZ NAZWĘ DLA PENDRIVE'A.",
@@ -393,7 +387,6 @@ export const pendriveConfig: PendriveConfig = {
   signature: {
     decisionNum: 4,
     question: 'WYBIERZ PODPIS NA KOPERCIE',
-    choiceLabel: 'WYBIERZ PODPIS NA KOPERCIE',
     confirmLabel: 'WYSUŃ PAMIĘĆ USB',
     task: 'WYBIERZ PODPIS, KTÓRY ZNAJDZIE SIĘ NA KOPERCIE.',
     options: [
@@ -575,7 +568,8 @@ export const ratSessionConfig: RatSessionConfig = {
       { id: 'this_pc', label: 'TEN KOMPUTER' },
       { id: 'freevolt', label: 'FREEVOLT', warning: true }
     ],
-    wallpaper: { group: 'rat', name: 'victim_wallpaper' }
+    wallpaper: { group: 'rat', name: 'victim_wallpaper' },
+    wallpaperAlt: 'tapeta pulpitu ofiary'
   },
   files: {
     folderTitle: 'FREEVOLT',
