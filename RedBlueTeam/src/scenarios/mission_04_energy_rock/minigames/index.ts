@@ -1,7 +1,6 @@
 // Minigry Misji 4 (Energy Rock) — unikalne dla tej misji (kontrakt silnika: config, onDecision, onComplete).
 // Rejestruje je index.ts misji. Wspólne elementy misji: ui.tsx (ImageSlot), siteAssets.ts (grafiki).
 // Z silnika: core/report.ts, LOADER_MS / LOADER_LONG_MS (components/ModuleLoader.tsx), blocks/ScratchMatrix.tsx.
-// Stan porcji B: pliki *App.tsx to zaślepki oparte o stub.tsx (zastępują je porcje C–G).
 
 export { VirusLabApp } from './VirusLabApp';
 export { RansomBuilderApp } from './RansomBuilderApp';
