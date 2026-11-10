@@ -32,7 +32,7 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
 
   const stepIndex = screen === 'start' || screen === 'loader_scan' ? 0 : screen === 'encrypt' ? 1 : 2;
   const taskFor: Record<Screen, string | undefined> = {
-    start: undefined,
+    start: start.task,
     loader_scan: undefined,
     encrypt: encrypt.task,
     exfil: exfil.task,

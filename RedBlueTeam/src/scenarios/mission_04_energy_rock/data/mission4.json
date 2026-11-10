@@ -82,7 +82,7 @@
   "desktopApps": [
     {
       "id": "chat_shortcut",
-      "label": "//KOMUNIKATOR: BYTE_MASTER",
+      "label": "//CHAT: BYTE_MASTER",
       "color": "#00ff66",
       "icon": "MessageSquareCode",
       "componentId": "chat",

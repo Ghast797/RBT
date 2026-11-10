@@ -66,7 +66,7 @@ export const virusLabConfig: VirusLabConfig = {
   },
   virusTexts: {
     task: 'WYBIERZ WIRUSA I ZATWIERDŹ WYBÓR.',
-    confirmLabel: 'ZATWIERDŹ WYBÓR'
+    confirmLabel: 'ZATWIERDŹ WIRUSA'
   },
   matrix: {
     heading: 'WYSZUKAJ CZĘŚCI WIRUSA:',
@@ -414,6 +414,7 @@ export const c2Config: C2Config = {
   subtitle: 'ZDALNY PANEL ZAINFEKOWANEJ STACJI',
   steps: ['KROK 1/3', 'KROK 2/3', 'KROK 3/3'],
   start: {
+    task: 'URUCHOM SZYFROWANIE ZASOBÓW FIRMY.',
     status: 'CV ZOSTAŁO OTWARTE – MALWARE ZOSTAŁ AKTYWOWANY',
     hostLabel: 'NAZWA KOMPUTERA:',
     host: 'ENERGY_ROCK_01_PC',

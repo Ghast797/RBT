@@ -218,6 +218,8 @@ export interface C2Config {
   subtitle: string;
   steps: string[];
   start: {
+    /** ZADANIE ekranu startowego. */
+    task: string;
     status: string;
     hostLabel: string;
     host: string;

@@ -65,7 +65,7 @@ export const ExfilFiles: React.FC<{
       }`}
     >
       <FileIcon name={f.name} />
-      <span className="text-xs font-bold font-mono text-white truncate">{f.name}</span>
+      <span className="text-xs font-bold font-mono text-white break-all leading-tight">{f.name}</span>
     </div>
   );
 
