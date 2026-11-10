@@ -1,33 +1,72 @@
-// ZAŚLEPKA (porcja B) etapu 6 — //CZAT_Z_OFIARĄ. Zastępuje ją porcja G (opakowanie `DialogueTree` + miniatura okna okupu).
-import React from 'react';
-import { MessageSquareCode } from 'lucide-react';
-import type { BlockProps } from '../../../engine/types/mission';
-import type { VictimChatConfig } from './types';
-import { StubShell } from './stub';
+// Etap 6 — //CZAT_Z_OFIARĄ: rozmowa z szefem IT (klocek DialogueTree, tryb per-węzeł: D9, D10, węzeł 3 bez oceny)
+// obok miniatury okna żądania okupu, które gracz złożył w kreatorze (customState['m4_note']).
+// Stan rozmowy trzyma DialogueTree (zwykły stan Reacta; AppHost nie odmontowuje aplikacji).
+
+import React, { useMemo } from 'react';
+import { DialogueTree } from '../../../engine/blocks/DialogueTree';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
+import type { BlockProps, DecisionReport } from '../../../engine/types/mission';
+import { M4_NOTE_KEY, type M4NoteState, type RansomPreviewConfig, type VictimChatConfig } from './types';
+
+/** Podmienia `answer` na `reportAnswers[optionId]`; DialogueTree zgłasza etykietę, więc opcję szukamy w węźle decyzji po `label`. */
+export function mapReportAnswer(config: VictimChatConfig, decision: DecisionReport): DecisionReport {
+  const node = config.dialogue.nodes.find((n) => n.decisionNum === decision.num);
+  const option = node?.options.find((o) => o.label === decision.answer);
+  const replaced = option ? config.reportAnswers[option.id] : undefined;
+  return replaced === undefined ? decision : { ...decision, answer: replaced };
+}
+
+export interface ResolvedPreview {
+  title: string;
+  time: string;
+  color: string;
+}
+
+/** Tytuł, czas i kolor miniatury z `m4_note`; brak lub nieznane id → `preview.fallback`. */
+export function resolvePreview(preview: RansomPreviewConfig, note: M4NoteState | undefined): ResolvedPreview {
+  const fb = preview.fallback;
+  const n = note ?? fb;
+  return {
+    title: preview.titles[n.titleId] ?? preview.titles[fb.titleId] ?? '',
+    time: preview.times[n.timeId] ?? preview.times[fb.timeId] ?? '',
+    color: preview.colors[n.colorId] ?? preview.colors[fb.colorId] ?? '#ef4444'
+  };
+}
 
 export const VictimChatApp: React.FC<BlockProps<VictimChatConfig>> = ({ config, onDecision, onComplete }) => {
-  const decide = (nodeId: string) => () => {
-    const node = config.dialogue.nodes.find((n) => n.id === nodeId)!;
-    const option = node.options.find((o) => o.tier === 'ideal')!;
-    onDecision({
-      num: node.decisionNum!,
-      question: node.question ?? node.incoming,
-      answer: config.reportAnswers[option.id] ?? option.label,
-      tier: option.tier,
-      feedback: option.feedback
-    });
-  };
+  const note = useMissionStore((s) => s.customState[M4_NOTE_KEY]) as M4NoteState | undefined;
+  const view = useMemo(() => resolvePreview(config.preview, note), [config.preview, note]);
+  const dialogue = useMemo(
+    () => ({ ...config.dialogue, title: config.dialogue.title ?? config.title }),
+    [config.dialogue, config.title]
+  );
+  const { preview } = config;
+
   return (
-    <StubShell
-      icon={MessageSquareCode}
-      accent="#f59e0b"
-      title={config.title}
-      subtitle={config.subtitle}
-      actions={[
-        { label: 'D9: ZGŁOŚ WYBÓR IDEALNY', run: decide('neg_1') },
-        { label: 'D10: ZGŁOŚ WYBÓR IDEALNY', run: decide('neg_2') },
-        { label: 'ZAKOŃCZ ETAP', run: onComplete }
-      ]}
-    />
+    <div className="flex h-full min-h-0 overflow-hidden bg-[#05090f]">
+      <div className="flex-1 min-w-0 min-h-0">
+        <DialogueTree
+          config={dialogue}
+          onDecision={(d) => onDecision(mapReportAnswer(config, d))}
+          onComplete={onComplete}
+        />
+      </div>
+      <aside className="w-[14rem] shrink-0 p-4 pl-0 font-mono select-none flex flex-col min-h-0">
+        <div className="text-[0.6875rem] font-bold tracking-widest text-gray-500 mb-2">{preview.heading}</div>
+        <div
+          className="rounded-lg border-2 bg-black/70 p-3 flex flex-col gap-2 text-center overflow-hidden"
+          style={{ borderColor: view.color, boxShadow: `0 0 14px ${view.color}55` }}
+        >
+          <div className="text-xs font-bold leading-snug" style={{ color: view.color }}>{view.title}</div>
+          <div className="text-lg font-bold text-gray-100">{view.time}</div>
+          <div className="border-t border-gray-800 pt-2 text-left">
+            <div className="text-[0.625rem] text-gray-500">{preview.amountLabel}</div>
+            <div className="text-xs text-gray-200 break-words">{preview.amount}</div>
+            <div className="text-[0.625rem] text-gray-400 break-all mt-1">{preview.address}</div>
+          </div>
+          <div className="text-[0.625rem] text-gray-400 break-words">{preview.contact}</div>
+        </div>
+      </aside>
+    </div>
   );
 };
