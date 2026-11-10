@@ -345,8 +345,7 @@ describe('Misja 4 — przepływ przez silnik', () => {
 });
 
 describe('Misja 4 — teksty do uzupełnienia', () => {
-  // Włączyć (zmienić `it.skip` na `it`) po uzupełnieniu wszystkich `TODO_VR` w stages.ts i mission4.json.
-  it.skip('w danych nie ma znacznika TODO_VR', () => {
+  it('w danych nie ma znacznika TODO_VR', () => {
     const json = JSON.stringify({ def: def(), blocks: def().blocks });
     expect(json).not.toContain('TODO_VR');
   });

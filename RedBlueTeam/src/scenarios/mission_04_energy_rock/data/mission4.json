@@ -170,8 +170,8 @@
         "answer": "RANSOMWARE",
         "correct": true,
         "details": "Zaszyfrowanie danych i blokada operacyjna umożliwia wywołanie presji szantażem i odwrócenie uwagi od kradzieży dokumentacji.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "attack": "Ransomware blokuje pliki i paraliżuje całą infrastrukturę organizacji, co stwarza idealną przykrywkę pod szantaż finansowy i odwraca uwagę od kradzieży dokumentacji. Keylogger rejestrowałby jedynie wpisywane znaki bez natychmiastowego dostępu do serwerów firmy, a trojan zdalnego dostępu (RAT) pozwoliłby na cichą infiltrację pojedynczego pulpitu, lecz nie wywarłby natychmiastowej presji operacyjnej na zarząd. Wybór oprogramowania szyfrującego wymusił na ofierze natychmiastowe podjęcie negocjacji.",
+        "defense": "Sygnały: nagła utrata dostępu do dokumentów, zmiana rozszerzeń plików, obciążenie procesora procesami szyfrującymi oraz plansza z żądaniem okupu. Co zrobić: malware, który szyfruje i żąda okupu, jest ogromnym zagrożeniem dla każdej instytucji. Upewnij się, że Twoje dane i praca są zabezpieczone przez systematycznie wykonywane backupy oraz regularne aktualizacje systemu. Skuteczny backup to taki, który można odtworzyć – stosuj zasadę 3-2-1 (dwie kopie lokalne i jedna zdalna) oraz regularnie sprawdzaj, czy dane da się przywrócić."
       },
       {
         "num": 2,
@@ -179,8 +179,8 @@
         "answer": "5 (DŁUGOŚĆ 24, 4 ZESTAWY ZNAKÓW)",
         "correct": true,
         "details": "Maksymalna długość 24 znaki oraz znaki specjalne uniemożliwiają przełamanie klucza metodami brute-force.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "attack": "Maksymalna długość 24 znaków oraz połączenie wielkich i małych liter, cyfr i symboli tworzą klucz o ogromnej entropii, którego nie da się złamać atakiem brute-force w rozsądnym czasie. Krótsze hasła lub mniejsza liczba zestawów znaków byłyby podatne na metody słownikowe, dając ofierze szansę na samodzielne odszyfrowanie danych. Dodatkowo wykluczenie znaków narodowych i spacji zapobiegło błędom dekodera, uniemożliwiając ofierze podważenie integralności szyfrowania.",
+        "defense": "Sygnały: komunikaty o niepoprawnym formacie hasła, próby wymuszenia prostych fraz lub brak polityki złożoności w systemach uwierzytelniania. Co zrobić: do generowania haseł używaj menedżera haseł, który stworzy za Ciebie unikalne i odpowiednio silne hasło. Menedżer będzie także przetrzymywał wszystkie Twoje hasła w bezpiecznej bazie danych, eliminując konieczność ich zapamiętywania. Wszędzie, gdzie to możliwe, włączaj wieloskładnikowe uwierzytelnianie (MFA)."
       },
       {
         "num": 3,
@@ -188,8 +188,8 @@
         "answer": "OSTRZEŻENIE + LIMIT 30 H",
         "correct": true,
         "details": "Jasny komunikat i wiarygodny zegar budują presję, a jednocześnie pozwalają ofierze zebrać okup.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "attack": "Formalny, alarmujący nagłówek w połączeniu z 30-godzinnym limitem czasu skutecznie wywołał presję psychologiczną, dając ofierze realne ramy na podjęcie decyzji i zebranie środków. Zbyt krótki czas, jak 30 sekund, uniemożliwiłby ofierze reakcję i zakup kryptowaluty, skłaniając ją do natychmiastowego sformatowania dysków. Z kolei niepoważny tytuł obniżyłby wiarygodność żądania i mógłby zostać zignorowany jako zwykły żart.",
+        "defense": "Sygnały: odliczający zegar, wywieranie silnej presji czasu, groźby bezpowrotnego skasowania danych oraz żądanie wpłaty w kryptowalutach. Co zrobić: zachowaj spokój i nie podejmuj pochopnych działań pod wpływem emocji, ponieważ pośpiech utrudnia racjonalną ocenę sytuacji. Natychmiast zgłoś incydent do zespołu bezpieczeństwa IT i wdroż procedurę reagowania na incydenty. Nigdy nie płać okupu na własną rękę, gdyż nie gwarantuje to odzyskania danych i finansuje dalszą działalność przestępczą."
       },
       {
         "num": 4,
@@ -197,8 +197,8 @@
         "answer": "CZERWONY",
         "correct": true,
         "details": "Kolor alarmowy wywołuje natychmiastową presję psychologiczną i poczucie zagrożenia.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "attack": "Czerwień to uniwersalna barwa ostrzegawcza, która natychmiast przyciąga uwagę użytkownika i potęguje stan zagrożenia oraz paniki. Kolor zielony podświadomie kojarzy się z poprawnym stanem systemu i bezpieczeństwem, co uśpiłoby czujność i osłabiło powagę sytuacji. Z kolei barwa biała lub szara przypomina zwykły błąd aplikacji, przez co pracownik mógłby zbagatelizować atak lub odłożyć powiadomienie przełożonych.",
+        "defense": "Sygnały: nagła zmiana tła pulpitu, agresywne czerwone okna blokujące ekran i uniemożliwiające zamknięcie aplikacji. Co zrobić: pamiętaj, że jaskrawa oprawa graficzna to element socjotechniki mający wywołać chaos i sparaliżować logiczne myślenie. Zabezpiecz dowody – zrób zdjęcie ekranu telefonem, jeśli nie możesz wykonać zrzutu ekranu, i odłącz komputer od sieci LAN oraz Wi-Fi. Zgłoś incydent do działu IT zgodnie z firmową procedurą zgłaszania awarii i ataków."
       },
       {
         "num": 5,
@@ -206,8 +206,8 @@
         "answer": "CV MICHAŁ WILK",
         "correct": true,
         "details": "Temat precyzyjnie wpisuje się w wymagania działu HR i nie budzi podejrzeń filtrów rekrutacyjnych.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "attack": "Temat wiadomości ściśle odpowiadał standardom korespondencji rekrutacyjnej w firmie, zawierając prefiks CV oraz pełne imię i nazwisko kandydata. Taki format bez przeszkód przeszedł przez wstępne filtry skrzynek rekrutacyjnych i wzbudził zaufanie osoby odpowiedzialnej za nabór. Brak imienia wyglądałby nieprofesjonalnie, a pominięcie skrótu CV sprawiłoby, że automatyczne reguły sortujące odrzuciłyby maila jako spam.",
+        "defense": "Sygnały: wiadomości z aplikacjami rekrutacyjnymi od osób, których profilu zawodowego nie można zweryfikować w sieci, lub maile z załącznikami od zupełnie nieznanych nadawców. Co zrobić: działy HR powinny korzystać z dedykowanych platform rekrutacyjnych zamiast przyjmować załączniki bezpośrednio na skrzynkę e-mail. Weryfikuj tożsamość kandydatów na portalach zawodowych i stosuj reguły pocztowe oznaczające wiadomości od nadawców zewnętrznych. Każdy nietypowy e-mail z załącznikiem skonsultuj z administratorem poczty przed jego otwarciem."
       },
       {
         "num": 6,
@@ -215,50 +215,50 @@
         "answer": "TREŚĆ Z HASŁEM WILK NA STANOWISKO ANALITYKA RYNKÓW ENERGETYCZNYCH",
         "correct": true,
         "details": "Szyfrowanie załącznika hasłem uniemożliwia bramce pocztowej automatyczne wykrycie ładunku złośliwego.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "attack": "Oficjalny ton wiadomości, precyzyjne wskazanie aktualnie otwartego stanowiska oraz dołączenie hasła do zabezpieczonego pliku skłoniły rekrutera do natychmiastowego otwarcia dokumentu. Zabezpieczenie pliku hasłem podanym w treści to skuteczny sposób na ominięcie bramek antyspamowych i piaskownic, które nie potrafią przeskanować zaszyfrowanego załącznika. Luźny, nieformalny styl lub błędna nazwa stanowiska wzbudziłyby czujność pracownika i doprowadziły do skasowania wiadomości.",
+        "defense": "Sygnały: maile z zabezpieczonymi hasłem plikami (ZIP, RAR, PDF), gdzie hasło podane jest bezpośrednio w treści wiadomości, skłaniające do szybkiego otwarcia. Co zrobić: zachowaj szczególną ostrożność wobec załączników chronionych hasłem, ponieważ przestępcy w ten sposób ukrywają złośliwy kod przed skanerami bezpieczeństwa. Wdrażaj bramki pocztowe analizujące treść maili pod kątem haseł do załączników i blokujące pliki wymagające wpisania hasła od nieznanych nadawców. W razie wątpliwości zgłoś wiadomość przyciskiem zgłaszania phishingu do zespołu IT."
       },
       {
         "num": 7,
         "question": "ZABEZPIECZENIE TOŻSAMOŚCI (VPN / NADAWCA)",
         "answer": "109.43.200.124 + M.WILK@PRIV.COM",
         "correct": true,
-        "details": "Adres IP tunelu zgodny z podsiecią celu omija geolokalizacyjne reguły filtrów poczty.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "details": "Spójny adres nadawcy M.WILK@PRIV.COM idealnie pasuje do podpisu kandydata Michała Wilka i nie budzi podejrzeń rekrutera.",
+        "attack": "Adres nadawcy M.WILK@PRIV.COM był w pełni spójny z imieniem i nazwiskiem kandydata oraz treścią podpisu, co uwiarygodniło korespondencję. Adres z obcym imieniem wprowadziłby dysonans poznawczy u odbiorcy, zmuszając go do weryfikacji tożsamości aplikanta. Z kolei wysyłka z przypadkowej domeny komercyjnej B2B natychmiast uruchomiłaby filtry antyspamowe i zaalarmowała administratora poczty.",
+        "defense": "Sygnały: rozbieżność między nazwą wyświetlaną a rzeczywistym adresem w nagłówku „Od:”, nietypowa domena pocztowa lub rozbieżność danych w stopce wiadomości. Co zrobić: zawsze sprawdzaj pełny adres e-mail nadawcy, a nie tylko nazwę wyświetlaną w programie pocztowym. Zwracaj uwagę na domeny darmowych dostawców w korespondencji biznesowej i porównuj dane kontaktowe z treścią dokumentów. W organizacji wdrażaj mechanizmy SPF, DKIM i DMARC chroniące przed podszywaniem się pod tożsamość nadawców."
       },
       {
         "num": 8,
         "question": "EKSFILTRACJA PLIKÓW",
         "answer": "3 PLIKI FREEVOLT (DOCX, PDF, XCF)",
         "correct": true,
-        "details": "Precyzyjne pobranie celów zlecenia bez uruchamiania pułapek honeypot.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "details": "Pobranie dokładnie trzech plików dokumentacji Freevolt realizuje główny cel zlecenia bez generowania podejrzanego transferu.",
+        "attack": "Precyzyjne skopiowanie wyłącznie trzech kluczowych plików technologii Freevolt pozwoliło osiągnąć cel wywiadowczy operacji. Pobranie zbyt wielu przypadkowych dokumentów wygenerowałoby duży wolumen transferu wychodzącego, co mogłoby zaalarmować systemy DLP i ułatwić analizę powłamaniową. Z kolei pominięcie któregokolwiek z plików technologii skutkowałoby pozyskaniem niekompletnej dokumentacji.",
+        "defense": "Sygnały: nietypowy transfer dużych ilości danych poza sieć firmową, dostęp do poufnych plików projektowych o nietypowej porze lub z nieuprawnionej stacji roboczej. Co zrobić: wdrażaj systemy zapobiegania wyciekowi danych (DLP) oraz monitoruj ruch wychodzący z sieci pod kątem anomalii transferu. Stosuj zasadę najmniejszych uprawnień – pliki o strategicznym znaczeniu powinny być szyfrowane i dostępne wyłącznie dla ograniczonego kręgu pracowników. Regularnie audytuj logi dostępu do zasobów sieciowych."
       },
       {
         "num": 9,
         "question": "JAK ODPOWIESZ SZEFOWI IT NA INFORMACJĘ O SŁUŻBACH?",
-        "answer": "TODO_VR",
+        "answer": "ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW…",
         "correct": true,
         "details": "Konfrontacja z technologiczną bezradnością organów ścigania wobec silnej kryptografii natychmiast rozbija złudzenie pomocy z zewnątrz i paraliżuje decyzyjność ofiary.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR"
+        "attack": "Wskazanie na matematyczną nieodwracalność silnego szyfrowania natychmiast rozbiło wiarę ofiary w możliwość bezpłatnego odzyskania danych przez policję czy służby państwowe. Agresywna lub emocjonalna odpowiedź sprowokowałaby szefa IT do zerwania rozmów i podjęcia prób walki z atakiem. Natomiast uległość pod wpływem blefu o powiadomieniu władz oznaczałaby natychmiastową porażkę negocjacyjną i utratę kontroli nad przebiegiem szantażu.",
+        "defense": "Sygnały: napastnik kategorycznie twierdzi, że żadne służby ani specjaliści nie są w stanie pomóc, dążąc do izolacji ofiary i wywołania poczucia bezradności. Co zrobić: nie wierz w zapewnienia przestępców o braku jakiejkolwiek alternatywy i natychmiast zaangażuj profesjonalny zespół reagowania na incydenty (CSIRT/CERT). Zgłoś sprawę organom ścigania – instytucje te dysponują bazami znanych kluczy deszyfrujących i analizują błędy w kodzie złośliwego oprogramowania. Nigdy nie prowadź negocjacji na własną rękę."
       },
       {
         "num": 10,
         "question": "CZEGO CHCESZ W ZAMIAN ZA ODSZYFROWANIE DANYCH?",
         "answer": "INTERESUJĄ MNIE TYLKO BITCOINY (OKUP WYŁUDZONY: TAK)",
         "correct": true,
-        "details": "Presja czasowa uniemożliwia ofierze odzyskanie danych z procedur zapasowych i kontakt z zewnętrznymi ekspertami.",
-        "attack": "TODO_VR",
-        "defense": "TODO_VR",
+        "details": "Żądanie wyłącznie bitcoinów utrzymało przykrywkę ataku motywowanego finansowo i zamaskowało kradzież dokumentacji Freevolt.",
+        "attack": "Konsekwentne żądanie okupu w kryptowalucie utrzymało narrację o czysto finansowym motywie ataku i uśpiło czujność zespołu bezpieczeństwa. Odkrycie kart i zażądanie dokumentacji Freevolt zdemaskowałoby szpiegowski charakter operacji, skłaniając firmę do natychmiastowego wdrożenia procedur ochrony tajemnicy przedsiębiorstwa. Z kolei niepoważne twierdzenie o działaniu „dla zabawy” podważyłoby profesjonalizm napastnika i przekreśliło szansę na okup.",
+        "defense": "Sygnały: żądanie płatności w kryptowalutach z twardym terminem realizacji oraz odwracanie uwagi od innych zasobów organizacji. Co zrobić: pamiętaj, że żądanie okupu w ataku ransomware może być jedynie zasłoną dymną dla równoległej kradzieży poufnych danych lub szpiegostwa gospodarczego. Zawsze zakładaj najgorszy scenariusz i przeprowadzaj pełną analizę powłamaniową (forensics), badając, jakie dane zostały wyeksfiltrowane przed zaszyfrowaniem dysków. Procedury powypadkowe muszą obejmować audyt wycieku informacji niejawnych.",
         "negotiationTranscript": [
           {
             "turn": 1,
             "title": "Tura 1 (Reakcja na szantaż)",
             "opponentLabel": "SZEF IT",
-            "opponent": "Szef IT grozi policją: „ROZWIĄZUJEMY PROBLEM RANSOMWARE! ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE”",
+            "opponent": "Szef IT grozi policją: „ROZWIĄZUJEMY PROBLEM RANSOMWARE I ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE”",
             "player": "Twarde stanowisko techniczne: „ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW. ZASTANÓW SIĘ DOBRZE, CO CHCESZ ZROBIĆ”",
             "psychology": "Konfrontacja z technologiczną bezradnością organów ścigania wobec silnej kryptografii natychmiast rozbija złudzenie pomocy z zewnątrz i paraliżuje decyzyjność ofiary."
           },
@@ -275,7 +275,7 @@
             "title": "Tura 3 (Presja czasu)",
             "opponentLabel": "SZEF IT",
             "opponent": "Szef IT gra na zwłokę: „POTRZEBUJEMY CZASU NA ICH ZDOBYCIE”",
-            "player": "Twardy limit 3h na przelew: „MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA”",
+            "player": "Twardy limit 3h na przelew: „MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA DO ODSZYFROWANIA”",
             "psychology": "Ekstremalny limit czasowy uniemożliwia ofierze odzyskanie danych z kopii zapasowych lub powiadomienie zespołu reagowania na incydenty (CSIRT/SOC)."
           }
         ]
