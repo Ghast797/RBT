@@ -1,4 +1,4 @@
-# SILNIK SCENARIUSZY SZKOLENIOWYCH SCORM 2004 (HACKER.OS)
+# SILNIK SCENARIUSZY SZKOLENIOWYCH SCORM 2004 (HACKERS.OS)
 
 Wielomodułowy silnik w React + TypeScript do tworzenia cyberbezpiecznych gier symulacyjnych zgodnych ze standardami **SCORM 2004 (4th Edition)** oraz **xAPI (Tin Can API)**.
 

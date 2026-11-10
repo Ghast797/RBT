@@ -15,7 +15,7 @@
   },
   "intro": {
     "callerName": "BYTE_MASTER",
-    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE (HACKER.OS)",
+    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE (HACKERS.OS)",
     "dialogue": [
       {
         "id": "node_1",
@@ -178,7 +178,7 @@
     },
     {
       "id": "debrief_app",
-      "label": "//PODSUMOWANIE",
+      "label": "//RAPORT POOPERACYJNY",
       "color": "#10b981",
       "icon": "Award",
       "componentId": "debrief_app",
