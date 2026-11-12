@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <filter id="rat-glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="rat-stroke" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#a5f3fc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Pure transparent background so ScratchMatrix provides one uniform backdrop -->
+  <g filter="url(#rat-glow)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Left & Right Ears curving cleanly outward -->
+    <path d="M 258 158 A 58 58 0 1 0 182 198" fill="none" stroke="url(#rat-stroke)" stroke-width="18"/>
+    <path d="M 342 158 A 58 58 0 1 1 418 198" fill="none" stroke="url(#rat-stroke)" stroke-width="18"/>
+
+    <!-- Subtle inner cyber ear arcs -->
+    <path d="M 232 146 A 32 32 0 1 0 186 178" fill="none" stroke="#22d3ee" stroke-width="3" stroke-dasharray="9 6" opacity="0.85"/>
+    <path d="M 368 146 A 32 32 0 1 1 414 178" fill="none" stroke="#22d3ee" stroke-width="3" stroke-dasharray="9 6" opacity="0.85"/>
+
+    <!-- Jaw / Snout V-shape -->
+    <path d="M 182 198 L 300 330 L 418 198" fill="none" stroke="url(#rat-stroke)" stroke-width="18"/>
+
+    <!-- Forehead cyber crest -->
+    <path d="M 258 158 Q 300 138 342 158" fill="none" stroke="#22d3ee" stroke-width="4" opacity="0.85"/>
+    <line x1="300" y1="120" x2="300" y2="152" stroke="#22d3ee" stroke-width="3" opacity="0.85"/>
+    <circle cx="300" cy="116" r="4.5" fill="#22d3ee"/>
+
+    <!-- Sharp hacker eyes -->
+    <polygon points="234,208 284,228 252,256" fill="#ffffff" stroke="#22d3ee" stroke-width="2"/>
+    <polygon points="366,208 316,228 348,256" fill="#ffffff" stroke="#22d3ee" stroke-width="2"/>
+
+    <!-- Snout tip node -->
+    <polygon points="290,304 310,304 300,320" fill="#22d3ee"/>
+
+    <!-- Whiskers -->
+    <g stroke="#ffffff" stroke-width="7">
+      <line x1="224" y1="266" x2="162" y2="254"/>
+      <line x1="230" y1="286" x2="160" y2="288"/>
+      <line x1="240" y1="306" x2="174" y2="320"/>
+
+      <line x1="376" y1="266" x2="438" y2="254"/>
+      <line x1="370" y1="286" x2="440" y2="288"/>
+      <line x1="360" y1="306" x2="426" y2="320"/>
+    </g>
+  </g>
+</svg>

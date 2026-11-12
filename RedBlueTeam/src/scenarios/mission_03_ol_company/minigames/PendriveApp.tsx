@@ -399,17 +399,25 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   if (screen === 'sign') {
     return wrap(
       <div className="flex-1 min-h-0 flex flex-col justify-between gap-3">
-        <div className="flex-1 min-h-0 grid grid-cols-[0.8fr_1.6fr] gap-4">
-          <div
-            className="relative min-h-0 rounded-xl border overflow-hidden bg-black/40"
-            style={{ borderColor: `${ACCENT}55` }}
-          >
-            <ImageSlot asset={config.envelopeImage} label={config.envelopeImageAlt} fit="cover" />
-            {signature && (
-              <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/85 to-transparent text-center">
-                <span className="text-sm font-black tracking-wider text-white break-words">{signature.label}</span>
+        <div className="flex-1 min-h-0 grid grid-cols-[1.05fr_1.35fr] items-center gap-5">
+          <div className="flex items-center justify-center min-h-0">
+            <div
+              className="relative w-full aspect-[16/10] rounded-xl border overflow-hidden bg-[#071019] shadow-lg"
+              style={{ borderColor: `${ACCENT}55` }}
+            >
+              <ImageSlot asset={config.envelopeImage} label={config.envelopeImageAlt} fit="cover" />
+              <div className="absolute inset-x-8 top-[60%] -translate-y-1/2 flex items-center justify-center pointer-events-none px-4">
+                {signature ? (
+                  <span className="text-center text-sm lg:text-base font-bold italic font-serif text-[#241c11] leading-snug break-words drop-shadow-[0_1px_0_rgba(255,255,255,0.45)]">
+                    {signature.label}
+                  </span>
+                ) : (
+                  <span className="text-center text-xs font-mono tracking-widest text-[#7c6a4d]/80 uppercase">
+                    WYBIERZ PODPIS →
+                  </span>
+                )}
               </div>
-            )}
+            </div>
           </div>
           <ChoiceCardGrid
             accent={ACCENT}
@@ -420,7 +428,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
               if (!locked) setSignatureId(id);
             }}
             columns={2}
-            className="mt-4 self-start"
+            className="self-center"
           />
         </div>
         <ConfirmButton
