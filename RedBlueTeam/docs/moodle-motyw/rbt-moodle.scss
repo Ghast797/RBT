@@ -1,0 +1,519 @@
+// Red Blue Team – motyw Moodle (Boost, Moodle 5.3)
+// Wklejać w: Administracja > Wygląd > Motywy > Boost > Ustawienia zaawansowane > „Surowy SCSS”.
+// Paleta i fonty z redblueteam.pl (jasny i ciemny). Tryb ciemny = Bootstrap 5.3 [data-bs-theme="dark"],
+// przełącznik w head.html / footer.html (Dodatkowy HTML).
+
+// ---------- Tokeny ----------
+:root,
+[data-bs-theme="light"] {
+  --rbt-bg: #f4f7fb;
+  --rbt-bg2: #e9eef5;
+  --rbt-surface: rgba(255, 255, 255, 0.82);
+  --rbt-text: #11202e;
+  --rbt-muted: #5a6b7a;
+  --rbt-blue: #0d63c4;
+  --rbt-blue-rgb: 13, 99, 196;
+  --rbt-green: #0aa63f;
+  --rbt-green-rgb: 10, 166, 63;
+  --rbt-green-ink: #ffffff;
+  --rbt-red: #d61f43;
+  --rbt-border: rgba(13, 99, 196, 0.22);
+  --rbt-grid: rgba(13, 99, 196, 0.07);
+  --rbt-glow: none;
+  --rbt-logo: url("https://redblueteam.pl/img/logo-h-dark.png");
+
+  --rbt-font-head: "Rajdhani", "Exo 2", sans-serif;
+  --rbt-font-mono: "IBM Plex Mono", monospace;
+  --rbt-font-body: "Inter", system-ui, sans-serif;
+  --rbt-radius: 10px;
+
+  // Bootstrap 5.3 – baza trybu jasnego w kolorach RBT (blok jasny musi stać PRZED ciemnym)
+  --bs-body-bg: #f4f7fb;
+  --bs-body-bg-rgb: 244, 247, 251;
+  --bs-body-color: #11202e;
+  --bs-body-color-rgb: 17, 32, 46;
+  --bs-secondary-color: #5a6b7a;
+  --bs-tertiary-bg: #e9eef5;
+  --bs-tertiary-bg-rgb: 233, 238, 245;
+  --bs-border-color: rgba(13, 99, 196, 0.18);
+  --bs-link-color: #0d63c4;
+  --bs-link-color-rgb: 13, 99, 196;
+  --bs-link-hover-color: #0a4f9c;
+  --bs-link-hover-color-rgb: 10, 79, 156;
+  --bs-primary: #0d63c4;
+  --bs-primary-rgb: 13, 99, 196;
+}
+
+[data-bs-theme="dark"] {
+  --rbt-bg: #0a0a0f;
+  --rbt-bg2: #0d1b2a;
+  --rbt-surface: rgba(13, 27, 42, 0.62);
+  --rbt-text: #f0f0f0;
+  --rbt-muted: #9bb0c1;
+  --rbt-blue: #2e8be6;
+  --rbt-blue-rgb: 46, 139, 230;
+  --rbt-green: #39ff6a;
+  --rbt-green-rgb: 57, 255, 106;
+  --rbt-green-ink: #052b12;
+  --rbt-red: #ff3b5c;
+  --rbt-border: rgba(46, 139, 230, 0.22);
+  --rbt-grid: rgba(46, 139, 230, 0.07);
+  --rbt-glow: 0 0 18px rgba(57, 255, 106, 0.35);
+  --rbt-logo: url("https://redblueteam.pl/img/logo-h.png");
+
+  // Bootstrap 5.3 – baza trybu ciemnego w kolorach RBT
+  --bs-body-bg: #0a0a0f;
+  --bs-body-bg-rgb: 10, 10, 15;
+  --bs-body-color: #f0f0f0;
+  --bs-body-color-rgb: 240, 240, 240;
+  --bs-secondary-color: #9bb0c1;
+  --bs-secondary-bg: #0d1b2a;
+  --bs-tertiary-bg: #0b1520;
+  --bs-tertiary-bg-rgb: 11, 21, 32;
+  --bs-border-color: rgba(46, 139, 230, 0.22);
+  --bs-link-color: #2e8be6;
+  --bs-link-color-rgb: 46, 139, 230;
+  --bs-link-hover-color: #5aa6f0;
+  --bs-link-hover-color-rgb: 90, 166, 240;
+  --bs-primary: #2e8be6;
+  --bs-primary-rgb: 46, 139, 230;
+}
+
+// ---------- Tło i typografia ----------
+body {
+  font-family: var(--rbt-font-body);
+  background-color: var(--rbt-bg);
+  background-image:
+    linear-gradient(var(--rbt-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rbt-grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-attachment: fixed;
+}
+
+#page,
+#page.drawers,
+#topofscroll,
+.main-inner {
+  background: transparent !important;
+}
+
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
+  font-family: var(--rbt-font-head);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+#page-header h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 2.4rem;
+}
+
+#page-header .page-header-headings::before {
+  content: ">_ red team × blue team";
+  display: block;
+  font-family: var(--rbt-font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--rbt-green);
+  margin-bottom: 0.25rem;
+}
+
+// ---------- Pasek górny ----------
+.navbar.fixed-top {
+  background: var(--rbt-surface) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rbt-border);
+  box-shadow: none;
+}
+
+.navbar .navbar-brand {
+  width: 150px;
+  height: 40px;
+  background: var(--rbt-logo) left center / contain no-repeat;
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+.navbar .navbar-brand img {
+  display: none;
+}
+
+.primary-navigation .nav-link {
+  font-family: var(--rbt-font-head);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.primary-navigation .nav-link.active,
+.primary-navigation .nav-link[aria-current="true"] {
+  border-bottom-color: var(--rbt-green) !important;
+}
+
+// ---------- Przełącznik motywu (wstrzykiwany przez footer.html) ----------
+.rbt-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--rbt-border);
+  background: transparent;
+  color: var(--rbt-blue);
+  cursor: pointer;
+  align-self: center;
+}
+
+.rbt-theme-toggle:hover {
+  border-color: var(--rbt-green);
+  color: var(--rbt-green);
+  box-shadow: var(--rbt-glow);
+}
+
+.rbt-theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rbt-theme-toggle .rbt-moon { display: none; }
+[data-bs-theme="dark"] .rbt-theme-toggle .rbt-moon { display: block; }
+[data-bs-theme="dark"] .rbt-theme-toggle .rbt-sun { display: none; }
+
+// ---------- Druga nawigacja (Kurs / Ustawienia / ...) ----------
+.secondary-navigation .nav-tabs .nav-link {
+  font-family: var(--rbt-font-mono);
+  font-size: 0.85rem;
+}
+
+.secondary-navigation .nav-tabs .nav-link.active {
+  color: var(--rbt-blue);
+  border-bottom-color: var(--rbt-blue) !important;
+  background: rgba(var(--rbt-blue-rgb), 0.08);
+}
+
+// ---------- Sekcje kursu jako karty misji ----------
+.course-content ul.section-list {
+  counter-reset: rbt-mission;
+}
+
+// Moodle 5.3: karta sekcji to .section-item wewnątrz li.course-section
+.course-content li.course-section .section-item {
+  background: var(--rbt-surface);
+  border: 1px solid var(--rbt-border);
+  border-radius: var(--rbt-radius);
+}
+
+.course-content li.course-section .sectionname {
+  font-family: var(--rbt-font-head);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 1.5rem;
+}
+
+.course-content li.course-section .sectionname a,
+.course-content li.course-section .sectionname span {
+  color: var(--rbt-text);
+  text-decoration: none;
+}
+
+.course-content li.course-section:not(#section-0) {
+  counter-increment: rbt-mission;
+}
+
+.course-content li.course-section:not(#section-0) .section-item {
+  border-left: 3px solid var(--rbt-blue);
+}
+
+.course-content li.course-section:not(#section-0) .sectionname::before {
+  content: counter(rbt-mission, decimal-leading-zero);
+  font-family: var(--rbt-font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--rbt-green);
+  margin-right: 0.75rem;
+}
+
+// Aktywności w sekcji
+.activity-item {
+  background: transparent;
+  border: 1px solid var(--rbt-border) !important;
+  border-radius: 8px;
+}
+
+.activity-item:hover {
+  border-color: rgba(var(--rbt-blue-rgb), 0.5) !important;
+}
+
+.activityname a,
+.activityname .instancename {
+  font-weight: 600;
+}
+
+// Odznaki ukończenia
+.completion-info .btn-success,
+.badge.bg-success {
+  background: rgba(var(--rbt-green-rgb), 0.14) !important;
+  color: var(--rbt-green) !important;
+  border: 1px solid rgba(var(--rbt-green-rgb), 0.45) !important;
+  font-family: var(--rbt-font-mono);
+}
+
+// ---------- Indeks kursu (lewa szuflada) ----------
+.drawer {
+  background: var(--rbt-surface) !important;
+  backdrop-filter: blur(10px);
+  border-color: var(--rbt-border) !important;
+}
+
+.courseindex .courseindex-section-title .courseindex-link {
+  font-family: var(--rbt-font-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.courseindex .courseindex-item.pageitem {
+  background: rgba(var(--rbt-blue-rgb), 0.12);
+  border-radius: 6px;
+}
+
+// ---------- Przyciski ----------
+.btn {
+  font-family: var(--rbt-font-head);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: 6px;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--rbt-green);
+  --bs-btn-border-color: var(--rbt-green);
+  --bs-btn-color: var(--rbt-green-ink);
+  --bs-btn-hover-bg: var(--rbt-green);
+  --bs-btn-hover-border-color: var(--rbt-green);
+  --bs-btn-hover-color: var(--rbt-green-ink);
+  --bs-btn-active-bg: var(--rbt-green);
+  --bs-btn-active-border-color: var(--rbt-green);
+  --bs-btn-active-color: var(--rbt-green-ink);
+  text-transform: uppercase;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: var(--rbt-glow);
+}
+
+.btn-outline-primary,
+.btn-secondary {
+  --bs-btn-color: var(--rbt-blue);
+  --bs-btn-border-color: var(--rbt-blue);
+  --bs-btn-bg: transparent;
+  --bs-btn-hover-bg: rgba(var(--rbt-blue-rgb), 0.1);
+  --bs-btn-hover-color: var(--rbt-blue);
+  --bs-btn-hover-border-color: var(--rbt-blue);
+}
+
+// ---------- Karty (Kokpit, bloki) ----------
+.card,
+.block {
+  background: var(--rbt-surface);
+  border: 1px solid var(--rbt-border);
+  border-radius: var(--rbt-radius);
+}
+
+// ---------- Stopka ----------
+#page-footer {
+  background: var(--rbt-bg2) !important;
+  border-top: 1px solid var(--rbt-border);
+}
+
+// ---------- Strona logowania (Moodle 5.3: dwie kolumny) ----------
+// Lewa kolumna zawsze ciemna (klimat HACKERS.OS), prawa idzie za trybem jasny/ciemny.
+// Teksty lewej kolumny podmienia footer.html.
+body.pagelayout-login #page {
+  background: transparent;
+}
+
+body.pagelayout-login .login-layout-left {
+  background-color: #07070b !important;
+  background-image:
+    radial-gradient(ellipse at 30% 20%, rgba(46, 139, 230, 0.28), transparent 55%),
+    radial-gradient(ellipse at 75% 85%, rgba(255, 59, 92, 0.18), transparent 55%),
+    linear-gradient(rgba(46, 139, 230, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 139, 230, 0.08) 1px, transparent 1px) !important;
+  background-size: auto, auto, 40px 40px, 40px 40px !important;
+  border-right: 1px solid rgba(46, 139, 230, 0.25);
+}
+
+body.pagelayout-login .login-layout-left::before,
+body.pagelayout-login .login-layout-left::after {
+  display: none !important;
+}
+
+body.pagelayout-login .login-layout-left-content {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  color: #f0f0f0;
+  max-width: 480px;
+  text-align: left;
+}
+
+body.pagelayout-login .rbt-login-emblem {
+  display: block;
+  width: 150px;
+  height: 190px;
+  margin: 0 0 1.5rem;
+  background: url("https://redblueteam.pl/img/logo.png") left center / contain no-repeat;
+  filter: drop-shadow(0 0 24px rgba(46, 139, 230, 0.35));
+}
+
+body.pagelayout-login .rbt-login-eyebrow {
+  font-family: var(--rbt-font-mono);
+  font-size: 0.85rem;
+  color: #39ff6a;
+  margin-bottom: 0.75rem;
+}
+
+body.pagelayout-login .login-layout-left-content h1 {
+  font-family: var(--rbt-font-head);
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  margin-bottom: 1rem !important;
+}
+
+body.pagelayout-login .login-layout-left-content p {
+  color: #9bb0c1;
+  margin-left: 0 !important;
+}
+
+body.pagelayout-login .login-layout-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: flex-start;
+}
+
+body.pagelayout-login .login-layout-stat {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(46, 139, 230, 0.3);
+  border-radius: 8px;
+  background: rgba(13, 27, 42, 0.6);
+  text-align: left;
+}
+
+body.pagelayout-login .login-layout-stat-value {
+  display: block;
+  font-family: var(--rbt-font-head);
+  font-size: 1.1rem;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #39ff6a;
+}
+
+body.pagelayout-login .login-layout-stat span {
+  font-family: var(--rbt-font-mono);
+  font-size: 0.8rem;
+  color: #9bb0c1;
+}
+
+body.pagelayout-login .login-layout-stat.rbt-red .login-layout-stat-value { color: #ff3b5c; }
+body.pagelayout-login .login-layout-stat.rbt-blue .login-layout-stat-value { color: #2e8be6; }
+
+// Prawa kolumna – karta logowania
+body.pagelayout-login .login-container {
+  background: var(--rbt-surface);
+  border: 1px solid var(--rbt-border);
+  border-radius: var(--rbt-radius);
+  backdrop-filter: blur(10px);
+  padding: 2.5rem !important;
+  max-width: 460px;
+}
+
+body.pagelayout-login .login-container::before {
+  content: "";
+  display: block;
+  height: 48px;
+  margin-bottom: 1.75rem;
+  background: var(--rbt-logo) left center / contain no-repeat;
+}
+
+body.pagelayout-login .loginform h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+body.pagelayout-login .loginform .form-label {
+  font-family: var(--rbt-font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rbt-muted);
+}
+
+body.pagelayout-login .loginform .form-control {
+  background-color: var(--rbt-bg);
+  border-color: var(--rbt-border);
+  min-height: 44px;
+}
+
+body.pagelayout-login .loginform .form-control:focus {
+  border-color: var(--rbt-blue);
+  box-shadow: 0 0 0 3px rgba(var(--rbt-blue-rgb), 0.2);
+}
+
+body.pagelayout-login .login-input-icon {
+  color: var(--rbt-blue);
+}
+
+body.pagelayout-login #loginbtn {
+  min-height: 46px;
+  font-size: 1rem;
+}
+
+// Telefon: mniejszy margines karty i miejsce na pływający przełącznik
+@media (max-width: 575.98px) {
+  body.pagelayout-login .login-container {
+    padding: 1.5rem !important;
+  }
+
+  body.pagelayout-login .login-layout-right-content {
+    padding-top: 4rem;
+  }
+}
+
+// Przełącznik motywu na stronach bez paska użytkownika (logowanie)
+.rbt-theme-toggle.rbt-theme-toggle--floating {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1030;
+  background: var(--rbt-surface);
+  backdrop-filter: blur(10px);
+}
+
+// ---------- Poprawki trybu ciemnego ----------
+// Moodle w trybie ciemnym podkreśla linki w treści (dostępność). Zostawiamy to w tekście,
+// ale zdejmujemy z nazw sekcji i aktywności, które i tak wyglądają na klikalne.
+[data-bs-theme="dark"] .course-content .sectionname a,
+[data-bs-theme="dark"] .activityname a,
+[data-bs-theme="dark"] .courseindex a {
+  text-decoration: none !important;
+}
+
+[data-bs-theme="dark"] .course-content .sectionname a:hover,
+[data-bs-theme="dark"] .activityname a:hover {
+  text-decoration: underline !important;
+}
+
+[data-bs-theme="dark"] .icons-collapse-expand {
+  background: rgba(var(--rbt-blue-rgb), 0.14);
+  color: var(--rbt-blue);
+}

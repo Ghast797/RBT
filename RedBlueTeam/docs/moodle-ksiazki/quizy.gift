@@ -1,0 +1,122 @@
+// Pytania quizów kursu FreeVolt (format GIFT, import do banku pytań Moodle).
+// Źródło: slajdy „Co powinieneś zapamiętać?" każdej misji. Do recenzji właściciela.
+
+$CATEGORY: $course$/top/Misja 1 – Petro Log
+
+::M1-1 Publiczne posty::Dlaczego publikowanie postów z biura i relacji z urlopu jest ryzykowne?{
+=Pozwala atakującemu zbudować profil pracownika i przygotować spersonalizowany atak#Dokładnie tak. Takie informacje to paliwo dla OSINT i spear-phishingu.
+~Od razu ujawnia hasła do kont firmowych#Posty nie zawierają haseł, ale dają kontekst do ataku.
+~Spowalnia komputer i sieć firmową#Nie ma to związku z bezpieczeństwem.
+~Jest zawsze zabronione przez prawo#Chodzi o ryzyko, nie o zakaz prawny.
+}
+
+::M1-2 Spear-phishing::Czym spear-phishing różni się od masowego spamu?{
+=Jest wymierzony w konkretną osobę i wykorzystuje jej realne relacje oraz zainteresowania#Dlatego łatwiej uśpić czujność ofiary.
+~Jest wysyłany do jak największej liczby losowych adresów#To cecha zwykłego spamu.
+~Zawsze zawiera załącznik z wirusem#Może zawierać tylko link albo prośbę o dane.
+~Można go rozpoznać po błędach ortograficznych#Spersonalizowane wiadomości bywają pisane bezbłędnie.
+}
+
+::M1-3 Weryfikacja nadawcy::Dostajesz nieoczekiwany link od współpracownika. Co robisz?{
+=Weryfikuję to innym kanałem, na przykład dzwonię lub pytam osobiście#Nadawca mógł zostać podrobiony przez spoofing albo typosquatting.
+~Klikam, bo adres nadawcy wygląda znajomo#Adres można podrobić lub zarejestrować łudząco podobną domenę.
+~Odpisuję na maila z pytaniem, czy to bezpieczne#Odpowiedź trafi do atakującego.
+~Przesyłam link dalej do zespołu, żeby ktoś sprawdził#Rozsyłasz potencjalne zagrożenie.
+}
+
+::M1-4 Adres linku::Jak sprawdzić, dokąd naprawdę prowadzi link, zanim w niego klikniesz?{
+=Najechać kursorem i odczytać adres docelowy w rogu okna przeglądarki#Widoczny tekst linku może być inny niż adres docelowy.
+~Przeczytać tekst linku w treści wiadomości#Tekst linku łatwo ustawić na inny adres.
+~Sprawdzić, czy link zaczyna się od https#https nie świadczy o uczciwości strony.
+~Kliknąć i obserwować, czy strona się wczytuje#Samo kliknięcie może już być szkodliwe.
+}
+
+$CATEGORY: $course$/top/Misja 2 – CarbonFlow
+
+::M2-1 Antywirus::Co jest pierwszą linią obrony przed atakami wirusów na stacji roboczej?{
+=Dobre oprogramowanie antywirusowe#Ogranicza szkody i powiadamia o próbie infekcji, co pozwala administratorowi szybko zareagować.
+~Wyłączenie sieci Wi-Fi na noc#Nie chroni przed infekcją w ciągu dnia.
+~Zmiana tapety na ekranie blokady#Nie ma wpływu na bezpieczeństwo.
+~Częste restarty komputera#Restart nie usuwa złośliwego oprogramowania.
+}
+
+::M2-2 Odnośniki w mailach::Dostajesz maila z odnośnikiem i nie jesteś pewny, czy jest bezpieczny. Co robisz?{
+=Pytam administratora i sprawdzam, czy taka wiadomość faktycznie została wysłana do pracowników#Sprawdź też, czy nadawca jest Ci znany.
+~Klikam, a potem sprawdzam, czy komputer działa normalnie#Infekcja może działać niezauważalnie.
+~Przekazuję maila znajomym spoza firmy z pytaniem o zdanie#Narażasz kolejne osoby i ujawniasz treść firmowych wiadomości.
+~Ignoruję ostrzeżenia, bo firma ma antywirus#Antywirus nie zastąpi ostrożności.
+}
+
+::M2-3 Domena nadawcy::Wiadomość wydaje się podejrzana. Na co przede wszystkim zwracasz uwagę?{
+=Na domenę i cały adres, z którego została wysłana#Podrobione lub podobne domeny to częsta metoda atakujących.
+~Na to, czy wiadomość ma ładne logo#Logo łatwo skopiować.
+~Na to, czy w temacie jest słowo „pilne"#Pilność to technika nacisku, a nie dowód wiarygodności.
+~Na rozmiar wiadomości#Rozmiar nie świadczy o bezpieczeństwie.
+}
+
+::M2-4 Wyciek danych::Co oznacza założenie, że dane kontaktowe pracowników mogły ulec wyciekowi?{
+=Trzeba stosować dodatkowe środki ostrożności, bo atakujący mogą znać nazwiska i adresy#Dotyczy to zwłaszcza wiadomości podszywających się pod znane osoby.
+~Nic się nie zmienia, bo adresy e-mail nie są cenne#Adresy i nazwiska ułatwiają ataki ukierunkowane.
+~Wszystkie maile można bezpiecznie otwierać#Wręcz przeciwnie.
+~Trzeba natychmiast wyłączyć pocztę firmową na stałe#Nieproporcjonalna reakcja.
+}
+
+$CATEGORY: $course$/top/Misja 3 – O&L Company
+
+::M3-1 Podejrzane pliki::Otrzymujesz archiwum .zip od nieznanego nadawcy. Co robisz?{
+=Proszę o pomoc administratora lub dział IT#Wirusy mogą być ukryte w dowolnym pliku, zwłaszcza w archiwach.
+~Otwieram je, bo antywirus i tak wszystko wykryje#Nie daje stuprocentowej ochrony.
+~Rozpakowuję je na pulpicie i oglądam zawartość#Rozpakowanie może uruchomić złośliwy kod.
+~Wysyłam je kolegom, żeby też sprawdzili#Rozprzestrzeniasz zagrożenie.
+}
+
+::M3-2 Pendrive::Na parkingu leży pendrive z napisem „Płace". Co robisz?{
+=Nie wkładam go do komputera i oddaję do działu IT#Każdy nośnik pamięci to potencjalne ryzyko infekcji.
+~Sprawdzam jego zawartość na swoim służbowym laptopie#Samo podłączenie może uruchomić wirusa.
+~Wkładam go do prywatnego komputera, żeby chronić firmę#Narażasz własne dane.
+~Formatuję go na swoim komputerze i używam#Nie wiesz, co zrobił w momencie podłączenia.
+}
+
+::M3-3 Informacje w sieci::Dlaczego informacje o Tobie dostępne w sieci mogą być groźne?{
+=Cyberprzestępcy wykorzystują je do ataków socjotechnicznych#Wiedza o Tobie pomaga zdobyć Twoje zaufanie.
+~Nie są groźne, jeśli profil jest prywatny od roku#Dane mogły już zostać zebrane.
+~Zagrażają tylko osobom publicznym#Dotyczy każdego pracownika.
+~Wystarczy, że ukryję swój numer telefonu#To tylko jedna z wielu informacji.
+}
+
+::M3-4 Obca osoba::Nieznana osoba w firmie zna Twoje imię, stanowisko i hobby. Jak reagujesz?{
+=Zachowuję ostrożność i weryfikuję jej tożsamość przez zaufany kanał#Informacje o Tobie mogły zostać zebrane z internetu.
+~Ufam jej, skoro dużo o mnie wie#Wiedza o Tobie nie dowodzi uczciwych zamiarów.
+~Podaję jej dostęp do komputera, żeby załatwić sprawę szybciej#To typowy scenariusz ataku socjotechnicznego.
+~Dzielę się hasłem do systemu, bo to ktoś z firmy#Nigdy nie udostępniaj hasła.
+}
+
+$CATEGORY: $course$/top/Misja 4 – Energy Rock
+
+::M4-1 Ransomware::Co robi ransomware?{
+=Szyfruje dane i żąda okupu za ich odblokowanie#To zagrożenie dla każdej instytucji.
+~Tylko wyświetla reklamy na komputerze#To adware.
+~Przyspiesza działanie systemu#To nieprawda.
+~Wyłącznie podsłuchuje rozmowy telefoniczne#To inna kategoria zagrożeń.
+}
+
+::M4-2 Backup::Który backup jest skuteczny?{
+=Taki, który da się odtworzyć#Od czasu do czasu trzeba sprawdzić, czy przywracanie działa.
+~Każdy, który został wykonany kiedykolwiek#Bez testu odtwarzania nie wiesz, czy zadziała.
+~Przechowywany na tym samym dysku co oryginał#Awaria lub ransomware zniszczy oba egzemplarze.
+~Wykonany raz, na początku roku#Backupy trzeba robić regularnie.
+}
+
+::M4-3 Zasada kopii::Jaką politykę kopii zapasowych zaleca slajd o backupach?{
+=Dwie kopie lokalne i jedna kopia zdalna#Dzięki temu pojedyncza awaria lub atak nie zniszczy wszystkich danych.
+~Jedna kopia lokalna wystarczy#Brak zapasu na wypadek awarii.
+~Wyłącznie kopie w tym samym pomieszczeniu#Pożar lub kradzież zniszczy wszystkie.
+~Kopii nie trzeba robić, jeśli system jest aktualny#Aktualizacje nie zastępują backupu.
+}
+
+::M4-4 Menedżer haseł::Dlaczego warto używać menedżera haseł?{
+=Generuje silne hasła i przechowuje je w bezpiecznej bazie danych#Nie musisz ich pamiętać ani powtarzać.
+~Pozwala używać jednego hasła wszędzie#To jedna z najgorszych praktyk.
+~Wysyła hasła do znajomych na prośbę#Nie o to chodzi.
+~Wyłącza potrzebę aktualizacji systemu#Aktualizacje nadal są konieczne.
+}
