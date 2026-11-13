@@ -1,3 +1,4 @@
+import { scormStatus, DEFAULT_PASSING_SCORE } from '../core/scoring';
 // xAPI Statement Helper & Mock LRS Emitter
 
 export interface XApiActor {
@@ -38,9 +39,10 @@ export function createMissionCompletionStatement(
   actor: XApiActor = { name: "Agent Trainee", mbox: "mailto:trainee@hackers.os" },
   scoreRaw: number = 100,
   decisionsSummary: string = "All 8 tactical choices executed successfully",
-  missionMeta?: { id?: string; title?: string; description?: string }
+  missionMeta?: { id?: string; title?: string; description?: string },
+  passingScore: number = DEFAULT_PASSING_SCORE
 ): XApiStatement {
-  const isPassed = scoreRaw >= 80;
+  const isPassed = scormStatus(scoreRaw, passingScore) === 'passed';
   const activityId = missionMeta?.id 
     ? `https://cybersec-training.internal/activities/${missionMeta.id}`
     : "https://cybersec-training.internal/activities/mission-unknown";

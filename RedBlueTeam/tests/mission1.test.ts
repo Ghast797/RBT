@@ -33,7 +33,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
     expect(mission?.mission.targetCompany).toBe('PetroLog');
     expect(mission?.mission.rewardBtc).toBe(2.52);
     expect(mission?.mission.decisionCount).toBe(4);
-    expect(mission?.mission.passingScore).toBe(75);
+    expect(mission?.mission.passingScore).toBe(70);
     expect(mission?.step6.choices.length).toBe(4);
     // Ogólna baza wiedzy jest w Moodle; debrief niesie lekcje atak/obrona przy każdej decyzji.
     expect(mission?.step6.educationalSlides).toBeUndefined();

@@ -8,7 +8,7 @@
     "accentColor": "#00ff66",
     "rewardBtc": 2.52,
     "maxScore": 100,
-    "passingScore": 75,
+    "passingScore": 70,
     "decisionCount": 4,
     "targetCompany": "PetroLog",
     "description": "Scenariusz szkoleniowy SCORM symulujący biały wywiad (OSINT), profilowanie psychologiczne pracownika i atak spear-phishingowy w celu infiltracji przedsiębiorstwa logistycznego PetroLog."

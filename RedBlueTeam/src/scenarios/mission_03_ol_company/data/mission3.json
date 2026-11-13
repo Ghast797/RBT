@@ -10,7 +10,7 @@
     "maxScore": 100,
     "decisionCount": 6,
     "targetCompany": "O&L Company",
-    "passingScore": 80
+    "passingScore": 70
   },
   "intro": {
     "callerName": "BYTE_MASTER",
