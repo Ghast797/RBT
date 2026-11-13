@@ -30,7 +30,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
   const selected = config.options.find((o) => o.id === selectedId);
 
   const handleSelect = (id: string) => {
-    if (isConfirmed || isRejected(rejected, config.options.find((o) => o.id === id)?.label ?? '')) return;
+    if (isConfirmed || isRejected(rejected, id)) return;
     sounds.playClick();
     setSelectedId(id);
   };
@@ -43,6 +43,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
       rejectDecision({
         num: config.decisionNum,
         question: config.question,
+        optionId: selected.id,
         answer: selected.label,
         tier: selected.tier,
         mentorLine: selected.reject.mentorLine
@@ -88,8 +89,8 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
             <ChoiceTile
               key={option.id}
               accent={accent}
-              state={isRejected(rejected, option.label) ? 'wrong' : selectedId === option.id ? 'selected' : 'idle'}
-              disabled={isConfirmed || isRejected(rejected, option.label)}
+              state={isRejected(rejected, option.id) ? 'wrong' : selectedId === option.id ? 'selected' : 'idle'}
+              disabled={isConfirmed || isRejected(rejected, option.id)}
               markerPosition="corner"
               onClick={() => handleSelect(option.id)}
               className="p-3.5 h-full"

@@ -87,6 +87,8 @@ export interface NegotiationTurn {
 
 /** Próba decyzji odrzucona przez mentora (B2): kara naliczona, decyzja nadal otwarta. */
 export interface RejectedAttempt {
+  /** `id` odrzuconej opcji — po nim blokujemy karty i wykrywamy powtórne odrzucenie. */
+  optionId: string;
   /** Odpowiedź (etykieta opcji), którą mentor odrzucił. */
   answer: string;
   /** Poziom odrzuconej opcji — z niego silnik liczy karę za próbę. */
@@ -181,7 +183,9 @@ export interface DecisionReport {
 export interface DecisionRejection {
   num: number;
   question: string;
-  /** Odpowiedź (etykieta opcji) odrzucona przez mentora. */
+  /** `id` odrzuconej opcji. */
+  optionId: string;
+  /** Odpowiedź (etykieta albo `reportAnswer`) odrzucona przez mentora — do raportu. */
   answer: string;
   tier: ChoiceOutcome;
   mentorLine: string;

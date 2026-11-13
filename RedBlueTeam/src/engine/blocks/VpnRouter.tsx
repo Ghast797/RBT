@@ -17,8 +17,8 @@ import { useMissionStore } from '../store/useMissionStore';
 import { sounds } from '../audio/soundEffects';
 import { ModuleLoader } from '../components/ModuleLoader';
 import { TimeJump } from '../components/TimeJump';
-import { reportAnswerOf } from '../core/report';
-import type { BlockProps, ChoiceOutcome, DecisionReport } from '../types/mission';
+import { reportAnswerOf, failFieldsOf } from '../core/report';
+import type { BlockProps, ChoiceOutcome, DecisionReport, DecisionRejection } from '../types/mission';
 
 function parseOctets(ip?: string): number[] {
   if (!ip) return [127, 0, 0, 1];
@@ -34,6 +34,10 @@ export interface VpnSenderOption {
   feedback: string;
   /** Odpowiedź do raportu, gdy inna niż etykieta (domyślnie `label`). */
   reportAnswer?: string;
+  /** B2: mentor odrzuca ten adres nadawcy (zob. docs/scenario-engine.md, 6.1). */
+  reject?: { mentorLine: string };
+  failTitle?: string;
+  failText?: string;
 }
 
 export interface VpnRouterConfig {
@@ -139,7 +143,26 @@ export function vpnSenderReport(
     question: sender.question,
     answer: sender.includeIpInAnswer ? `${ip} + ${answer}` : answer,
     tier: option.tier,
-    feedback: option.feedback
+    feedback: option.feedback,
+    ...failFieldsOf(option, option.tier)
+  };
+}
+
+/** Odrzucenie adresu nadawcy przez mentora (B2) albo `null`; odpowiedź jak w raporcie (`IP + nadawca`). */
+export function vpnSenderRejection(
+  sender: NonNullable<VpnRouterConfig['sender']>,
+  option: VpnSenderOption,
+  ip: string
+): DecisionRejection | null {
+  if (!option.reject) return null;
+  const report = vpnSenderReport(sender, option, ip);
+  return {
+    num: report.num,
+    question: report.question,
+    optionId: option.id,
+    answer: report.answer,
+    tier: option.tier,
+    mentorLine: option.reject.mentorLine
   };
 }
 
@@ -161,6 +184,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   onComplete
 }) => {
   const accent = useMissionStore((s) => s.activeMission.mission?.accentColor) || '#a855f7';
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
 
   // Normalizacja konfiguracji (płaska lub zagnieżdżona w config.vpn)
   const step = resolveVpnStep(config);
@@ -278,6 +302,13 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
   const handleSender = () => {
     if (!sender || !config.sender) return;
     sounds.playClick();
+    // B2: mentor odrzuca adres — zostajemy na wyborze, opcja się blokuje.
+    const rejection = vpnSenderRejection(config.sender, sender, currentIp);
+    if (rejection) {
+      rejectDecision(rejection);
+      setSenderId(null);
+      return;
+    }
     onDecision(vpnSenderReport(config.sender, sender, currentIp));
 
     if (sender.tier !== 'critical') {
@@ -335,6 +366,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
           label="WYBIERZ ADRES"
           mono
           options={senderOptions}
+          decisionNum={config.sender.decisionNum}
           selectedId={senderId}
           onSelect={(id) => {
             sounds.playClick();

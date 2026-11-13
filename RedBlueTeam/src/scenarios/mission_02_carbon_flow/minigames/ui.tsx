@@ -3,6 +3,7 @@ import { Image as ImageIcon } from 'lucide-react';
 import { resolveFormImage, FORM_ASSETS_DIR } from './formAssets';
 import { ChoiceZone, ChoiceTile, ChoiceCardGrid, ChoiceRows } from '../../../engine/components/ChoiceZone';
 import { sounds } from '../../../engine/audio/soundEffects';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
 import type { ChoiceOption } from '../../../engine/types/mission';
 
 /**
@@ -24,13 +25,15 @@ export const OptionCards: React.FC<{
   label?: string;
   mono?: boolean;
   layout?: 'cards' | 'rows';
-}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false, layout = 'cards' }) => {
+  /** Numer decyzji: opcje odrzucone przez mentora (B2) są blokowane. */
+  decisionNum?: number;
+}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false, layout = 'cards', decisionNum }) => {
   const handle = (id: string) => {
     sounds.playClick();
     onSelect(id);
   };
   return layout === 'rows' ? (
-    <ChoiceRows accent={accent} options={options} selectedId={selectedId} onSelect={handle} label={label} mono={mono} />
+    <ChoiceRows accent={accent} options={options} selectedId={selectedId} onSelect={handle} label={label} mono={mono} decisionNum={decisionNum} />
   ) : (
     <ChoiceCardGrid
       accent={accent}
@@ -39,6 +42,7 @@ export const OptionCards: React.FC<{
       onSelect={handle}
       label={label}
       mono={mono}
+      decisionNum={decisionNum}
     />
   );
 };
@@ -83,14 +87,20 @@ export const ImageOptionCards: React.FC<{
   selectedId: string | null;
   onSelect: (id: string) => void;
   label?: string;
-}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO' }) => (
+  /** Numer decyzji: opcje odrzucone przez mentora (B2) są blokowane. */
+  decisionNum?: number;
+}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', decisionNum }) => {
+  const rejected = useRejectedAttempts(decisionNum);
+  return (
   <ChoiceZone accent={accent} label={label}>
+    <MentorRejectNotice attempts={rejected} />
     <div className="grid grid-cols-3 gap-3">
       {options.map((opt) => (
         <ChoiceTile
           key={opt.id}
           accent={accent}
-          state={selectedId === opt.id ? 'selected' : 'idle'}
+          state={isRejected(rejected, opt.id) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
+          disabled={isRejected(rejected, opt.id)}
           markerPosition="corner"
           onClick={() => {
             sounds.playClick();
@@ -109,7 +119,8 @@ export const ImageOptionCards: React.FC<{
       ))}
     </div>
   </ChoiceZone>
-);
+  );
+};
 
 /** Karty w siatce: duża, wyśrodkowana nazwa i krótka, neutralna definicja pod spodem. */
 export const NameCards: React.FC<{

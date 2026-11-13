@@ -17,7 +17,8 @@ import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
 import type { BlockProps } from '../../../engine/types/mission';
 import { USB_STATE_KEY, type DroneConfig, type UsbState } from './types';
-import { buildReport } from '../../../engine/core/report';
+import { buildReport, submitDecision } from '../../../engine/core/report';
+import { MentorRejectNotice, isRejected, useRejectedAmong } from '../../../engine/components/MentorRejectNotice';
 import { DroneMap } from './DroneMap';
 import { DroneCamera } from './DroneCamera';
 import {
@@ -103,6 +104,8 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
   const [phase, setPhase] = useState<DronePhase>('activate');
   const [prepared, setPrepared] = useState(false);
   const [selectedLocId, setSelectedLocId] = useState<string | null>(null);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
+  const rejectedLocs = useRejectedAmong(config.address.decisionNum, config.address.options);
   const [flight, setFlight] = useState(0);
   const [aim, setAim] = useState<Point | null>(null);
   const [locked, setLocked] = useState(false);
@@ -158,8 +161,12 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
   const handleLocConfirm = () => {
     const option = config.address.options.find((o) => o.id === selectedLocId);
     if (!option || locked) return;
+    // B2: mentor odrzuca adres — zostajemy na mapie, pin się blokuje.
+    if (submitDecision(config.address, option, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedLocId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision(buildReport(config.address, option));
     if (option.tier === 'critical') {
       setLocked(true);
       return;
@@ -319,15 +326,18 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
       <div className={shell}>
         {header(flying ? texts.flightCaption : texts.tasks.map)}
         <ChoiceZone accent={accent} label={config.address.question} className="flex-1 min-h-0 flex flex-col">
+          <MentorRejectNotice attempts={rejectedLocs} />
           <div className="flex-1 min-h-0">
             <DroneMap
               accent={accent}
               locations={config.mapLocations}
               selectedId={selectedLocId}
+              blockedIds={rejectedLocs.map((a) => a.optionId)}
               onSelect={
                 flying || locked
                   ? undefined
                   : (id) => {
+                      if (isRejected(rejectedLocs, id)) return;
                       sounds.playClick();
                       setSelectedLocId(id);
                     }

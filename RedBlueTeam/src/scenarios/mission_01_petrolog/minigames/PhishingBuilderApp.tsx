@@ -11,6 +11,9 @@ import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { shuffled } from '../../../engine/core/shuffle';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
+import { submitDecision } from '../../../engine/core/report';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingBuilderConfig } from './types';
 import { WebsitePreview } from './WebsitePreview';
@@ -58,6 +61,10 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
     [currentPayloadConfig]
   );
 
+  // B2: odrzucone przez mentora opcje bieżącej decyzji (D1 na ekranie domeny, D2 na ekranie pliku).
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
+  const rejected = useRejectedAttempts(screen === 'domain' ? config.domain.decisionNum : currentPayloadConfig.decisionNum);
+
   const selectedDomain = config.domain.options.find((o) => o.id === selectedDomainId);
   const selectedPayload = currentPayloadConfig.options.find((o) => o.id === selectedPayloadId);
 
@@ -71,12 +78,14 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
     onSelect: (id: string) => void
   ) => (
     <ChoiceZone accent={pink} label="WYBIERZ JEDNO">
+      <MentorRejectNotice attempts={rejected} />
       <div className="flex flex-col gap-3">
         {options.map((opt) => (
           <ChoiceTile
             key={opt.id}
             accent={pink}
-            state={selectedId === opt.id ? 'selected' : 'idle'}
+            state={isRejected(rejected, opt.id) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
+            disabled={isRejected(rejected, opt.id)}
             markerPosition="corner"
             onClick={() => {
               sounds.playClick();
@@ -214,14 +223,11 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
 
   const handleDomainConfirm = () => {
     if (!selectedDomain) return;
+    if (submitDecision({ decisionNum: config.domain.decisionNum, question: config.domain.question }, selectedDomain, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedDomainId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.domain.decisionNum,
-      question: config.domain.question,
-      answer: selectedDomain.label,
-      tier: selectedDomain.tier,
-      feedback: selectedDomain.feedback
-    });
     if (selectedDomain.tier !== 'critical') {
       setScreen('load_payload');
     }
@@ -229,14 +235,11 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
 
   const handlePayloadConfirm = () => {
     if (!selectedPayload) return;
+    if (submitDecision({ decisionNum: currentPayloadConfig.decisionNum, question: currentPayloadConfig.question }, selectedPayload, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedPayloadId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: currentPayloadConfig.decisionNum,
-      question: currentPayloadConfig.question,
-      answer: selectedPayload.label,
-      tier: selectedPayload.tier,
-      feedback: selectedPayload.feedback
-    });
     if (selectedPayload.tier !== 'critical') {
       setScreen('load_injection');
     }

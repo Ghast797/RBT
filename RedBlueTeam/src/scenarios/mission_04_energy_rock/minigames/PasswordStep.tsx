@@ -20,8 +20,12 @@ export const PasswordStep: React.FC<{
   selected: string[];
   onSelected: (ids: string[]) => void;
   locked: boolean;
+  /** Komunikat mentora (B2) nad ustawieniami. */
+  notice?: React.ReactNode;
+  /** Zatwierdzenie zablokowane (ta konfiguracja została już odrzucona przez mentora). */
+  confirmBlocked?: boolean;
   onConfirm: () => void;
-}> = ({ config, accent, length, onLength, selected, onSelected, locked, onConfirm }) => {
+}> = ({ config, accent, length, onLength, selected, onSelected, locked, notice, confirmBlocked = false, onConfirm }) => {
   const tiles = useShuffled(config.tiles);
 
   const move = (id: string, toFrame: boolean) => {
@@ -73,6 +77,7 @@ export const PasswordStep: React.FC<{
   return (
     <>
       <div className="flex-1 min-h-0 flex flex-col gap-3">
+        {notice}
         <div className="text-sm font-black tracking-widest text-white">{config.heading}</div>
         <div className="flex items-center gap-4 rounded-xl border bg-[#08101a] px-4 py-2.5" style={{ borderColor: `${accent}55` }}>
           <span className="text-xs font-black tracking-widest shrink-0" style={{ color: accent }}>
@@ -121,7 +126,7 @@ export const PasswordStep: React.FC<{
           <span className="font-mono text-base text-white break-all whitespace-pre">{preview || ' '}</span>
         </div>
       </div>
-      <ConfirmButton accent={accent} label={config.confirmLabel} enabled={selected.length >= 1 && !locked} onClick={onConfirm} />
+      <ConfirmButton accent={accent} label={config.confirmLabel} enabled={selected.length >= 1 && !locked && !confirmBlocked} onClick={onConfirm} />
       <DragGhost dragging={drag.dragging}>{dragged?.label}</DragGhost>
     </>
   );

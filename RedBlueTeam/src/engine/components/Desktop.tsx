@@ -12,7 +12,7 @@ import {
   RefreshCw,
   Play
 } from 'lucide-react';
-import { useMissionStore, type WindowId } from '../store/useMissionStore';
+import { useMissionStore, DEFAULT_FAIL_TITLE, type WindowId } from '../store/useMissionStore';
 import { BootSequence } from './BootSequence';
 import { ChatApp } from '../apps/ChatApp';
 import { AppHost, renderAppIcon } from '../registry/appRegistry';
@@ -409,7 +409,10 @@ export const Desktop: React.FC = () => {
 
             <div className="space-y-1">
               <div className="text-xs font-black tracking-widest text-[#ff3366] uppercase animate-pulse">
-                ⚠️ OPERACJA SPALONA
+                {/* Nagłówek nie może przeczyć własnemu tytułowi porażki (np. „KOPERTA TRAFIŁA POD ZŁY ADRES”). */}
+                {!detectionReason?.title || detectionReason.title === DEFAULT_FAIL_TITLE
+                  ? '⚠️ OPERACJA SPALONA'
+                  : '⚠️ OPERACJA PRZERWANA'}
               </div>
               <h2 className="text-lg sm:text-xl font-black text-white tracking-wide">
                 {detectionReason?.title || "ZOSTAŁEŚ WYKRYTY!"}

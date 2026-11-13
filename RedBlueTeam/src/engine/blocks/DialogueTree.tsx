@@ -104,12 +104,13 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
 
     // B2: mentor odrzuca tę odpowiedź — kara za próbę, rozmowa stoi w miejscu, odpowiedź się blokuje.
     if (option.reject && currentNum !== undefined) {
-      if (isRejected(rejected, option.label)) return;
+      if (isRejected(rejected, option.id)) return;
       rejectDecision({
         num: currentNum,
         question: aggregate
           ? config.question || firstNode.incoming
           : currentNode.question || currentNode.incoming,
+        optionId: option.id,
         answer: option.label,
         tier: option.tier,
         mentorLine: option.reject.mentorLine
@@ -223,8 +224,8 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
               <ChoiceTile
                 key={option.id}
                 accent={accent}
-                state={isRejected(rejected, option.label) ? 'wrong' : 'idle'}
-                disabled={isRejected(rejected, option.label)}
+                state={isRejected(rejected, option.id) ? 'wrong' : 'idle'}
+                disabled={isRejected(rejected, option.id)}
                 onClick={() => handleChoose(option.id)}
                 className="px-3.5 py-2.5 items-center"
               >

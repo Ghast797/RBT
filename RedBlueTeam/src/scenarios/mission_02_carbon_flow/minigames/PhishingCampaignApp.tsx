@@ -5,6 +5,8 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { submitDecision } from '../../../engine/core/report';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { PhishingCampaignConfig } from './types';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
@@ -51,6 +53,9 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   const selectedTemplate = config.template.options.find((o) => o.id === selectedTemplateId);
   const selectedTopic = config.topic.options.find((o) => o.id === selectedTopicId);
 
+  // B2: mentor może odrzucić wybór (blokada opcji + komunikat); wspólny helper `submitDecision`.
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
+
   const header = (subtitle: string, task: string, step: string) => (
     <AppHeader icon={Mail} accent={accent} title="//PHISHING" subtitle={subtitle} task={task} step={step} />
   );
@@ -66,14 +71,15 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
     confirmLabel: string,
     enabled: boolean,
     onConfirm: () => void,
+    decisionNum?: number,
     withImages = false
   ) => (
     <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-200">
       {header(subtitle, task, step)}
       {withImages ? (
-        <ImageOptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} />
+        <ImageOptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} decisionNum={decisionNum} />
       ) : (
-        <OptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} />
+        <OptionCards accent={accent} options={options} selectedId={selectedId} onSelect={onSelect} decisionNum={decisionNum} />
       )}
       <div className="flex justify-end">
         <ConfirmButton
@@ -89,14 +95,11 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
 
   const handleActionConfirm = () => {
     if (!selectedAction) return;
+    if (submitDecision({ decisionNum: config.action.decisionNum, question: config.action.question }, selectedAction, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedActionId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.action.decisionNum,
-      question: config.action.question,
-      answer: selectedAction.label,
-      tier: selectedAction.tier,
-      feedback: selectedAction.feedback
-    });
     if (selectedAction.tier !== 'critical') {
       setScreen('load_template');
     }
@@ -104,14 +107,11 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
 
   const handleTemplateConfirm = () => {
     if (!selectedTemplate) return;
+    if (submitDecision({ decisionNum: config.template.decisionNum, question: config.template.question }, selectedTemplate, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedTemplateId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.template.decisionNum,
-      question: config.template.question,
-      answer: selectedTemplate.label,
-      tier: selectedTemplate.tier,
-      feedback: selectedTemplate.feedback
-    });
     if (selectedTemplate.tier !== 'critical') {
       setScreen('load_topic');
     }
@@ -119,14 +119,11 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
 
   const handleTopicConfirm = () => {
     if (!selectedTopic) return;
+    if (submitDecision({ decisionNum: config.topic.decisionNum, question: config.topic.question }, selectedTopic, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedTopicId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.topic.decisionNum,
-      question: config.topic.question,
-      answer: selectedTopic.label,
-      tier: selectedTopic.tier,
-      feedback: selectedTopic.feedback
-    });
     if (selectedTopic.tier !== 'critical') {
       setScreen('import_list');
     }
@@ -204,7 +201,8 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
           setSelectedActionId,
           'ZATWIERDŹ RODZAJ AKCJI',
           !!selectedAction,
-          handleActionConfirm
+          handleActionConfirm,
+          config.action.decisionNum
         )}
 
       {screen === 'load_template' && (
@@ -227,6 +225,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
           'ZATWIERDŹ SZABLON',
           !!selectedTemplate,
           handleTemplateConfirm,
+          config.template.decisionNum,
           true
         )}
 
@@ -249,7 +248,8 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
           setSelectedTopicId,
           'ZATWIERDŹ TEMAT ANKIETY',
           !!selectedTopic,
-          handleTopicConfirm
+          handleTopicConfirm,
+          config.topic.decisionNum
         )}
 
       {screen === 'import_list' && (

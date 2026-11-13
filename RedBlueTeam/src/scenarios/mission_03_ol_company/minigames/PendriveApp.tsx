@@ -13,6 +13,7 @@ import { DragGhost, usePointerDrag } from '../../../engine/components/usePointer
 import { sounds } from '../../../engine/audio/soundEffects';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { buildRejection } from '../../../engine/core/report';
 import type { BlockProps } from '../../../engine/types/mission';
 import { PLAN_STATE_KEY, USB_STATE_KEY, type PendriveConfig, type UsbAttachment } from './types';
 import { ImageSlot } from './ui';
@@ -73,6 +74,7 @@ const PackingBar: React.FC<{ label: string; onDone: () => void }> = ({ label, on
 
 export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDecision, onComplete }) => {
   const setCustomState = useMissionStore((s) => s.setCustomState);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
   // Plan z D3 (id opcji wektora) zapisany przez //TOR we wspólnym stanie.
   const planVectorId = useMissionStore((s) => s.customState[PLAN_STATE_KEY]) as string | undefined;
 
@@ -148,6 +150,13 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   const confirmVolume = () => {
     const opt = config.volume.options.find((o) => o.id === volumeId);
     if (!opt || locked) return;
+    // B2: mentor odrzuca nazwę dysku — zostajemy na wyborze, opcja się blokuje.
+    const volumeRejection = buildRejection(config.signature, opt);
+    if (volumeRejection) {
+      rejectDecision(volumeRejection);
+      setVolumeId(null);
+      return;
+    }
     sounds.playSuccess();
     setVolumeConfirmedId(opt.id);
     const critical = buildVolumeCriticalReport(config.signature, opt);
@@ -162,6 +171,13 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
 
   const confirmSignature = () => {
     if (!volume || !signature || !usbFile || locked) return;
+    // B2: mentor odrzuca podpis na kopercie — zostajemy na wyborze, opcja się blokuje.
+    const signatureRejection = buildRejection(config.signature, signature);
+    if (signatureRejection) {
+      rejectDecision(signatureRejection);
+      setSignatureId(null);
+      return;
+    }
     sounds.playSuccess();
     setCustomState(USB_STATE_KEY, buildUsbState(volume, usbFile, signature));
     onDecision(buildD4Report(config.signature, volume, signature, config.reportLabels));
@@ -378,6 +394,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
           accent={ACCENT}
           label={config.volume.question}
           options={volumeOptions}
+          decisionNum={config.signature.decisionNum}
           selectedId={volumeId}
           onSelect={(id) => {
             if (!locked) setVolumeId(id);
@@ -423,6 +440,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
             accent={ACCENT}
             label={config.signature.question}
             options={signatureOptions}
+            decisionNum={config.signature.decisionNum}
             selectedId={signatureId}
             onSelect={(id) => {
               if (!locked) setSignatureId(id);

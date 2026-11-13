@@ -13,6 +13,8 @@ interface DroneMapProps {
   selectedId: string | null;
   /** Gdy podane, piny są klikalne (ekran wyboru adresu). */
   onSelect?: (id: string) => void;
+  /** Piny odrzucone przez mentora (B2): widoczne, ale zablokowane. */
+  blockedIds?: readonly string[];
   /** Postęp lotu 0..100; brak = dron stoi w pokoju hakera. */
   flightPct?: number;
   /** Podpis punktu startu (np. „POKÓJ HAKERA”). */
@@ -75,6 +77,7 @@ export const DroneMap: React.FC<DroneMapProps> = ({
   locations,
   selectedId,
   onSelect,
+  blockedIds = [],
   flightPct,
   originLabel,
   image
@@ -112,7 +115,8 @@ export const DroneMap: React.FC<DroneMapProps> = ({
       {locations.map((loc) => {
         const selected = selectedId === loc.id;
         const flip = loc.x > 55;
-        const interactive = !!onSelect;
+        const blocked = blockedIds.includes(loc.id);
+        const interactive = !!onSelect && !blocked;
         return (
           <div key={loc.id} className="absolute" style={{ left: `${loc.x}%`, top: `${loc.y}%` }}>
             <button
@@ -130,7 +134,8 @@ export const DroneMap: React.FC<DroneMapProps> = ({
                   interactive ? 'group-hover:scale-110' : ''
                 }`}
                 style={{
-                  borderColor: accent,
+                  borderColor: blocked ? '#ff3366' : accent,
+                  opacity: blocked ? 0.45 : undefined,
                   backgroundColor: selected ? accent : '#040d14',
                   color: selected ? '#05090f' : accent,
                   boxShadow: selected ? `0 0 0 3px ${accent}55, 0 0 18px ${accent}99` : `0 0 10px ${accent}40`

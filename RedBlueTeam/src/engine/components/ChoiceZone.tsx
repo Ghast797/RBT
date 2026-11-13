@@ -1,5 +1,5 @@
 import React from 'react';
-import { MentorRejectNotice, isRejected, useRejectedAttempts } from './MentorRejectNotice';
+import { MentorRejectNotice, isRejected, useRejectedAmong } from './MentorRejectNotice';
 
 /**
  * Strefa wyboru: wszystko, co gracz wybiera, stoi w ramce z etykietą „▼ WYBIERZ…”,
@@ -145,7 +145,7 @@ interface ChoiceLayoutProps {
 export const ChoiceCardGrid: React.FC<
   ChoiceLayoutProps & { columns?: 1 | 2 | 3; size?: 'md' | 'lg'; className?: string }
 > = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false, columns = 3, size = 'md', className = '', decisionNum }) => {
-  const rejected = useRejectedAttempts(decisionNum);
+  const rejected = useRejectedAmong(decisionNum, options);
   const cols = columns === 1 ? 'grid-cols-1' : columns === 2 ? 'grid-cols-2' : 'grid-cols-3';
   const big = size === 'lg';
   return (
@@ -156,8 +156,8 @@ export const ChoiceCardGrid: React.FC<
           <ChoiceTile
             key={opt.id}
             accent={accent}
-            state={isRejected(rejected, opt.label) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
-            disabled={isRejected(rejected, opt.label)}
+            state={isRejected(rejected, opt.id) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
+            disabled={isRejected(rejected, opt.id)}
             markerPosition="corner"
             onClick={() => onSelect(opt.id)}
             className={big ? 'p-4 min-h-[11rem]' : 'p-4 min-h-[7rem]'}
@@ -205,15 +205,20 @@ export const ChoiceRows: React.FC<ChoiceLayoutProps> = ({
   selectedId,
   onSelect,
   label = 'WYBIERZ JEDNO',
-  mono = false
-}) => (
+  mono = false,
+  decisionNum
+}) => {
+  const rejected = useRejectedAmong(decisionNum, options);
+  return (
   <ChoiceZone accent={accent} label={label}>
+    <MentorRejectNotice attempts={rejected} />
     <div className="flex flex-col gap-2.5">
       {options.map((opt) => (
         <ChoiceTile
           key={opt.id}
           accent={accent}
-          state={selectedId === opt.id ? 'selected' : 'idle'}
+          state={isRejected(rejected, opt.id) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
+          disabled={isRejected(rejected, opt.id)}
           markerPosition="left"
           onClick={() => onSelect(opt.id)}
           className="px-3 py-2.5 items-center"
@@ -228,4 +233,5 @@ export const ChoiceRows: React.FC<ChoiceLayoutProps> = ({
       ))}
     </div>
   </ChoiceZone>
-);
+  );
+};

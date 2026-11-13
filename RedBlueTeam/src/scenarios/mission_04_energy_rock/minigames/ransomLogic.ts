@@ -1,7 +1,7 @@
 // Czysta logika //KREATOR: RANSOMWARE (bez UI): siła hasła, poziom D3, kompletność slotów, odpowiedź do raportu.
 // Progi i tabela: docs/rebuild-plan.md, 3.2. Punkty liczy silnik z poziomu decyzji.
 
-import type { ChoiceOutcome, DecisionReport } from '../../../engine/types/mission';
+import type { ChoiceOutcome, DecisionReport, DecisionRejection } from '../../../engine/types/mission';
 import type { NoteConfig, NoteSlotId, NoteTile, PasswordConfig, PasswordTile } from './types';
 
 const TIER_RANK: Record<ChoiceOutcome, number> = { ideal: 0, suboptimal: 1, critical: 2 };
@@ -93,4 +93,52 @@ export function buildNoteReport(config: NoteConfig, fill: NoteFill): DecisionRep
           .join(' ');
   const answer = variable.map((t) => t.reportPart ?? t.label).join(config.answerJoiner);
   return { num: config.decisionNum, question: config.question, answer, tier, feedback };
+}
+
+/** Identyfikator odrzuconej konfiguracji hasła (długość + zestawy): ta sama konfiguracja odrzucona drugi raz nie liczy kary. */
+export const passwordOptionId = (selectedIds: readonly string[], length: number): string =>
+  `password:${length}:${[...selectedIds].sort().join('+')}`;
+
+/** B2 dla D2: mentor odrzuca hasło, gdy `config.rejectLine` zwraca kwestię; inaczej `null` (zwykła ocena). */
+export function buildPasswordRejection(
+  config: PasswordConfig,
+  ev: PasswordEvaluation,
+  selectedIds: readonly string[]
+): DecisionRejection | null {
+  const mentorLine = config.rejectLine?.(ev);
+  if (!mentorLine) return null;
+  return {
+    num: config.decisionNum,
+    question: config.question,
+    optionId: passwordOptionId(selectedIds, ev.length),
+    answer: buildPasswordReport(config, ev).answer,
+    tier: ev.tier,
+    mentorLine
+  };
+}
+
+/**
+ * B2 dla D3: mentor odrzuca kafelek tytułu/czasu z `reject`. Przy dwóch takich kafelkach odrzuca najpierw
+ * gorszy (wyższy poziom), potem - po poprawce - drugi. Zwraca też slot do opróżnienia.
+ */
+export function buildNoteRejection(
+  config: NoteConfig,
+  fill: NoteFill
+): { rejection: DecisionRejection; slot: NoteSlotId } | null {
+  const candidates = (['title', 'time'] as const)
+    .map((slot) => ({ slot, tile: config.tiles.find((t) => t.id === fill[slot]) }))
+    .filter((c): c is { slot: 'title' | 'time'; tile: NoteTile } => !!c.tile && !!c.tile.reject && !!c.tile.tier);
+  if (candidates.length === 0) return null;
+  const worst = candidates.reduce((a, b) => (TIER_RANK[b.tile.tier!] > TIER_RANK[a.tile.tier!] ? b : a));
+  return {
+    slot: worst.slot,
+    rejection: {
+      num: config.decisionNum,
+      question: config.question,
+      optionId: worst.tile.id,
+      answer: worst.tile.reportPart ?? worst.tile.label,
+      tier: worst.tile.tier!,
+      mentorLine: worst.tile.reject!.mentorLine
+    }
+  };
 }

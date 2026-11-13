@@ -122,3 +122,11 @@ export function scoreFromDecisions(
   });
   return Math.max(0, maxScore - total);
 }
+
+/**
+ * Poziom decyzji do liczników raportu (IDEALNE / DOBRE / WPADKI): decyzja z odrzuconą próbą (B2) i ostatecznie
+ * idealnym wyborem liczy się jak `suboptimal`, bo kara za próbę obniżyła wynik. Sam wynik liczy `scoreFromDecisions`.
+ */
+export function countedTier(finalTier: ChoiceOutcome, hadRejectedAttempts: boolean): ChoiceOutcome {
+  return finalTier === 'ideal' && hadRejectedAttempts ? 'suboptimal' : finalTier;
+}

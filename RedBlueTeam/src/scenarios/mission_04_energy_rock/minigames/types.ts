@@ -121,6 +121,12 @@ export interface PasswordConfig {
   /** Odpowiedź w raporcie: ideal oraz szablon dla pozostałych (`{score}`, `{length}`, `{sets}`). */
   answers: { ideal: string; other: string };
   feedback: Record<ChoiceOutcome, string>;
+  /**
+   * B2 dla wyliczanej oceny hasła: zwraca kwestię mentora, gdy tak skonfigurowane hasło ma zostać odrzucone
+   * (zamiast `critical`), albo `undefined`, gdy ocena idzie normalną drogą. Mentor odrzuca konfigurację
+   * (długość + zestawy), kara za próbę wg `ev.tier`; decyzja zostaje otwarta.
+   */
+  rejectLine?: (ev: { score: number; tier: ChoiceOutcome; sets: number; length: number; hasForbidden: boolean }) => string | undefined;
 }
 
 export type NoteSlotId = 'icon' | 'title' | 'time' | 'amount' | 'address' | 'contact';
@@ -134,6 +140,8 @@ export interface NoteTile {
   feedback?: string;
   /** Fragment odpowiedzi w raporcie (np. `OSTRZEŻENIE`, `LIMIT 30 H`). */
   reportPart?: string;
+  /** B2: mentor odrzuca ten kafelek (tytuł/czas) zamiast palić operację: kara za próbę, kafelek się blokuje. */
+  reject?: { mentorLine: string };
 }
 
 export interface NoteConfig {

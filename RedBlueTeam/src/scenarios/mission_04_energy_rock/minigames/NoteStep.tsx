@@ -7,6 +7,7 @@ import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
 import { sounds } from '../../../engine/audio/soundEffects';
 import { useShuffled } from '../../../engine/core/shuffle';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
 import type { NoteConfig, NoteSlotId, NoteTile } from './types';
 import { isNoteComplete, tileFitsSlot, type NoteFill } from './ransomLogic';
 
@@ -83,6 +84,8 @@ export const NoteStep: React.FC<{
   onConfirm: () => void;
 }> = ({ config, accent, fill, onFill, locked, onConfirm }) => {
   const tiles = useShuffled(config.tiles);
+  // B2: kafelki odrzucone przez mentora są zablokowane (nie wchodzą do slotu), nad zasobnikiem widać jego kwestię.
+  const rejected = useRejectedAttempts(config.decisionNum);
   const [bounce, setBounce] = useState<string | null>(null);
   const bounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   React.useEffect(() => () => {
@@ -92,7 +95,7 @@ export const NoteStep: React.FC<{
   const place = (tileId: string, slotId: string) => {
     if (locked) return;
     const tile = config.tiles.find((t) => t.id === tileId);
-    if (!tile) return;
+    if (!tile || isRejected(rejected, tile.id)) return;
     if (!tileFitsSlot(tile, slotId)) {
       sounds.playError();
       setBounce(slotId);
@@ -120,12 +123,13 @@ export const NoteStep: React.FC<{
       const t = config.tiles.find((x) => x.id === itemId);
       if (t) place(itemId, t.slot);
     },
-    canDrag: () => !locked
+    canDrag: (itemId) => !locked && !isRejected(rejected, itemId)
   });
   const dragged = config.tiles.find((t) => t.id === drag.draggedId);
 
   return (
     <>
+      <MentorRejectNotice attempts={rejected} />
       <div className="flex-1 min-h-0 grid grid-cols-[1.4fr_1fr] gap-4">
         <div className="min-h-0 flex flex-col justify-center">
           <NoteMockup
@@ -166,10 +170,10 @@ export const NoteStep: React.FC<{
                   if (e.key === 'Enter') place(t.id, t.slot);
                 }}
                 {...props}
-                className={`px-2.5 py-1.5 rounded-lg border-2 bg-[#0b1724] text-xs font-bold text-white cursor-grab transition-all hover:-translate-y-0.5 ${
-                  drag.draggedId === t.id ? 'opacity-40' : ''
-                }`}
-                style={{ ...props.style, borderColor: `${accent}88` }}
+                className={`px-2.5 py-1.5 rounded-lg border-2 bg-[#0b1724] text-xs font-bold text-white transition-all ${
+                  isRejected(rejected, t.id) ? 'opacity-40 line-through cursor-not-allowed' : 'cursor-grab hover:-translate-y-0.5'
+                } ${drag.draggedId === t.id ? 'opacity-40' : ''}`}
+                style={{ ...props.style, borderColor: isRejected(rejected, t.id) ? '#ff3366' : `${accent}88` }}
               >
                 {tileContent(t)}
               </div>

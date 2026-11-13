@@ -9,7 +9,8 @@ import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { LOADER_LONG_MS, LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
 import { sounds } from '../../../engine/audio/soundEffects';
-import { buildReport } from '../../../engine/core/report';
+import { submitDecision } from '../../../engine/core/report';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
@@ -60,6 +61,7 @@ const Row: React.FC<{ label: string; children?: React.ReactNode }> = ({ label, c
 
 export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDecision, onComplete }) => {
   const setCustomState = useMissionStore((s) => s.setCustomState);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
   const [screen, setScreen] = useState<Screen>('subject');
   const [subjectId, setSubjectId] = useState<string | null>(null);
   const [bodyId, setBodyId] = useState<string | null>(null);
@@ -77,9 +79,11 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
   const decision = isSubject ? config.subject : config.body;
   const tiles = isSubject ? subjectTiles : bodyTiles;
   const fieldValue = isSubject ? subject : body;
+  // B2: kafelki odrzucone przez mentora (D5 temat, D6 treść) są zablokowane, nad nimi widać jego kwestię.
+  const rejected = useRejectedAttempts(decision.decisionNum);
 
   const pick = (id: string) => {
-    if (locked) return;
+    if (locked || isRejected(rejected, id)) return;
     if (screen === 'subject') setSubjectId((c) => placeInField(c, id, config.subject.options));
     else if (screen === 'body') setBodyId((c) => placeInField(c, id, config.body.options));
     else return;
@@ -95,22 +99,29 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
   const drag = usePointerDrag<string>({
     onDrop: ({ itemId }) => (itemId === PAYLOAD_ID ? startArm() : pick(itemId)),
     onTap: (itemId) => (itemId === PAYLOAD_ID ? startArm() : pick(itemId)),
-    canDrag: (itemId) => (itemId === PAYLOAD_ID ? screen === 'arm' && !arming && !armed : !locked && screen !== 'arm'),
+    canDrag: (itemId) =>
+      itemId === PAYLOAD_ID ? screen === 'arm' && !arming && !armed : !locked && screen !== 'arm' && !isRejected(rejected, itemId),
     accepts: (itemId, zoneId) => (itemId === PAYLOAD_ID ? zoneId === 'attachment' : zoneId === 'field')
   });
 
   const confirm = () => {
     if (locked) return;
     if (screen === 'subject' && subject) {
+      if (submitDecision(config.subject, subject, { onDecision, rejectDecision }) === 'rejected') {
+        setSubjectId(null);
+        return;
+      }
       sounds.playSuccess();
-      onDecision(buildReport(config.subject, subject));
       if (subject.tier === 'critical') setLocked(true);
       else setScreen('loadBody');
     } else if (screen === 'body' && body) {
+      if (submitDecision(config.body, body, { onDecision, rejectDecision }) === 'rejected') {
+        setBodyId(null);
+        return;
+      }
       sounds.playSuccess();
       const state = buildMailState(subjectId, bodyId);
       if (state) setCustomState(M4_MAIL_KEY, state);
-      onDecision(buildReport(config.body, body));
       if (body.tier === 'critical') setLocked(true);
       else setScreen('loadArm');
     }
@@ -241,9 +252,11 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
               <span className="text-sm font-bold text-white leading-snug">{fieldValue?.label}</span>
             </div>
           </div>
+          <MentorRejectNotice attempts={rejected} />
           <div className="flex-1 min-h-0 flex flex-col gap-2.5 justify-center">
             {tiles.map((t) => {
               const used = t.id === fieldValue?.id;
+              const blocked = isRejected(rejected, t.id);
               return (
                 <div
                   key={t.id}
@@ -253,10 +266,10 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
                     if (e.key === 'Enter') pick(t.id);
                   }}
                   {...drag.getDragProps(t.id)}
-                  className={`p-3 rounded-lg border-2 bg-[#0b1724] text-sm font-bold text-white leading-snug cursor-grab transition-all hover:-translate-y-0.5 ${
-                    drag.draggedId === t.id ? 'opacity-40' : used ? 'opacity-50' : ''
-                  }`}
-                  style={{ ...drag.getDragProps(t.id).style, borderColor: used ? ACCENT : `${ACCENT}55` }}
+                  className={`p-3 rounded-lg border-2 bg-[#0b1724] text-sm font-bold text-white leading-snug transition-all ${
+                    blocked ? 'opacity-40 line-through cursor-not-allowed' : 'cursor-grab hover:-translate-y-0.5'
+                  } ${drag.draggedId === t.id ? 'opacity-40' : used ? 'opacity-50' : ''}`}
+                  style={{ ...drag.getDragProps(t.id).style, borderColor: blocked ? '#ff3366' : used ? ACCENT : `${ACCENT}55` }}
                 >
                   {t.label}
                 </div>

@@ -7,14 +7,25 @@ import { Lock } from 'lucide-react';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { LOADER_LONG_MS, LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { sounds } from '../../../engine/audio/soundEffects';
-import { buildReport } from '../../../engine/core/report';
+import { submitDecision } from '../../../engine/core/report';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
+
 import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import { M4_NOTE_KEY, type BuilderConfig, type M4NoteState } from './types';
 import { PasswordStep } from './PasswordStep';
 import { NoteStep } from './NoteStep';
 import { ColorStep } from './ColorStep';
-import { buildNoteReport, buildPasswordReport, evaluatePassword, type NoteFill, type PasswordEvaluation } from './ransomLogic';
+import {
+  buildNoteReport,
+  buildNoteRejection,
+  buildPasswordReport,
+  buildPasswordRejection,
+  evaluatePassword,
+  passwordOptionId,
+  type NoteFill,
+  type PasswordEvaluation
+} from './ransomLogic';
 
 const ACCENT = '#a855f7';
 const RESULT_MS = 2500;
@@ -24,6 +35,7 @@ type Screen = 'password' | 'result' | 'loadNote' | 'note' | 'loadColor' | 'color
 
 export const RansomBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ config, onDecision, onComplete }) => {
   const setCustomState = useMissionStore((s) => s.setCustomState);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
   const { password, note, color } = config;
 
   const [screen, setScreen] = useState<Screen>('password');
@@ -35,6 +47,7 @@ export const RansomBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ config, 
   // Po zgłoszeniu critical silnik pokazuje wykrycie; do powtórki (nowy montaż) wybór jest zablokowany.
   const [locked, setLocked] = useState(false);
   const completedRef = useRef(false);
+  const passwordRejected = useRejectedAttempts(password.decisionNum);
 
   useEffect(() => {
     if (screen !== 'result') return;
@@ -55,8 +68,14 @@ export const RansomBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ config, 
 
   const confirmPassword = () => {
     if (locked || selected.length < 1) return;
-    sounds.playSuccess();
     const ev = evaluatePassword(password, selected, length);
+    // B2: mentor odrzuca hasło (np. za słabe) — zostajemy w kroku, konfiguracja się blokuje.
+    const rejection = buildPasswordRejection(password, ev, selected);
+    if (rejection) {
+      rejectDecision(rejection);
+      return;
+    }
+    sounds.playSuccess();
     setEvaluation(ev);
     onDecision(buildPasswordReport(password, ev));
     if (ev.tier === 'critical') setLocked(true);
@@ -65,6 +84,15 @@ export const RansomBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ config, 
 
   const confirmNote = () => {
     if (locked) return;
+    // B2: mentor odrzuca kafelek tytułu/czasu — kafelek wraca do zasobnika i się blokuje.
+    const noteRejection = buildNoteRejection(note, fill);
+    if (noteRejection) {
+      rejectDecision(noteRejection.rejection);
+      const next = { ...fill };
+      delete next[noteRejection.slot];
+      setFill(next);
+      return;
+    }
     sounds.playSuccess();
     const report = buildNoteReport(note, fill);
     onDecision(report);
@@ -75,10 +103,13 @@ export const RansomBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ config, 
   const confirmColor = () => {
     const opt = color.options.find((o) => o.id === colorId);
     if (!opt || locked) return;
+    if (submitDecision(color, opt, { onDecision, rejectDecision }) === 'rejected') {
+      setColorId(null);
+      return;
+    }
     sounds.playSuccess();
     const state: M4NoteState = { titleId: fill.title ?? '', timeId: fill.time ?? '', colorId: opt.id };
     setCustomState(M4_NOTE_KEY, state);
-    onDecision(buildReport(color, opt));
     if (opt.tier === 'critical') setLocked(true);
     else setScreen('compile');
   };
@@ -162,6 +193,9 @@ export const RansomBuilderApp: React.FC<BlockProps<BuilderConfig>> = ({ config, 
       selected={selected}
       onSelected={setSelected}
       locked={locked}
+      notice={<MentorRejectNotice attempts={passwordRejected} />}
+      // Ta sama konfiguracja odrzucona przez mentora: trzeba ją zmienić, zanim da się zatwierdzić ponownie.
+      confirmBlocked={isRejected(passwordRejected, passwordOptionId(selected, length))}
       onConfirm={confirmPassword}
     />
   );

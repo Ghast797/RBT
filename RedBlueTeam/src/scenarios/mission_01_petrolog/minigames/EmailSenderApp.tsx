@@ -10,6 +10,8 @@ import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
+import { submitDecision } from '../../../engine/core/report';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
 import type { EmailSenderConfig } from './types';
 import { EmailPreview } from './EmailPreview';
@@ -40,6 +42,10 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
   const targetDomain = domainChoice || config?.defaultDomain || 'dalekbieg.info';
   const targetPayload = payloadChoice || config?.defaultPayload || 'Poradnik dla biegaczy długodystansowych';
 
+  // B2: odrzucone przez mentora opcje bieżącej decyzji (D3 nadawca, D4 adres).
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
+  const rejected = useRejectedAttempts(screen === 'email' ? config.senderEmail?.decisionNum : config.senderName?.decisionNum);
+
   const selectedSender = config.senderName?.options.find((o) => o.id === selectedSenderId);
   const selectedEmail = config.senderEmail?.options.find((o) => o.id === selectedEmailId);
 
@@ -55,12 +61,14 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     showTags: boolean = true
   ) => (
     <ChoiceZone accent={accent} label="WYBIERZ JEDNO">
+      <MentorRejectNotice attempts={rejected} />
       <div className="flex flex-col gap-3">
         {options.map((opt) => (
           <ChoiceTile
             key={opt.id}
             accent={accent}
-            state={selectedId === opt.id ? 'selected' : 'idle'}
+            state={isRejected(rejected, opt.id) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
+            disabled={isRejected(rejected, opt.id)}
             markerPosition="corner"
             onClick={() => {
               sounds.playClick();
@@ -96,12 +104,14 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     onSelect: (id: string) => void
   ) => (
     <ChoiceZone accent={accent} label="WYBIERZ ADRES">
+      <MentorRejectNotice attempts={rejected} />
       <div className="flex flex-col gap-3">
         {options.map((opt) => (
           <ChoiceTile
             key={opt.id}
             accent={accent}
-            state={selectedId === opt.id ? 'selected' : 'idle'}
+            state={isRejected(rejected, opt.id) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
+            disabled={isRejected(rejected, opt.id)}
             onClick={() => {
               sounds.playClick();
               onSelect(opt.id);
@@ -117,14 +127,11 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
 
   const handleSenderConfirm = () => {
     if (!selectedSender || !config.senderName) return;
+    if (submitDecision({ decisionNum: config.senderName.decisionNum, question: config.senderName.question }, selectedSender, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedSenderId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.senderName.decisionNum,
-      question: config.senderName.question,
-      answer: selectedSender.label,
-      tier: selectedSender.tier,
-      feedback: selectedSender.feedback
-    });
     if (selectedSender.tier !== 'critical') {
       setScreen('load_email');
     }
@@ -132,14 +139,11 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
 
   const handleEmailConfirm = () => {
     if (!selectedEmail || !config.senderEmail) return;
+    if (submitDecision({ decisionNum: config.senderEmail.decisionNum, question: config.senderEmail.question }, selectedEmail, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedEmailId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.senderEmail.decisionNum,
-      question: config.senderEmail.question,
-      answer: selectedEmail.label,
-      tier: selectedEmail.tier,
-      feedback: selectedEmail.feedback
-    });
     if (selectedEmail.tier !== 'critical') {
       setScreen('summary');
     }

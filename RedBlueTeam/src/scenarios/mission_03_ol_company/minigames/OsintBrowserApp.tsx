@@ -14,8 +14,9 @@ import { LOADER_LONG_MS, LOADER_MS, ModuleLoader } from '../../../engine/compone
 import { ChoiceCardGrid, ChoiceTile, ChoiceZone } from '../../../engine/components/ChoiceZone';
 import type { BlockProps } from '../../../engine/types/mission';
 import { PLAN_STATE_KEY, type OsintBrowserConfig, type ReportableOption } from './types';
-import { buildReport, submitDecision } from '../../../engine/core/report';
+import { submitDecision } from '../../../engine/core/report';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
 import { SiteView } from './SiteView';
 import {
   INITIAL_READ_STATE,
@@ -74,12 +75,12 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
 
   const handleTargetConfirm = () => {
     if (!target || locked) return;
-    sounds.playSuccess();
     // B2: mentor odrzuca wybór celu — zostajemy na ekranie wyboru, opcja się blokuje.
     if (submitDecision(config.target, target, { onDecision, rejectDecision }) === 'rejected') {
       setTargetId(null);
       return;
     }
+    sounds.playSuccess();
     if (afterDecision(target.tier) === 'stop') {
       setLocked(true);
       return;
@@ -89,10 +90,14 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
 
   const handleVectorConfirm = () => {
     if (!vector || locked) return;
+    // B2: mentor odrzuca wybór przynęty — zostajemy na ekranie wyboru, opcja się blokuje, plan się nie zapisuje.
+    if (submitDecision(config.vector, vector, { onDecision, rejectDecision }) === 'rejected') {
+      setVectorId(null);
+      return;
+    }
     sounds.playSuccess();
     // Plan z D3 we wspólnym stanie: //DYSK E dobiera po nim pliki pasujące do planu.
     setCustomState(PLAN_STATE_KEY, vector.id);
-    onDecision(buildReport(config.vector, vector));
     if (afterDecision(vector.tier) === 'stop') {
       setLocked(true);
       return;
@@ -218,6 +223,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
               options={vectorOptions}
               selectedId={vectorId}
               label={config.vector.question}
+              decisionNum={config.vector.decisionNum}
               onSelect={(id) => {
                 if (locked) return;
                 sounds.playClick();
@@ -247,15 +253,20 @@ const VectorRows: React.FC<{
   options: ReportableOption[];
   selectedId: string | null;
   label: string;
+  decisionNum: number;
   onSelect: (id: string) => void;
-}> = ({ options, selectedId, label, onSelect }) => (
+}> = ({ options, selectedId, label, decisionNum, onSelect }) => {
+  const rejected = useRejectedAttempts(decisionNum);
+  return (
   <ChoiceZone accent={ACCENT} label={label}>
+    <MentorRejectNotice attempts={rejected} />
     <div className="flex flex-col gap-3">
       {options.map((o) => (
         <ChoiceTile
           key={o.id}
           accent={ACCENT}
-          state={selectedId === o.id ? 'selected' : 'idle'}
+          state={isRejected(rejected, o.id) ? 'wrong' : selectedId === o.id ? 'selected' : 'idle'}
+          disabled={isRejected(rejected, o.id)}
           markerPosition="left"
           onClick={() => onSelect(o.id)}
           className="px-4 py-3.5 items-center"
@@ -265,4 +276,5 @@ const VectorRows: React.FC<{
       ))}
     </div>
   </ChoiceZone>
-);
+  );
+};

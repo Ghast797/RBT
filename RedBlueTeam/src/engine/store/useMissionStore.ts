@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, DecisionRejection, RejectedAttempt, ConversationBeat, ChoiceOutcome } from '../types/mission';
-import { scoreFromDecisions, btcForScore, resolveDecisionCount, DEFAULT_PASSING_SCORE, roundScore } from '../core/scoring';
+import { scoreFromDecisions, countedTier, btcForScore, resolveDecisionCount, DEFAULT_PASSING_SCORE, roundScore } from '../core/scoring';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
 import { createMissionCompletionStatement, MockLRS } from '../scorm/xapi';
@@ -524,10 +524,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     // Wynik, liczniki i BTC są funkcją rekordów decyzji (nie sumą przyrostową).
     const tiers = { ...get().decisionTiers, [report.num]: report.tier };
     const base = getInitialMissionState(activeMission);
-    const all = Object.values(tiers);
+    const rejectedNow = get().rejectedAttempts;
+    // Do liczników: ideał po odrzuconej próbie to „dobre” (kara obniżyła wynik).
+    const all = Object.entries(tiers).map(([n, t]) => countedTier(t, (rejectedNow[Number(n)] || []).length > 0));
     const nonIdeal = all.filter((t) => t !== 'ideal').length;
     // Max − kary z poziomów − kary za odrzucone próby (limit na decyzję w `scoreFromDecisions`).
-    const score = scoreFromDecisions(tiers, get().rejectedAttempts, maxScore, decisionCount);
+    const score = scoreFromDecisions(tiers, rejectedNow, maxScore, decisionCount);
     set({
       decisionTiers: tiers,
       score,
@@ -568,7 +570,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     // Decyzja już zamknięta (pierwsze zgłoszenie wygrywa) albo ta sama odpowiedź odrzucona wcześniej.
     if (get().decisionTiers[rejection.num] !== undefined) return;
     const prior = get().rejectedAttempts[rejection.num] || [];
-    if (prior.some((r) => r.answer === rejection.answer)) return;
+    if (prior.some((r) => r.optionId === rejection.optionId)) return;
 
     const { activeMission } = get();
     const maxScore = activeMission.mission?.maxScore ?? 100;
@@ -577,7 +579,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     const rejectedAttempts = {
       ...get().rejectedAttempts,
-      [rejection.num]: [...prior, { answer: rejection.answer, tier: rejection.tier, mentorLine: rejection.mentorLine }]
+      [rejection.num]: [...prior, { optionId: rejection.optionId, answer: rejection.answer, tier: rejection.tier, mentorLine: rejection.mentorLine }]
     };
     const score = scoreFromDecisions(get().decisionTiers, rejectedAttempts, maxScore, decisionCount);
     sounds.playNotification();

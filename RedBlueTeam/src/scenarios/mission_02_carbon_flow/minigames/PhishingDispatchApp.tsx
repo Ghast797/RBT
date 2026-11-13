@@ -5,6 +5,7 @@ import { sounds } from '../../../engine/audio/soundEffects';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { submitDecision } from '../../../engine/core/report';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { PhishingDispatchConfig } from './types';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
@@ -133,6 +134,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
   const [screen, setScreen] = useState<Screen>('sender_select');
   const [selectedSenderId, setSelectedSenderId] = useState<string | null>(null);
 
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
   const senderOptions = useShuffled(config.sender.options);
   const selectedSender = config.sender.options.find((o) => o.id === selectedSenderId);
 
@@ -147,14 +149,12 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
 
   const handleSenderConfirm = () => {
     if (!selectedSender) return;
+    // B2: mentor odrzuca adres nadawcy — zostajemy na wyborze, opcja się blokuje.
+    if (submitDecision({ decisionNum: config.sender.decisionNum, question: config.sender.question }, selectedSender, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedSenderId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.sender.decisionNum,
-      question: config.sender.question,
-      answer: selectedSender.label,
-      tier: selectedSender.tier,
-      feedback: selectedSender.feedback
-    });
     if (selectedSender.tier !== 'critical') {
       setScreen('preview');
     }
@@ -247,6 +247,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
           label="WYBIERZ ADRES"
           layout="rows"
           mono
+          decisionNum={config.sender.decisionNum}
         />
       </SidePanel>
     ) : screen === 'preview' ? (

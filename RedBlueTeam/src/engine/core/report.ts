@@ -45,6 +45,7 @@ export function buildRejection(decision: ReportableDecision, option: ReportableO
   return {
     num: decision.decisionNum,
     question: decision.question,
+    optionId: option.id,
     answer: reportAnswerOf(option),
     tier: option.tier,
     mentorLine: option.reject.mentorLine
