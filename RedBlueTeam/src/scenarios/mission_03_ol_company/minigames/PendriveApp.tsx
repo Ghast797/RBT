@@ -3,7 +3,7 @@
 // Teksty i opcje z configu (stages.ts, pendriveConfig); logika w usbLogic.ts. Kontrakt: docs/rebuild-plan.md, 3.3.
 // D4 = gorszy z dwóch kroków (nazwa, podpis); nazwa `KEYLOGGER` zgłasza D4 od razu. Stan nośnika: customState.m3_usb.
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Download, FileText, HardDrive, Image as ImageIcon, Package, Usb, Check } from 'lucide-react';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceCardGrid } from '../../../engine/components/ChoiceZone';
@@ -22,6 +22,7 @@ import {
   buildUsbState,
   buildVolumeCriticalReport,
   fileMatchesPlan,
+  resolveOptionsForPlan,
   resolvePlanRule
 } from './usbLogic';
 
@@ -92,14 +93,22 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   const wrongTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const completedRef = useRef(false);
 
-  const attachments = useShuffled(config.attachments);
-  const volumeOptions = useShuffled(config.volume.options);
-  const signatureOptions = useShuffled(config.signature.options);
-
   const rule = resolvePlanRule(config.plan, config.planFallbackVectorOptionId, planVectorId);
+  // Poziomy i feedback D4 zależą od planu z D3 (M3-06): nazwa i podpis oceniane względem tego, co jest na pendrive'ie.
+  const planId = rule?.vectorOptionId;
+  const planVolumes = useMemo(() => resolveOptionsForPlan(config.volume.options, planId), [config.volume.options, planId]);
+  const planSignatures = useMemo(
+    () => resolveOptionsForPlan(config.signature.options, planId),
+    [config.signature.options, planId]
+  );
+
+  const attachments = useShuffled(config.attachments);
+  const volumeOptions = useShuffled(planVolumes);
+  const signatureOptions = useShuffled(planSignatures);
+
   const usbFile: UsbAttachment | undefined = config.attachments.find((a) => a.id === usbFileId);
-  const volume = config.volume.options.find((o) => o.id === volumeConfirmedId);
-  const signature = config.signature.options.find((o) => o.id === signatureId);
+  const volume = planVolumes.find((o) => o.id === volumeConfirmedId);
+  const signature = planSignatures.find((o) => o.id === signatureId);
 
   useEffect(
     () => () => {
@@ -148,7 +157,7 @@ export const PendriveApp: React.FC<BlockProps<PendriveConfig>> = ({ config, onDe
   });
 
   const confirmVolume = () => {
-    const opt = config.volume.options.find((o) => o.id === volumeId);
+    const opt = planVolumes.find((o) => o.id === volumeId);
     if (!opt || locked) return;
     // B2: mentor odrzuca nazwę dysku — zostajemy na wyborze, opcja się blokuje.
     const volumeRejection = buildRejection(config.signature, opt);

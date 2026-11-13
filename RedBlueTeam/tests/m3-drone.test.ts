@@ -107,12 +107,12 @@ describe('dopasowanie kliknięcia do opcji D6', () => {
 });
 
 describe('dane parkingu (źródło: stages.ts)', () => {
-  it('dokładnie jedno auto ideal (dwukolorowe), a asfalt jest critical', () => {
+  it('dokładnie jedno auto ideal (dwukolorowe), a asfalt jest suboptimal', () => {
     const ideal = parkingCars.filter((c) => c.tier === 'ideal');
     expect(ideal).toHaveLength(1);
     expect(ideal[0].body).not.toBe(ideal[0].roof);
-    expect(asphalt.tier).toBe('critical');
-    expect(droneConfig.car.options.find((o) => o.id === asphalt.id)?.tier).toBe('critical');
+    expect(asphalt.tier).toBe('suboptimal');
+    expect(droneConfig.car.options.find((o) => o.id === asphalt.id)?.tier).toBe('suboptimal');
   });
 
   it('są auta łudząco podobne do auta ofiary (wspólny kolor nadwozia lub dachu)', () => {
