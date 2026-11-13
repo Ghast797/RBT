@@ -66,19 +66,19 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-15 | S | Każdy critical ma tytuł „ZOSTAŁEŚ WYKRYTY!” | w toku |  | Właściciel: tytuł porażki dopasowany do kontekstu opcji (failTitle), domyślnie „ZOSTAŁEŚ WYKRYTY!”. |
-| M1-06 | S | Muffin: pełne punkty za przynętę, której ofiara nie szukała | w toku |  | Właściciel: najlepsza opcja zależy od poprzedniego wyboru — na stronie z muffinkami ideal to poradnik o muffinkach (już tak jest). Poziomów nie zmieniać; poprawić tylko feedback, by nie przeczył D1. |
-| M2-02 | W | D4 KEYLOGGER, a gra buduje robaka i botnet | w toku |  | D-04: B2 — mentor odrzuca KEYLOGGER, kara zostaje, gracz wybiera ponownie. |
-| M2-03 | W | D1 SZKOLENIE IT, a reszta zakłada wirusa 0-day | w toku |  | D-03: usunąć D1 z M2 (przenumerować decyzje, raport, testy). Znika też M2-07. |
-| M2-04 | S | Suboptimal, które według opisu nie realizują celu | otwarte | | |
-| M3-01 | W | D2 kobieta jako cel, a 4 etapy mówią o Mateuszu | w toku |  | Wiktoria, Agnieszka → B2 (mentor odrzuca: zbyt ostrożne), zamiast critical. |
-| M3-02 | W | D1 RANSOMWARE, a reszta misji jako RAT | otwarte | | → critical. |
-| M3-03 | S | D1 poziomy odwrócone (keylogger „WYKRYTY”) | w toku |  | D-05: KEYLOGGER w D1 → B2 (mentor odrzuca). |
-| M3-04 | W | D5 zły adres i tak trafia do ofiary | w toku |  | Oławska 51B, Drzymały 38D → critical z wyjaśnieniem na ekranie (failTitle). |
-| M3-05 | W | D6 złe auto i tak aktywuje wirusa u Mateusza | w toku |  | 7 złych aut → critical; „PUSTY ASFALT” → suboptimal (Mateusz znajdzie kopertę na ziemi, gra idzie dalej). |
-| M3-06 | W | D3 „dokumenty HR” psuje ocenę D4 | w toku |  | Właściciel: poziomy D4 (nazwa dysku, podpis) zależne od planu z D3 — przy planie HR ideal to podpis pasujący do dokumentów HR. |
-| M4-01 | W | D1 RAT, a reszta misji zakłada ransomware | w toku |  | RAT → B2, spójnie z M2 KEYLOGGER (właściciel zmienił zdanie z critical). |
-| M4-03 | W | D10 „troll” i D9 „agresja”: rozmowa zakłada ideał | w toku |  | Troll → critical; agresja (D9) → nowa kwestia, w której szef IT grozi zerwaniem rozmów. Tekst do akceptacji właściciela. |
+| ENG-15 | S | Każdy critical ma tytuł „ZOSTAŁEŚ WYKRYTY!” | zrobione | 4acf0d2, 697da40 | Właściciel: tytuł porażki dopasowany do kontekstu opcji (failTitle), domyślnie „ZOSTAŁEŚ WYKRYTY!”. |
+| M1-06 | S | Muffin: pełne punkty za przynętę, której ofiara nie szukała | zrobione | 25b2f1b | Właściciel: najlepsza opcja zależy od poprzedniego wyboru — na stronie z muffinkami ideal to poradnik o muffinkach (już tak jest). Poziomów nie zmieniać; poprawić tylko feedback, by nie przeczył D1. |
+| M2-02 | W | D4 KEYLOGGER, a gra buduje robaka i botnet | zrobione | 6d91d81 | D-04: B2 — mentor odrzuca KEYLOGGER, kara zostaje, gracz wybiera ponownie. |
+| M2-03 | W | D1 SZKOLENIE IT, a reszta zakłada wirusa 0-day | zrobione | 6d91d81 | D-03: usunąć D1 z M2 (przenumerować decyzje, raport, testy). Znika też M2-07. |
+| M2-04 | S | Suboptimal, które według opisu nie realizują celu | zrobione | 6d91d81 |  |
+| M3-01 | W | D2 kobieta jako cel, a 4 etapy mówią o Mateuszu | zrobione | 55ae46e | Wiktoria, Agnieszka → B2 (mentor odrzuca: zbyt ostrożne), zamiast critical. |
+| M3-02 | W | D1 RANSOMWARE, a reszta misji jako RAT | zrobione | 55ae46e | → critical. |
+| M3-03 | S | D1 poziomy odwrócone (keylogger „WYKRYTY”) | zrobione | 55ae46e | D-05: KEYLOGGER w D1 → B2 (mentor odrzuca). |
+| M3-04 | W | D5 zły adres i tak trafia do ofiary | zrobione | 55ae46e | Oławska 51B, Drzymały 38D → critical z wyjaśnieniem na ekranie (failTitle). |
+| M3-05 | W | D6 złe auto i tak aktywuje wirusa u Mateusza | zrobione | 55ae46e | 7 złych aut → critical; „PUSTY ASFALT” → suboptimal (Mateusz znajdzie kopertę na ziemi, gra idzie dalej). |
+| M3-06 | W | D3 „dokumenty HR” psuje ocenę D4 | zrobione | 55ae46e | Właściciel: poziomy D4 (nazwa dysku, podpis) zależne od planu z D3 — przy planie HR ideal to podpis pasujący do dokumentów HR. |
+| M4-01 | W | D1 RAT, a reszta misji zakłada ransomware | zrobione | dfcc04a | RAT → B2, spójnie z M2 KEYLOGGER (właściciel zmienił zdanie z critical). |
+| M4-03 | W | D10 „troll” i D9 „agresja”: rozmowa zakłada ideał | zrobione | dfcc04a | Troll → critical; agresja (D9) → nowa kwestia, w której szef IT grozi zerwaniem rozmów. Tekst do akceptacji właściciela. |
 
 ### P3 — pamięć wyborów (ENG-04) i treść za graczem
 
@@ -90,7 +90,7 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 | M1-03 | W | D3 Prezes Buczek, a D4 proponuje adresy Kwiatkowskiego | otwarte | | |
 | M1-04 | W | Monitor ofiary zawsze mówi o „poradniku biegowym” | otwarte | | |
 | M2-05 | S | D3 ankieta przeciwpożarowa: treść maila przeczy feedbackowi | otwarte | | |
-| M2-07 | S | Po D1 mentor zawsze każe „STWÓRZ WIRUSA 0-DAY” | otwarte | | Może zniknąć z decyzją D-03. |
+| M2-07 | S | Po D1 mentor zawsze każe „STWÓRZ WIRUSA 0-DAY” | zrobione | 6d91d81 | Zniknęło z usunięciem D1: typ wirusa wybiera się dopiero w D3, więc kwestia mentora nie przeczy wyborowi. |
 | M3-07 | S | Mostki po etapach mówią o ścieżce idealnej | otwarte | | |
 | M3-08 | S | Raport: lekcja zawsze opisuje opcję idealną | otwarte | | Razem z ENG-16. |
 | M3-11 | N | Raport D4 przy remisie gubi nazwę dysku | otwarte | | |
@@ -195,3 +195,8 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 |---|---|---|---|---|---|---|
 | NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. |
 | NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | — | otwarte | | Decyzja: dodać zależność dev czy zostać przy testach logiki. |
+| NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | otwarte | | Neutralizować na „PENDRIVE” albo zrobić warunkową (pamięć wyborów). |
+| NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | otwarte | | |
+| NEW-05 | N | M4: lekcja D9 w `mission4.json` mówi, że uległość „oznaczałaby natychmiastową porażkę”, a „JUŻ WAM NIE PRZESZKADZAM” jest teraz suboptimal z powrotem do rozmowy. Lekcje M4 pisze właściciel. | P5 | czeka na właściciela | | |
+| NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | otwarte | | |
+| NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | otwarte | | Rozważyć pokazanie w raporcie przy „Najpierw: X”. |
