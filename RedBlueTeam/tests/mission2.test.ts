@@ -12,6 +12,7 @@ import {
   phishingDispatchConfig,
   botnetMonitorConfig
 } from '../src/scenarios/mission_02_carbon_flow/stages';
+import type { ChoiceOption } from '../src/engine/types/mission';
 import { summarizeBotnet } from '../src/scenarios/mission_02_carbon_flow/minigames/botnet';
 
 /** Przegrywa rozmowę mostkującą do końca: flushuje kwestie BYTE_MASTERA i klika kwestie gracza. */
@@ -44,9 +45,9 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     expect(mission?.mission.title).toBe('MISJA 2 – CARBONFLOW');
     expect(mission?.mission.targetCompany).toBe('CarbonFlow Inc.');
     expect(mission?.mission.rewardBtc).toBe(2.96);
-    expect(mission?.mission.decisionCount).toBe(5);
+    expect(mission?.mission.decisionCount).toBe(4);
     expect(mission?.mission.passingScore).toBe(70);
-    expect(mission?.step6.choices.length).toBe(5);
+    expect(mission?.step6.choices.length).toBe(4);
     expect(mission?.step6.educationalSlides.length).toBe(5);
   });
 
@@ -76,12 +77,12 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
         'phishing_dispatch',
         'botnet_monitor'
       ]);
-      expect(stages.map((s) => s.decisions)).toEqual([[1, 2, 3], [], [4], [5], []]);
+      expect(stages.map((s) => s.decisions)).toEqual([[1, 2], [], [3], [4], []]);
     });
 
     it('każda decyzja 1..N jest w dokładnie jednym etapie i w step6.choices', () => {
       const n = def.mission.decisionCount;
-      expect(n).toBe(5);
+      expect(n).toBe(4);
       for (let k = 1; k <= n; k++) {
         expect(stages.filter((s) => s.decisions.includes(k)).length).toBe(1);
         expect(def.step6.choices.filter((c) => c.num === k).length).toBe(1);
@@ -92,11 +93,10 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
 
     it('raport: pytania identyczne z ekranem, każda decyzja ma lekcje atak/obrona', () => {
       const questions: Record<number, string> = {
-        1: phishingCampaignConfig.action.question,
-        2: phishingCampaignConfig.template.question,
-        3: phishingCampaignConfig.topic.question,
-        4: wormBuilderConfig.virus.question,
-        5: phishingDispatchConfig.sender.question
+        1: phishingCampaignConfig.template.question,
+        2: phishingCampaignConfig.topic.question,
+        3: wormBuilderConfig.virus.question,
+        4: phishingDispatchConfig.sender.question
       };
       def.step6.choices.forEach((c) => {
         expect(c.question).toBe(questions[c.num]);
@@ -105,26 +105,82 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       });
     });
 
-    it('numery decyzji w danych klocków zgadzają się z etapami, jedna opcja ideal/suboptimal/critical', () => {
+    it('numery decyzji w danych klocków zgadzają się z etapami, jedna opcja ideal, reszta suboptimal (critical tylko RANSOMWARE)', () => {
       const decisions = [
-        phishingCampaignConfig.action,
         phishingCampaignConfig.template,
         phishingCampaignConfig.topic,
         wormBuilderConfig.virus,
         phishingDispatchConfig.sender
       ];
-      expect(decisions.map((d) => d.decisionNum)).toEqual([1, 2, 3, 4, 5]);
+      expect(decisions.map((d) => d.decisionNum)).toEqual([1, 2, 3, 4]);
       decisions.forEach((d) => {
-        expect(d.options.map((o) => o.tier).sort()).toEqual(['critical', 'ideal', 'suboptimal']);
+        const tiers = d.options.map((o) => o.tier).sort();
+        expect(tiers.filter((x) => x === 'ideal')).toHaveLength(1);
+        expect(tiers.filter((x) => x !== 'ideal').length).toBe(2);
         const ideal = d.options.find((o) => o.tier === 'ideal')!;
         expect(def.step6.choices.find((c) => c.num === d.decisionNum)!.answer).toBe(ideal.label);
       });
       expect(vpnConfig.allowedIps).toContain(vpnConfig.targetIp);
     });
 
+    it('D1 (rodzaj akcji) usunięta: kreator nie ma opcji akcji, a typ ataku wybiera się w D3', () => {
+      expect('action' in phishingCampaignConfig).toBe(false);
+      const all = JSON.stringify([phishingCampaignConfig, wormBuilderConfig, phishingDispatchConfig, def.step6]);
+      expect(all).not.toMatch(/SZKOLENIE Z BEZPIECZEŃSTWA|ZBIERANIE WRAŻLIWYCH|security_training|data_harvesting/);
+    });
+
+    it('poziomy wg D-06: jedyny critical to RANSOMWARE (wykrycie), złe opcje bez wykrycia to suboptimal z reject', () => {
+      const all = [
+        phishingCampaignConfig.template,
+        phishingCampaignConfig.topic,
+        wormBuilderConfig.virus,
+        phishingDispatchConfig.sender
+      ].flatMap((d) => d.options);
+      const critical = all.filter((o) => o.tier === 'critical');
+      expect(critical.map((o) => o.id)).toEqual(['ransomware']);
+      expect(critical[0].reject).toBeUndefined();
+      expect(critical[0].feedback).toMatch(/alarmuje|wykryt/i);
+    });
+
+    it('opcje odrzucane przez mentora (B2): KNEENOOK, owoce, KEYLOGGER, KATERING, z kwestią mentora wielkimi literami', () => {
+      const find = (opts: { id: string }[], id: string) => opts.find((o) => o.id === id) as ChoiceOption;
+      const rejected = [
+        find(phishingCampaignConfig.template.options, 'kneenook'),
+        find(phishingCampaignConfig.topic.options, 'fruit_thursday'),
+        find(wormBuilderConfig.virus.options, 'keylogger'),
+        find(phishingDispatchConfig.sender.options, 'catering_oilflow')
+      ];
+      rejected.forEach((o) => {
+        expect(o.tier).toBe('suboptimal');
+        expect(o.reject?.mentorLine).toBeTruthy();
+        expect(o.reject!.mentorLine).toBe(o.reject!.mentorLine.toUpperCase());
+        expect(o.reject!.mentorLine).toMatch(/WYBIERZ INACZEJ\.$/);
+      });
+      expect(find(wormBuilderConfig.virus.options, 'keylogger').reject!.mentorLine).toMatch(/BOTNET/);
+      // pozostałe suboptimal działają i nie są odrzucane
+      ['quickgram'].forEach((id) => expect(find(phishingCampaignConfig.template.options, id).reject).toBeUndefined());
+      expect(find(phishingCampaignConfig.topic.options, 'fire_drill').reject).toBeUndefined();
+      expect(find(phishingDispatchConfig.sender.options, 'marketing_carbon').reject).toBeUndefined();
+      expect(find(phishingDispatchConfig.sender.options, 'typosquatting_kadry').reject).toBeUndefined();
+    });
+
+    it('feedback opcji suboptimal nie mówi, że opcja nie działa, ani nie chwali ("dobry wybór")', () => {
+      const subs = [
+        phishingCampaignConfig.template,
+        phishingCampaignConfig.topic,
+        phishingDispatchConfig.sender
+      ]
+        .flatMap((d) => d.options)
+        .filter((o) => o.tier === 'suboptimal' && !o.reject);
+      expect(subs.length).toBe(3);
+      subs.forEach((o) => {
+        expect(o.feedback).toMatch(/zadziała|działa/);
+        expect(o.feedback).not.toMatch(/dobry wybór|nie realizuje|nie tworzy/i);
+      });
+    });
+
     it('opcje nie mają opisów ani tagów spoza VR (poza podtytułami szablonów)', () => {
       const all = [
-        ...phishingCampaignConfig.action.options,
         ...phishingCampaignConfig.topic.options,
         ...phishingDispatchConfig.sender.options
       ];
@@ -227,7 +283,7 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     const state = useMissionStore.getState();
     expect(state.activeMission.mission.id).toBe('mission-2-carbonflow');
     expect(state.score).toBe(100);
-    expect(state.playerChoices.length).toBe(5);
+    expect(state.playerChoices.length).toBe(4);
     expect(state.systemDate).toBe('19.05.2026');
   });
 
@@ -246,7 +302,7 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       __setBridgeDelayForTests(null);
     });
 
-    it('przechodzi wzorcem B przez 5 decyzji w kolejności z VR, odblokowuje etapy i składa paczkę SCORM', () => {
+    it('przechodzi wzorcem B przez 4 decyzje w kolejności z VR, odblokowuje etapy i składa paczkę SCORM', () => {
       const store = useMissionStore.getState();
 
       // Start: po BIOSie kwestia gracza (spójnik) w czacie odblokowuje //PHISHING
@@ -255,23 +311,16 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       expect(useMissionStore.getState().highlightedTileId).toBe('phishing_app');
       expect(useMissionStore.getState().chatAvailableChoices.length).toBe(0);
 
-      // ETAP 1: //PHISHING (D1 akcja, D2 szablon, D3 temat)
+      // ETAP 1: //PHISHING (D1 szablon, D2 temat)
       store.reportDecision({
         num: 1,
-        question: 'WYBIERZ RODZAJ AKCJI:',
-        answer: 'WIRUS 0-DAY',
-        tier: 'ideal',
-        feedback: 'Wirus 0-day bezbłędnie realizuje cel zlecenia.'
-      });
-      store.reportDecision({
-        num: 2,
         question: 'WYBIERZ SZABLON FORMULARZA:',
         answer: 'POODLE FORMS',
         tier: 'ideal',
         feedback: 'Profesjonalny szablon formularza ankietowego.'
       });
       store.reportDecision({
-        num: 3,
+        num: 2,
         question: 'WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:',
         answer: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO',
         tier: 'ideal',
@@ -292,9 +341,9 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       expect(useMissionStore.getState().unlockedIcons).toContain('virus_database_unlocked');
       expect(useMissionStore.getState().highlightedTileId).toBe('virus_database');
 
-      // ETAP 3: Baza Wirusów (D4)
+      // ETAP 3: Baza Wirusów (D3)
       store.reportDecision({
-        num: 4,
+        num: 3,
         question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
         answer: 'ROBAK',
         tier: 'ideal',
@@ -307,9 +356,9 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       expect(useMissionStore.getState().unlockedIcons).toContain('phishing_dispatch_unlocked');
       expect(useMissionStore.getState().highlightedTileId).toBe('phishing_dispatch');
 
-      // ETAP 4: //PHISHING (WYSYŁKA) (D5)
+      // ETAP 4: //PHISHING (WYSYŁKA) (D4)
       store.reportDecision({
-        num: 5,
+        num: 4,
         question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
         answer: 'KADRY@CARDONFLOW.COM',
         tier: 'ideal',
@@ -346,92 +395,123 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       expect(api.GetValue('cmi.score.raw')).toBe('100');
     });
 
-    it('reaguje na błąd krytyczny (np. D4 ransomware) wyzwalając modal dekonspiracji', () => {
+    it('reaguje na błąd krytyczny (D3 ransomware: wykrycie) wyzwalając modal dekonspiracji', () => {
       const store = useMissionStore.getState();
 
       store.reportDecision({
-        num: 4,
+        num: 3,
         question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
-        answer: 'RANSOMWARE – MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ',
+        answer: 'RANSOMWARE',
         tier: 'critical',
-        feedback: 'Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.'
+        feedback: wormBuilderConfig.virus.options.find((o) => o.id === 'ransomware')!.feedback
       });
 
       const state = useMissionStore.getState();
       expect(state.isDetectedModalOpen).toBe(true);
       expect(state.criticalErrorsCount).toBe(1);
-      expect(state.score).toBeLessThan(100);
+      expect(state.score).toBe(75);
       expect(state.detectionReason?.title).toContain('ZOSTAŁEŚ WYKRYTY');
     });
 
-    it('poprawnie nalicza karę punktową i BTC przy wyborze suboptimal w M2', () => {
+    it('poprawnie nalicza karę punktową i BTC przy wyborze suboptimal w M2 (D3 przez odrzucony KEYLOGGER)', () => {
       const store = useMissionStore.getState();
+      const keylogger = wormBuilderConfig.virus.options.find((o) => o.id === 'keylogger')!;
 
-      // Wybór suboptimal dla D4: 50% punktów za decyzję (10 pkt straty ze 100)
-      store.reportDecision({
-        num: 4,
-        question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
-        answer: 'KEYLOGGER – POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE',
-        tier: 'suboptimal',
-        feedback: 'Przechwytuje dane na jednej stacji, nie tworzy botnetu.'
+      // B2: mentor odrzuca KEYLOGGER, kara = pół udziału decyzji (25 pkt / 2), decyzja zostaje otwarta
+      store.rejectDecision({
+        num: 3,
+        question: wormBuilderConfig.virus.question,
+        optionId: keylogger.id,
+        answer: keylogger.label,
+        tier: keylogger.tier,
+        mentorLine: keylogger.reject!.mentorLine
       });
+      let state = useMissionStore.getState();
+      expect(state.decisionTiers[3]).toBeUndefined();
+      expect(state.isDetectedModalOpen).toBe(false);
+      expect(state.score).toBe(87.5);
+      expect(state.chatMessages.at(-1)).toMatchObject({ sender: 'BYTE_MASTER', text: keylogger.reject!.mentorLine });
 
-      const state = useMissionStore.getState();
-      expect(state.score).toBe(90);
-      expect(state.btcReward).toBeCloseTo(2.96 * 0.9, 2);
-      expect(state.goodChoicesCount).toBe(1);
+      // Ponowny wybór ROBAKA nie dokłada kary: pół udziału zapłacone za próbę
+      store.reportDecision({
+        num: 3,
+        question: wormBuilderConfig.virus.question,
+        answer: 'ROBAK',
+        tier: 'ideal',
+        feedback: 'Robak samodzielnie powiela się w sieci i formuje botnet.'
+      });
+      state = useMissionStore.getState();
+      expect(state.score).toBe(87.5);
+      expect(state.btcReward).toBeCloseTo(2.96 * 0.875, 2);
+      expect(state.criticalErrorsCount).toBe(0);
     });
 
-    it('suboptimal w D2 i D5 odejmuje po 10 pkt, a BTC liczy silnik', () => {
+    it('suboptimal (Quickgram w D1, MARKETING w D4) odejmuje po połowie udziału (12,5 pkt), a BTC liczy silnik', () => {
       const store = useMissionStore.getState();
       store.reportDecision({
-        num: 2,
+        num: 1,
         question: 'WYBIERZ SZABLON FORMULARZA:',
         answer: 'Quickgram',
         tier: 'suboptimal',
-        feedback: 'Szablon sieci społecznościowej wzbudza podejrzenia.'
+        feedback: 'Szablon sieci społecznościowej działa, ale wzbudza podejrzenia.'
       });
       store.reportDecision({
-        num: 5,
+        num: 4,
         question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
         answer: 'MARKETING@CARBON.COM',
         tier: 'suboptimal',
-        feedback: 'Skrócona domena jest podejrzana.'
+        feedback: 'Adres zadziała, ale marketing rzadko pisze w sprawach kadrowych.'
       });
       const state = useMissionStore.getState();
-      expect(state.score).toBe(80);
-      expect(state.btcReward).toBeCloseTo(2.96 * 0.8, 2);
+      expect(state.score).toBe(75);
+      expect(state.btcReward).toBeCloseTo(2.96 * 0.75, 2);
       expect(state.goodChoicesCount).toBe(2);
       expect(state.isDetectedModalOpen).toBe(false);
-      expect(state.playerChoices.find((c) => c.num === 5)?.outcome).toBe('suboptimal');
+      expect(state.playerChoices.find((c) => c.num === 4)?.outcome).toBe('suboptimal');
     });
 
-    it('critical w D3 (temat) i D5 (nadawca) uruchamia wykrycie z numerem decyzji', () => {
+    it('B2 w D1, D2 i D4: odrzucone próby nie otwierają modala, nie zamykają decyzji i blokują opcję', () => {
+      const store = useMissionStore.getState();
+      const cases: Array<[number, string, ChoiceOption, string]> = [
+        [1, phishingCampaignConfig.template.question, phishingCampaignConfig.template.options.find((o) => o.id === 'kneenook')!, 'kneenook'],
+        [2, phishingCampaignConfig.topic.question, phishingCampaignConfig.topic.options.find((o) => o.id === 'fruit_thursday')!, 'fruit_thursday'],
+        [4, phishingDispatchConfig.sender.question, phishingDispatchConfig.sender.options.find((o) => o.id === 'catering_oilflow')!, 'catering_oilflow']
+      ];
+      let expected = 100;
+      for (const [num, question, o, id] of cases) {
+        store.rejectDecision({
+          num,
+          question,
+          optionId: o.id,
+          answer: o.label,
+          tier: o.tier,
+          mentorLine: o.reject!.mentorLine
+        });
+        expected -= 12.5;
+        const state = useMissionStore.getState();
+        expect(state.isDetectedModalOpen).toBe(false);
+        expect(state.decisionTiers[num]).toBeUndefined();
+        expect(state.rejectedAttempts[num]?.[0].optionId).toBe(id);
+        expect(state.score).toBe(expected);
+        expect(state.criticalErrorsCount).toBe(0);
+      }
+    });
+
+    it('critical w D3 (RANSOMWARE) uruchamia wykrycie z numerem decyzji i domyślnym tytułem', () => {
       const store = useMissionStore.getState();
       store.reportDecision({
         num: 3,
-        question: 'WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:',
-        answer: 'ULUBIONE OWOCE Z OWOCOWEGO CZWARTKU',
+        question: wormBuilderConfig.virus.question,
+        answer: 'RANSOMWARE',
         tier: 'critical',
-        feedback: 'Błahy temat zostanie zignorowany.'
+        feedback: wormBuilderConfig.virus.options.find((o) => o.id === 'ransomware')!.feedback
       });
-      let state = useMissionStore.getState();
+      const state = useMissionStore.getState();
       expect(state.isDetectedModalOpen).toBe(true);
       expect(state.detectionReason?.choiceNum).toBe(3);
-      expect(state.score).toBe(80);
+      expect(state.detectionReason?.title).toBe('ZOSTAŁEŚ WYKRYTY!');
+      expect(state.score).toBe(75);
       expect(state.criticalErrorsCount).toBe(1);
-
-      store.reportDecision({
-        num: 5,
-        question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
-        answer: 'KATERING@OILFLOW.COM',
-        tier: 'critical',
-        feedback: 'Obca domena zostanie zablokowana.'
-      });
-      state = useMissionStore.getState();
-      expect(state.detectionReason?.choiceNum).toBe(5);
-      expect(state.criticalErrorsCount).toBe(2);
-      expect(state.score).toBe(60);
     });
 
     it('mostki odblokowują kafelki dopiero po kwestii gracza', () => {

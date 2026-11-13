@@ -15,7 +15,6 @@ import { InfoCard, OptionCards, ImageOptionCards } from './ui';
 
 type Screen =
   | 'start'
-  | 'action'
   | 'load_template'
   | 'template'
   | 'load_topic'
@@ -35,7 +34,6 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   const accent = '#38bdf8';
 
   const [screen, setScreen] = useState<Screen>('start');
-  const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [isImported, setIsImported] = useState(false);
@@ -45,11 +43,9 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
   const listSize = config.mailingList.recipients.length;
 
   // Opcje w losowej kolejności (raz przy zamontowaniu aplikacji; od nowa przy powtórce misji).
-  const actionOptions = useShuffled(config.action.options);
   const templateOptions = useShuffled(config.template.options);
   const topicOptions = useShuffled(config.topic.options);
 
-  const selectedAction = config.action.options.find((o) => o.id === selectedActionId);
   const selectedTemplate = config.template.options.find((o) => o.id === selectedTemplateId);
   const selectedTopic = config.topic.options.find((o) => o.id === selectedTopicId);
 
@@ -92,18 +88,6 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
       </div>
     </div>
   );
-
-  const handleActionConfirm = () => {
-    if (!selectedAction) return;
-    if (submitDecision({ decisionNum: config.action.decisionNum, question: config.action.question }, selectedAction, { onDecision, rejectDecision }) === 'rejected') {
-      setSelectedActionId(null);
-      return;
-    }
-    sounds.playSuccess();
-    if (selectedAction.tier !== 'critical') {
-      setScreen('load_template');
-    }
-  };
 
   const handleTemplateConfirm = () => {
     if (!selectedTemplate) return;
@@ -173,7 +157,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
               type="button"
               onClick={() => {
                 sounds.playClick();
-                setScreen('action');
+                setScreen('load_template');
               }}
               className="w-full max-w-md p-8 rounded-2xl border-2 text-center space-y-3 transition-all duration-150 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
               style={{
@@ -191,20 +175,6 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         </div>
       )}
 
-      {screen === 'action' &&
-        choiceScreen(
-          'KONFIGURACJA KAMPANII: RODZAJ AKCJI',
-          'Wybierz rodzaj akcji, którą przeprowadzisz przeciwko CarbonFlow Inc.',
-          'KROK 1/4',
-          actionOptions,
-          selectedActionId,
-          setSelectedActionId,
-          'ZATWIERDŹ RODZAJ AKCJI',
-          !!selectedAction,
-          handleActionConfirm,
-          config.action.decisionNum
-        )}
-
       {screen === 'load_template' && (
         <ModuleLoader
           label="Pobieranie bazy szablonów formularzy..."
@@ -218,7 +188,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         choiceScreen(
           'KONFIGURACJA KAMPANII: SZABLON FORMULARZA',
           'Wybierz szablon formularza, w którym ofiary otrzymają link.',
-          'KROK 2/4',
+          'KROK 1/3',
           templateOptions,
           selectedTemplateId,
           setSelectedTemplateId,
@@ -242,7 +212,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
         choiceScreen(
           'KONFIGURACJA KAMPANII: TEMAT I PRZYNĘTA',
           'Wybierz temat ankiety, który ma zainteresować pracowników.',
-          'KROK 3/4',
+          'KROK 2/3',
           topicOptions,
           selectedTopicId,
           setSelectedTopicId,
@@ -259,7 +229,7 @@ export const PhishingCampaignApp: React.FC<BlockProps<PhishingCampaignConfig>> =
             isImported
               ? 'Baza jest załadowana. Zapisz kampanię.'
               : 'Zaimportuj bazę adresatów, aby zaadresować kampanię.',
-            'KROK 4/4'
+            'KROK 3/3'
           )}
 
           {isImporting ? (
