@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audyt złych wyborów</title>
+<style>
+:root{
+  --bg:#f6f7f9;--panel:#ffffff;--ink:#16181d;--muted:#5d6472;--line:#e2e5ea;
+  --accent:#0b7a4b;--accent-soft:#e3f4ec;
+  --high:#b42318;--high-soft:#fdecea;--mid:#a15c07;--mid-soft:#fdf3e1;--low:#475467;--low-soft:#eef0f3;
+  --a:#1d5fbf;--a-soft:#e6eefb;--b:#7a2bbf;--b-soft:#f1e8fb;--c:#475467;--c-soft:#eef0f3;
+  --code:#f0f2f5;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1115;--panel:#171a20;--ink:#e7e9ee;--muted:#9aa3b2;--line:#2a2f38;
+    --accent:#3ddc97;--accent-soft:#12291f;
+    --high:#ff8a80;--high-soft:#3a1714;--mid:#f5b454;--mid-soft:#33260f;--low:#b4bcc8;--low-soft:#242932;
+    --a:#7fb0ff;--a-soft:#16243b;--b:#c79bff;--b-soft:#27193a;--c:#b4bcc8;--c-soft:#242932;
+    --code:#222731;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1115;--panel:#171a20;--ink:#e7e9ee;--muted:#9aa3b2;--line:#2a2f38;
+  --accent:#3ddc97;--accent-soft:#12291f;
+  --high:#ff8a80;--high-soft:#3a1714;--mid:#f5b454;--mid-soft:#33260f;--low:#b4bcc8;--low-soft:#242932;
+  --a:#7fb0ff;--a-soft:#16243b;--b:#c79bff;--b-soft:#27193a;--c:#b4bcc8;--c-soft:#242932;
+  --code:#222731;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:32px 16px 80px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px}
+h2{font-size:20px;margin:44px 0 12px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:22px 0 8px}
+p{margin:8px 0}
+.sub{color:var(--muted);margin:0 0 22px}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:13px;font-family:ui-monospace,Consolas,monospace;word-break:break-word}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:18px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.stat b{display:block;font-size:24px;line-height:1.1}
+.stat span{color:var(--muted);font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0}
+.callout{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:12px 16px;margin:14px 0}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.tools .card h3{margin-top:0}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-weight:600}
+.tablewrap{overflow-x:auto}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.W{background:var(--high-soft);color:var(--high)}
+.S{background:var(--mid-soft);color:var(--mid)}
+.N{background:var(--low-soft);color:var(--low)}
+.fA{background:var(--a-soft);color:var(--a)}
+.fB{background:var(--b-soft);color:var(--b)}
+.fC{background:var(--c-soft);color:var(--c)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2}
+.filters button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:5px 12px;border-radius:999px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters .sep{width:1px;background:var(--line);margin:0 4px}
+details.f{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+details.f summary{cursor:pointer;padding:10px 14px;list-style:none;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+details.f summary::-webkit-details-marker{display:none}
+details.f summary .id{font-family:ui-monospace,Consolas,monospace;font-size:13px;color:var(--muted);min-width:56px}
+details.f summary .t{flex:1 1 300px;font-weight:600}
+details.f[open] summary{border-bottom:1px solid var(--line)}
+.fb{padding:4px 14px 12px}
+.fb dl{margin:0;display:grid;grid-template-columns:120px 1fr;gap:6px 12px}
+.fb dt{color:var(--muted);font-size:13px;padding-top:2px}
+.fb dd{margin:0}
+@media (max-width:600px){.fb dl{grid-template-columns:1fr}.fb dt{padding-top:8px}}
+.count{color:var(--muted);font-size:13px;margin:6px 0}
+ol li,ul li{margin:4px 0}
+.small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Audyt złych wyborów — M1–M4</h1>
+<p class="sub">13.11.2026 · audyt tylko odczytem (kod, dane, scenariusze) · każde ustalenie WYSOKIE sprawdzone ponownie w kodzie · stan kodu: commit <code>5814fd8</code></p>
+<p class="small">Zamrożony zapis audytu — nie edytować. Postęp poprawek, statusy i decyzje: <code>audyt-zle-wybory-postep.md</code> w tym samym folderze.</p>
+
+<div class="stats" id="stats"></div>
+
+<div class="callout">
+<b>Wniosek w jednym zdaniu:</b> wszystkie cztery misje mają fabułę napisaną pod ścieżkę idealną. Wybór „suboptimal” zmienia dziś tylko punkty w raporcie, a nie to, co gracz widzi — dlatego po złym wyborze gra opowiada historię, której gracz nie zbudował. Część opcji „suboptimal” w ogóle nie może pójść dalej (inny wirus, inna ofiara, inny adres) i trzeba je zablokować, a resztę obsłużyć prostym mechanizmem pamięci wyborów w silniku.
+</div>
+
+<h2>1. Trzy przyczyny źródłowe</h2>
+<ol>
+<li><b>Silnik nie pamięta, którą opcję gracz wybrał.</b> <code>DecisionReport</code> nie ma <code>optionId</code>, <code>playerChoices</code> jest z góry wypełnione odpowiedziami idealnymi, a beaty rozmowy, pasek ZADANIE i <code>highlightTile</code> nie mają warunków. Misje obchodzą to dopasowaniem po tekście etykiety albo własnymi kluczami w <code>customState</code> — a większość tekstów po prostu zakłada ideał (ENG-04).</li>
+<li><b>„Suboptimal” nadawany opcjom, które zmieniają fabułę, a nie jej jakość.</b> Inny typ wirusa (M2 keylogger, M3 ransomware, M4 RAT), inna ofiara (M3 Wiktoria/Agnieszka), zły adres lub auto (M3 dron) — a ich własny feedback opisuje porażkę („nie tworzy botnetu”, „nie trafi do ofiary”, „zablokuje wykradzenie”). Gra i tak prowadzi dalej, jakby wybrano ideał.</li>
+<li><b>Decyzje ocenia się w izolacji, choć zależą od wcześniejszych.</b> M1 D3→D4 (nadawca vs adres), M3 D3→D4 (plan HR vs podpis „AFTERPARTY”), M4 D2→D9 (słaby klucz vs „nie odszyfrują”), M1 D1→D2 (ścieżka muffinowa).</li>
+</ol>
+
+<h2>2. Proponowana reguła: kiedy „gra idzie za wyborem”, a kiedy „nie pozwól wybrać źle”</h2>
+<div class="callout"><b>Test jednego pytania:</b> czy historia może iść dalej <i>z tym konkretnym wyborem</i> bez przepisywania kolejnych etapów? Jeśli nie — opcja nie może być <code>suboptimal</code>.</div>
+<div class="tools">
+  <div class="card"><h3><span class="chip fB">B1</span> Twarda blokada → critical</h3>
+  <p>Gdy opcja kończy się wykryciem albo udaremnia cel misji (zły adres drona, kod-rozrywka w negocjacjach, wirus sprzeczny z celem).</p>
+  <p class="small">Wymaga ENG-15: modal z własnym tytułem („OPERACJA NIEUDANA” zamiast zawsze „ZOSTAŁEŚ WYKRYTY!”).</p></div>
+  <div class="card"><h3><span class="chip fB">B2</span> Miękka blokada → korekta mentora</h3>
+  <p>Gdy opcja jest sprzeczna z planem, ale nikt nas nie wykrył (np. RAT zamiast ransomware w M4). Mentor odrzuca: „RAT nie da nam szantażu — wybierz jeszcze raz”. Kara za pierwszy wybór zostaje, gra idzie dalej tylko z poprawną opcją.</p>
+  <p class="small">Nowa funkcja klocka (propozycja): <code>option.reject = { mentorLine }</code>.</p></div>
+  <div class="card"><h3><span class="chip fA">A</span> Gra idzie za wyborem</h3>
+  <p>Gdy opcja to ten sam plan w gorszej jakości (słabszy temat maila, nadawca z obcej domeny, niepełny zestaw plików). Treść pokazuje wybór gracza, a konsekwencja wraca 1–2 etapy później (alarm, mniej plików, <code>btcPenalty</code>, „Widok Blue Teamu”).</p>
+  <p class="small">Wymaga ENG-04: pamięć wyborów + warunkowe beaty + szablony tekstu.</p></div>
+</div>
+<p><b>M1 (samouczek):</b> głównie B i łagodne A — gracz ma się nauczyć, nie zgubić. <b>M2–M4:</b> B1/B2 dla opcji zmieniających fabułę, A z odroczoną konsekwencją dla opcji „jakościowych” — to dokładnie obietnica z <code>mission-standard.md</code>, której dziś żadna misja nie realizuje.</p>
+
+<h2>3. Proponowane zmiany poziomów (same dane, szybki efekt)</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Misja</th><th>Decyzja / opcja</th><th>Dziś</th><th>Propozycja</th><th>Powód</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>D2 wariant muffin: <code>guide_muffins</code></td><td>ideal</td><td>suboptimal</td><td>Anita szukała porad biegowych, nie przepisów (M1-06)</td></tr>
+<tr><td>M2</td><td>D1 SZKOLENIE Z BEZPIECZEŃSTWA IT</td><td>suboptimal</td><td>critical lub usunąć D1</td><td>„nie instaluje złośliwego oprogramowania”; D1 dubluje D4 (M2-03)</td></tr>
+<tr><td>M2</td><td>D4 KEYLOGGER</td><td>suboptimal</td><td>critical (albo B2)</td><td>„nie tworzy botnetu”, a gra buduje botnet (M2-02)</td></tr>
+<tr><td>M3</td><td>D1 RANSOMWARE</td><td>suboptimal</td><td>critical</td><td>„zablokuje możliwość cichego wykradzenia” (M3-02)</td></tr>
+<tr><td>M3</td><td>D1 KEYLOGGER</td><td>critical</td><td>suboptimal + odroczony skutek, albo critical z tytułem „OPERACJA NIEUDANA”</td><td>feedback mówi o nieskuteczności, nie wykryciu (M3-03)</td></tr>
+<tr><td>M3</td><td>D2 WIKTORIA GAŁECKA, AGNIESZKA LEMAN</td><td>suboptimal</td><td>critical</td><td>4 etapy opowiadają potem o Mateuszu (M3-01)</td></tr>
+<tr><td>M3</td><td>D5 OŁAWSKA 51B, DRZYMAŁY 38D</td><td>suboptimal</td><td>critical</td><td>„ładunek nie trafi do rąk ofiary”, a trafia (M3-04)</td></tr>
+<tr><td>M3</td><td>D6 7 złych aut</td><td>suboptimal</td><td>critical</td><td>„trafi do przypadkowego sąsiada”, a wirusa uruchamia Mateusz (M3-05)</td></tr>
+<tr><td>M3</td><td>D4 podpis / nazwa dysku przy planie HR</td><td>stałe</td><td>zależne od <code>m3_plan</code></td><td>spójna legenda karana, niespójna nagradzana (M3-06)</td></tr>
+<tr><td>M4</td><td>D1 RAT</td><td>suboptimal</td><td>critical albo B2</td><td>reszta misji to ransomware (M4-01)</td></tr>
+<tr><td>M4</td><td>D10 „ROBIĘ TO DLA ZABAWY :D”</td><td>suboptimal</td><td>critical</td><td>„niszczy szansę na okup”, a rozmowa toczy się dalej (M4-03)</td></tr>
+</tbody></table></div>
+<p class="small">Uwaga projektowa: więcej opcji critical = więcej powtórek. Przy błędzie w etapie 4–5 M3 powtórka od początku boli; warto rozważyć powtórkę od bieżącego etapu albo B2 tam, gdzie nikt nas nie wykrył.</p>
+
+<h2>4. Kolejność prac</h2>
+<ol>
+<li><b>Poprawki silnika bez decyzji projektowych</b> (ok. 1 dzień): ENG-01 (SCORM po „OD POCZĄTKU”), ENG-02 (próg zaliczenia w raporcie), ENG-06 (idempotentne liczenie wyniku), ENG-08 (timery DialogueTree), ENG-11 (zaokrąglanie), usunięcie WRÓĆ w M1 (M1-02).</li>
+<li><b>Przejście po poziomach</b> — tabela z sekcji 3. Same zmiany w <code>stages.ts</code>/JSON + feedback; usuwa większość WYSOKICH ustaleń bez nowego kodu.</li>
+<li><b>Pamięć wyborów w silniku</b> (ENG-04): <code>choices[num] = {optionId, label, tier}</code> bez seedu, warunek <code>when</code> na beatach rozmowy, szablony <code>{{choice:5.label}}</code> w ZADANIU i czacie, lekcja w raporcie per opcja (ENG-16), konfigurowalny tytuł modala (ENG-15), opcjonalnie <code>option.reject</code> (B2).</li>
+<li><b>Konsekwencje odroczone per misja</b> na nowym API: M2 monitor botnetu z poziomów D1–D5, M3 sesja RAT po słabym podpisie, M4 status C2 z <code>m4_mail</code>/nadawcy i wariant negocjacji po słabym kluczu.</li>
+<li><b>Teksty i drobne</b>: spoilery, „DOSKONAŁA ROBOTA”, niejednoznaczne formaty, jednostki, liczniki X/3.</li>
+<li><b>Decyzja do podjęcia:</b> czy ukrywać WYNIK/BTC na pasku zadań w M2+ (ENG-17) — bez tego odroczona konsekwencja jest od razu widoczna jako spadek procentów.</li>
+</ol>
+
+<h2>5. Ustalenia</h2>
+<div class="filters" id="filters"></div>
+<div class="count" id="count"></div>
+<div id="list"></div>
+
+<h2>6. Sprawdzone i spójne</h2>
+<ul>
+<li><b>Silnik:</b> pamięć aplikacji (<code>AppHost</code> + <code>appRunId</code>) i pełny reset przy każdej powtórce; timery mostków i <code>ModuleLoader</code>/<code>TimeJump</code> sprzątają po sobie; podwójne kliknięcia zablokowane w <code>ChoiceCards</code>/<code>DialogueTree</code>; critical nigdy nie wywołuje <code>onComplete</code>; misje liniowe, nie ma ścieżki utknięcia w SCORM; liczba decyzji = liczba wierszy raportu we wszystkich misjach.</li>
+<li><b>M1:</b> OSINT (profil prywatny jako bramka), Social Intel, wybór drogi ataku, D1/D2 poza ścieżką muffin, zamykanie aplikacji w trakcie kroku.</li>
+<li><b>M2:</b> podgląd maila bierze temat, szablon i nadawcę z faktycznych wyborów; critical zatrzymuje etap; brak przycisków wstecz; zły IP w VPN tylko blokuje.</li>
+<li><b>M3:</b> zdrapka zależna od D1; plik na pendrive blokowany, gdy nie pasuje do planu D3 (dobre B); koperta i nazwa dysku w //DRON i //RAT z <code>m3_usb</code>; przeskoki czasu; //TOR w trybie odczytu po ukończeniu.</li>
+<li><b>M4:</b> miniatura okna okupu w czacie idzie za D3/D4; keylogger, 8 znaków, NEWRAWGOODS, „JUŻ WAM NIE PRZESZKADZAM”, „CHCĘ DOSTĘPU DO PLIKÓW FREEVOLT” spójne ze swoim poziomem; nie ma ponownego zgłaszania decyzji.</li>
+</ul>
+<p class="small">Testy: <code>npx vitest run</code> — 26 plików, 328 testów, wszystkie zielone. Żaden z testów nie wyłapuje ustaleń z tego raportu. Ustalenia M1–M4 pochodzą z czytania kodu (bez przejścia w przeglądarce); ENG-01 i ENG-06 potwierdzone testem-sondą.</p>
+
+</div>
+
+<script>
+const F = [
+// ---------------- SILNIK ----------------
+{id:"ENG-01",m:"ENG",sev:"W",fix:"C",t:"Po „OD POCZĄTKU” wynik nie zapisuje się w Moodle",
+ w:"useMissionStore.ts:730 (finishBiosBoot → scorm2004.initialize), scorm2004.ts:164-192, 280-286",
+ r:"Critical (albo ↺ na pasku) → „OD POCZĄTKU” → BIOS → przejście misji.",
+ s:"Drugie <code>API.Initialize('')</code>; prawdziwy LMS zwraca „false” (błąd 103), <code>isConnected=false</code>, <code>saveResult</code> kończy się „Nie odnaleziono interfejsu SCORM 2004”. Ukończona misja nie trafia do dziennika — dokładnie na ścieżce błędu. Mock zawsze zwraca „true”, więc testy tego nie widzą.",
+ f:"<code>initialize()</code> idempotentne (<code>if (this.isConnected) return true</code>), błąd 103 traktować jako połączenie, <code>startTime</code> tylko przy pierwszej inicjalizacji, tryb „strict” w mocku + test regresyjny."},
+{id:"ENG-02",m:"ENG",sev:"W",fix:"C",t:"Raport pokazuje ZALICZONO, a SCORM zapisuje failed",
+ w:"DebriefApp.tsx:489-491 (score ≥ 70), :358 (≥ 80), :496 („/ 100 PKT” na sztywno)",
+ r:"M2/M3/M4 (próg 80) z wynikiem 70–79, np. 3 × suboptimal w M3 = 75.",
+ s:"Modal: „ZALICZONO (PASSED)”, a do Moodle idzie <code>failed</code>.",
+ f:"Jedna funkcja <code>scormStatus(score, mission.passingScore)</code> (jest w core/scoring.ts:54) dla modala, paska i SCORM."},
+{id:"ENG-03",m:"ENG",sev:"W",fix:"C",t:"„TYLKO NAJLEPSZY WYNIK ZOSTANIE ZAPISANY” — nieprawda",
+ w:"Desktop.tsx:467, useMissionStore.ts:508-514, 830-864",
+ r:"Misja na 100 → POWTÓRZ ZADANIE → BEZ INTRO → gorszy wynik.",
+ s:"<code>saveMissionResult</code> nadpisuje <code>cmi.score.raw</code> niższym wynikiem.",
+ f:"Czytać dotychczasowy wynik w <code>initialize</code> i zapisywać tylko gdy <code>score ≥ best</code>; inaczej zmienić tekst modala."},
+{id:"ENG-04",m:"ENG",sev:"W",fix:"A",t:"Silnik nie pamięta wybranej opcji — treść nie może iść za graczem",
+ w:"types/mission.ts:148-159, 298-320; useMissionStore.ts:246-255, 293-298",
+ r:"Dowolny wybór inny niż idealny.",
+ s:"Store trzyma tylko tekst odpowiedzi; <code>playerChoices</code> startuje wypełnione ideałami (przed decyzją selektor zwraca odpowiedź idealną — fallback <code>NEUTRAL_TOPIC</code> w M2 jest nieosiągalny, tryb dev pokazuje ideały). Beaty rozmów, ZADANIE i <code>highlightTile</code> są statyczne. Misje dopasowują po etykiecie (M1, M2, M4) albo trzymają własne klucze (<code>m3_plan</code>, <code>m4_mail</code>).",
+ f:"<code>choices: Record&lt;number,{optionId,label,answer,tier}&gt;</code> tylko ze zgłoszeń; <code>DecisionReport.optionId</code>; <code>ConversationBeat.when = {decision, optionId?|tier?}</code>; <code>resolveText('{{choice:5.label}}')</code> w czacie, ZADANIU i pytaniach klocków; raport czyta <code>choices</code>, <code>step6</code> tylko jako treść lekcji. Korzystają wszystkie 4 misje."},
+{id:"ENG-15",m:"ENG",sev:"S",fix:"C",t:"Każdy critical ma tytuł „ZOSTAŁEŚ WYKRYTY!”, także porażki bez wykrycia",
+ w:"useMissionStore.ts:523, Desktop.tsx:415",
+ r:"M3 keylogger, M3 „pusty asfalt”, M4 D5/D6 critical, M2 D1–D3 critical.",
+ s:"Nagłówek „WYKRYTY”, a szczegóły: „nie gwarantuje dostępu…”, „mail zostanie pominięty…”.",
+ f:"Pole <code>failTitle</code> na opcji/etapie (np. „OPERACJA NIEUDANA”), domyślnie „ZOSTAŁEŚ WYKRYTY!”."},
+{id:"ENG-16",m:"ENG",sev:"S",fix:"A",t:"Lekcja w raporcie zawsze opisuje opcję idealną pod nagłówkiem „dlaczego to zadziałało”",
+ w:"DebriefApp.tsx:92, 221-229; lekcje w step6 per decyzja, nie per opcja",
+ r:"M3 z ransomware → raport.",
+ s:"„TWOJA ODPOWIEDŹ: RANSOMWARE”, a pod spodem „Atak — dlaczego to zadziałało: RAT daje zdalny pulpit…”.",
+ f:"Dla wyboru nieidealnego nagłówek „Co zadziałałoby lepiej”, albo opcjonalna lekcja per opcja."},
+{id:"ENG-17",m:"ENG",sev:"S",fix:"C",t:"WYNIK i BTC na pasku zadań zdradzają słaby wybór natychmiast",
+ w:"Taskbar.tsx:87-93",
+ r:"Dowolny suboptimal.",
+ s:"Pasek od razu pokazuje spadek (np. „91.66666666666667%”) — konsekwencja „odroczona” jest widoczna w sekundę.",
+ f:"W M2+ ukryć WYNIK do raportu albo pokazywać tylko BTC zmieniane przez konsekwencje fabularne. Decyzja właściciela."},
+{id:"ENG-05",m:"ENG",sev:"S",fix:"A",t:"Reakcja mentora na odpowiedź w intrze nigdy się nie wyświetla",
+ w:"types/mission.ts:22 (mentorReaction), BootSequence.tsx:124-130, useMissionStore.ts:196, 412-416",
+ r:"M1 node_7 → „PRZEJMĘ ICH SOCIAL MEDIA…”.",
+ s:"Korekta mentora („ALE NAJPIERW OSINT”) nie pojawia się; po „BEZ INTRO” historia czatu pokazuje odpowiedź idealną zamiast wybranej.",
+ f:"Zapamiętywać <code>introReplies[dialogId]=optionId</code>, grać <code>mentorReaction</code> jako dymek, w <code>retryFromChoices</code> przenieść <code>introReplies</code>."},
+{id:"ENG-06",m:"ENG",sev:"S",fix:"C",t:"Ponowne zgłoszenie tej samej decyzji psuje punktację",
+ w:"useMissionStore.ts:432-480",
+ r:"Patrz M1-02 (przycisk WRÓĆ). Sonda: suboptimal 2× → 83,33 zamiast 91,67; suboptimal potem ideal → wiersz „IDEALNY”, wynik nadal obniżony.",
+ s:"Liczniki i wynik liczone przyrostowo, bez sprawdzenia numeru decyzji.",
+ f:"Wynik i liczniki wyliczać z rekordów (<code>max − Σ kara(tier)</code>); drugie zgłoszenie tego samego <code>num</code> ignorować."},
+{id:"ENG-07",m:"ENG",sev:"S",fix:"C",t:"Interakcje SCORM prawdopodobnie odrzucane przez Moodle",
+ w:"useMissionStore.ts:834-840, scorm2004.ts:317-327",
+ r:"Każda decyzja.",
+ s:"<code>type:'choice'</code> z polską etykietą ze spacjami jako <code>learner_response</code> — niezgodne ze SCORM 2004; wynik <code>SetValue</code> ignorowany. Suboptimal i critical dostają to samo <code>incorrect</code>. Do potwierdzenia w Moodle: Raporty → Interakcje.",
+ f:"<code>learner_response = optionId</code> (po ENG-04) albo <code>long-fill-in</code>; <code>result</code> jako liczba lub <code>neutral</code> dla suboptimal."},
+{id:"ENG-08",m:"ENG",sev:"S",fix:"C",t:"Timery DialogueTree przeżywają powtórkę",
+ w:"DialogueTree.tsx:182-198, 240-248",
+ r:"M4 //CZAT_Z_OFIARĄ: ostatnia kwestia → w ciągu 1,6 s ↺ → BEZ INTRO.",
+ s:"Stary timer woła <code>completeStage('negotiation')</code> w nowym podejściu: etap zaliczony, raport odblokowany.",
+ f:"Id timerów w <code>useRef</code> + cleanup; w silniku ignorować callbacki z nieaktualnym <code>appRunId</code>."},
+{id:"ENG-09",m:"ENG",sev:"S",fix:"C",t:"Tryb aggregate DialogueTree: odpowiedź z ostatniej tury, poziom z najgorszej",
+ w:"DialogueTree.tsx:253",
+ r:"Dziś żadna misja nie używa aggregate — problem ukryty.",
+ s:"Suboptimal w turze 1 + ideal w turze 2 → „DOBRY” z pochwałą tury 2.",
+ f:"Raportować opcję o najgorszym poziomie albo całą ścieżkę „A → B”."},
+{id:"ENG-10",m:"ENG",sev:"S",fix:"C",t:"Brak wznowienia sesji SCORM (suspend_data zapisywane, nieczytane)",
+ w:"scorm2004.ts (brak cmi.entry / cmi.exit=suspend), useMissionStore.ts:842-847",
+ r:"Zamknięcie karty w trakcie misji.",
+ s:"Start od zera — spójnie, ale postęp przepada.",
+ f:"Świadoma decyzja: albo wznowienie od początku pierwszego nieukończonego etapu, albo przestać pisać <code>suspend_data</code> i opisać to w dokumentacji."},
+{id:"ENG-11",m:"ENG",sev:"N",fix:"C",t:"Wynik z długimi ułamkami w UI i w SCORM",
+ w:"DebriefApp.tsx:347, 355, 496; Taskbar.tsx:93; scorm2004.ts:301, 336",
+ r:"M3 z jednym suboptimal.",
+ s:"„91.66666666666667%”, „75.00000000000001”.",
+ f:"<code>Math.round</code> do wyświetlania, <code>toFixed(2)</code> do SCORM."},
+{id:"ENG-12",m:"ENG",sev:"N",fix:"C",t:"completeStage nadpisuje trwający mostek",
+ w:"useMissionStore.ts:550-576, 625",
+ r:"Tylko przy etapach równoległych (dziś tylko tryb dev).",
+ s:"Gubią się beaty i odblokowania poprzedniego etapu.",
+ f:"Kolejkować mostki jak <code>queuedOpenings</code>."},
+{id:"ENG-13",m:"ENG",sev:"N",fix:"C",t:"Podpowiedzi T1/T2 opisane jako mechanizm silnika — nie istnieją",
+ w:"player-guidance.md pkt 5; Desktop.tsx:92-104",
+ r:"—",
+ s:"Jest tylko ogólny „WSKAZÓWKA [?]” i lokalne podpowiedzi minigier.",
+ f:"Hook <code>useIdleHint</code> albo poprawić dokumentację."},
+{id:"ENG-14",m:"ENG",sev:"N",fix:"C",t:"Tryb ?dev=1 znika po powtórce",
+ w:"devMode.ts, App.tsx:24",
+ r:"?dev=1 → critical → powtórka.",
+ s:"Kafelki znowu zablokowane. W SCORM bez wpływu. Przy okazji: <code>openDebrief</code> (xAPI) nigdzie nie wywoływany.",
+ f:"Ponownie stosować dev mode po resecie."},
+
+// ---------------- M1 ----------------
+{id:"M1-01",m:"M1",sev:"W",fix:"C",t:"D4: ideał to domena-sobowtór PETR0LOG.COM, a raport uczy o spoofingu i SPF/DKIM",
+ w:"stages.ts:768-774 vs data/mission1.json:231-235, scenario.md:113, 149-150, EmailSenderApp.tsx:276",
+ r:"Dowolna ścieżka, nawet idealna → raport, decyzja 4.",
+ s:"„Twoja decyzja: Fałszywa domena łudząco podobna…” obok „Atak: Spoofing: podrobiony adres w firmowej domenie”. Obrona radzi SPF/DKIM/DMARC — to nie chroni przed petr0log.com. Loader: „ANALIZA ZABEZPIECZEŃ SPF/DKIM”.",
+ f:"Ujednolicić scenario.md, step6 (answer/details/attack/defense) i loader z wersją petr0log: sygnał = podmieniony znak, obrona = porównanie domeny znak po znaku, oznaczanie poczty z zewnątrz, blokowanie podobnych domen. Błąd merytoryczny."},
+{id:"M1-02",m:"M1",sev:"W",fix:"B",t:"Przycisk WRÓĆ w poczcie zgłasza D3 drugi raz",
+ w:"EmailSenderApp.tsx:214-219, 119-132; useMissionStore.ts:462-469",
+ r:"D3 PREZES BUCZEK → WRÓĆ → JAKUB → reszta idealna.",
+ s:"Wszystkie decyzje zielone, a u góry „3 IDEALNE / 1 DOBRE”, 87,5% i obcięte BTC — i to idzie do SCORM. PREZES 2× = podwójna kara.",
+ f:"Usunąć WRÓĆ po zatwierdzeniu D3 (D1/D2 też są jednorazowe) + ENG-06."},
+{id:"M1-03",m:"M1",sev:"W",fix:"A",t:"D3 = Prezes Buczek, a D4 proponuje tylko adresy Kwiatkowskiego",
+ w:"stages.ts:749-776, EmailPreview.tsx:35-50, 101, VictimMonitorApp.tsx:130-131, 159, 165",
+ r:"D3 PREZES BUCZEK → D4 dowolny niekrytyczny adres.",
+ s:"„OD: PREZES BUCZEK &lt;k.kwiatkowski@petr0log.com&gt;”; monitor: „Anita… widzi rekomendację od zaufanego współpracownika”.",
+ f:"Opcje D4 zależne od D3 (wzorem <code>payloadByDomain</code>: <code>senderEmailBySender</code> z p.buczek@…), stopka ofiary zależna od nadawcy. Uczy, że nadawca i adres muszą pasować."},
+{id:"M1-04",m:"M1",sev:"W",fix:"A",t:"Monitor ofiary zawsze mówi o „poradniku biegowym”, niezależnie od pliku",
+ w:"VictimMonitorApp.tsx:152-156, 200, 206-208, 230",
+ r:"D1 DALEKBIEG.INFO → D2 „TAPETY DLA BIEGACZY NA TELEFON”.",
+ s:"Mail: „Mają super poradnik dla biegaczy długodystansowych!”; strona pod nagłówkiem TAPETY opisuje plany treningowe; stopka „pobrać poradnik biegowy”; przycisk „POBIERZ PAKIET TAPET”. Payload sprawdzany tylko w gałęzi muffin.",
+ f:"Mapa <code>byPayload</code> w configu (tekst maila, opis strony, stopka) zamiast sprawdzania nazwy domeny."},
+{id:"M1-05",m:"M1",sev:"W",fix:"C",t:"Każdy suboptimal kończy się pełnym sukcesem i „DOSKONAŁA ROBOTA”",
+ w:"stages.ts:959, VictimMonitorApp.tsx:276-286, PhishingBuilderApp.tsx:394",
+ r:"MUFINA + PREZES + @HACK.COM → do końca.",
+ s:"Feedback: „nie budzi zaufania”, „wysoce podejrzana”, „łatwa do wykrycia”; ofiara klika, „DOSTĘP DOMENOWY: ADMIN”; mentor „DOSKONAŁA ROBOTA… ZASŁUŻYŁEŚ NA SWOJĄ DOLĘ”. Wynik 62,5% &lt; próg 75 → SCORM failed.",
+ f:"Teraz: neutralna kwestia („OFIARA POBRAŁA PLIK, MAMY DOSTĘP…”), ocena zostaje w raporcie. Po ENG-04: wariant „Anita się zawahała, SOC dostał alert”."},
+{id:"M1-06",m:"M1",sev:"S",fix:"A",t:"Ścieżka muffinowa: pełne punkty za przynętę, której ofiara nie szukała",
+ w:"stages.ts:674-686 vs :594, :618",
+ r:"D1 MUFINA.ORG.PL (suboptimal) → D2 „PORADNIK KULINARNY” (ideal).",
+ s:"Pełne punkty i „wzbudza zaufanie”, choć mentor mówił, że Anita szuka porad biegowych.",
+ f:"W wariancie muffin <code>guide_muffins</code> → suboptimal z dopiskiem „Anita szukała porad biegowych, nie przepisów”."},
+{id:"M1-07",m:"M1",sev:"S",fix:"B",t:"Wstrzyknięcie wirusa tylko przeciąganiem HTML5 — na dotyku nie da się przejść",
+ w:"PhishingBuilderApp.tsx:186-191, 209-212; WebsitePreview.tsx:229-243",
+ r:"Ekran dotykowy / tablet w Moodle → krok 3/3.",
+ s:"„PRZECIĄGNIJ NA PRZYCISK STRONY ←” — brak <code>dragstart</code> na dotyku, etap nie do ukończenia.",
+ f:"<code>usePointerDrag</code> z <code>onTap</code>, jak w M3 (DroneApp, FreevoltFiles)."},
+{id:"M1-08",m:"M1",sev:"N",fix:"C",t:"Treść maila w trzech różnych wersjach",
+ w:"EmailPreview.tsx:69-101, EmailSenderApp.tsx:332-343, VictimMonitorApp.tsx:143-159; config emailBody/emailSubject (stages.ts:794-801) nieużywany",
+ r:"Porównać podgląd D3/D4, podsumowanie i skrzynkę Anity.",
+ s:"Raz „Cześć Anita…”, raz bez, różne sformułowania.",
+ f:"Jeden komponent treści maila z tekstem z configu."},
+{id:"M1-09",m:"M1",sev:"N",fix:"C",t:"Stanowisko Anity niespójne",
+ w:"stages.ts:146 vs :160",
+ r:"Wybór Anity w OSINT → SOCIAL_MEDIA.",
+ s:"„Specjalista ds. Rozliczeń” vs „Specjalista ds. Księgowości”.",
+ f:"Ujednolicić."},
+
+// ---------------- M2 ----------------
+{id:"M2-01",m:"M2",sev:"W",fix:"A",t:"Brak odroczonych konsekwencji — monitor botnetu zawsze taki sam",
+ w:"stages.ts (brak btcPenalty), stages.ts:263-267, BotnetMonitorApp.tsx:110-111; scenario.md etap 5 sam to przyznaje",
+ r:"D1–D5 same suboptimal.",
+ s:"Ten sam monitor co przy ideale: 82%, „0 ALARMÓW”, „ŁADUNEK 0-DAY NIEWYKRYTY”, potem „NIEŹLE CI POSZŁO”.",
+ f:"% penetracji, liczba alarmów IDS i komunikat liczone z poziomów D1–D5 (BotnetMonitorApp czyta wybory jak PhishingDispatchApp:140) + <code>btcPenalty</code> + „Widok Blue Teamu”. To obietnica standardu M2+."},
+{id:"M2-02",m:"M2",sev:"W",fix:"B",t:"D4 = KEYLOGGER, a gra buduje robaka i botnet",
+ w:"stages.ts:79, 91-95, 128; WormBuilderApp.tsx:205; BotnetMonitorApp.tsx:65, 101-103, 111",
+ r:"D4 KEYLOGGER, reszta niekrytyczna.",
+ s:"Feedback: „nie tworzy botnetu”. Dalej: „MODYFIKACJA KODU ROBAKA 0-DAY”, „KOMPUTERY ZOMBIE SĄ TWORZONE”, 10/12 zombie.",
+ f:"Keylogger → critical albo B2 (mentor: „keylogger nie da nam botnetu”). Inny typ ataku to nie „gorsza jakość”. Alternatywa A: monitor „1 stacja, brak botnetu” — droższa."},
+{id:"M2-03",m:"M2",sev:"W",fix:"B",t:"D1 = SZKOLENIE IT, a reszta zakłada wirusa 0-day",
+ w:"stages.ts:128, 313; PhishingDispatchApp.tsx:209, 215, 329-330; intro node_4-5",
+ r:"D1 SZKOLENIE → dalej normalnie.",
+ s:"Feedback: „nie instaluje złośliwego oprogramowania”. Mentor: „STWÓRZ WIRUSA 0-DAY”, link <code>?token=0day_worm</code>, „ŁADUNEK WSTRZYKNIĘTY”. W intrze gracz sam proponował ankietę z wirusem.",
+ f:"Szkolenie → critical, albo usunąć D1 (dubluje D4)."},
+{id:"M2-12",m:"M2",sev:"S",fix:"B",t:"Spoiler: gracz mówi „PODMIENIĘ JEDNĄ LITERĘ W DOMENIE FIRMOWEJ” przed decyzją o nadawcy",
+ w:"stages.ts:340 (mostek etapu virus_database, przed D5 w phishing_dispatch)",
+ r:"Ukończenie //BAZA_WIRUSÓW.",
+ s:"Odpowiedź na D5 podana w kwestii gracza — dokładnie przykład zakazany w player-guidance.md pkt 13. Przy wyborze suboptimal w D5 gracz robi coś innego, niż sam zapowiedział.",
+ f:"Neutralna kwestia („MAM POMYSŁ NA ADRES. NIKT NIE ZWRÓCI UWAGI”). Kwestia jest z VR — decyzja właściciela, czy pkt 13 wygrywa z 1:1."},
+{id:"M2-04",m:"M2",sev:"S",fix:"B",t:"Suboptimal, które według własnego opisu nie realizują celu",
+ w:"stages.ts:126-128, 79; Debrief „[DOBRY, ALE NIEIDEALNY WYBÓR]”",
+ r:"D1 SZKOLENIE albo D4 KEYLOGGER → raport.",
+ s:"„Dobry wybór” dla opcji, która nie tworzy botnetu ani nie instaluje malware.",
+ f:"Rozwiązane przez M2-02/03; inaczej przepisać feedback na częściową stratę."},
+{id:"M2-05",m:"M2",sev:"S",fix:"A",t:"D3 ankieta przeciwpożarowa: treść maila przeczy feedbackowi",
+ w:"stages.ts:185 vs :241, PhishingDispatchApp.tsx:200",
+ r:"D3 ANKIETA PRZECIWPOŻAROWA → wysyłka → podgląd.",
+ s:"Feedback: „część pracowników odłoży wypełnienie na później”. Mail: „pilne wypełnienie”, „upływa dzisiaj o godzinie 16:00” — dla każdego tematu.",
+ f:"Termin 16:00 tylko w <code>topics[].body</code> tematu obowiązkowego; fire_drill bez presji."},
+{id:"M2-06",m:"M2",sev:"S",fix:"C",t:"Każdy wybór brzmi jak sukces (także critical przed alarmem)",
+ w:"PhishingCampaignApp.tsx:90-103, WormBuilderApp.tsx:90-103",
+ r:"Dowolny wybór.",
+ s:"<code>playSuccess()</code> przed oceną.",
+ f:"Jeden neutralny dźwięk zatwierdzenia dla wszystkich opcji (różne dźwięki zdradzałyby poziom i psuły odroczoną konsekwencję)."},
+{id:"M2-07",m:"M2",sev:"S",fix:"B",t:"Mentor po D1 każe „STWÓRZ WIRUSA 0-DAY” niezależnie od wyboru",
+ w:"stages.ts:313, 378",
+ r:"D1 SZKOLENIE.",
+ s:"Mentor każe zrobić rzecz, którą gracz właśnie odrzucił; na końcu „NIEŹLE CI POSZŁO” przy każdym wyniku.",
+ f:"Znika z M2-03; końcowa kwestia warunkowa po ENG-04."},
+{id:"M2-08",m:"M2",sev:"N",fix:"C",t:"Teksty critical opisują nieskuteczność, nie wykrycie",
+ w:"stages.ts:135, 165, 192, 225",
+ r:"Critical w D1/D2/D3/D5.",
+ s:"„nie infekuje maszyn”, „zostanie zignorowany” pod nagłówkiem „WYKRYTY”.",
+ f:"Dopisać skutek wykrycia („filtr oznaczył kampanię, SOC zablokował domenę”) albo ENG-15."},
+{id:"M2-09",m:"M2",sev:"N",fix:"C",t:"Nie da się wywnioskować kolejności poziomów w D2 i D3",
+ w:"stages.ts:152-166",
+ r:"D2 Quickgram (sub) vs Kneenook (crit); D3 p.poż. (sub) vs owoce (crit).",
+ s:"Nic w intrze ani OSINT nie mówi, czemu forum jest gorsze niż sieć społecznościowa.",
+ f:"Dać graczowi przesłankę (notatka mentora / OSINT) albo uprościć do ideal vs critical."},
+{id:"M2-11",m:"M2",sev:"N",fix:"C",t:"„CZARNA LISTA” vs „BIAŁA LISTA”",
+ w:"stages.ts:291 vs mission2.json:59",
+ r:"Mostek przed VPN.",
+ s:"„MAJĄ CZARNĄ LISTĘ ANTYSPAMOWĄ. MUSISZ WYBRAĆ JEDEN Z TYCH ADRESÓW IP” — a wybiera się z białej listy.",
+ f:"„BIAŁĄ LISTĘ”."},
+
+// ---------------- M3 ----------------
+{id:"M3-01",m:"M3",sev:"W",fix:"B",t:"D2 (cel) ignorowany: po wyborze kobiety 4 etapy mówią o Mateuszu",
+ w:"stages.ts:229-243; dalej 268, 273, 281, 454, 556, 592, 672, 674, 703-704, 733",
+ r:"//TOR → WIKTORIA GAŁECKA lub AGNIESZKA LEMAN → dalej idealnie.",
+ s:"„JAK GO OSZUKASZ?”, „MATEUSZ POWINIEN SIĘ OSTRO ZESTRESOWAĆ”, „WSKAŻ DOM MATEUSZA”, host „MATEUSZ_BIURO_O&amp;L”. Przynęta „impreza działu sprzedaży”, choć Wiktoria jest z logistyki.",
+ f:"Wiktoria i Agnieszka → critical (ich feedback mówi, że „zachowują większą ostrożność”). Alternatywa A (<code>m3_target</code> z imieniem, rodzajem, adresem, autem) jest bardzo droga."},
+{id:"M3-02",m:"M3",sev:"W",fix:"B",t:"D1 RANSOMWARE: reszta misji leci jako RAT",
+ w:"stages.ts:54-59, 346-347, 559, 568; mission3.json:125",
+ r:"//BAZA_WIRUSÓW → RANSOMWARE → zdrapka → //DYSK E → //RAT.",
+ s:"Zdrapka pokazuje RANSOMWARE, potem „//WIRUS: RAT”, „KONTROLUJESZ PULPIT OFIARY”, ciche kopiowanie FREEVOLT. Feedback tej opcji: „zablokuje możliwość cichego wykradzenia dokumentacji Freevolt”.",
+ f:"Ransomware → critical; wariant zdrapki ransomware staje się zbędny."},
+{id:"M3-04",m:"M3",sev:"W",fix:"B",t:"D5: zły adres (suboptimal) i tak trafia do ofiary",
+ w:"stages.ts:435-436, 455, 546; DroneApp.tsx:114-115; mission3.json:196",
+ r:"//DRON → OŁAWSKA 51B → kamera.",
+ s:"Pod złym adresem ten sam parking z autem ofiary, „POMYŚLNIE POZOSTAWIONO KOPERTĘ”, Mateusz uruchamia wirusa. Feedback: „ładunek nie trafi do rąk ofiary”; lekcja: „pomyłka adresu oznaczałaby koniec operacji”. Czemu Wystawowa jest critical, a dwie inne tylko suboptimal — nie do wywnioskowania.",
+ f:"Każdy adres inny niż podany przez mentora → critical, albo blokada z podpowiedzią „TO NIE ADRES Z CZATU”. Adres jest podany dosłownie."},
+{id:"M3-05",m:"M3",sev:"W",fix:"B",t:"D6: złe auto (suboptimal) i tak aktywuje wirusa u Mateusza",
+ w:"stages.ts:443-450, 462-463, 719; DroneApp.tsx:415; mission3.json:205",
+ r:"Kamera → CZERWONY HATCHBACK Z BIAŁYM DACHEM → ZRZUĆ.",
+ s:"„MALWARE ZOSTAŁ AKTYWOWANY”, //RAT na „MATEUSZ_BIURO_O&amp;L”. Feedback: „koperta trafi do przypadkowego sąsiada”; lekcja: „zdradza próbę ataku” — to opis wykrycia.",
+ f:"Złe auto → critical (spójne z lekcją)."},
+{id:"M3-06",m:"M3",sev:"W",fix:"A",t:"D3 „dokumenty HR” psuje ocenę D4 (podpis i nazwa dysku)",
+ w:"stages.ts:323, 376-379, 396-422; mission3.json:187",
+ r:"D3 PENDRIVE Z DOKUMENTAMI HR → WYPOWIEDZENIE_UMOWY_O_PRACE.PDF → nazwa IMPREZA → podpis.",
+ s:"Podpis „ZDJĘCIA Z AFTERPARTY” na kopercie z archiwum HR = ideal; podpis „WYPOWIEDZENIE UMOWY” (pasuje do zawartości) = critical z uzasadnieniem o „spakowanych zdjęciach”, których nie ma.",
+ f:"Poziomy podpisu i nazwy zależne od <code>m3_plan</code> (dla HR: „WYPOWIEDZENIE UMOWY” ideal, „AFTERPARTY” critical). Albo D3-HR → critical."},
+{id:"M3-03",m:"M3",sev:"S",fix:"B",t:"D1: poziomy odwrócone — keylogger kończy się „WYKRYTY”, ransomware nie",
+ w:"stages.ts:62-67; useMissionStore.ts:523",
+ r:"KEYLOGGER → ZATWIERDŹ.",
+ s:"„ZOSTAŁEŚ WYKRYTY!” z uzasadnieniem o nieskuteczności; tymczasem ransomware, który „postawi na nogi dział IT”, jest tylko suboptimal. Ten sam problem: D6 „PUSTY ASFALT”.",
+ f:"Zamienić poziomy (z M3-02) albo ENG-15 (tytuł „OPERACJA NIEUDANA”)."},
+{id:"M3-07",m:"M3",sev:"S",fix:"A",t:"Mostki po etapach mówią o ścieżce idealnej",
+ w:"stages.ts:647, 667",
+ r:"D3 DOKUMENTY HR.",
+ s:"Mentor: „DZIĘKI ARCHIWUM ANTYWIRUS NIE ZNAJDZIE ZAGROŻENIA. DOBRZE.” (po każdym niekrytycznym wyborze); gracz: „ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA” przy pendrive z dokumentami HR.",
+ f:"Warianty beatów wg <code>m3_plan</code> (ENG-04) albo teksty neutralne („NOŚNIK GOTOWY…”, bez „DOBRZE”)."},
+{id:"M3-08",m:"M3",sev:"S",fix:"A",t:"Raport: lekcja zawsze opisuje opcję idealną",
+ w:"DebriefApp.tsx:92, 221-229; mission3.json:160-205",
+ r:"Misja z ransomware / Wiktorią / HR → raport.",
+ s:"„TWOJA ODPOWIEDŹ: RANSOMWARE” + „dlaczego to zadziałało: RAT…”; przy Wiktorii „strona pokazywała, że Mateusz…”.",
+ f:"→ ENG-16."},
+{id:"M3-09",m:"M3",sev:"S",fix:"A",t:"Brak odroczonych konsekwencji; wynik spada od razu",
+ w:"brak btcPenalty i wariantów w M3; Taskbar.tsx:87-93",
+ r:"Dowolny suboptimal.",
+ s:"Pasek natychmiast: „WYNIK: 91.66666666666667%”; fabuła nigdy nie pokazuje skutku.",
+ f:"Dla suboptimal, które zostaną (nazwa dysku, podpis B&amp;O): skutek w //RAT („ofiara zwlekała 2 h, zdążyłeś skopiować 2/4 pliki”) + <code>btcPenalty</code>. Wymaga ENG-04; ENG-17."},
+{id:"M3-10",m:"M3",sev:"S",fix:"C",t:"Wynik z ułamkami i fałszywe „najlepszy wynik”",
+ w:"DebriefApp.tsx, Taskbar.tsx, scorm2004.ts, Desktop.tsx",
+ r:"Jeden suboptimal; powtórka po ukończeniu.",
+ s:"—",
+ f:"→ ENG-11 i ENG-03."},
+{id:"M3-11",m:"M3",sev:"N",fix:"A",t:"Raport D4 przy remisie gubi nazwę dysku",
+ w:"usbLogic.ts:59-63",
+ r:"NOWY DYSK (sub) + B&amp;O (sub).",
+ s:"Raport pokazuje tylko podpis.",
+ f:"Przy remisie pokazywać obie pozycje („NAZWA: X / PODPIS: Y”)."},
+{id:"M3-12",m:"M3",sev:"N",fix:"C",t:"Feedback D2 niezgodny z faktami",
+ w:"stages.ts:234, 250, 258; mission3.json:169",
+ r:"D2 Wiktoria / CEO / szef cyberbezpieczeństwa.",
+ s:"„pracownice wyższego szczebla” przy „SPECJALISTKA DS. LOGISTYKI”; „tak jawnym wektorem”, zanim wektor (D3) wybrano.",
+ f:"Przepisać na podstawie danych ze strony."},
+{id:"M3-13",m:"M3",sev:"N",fix:"C",t:"Intro zdradza odpowiedź D1",
+ w:"mission3.json:48",
+ r:"Intro.",
+ s:"Kwestia gracza: „CZY WIRUS, KTÓRY PRZEJMIE PULPIT PRACOWNIKA…” — opis RAT-a przed wyborem.",
+ f:"„CZY WIRUS NA KOMPUTERZE PRACOWNIKA WYSTARCZY?”"},
+
+// ---------------- M4 ----------------
+{id:"M4-01",m:"M4",sev:"W",fix:"B",t:"D1 RAT (suboptimal): cała reszta misji zakłada ransomware",
+ w:"stages.ts:51-54, 187-189, 269, 329, 413, 418, 423, 578; mission4.json:36, 48",
+ r:"//BAZA_WIRUSÓW → RAT → zdrapka RAT → dalej.",
+ s:"Mostek o haśle szyfrującym, „//KREATOR: RANSOMWARE”, „//WIRUS: RANSOMWARE” w mailu, C2 „SZYFRUJ ZASOBY FIRMY”. W intrze gracz sam mówi „MOŻEMY WYKORZYSTAĆ RANSOMWARE”.",
+ f:"RAT → critical, albo B2: mentor „RAT nie da nam szantażu, wybierz jeszcze raz” (kara zostaje). Pełna gałąź RAT jest nieproporcjonalnie droga."},
+{id:"M4-02",m:"M4",sev:"W",fix:"A",t:"Brak odroczonych konsekwencji; m4_mail zapisywany, nigdy nieczytany",
+ w:"PhishingMailApp.tsx:112, mailLogic.ts:308; stages.ts:418, 633, 638",
+ r:"D6 body_casual albo D7 ALEX@PRIV.COM → do końca.",
+ s:"Identycznie jak po ideale: „CV ZOSTAŁO OTWARTE”, ten sam status C2. Feedback D6 ideal mówi, że bez hasła skanery wykryją załącznik.",
+ f:"RansomC2App czyta <code>m4_mail</code> (+ nowy <code>m4_sender</code>): „SKRZYNKA HR OZNACZYŁA PLIK” / „REKRUTER ZGŁOSIŁ DZIWNY ADRES” + <code>btcPenalty</code> + krótsze ultimatum + ramka „Widok Blue Teamu”."},
+{id:"M4-03",m:"M4",sev:"W",fix:"B",t:"D10 „troll” i D9 „agresja”: rozmowa zakłada ideał",
+ w:"stages.ts:473-477, 501-505, 517, 522, 666-667; mission4.json:245, 254",
+ r:"D9 „NIE BOJĘ SIĘ POLICJI” → D10 „NICZEGO NIE ODSZYFRUJĘ, ROBIĘ TO DLA ZABAWY :D”.",
+ s:"Szef IT: „POTRZEBUJEMY CZASU NA ICH ZDOBYCIE”; gracz musi kliknąć „MACIE 3 H. POTEM NIE DOSTANIECIE JUŻ KLUCZA” — po tym, jak powiedział, że niczego nie odszyfruje; mostek „UDAŁO SIĘ BEZ WIĘKSZYCH PROBLEMÓW”. Lekcje mówią o zerwaniu rozmów / utracie okupu.",
+ f:"Troll → critical. Dla agresji osobny węzeł <code>neg_3_alt</code> (DialogueTree ma już <code>nextNode</code>), w którym szef IT grozi zerwaniem."},
+{id:"M4-04",m:"M4",sev:"S",fix:"B",t:"D8 niepełny zestaw plików, a mostek „mamy wszystko”",
+ w:"stages.ts:442-447, 649, 666-667; exfilLogic.ts:434-438",
+ r:"C2 → tylko FREEVOLT_SCHEMAT.PDF → POBIERZ.",
+ s:"„TERAZ POWINNIŚMY MIEĆ JUŻ WSZYSTKO”, choć celem misji były brakujące pliki Freevolt.",
+ f:"Licznik „WYBRANO X/3” i blokada zatwierdzenia przy &lt; 3 (łączy się z M4-10); albo wariant mostka po ENG-04."},
+{id:"M4-05",m:"M4",sev:"S",fix:"A",t:"Słaby klucz w D2, a w D9 „ideał” to „nie odszyfrują waszych plików”",
+ w:"stages.ts:212, 223-224, 467, 469",
+ r:"D2 długość 12 + 4 zestawy (3/5) → D9 opcja idealna.",
+ s:"Dwie oceny sprzeczne w jednej historii: klucz „podatny”, a potem „matematyczna nieodwracalność”.",
+ f:"Gdy D2 &lt; 5: <code>nextNode</code> do odpowiedzi „NASI SPECJALIŚCI JUŻ ŁAMIĄ KLUCZ”; minimum: dopisek w feedbacku D9 „to blef — klucz jest słaby”."},
+{id:"M4-06",m:"M4",sev:"S",fix:"B",t:"D2: zakazane znaki nieopisane, jedno zdanie feedbacku na dwie przyczyny",
+ w:"stages.ts:119-121, 209-210, 225-226; ransomLogic.ts:336-345, 357",
+ r:"Suwak 24 + wszystkie 6 kafelków (ze ZNAKAMI NARODOWYMI) → ZAPISZ.",
+ s:"„ZOSTAŁEŚ WYKRYTY!” i „Zbyt słaby klucz (8 znaków) albo znaki niedozwolone” — gracz miał 24 znaki, a o zakazie nikt nie mówił.",
+ f:"Oznaczyć kafelki „NIEDOZWOLONE W KLUCZU” albo dodać zdanie mentora; osobny feedback dla każdej przyczyny."},
+{id:"M4-07",m:"M4",sev:"S",fix:"B",t:"D3: format czasu niejednoznaczny",
+ w:"stages.ts:149, 156, 159",
+ r:"Kreator → krok 2 → slot [CZAS].",
+ s:"„00:30:00:00” (ideal, „30 godzin”) vs „00:00:30:00” (critical, „30 sekund”) — bez jednostek. W żadnej konwencji 00:00:30:00 nie znaczy 30 sekund.",
+ f:"Podpis formatu (DD:GG:MM:SS) nad polem i poprawka drugiej etykiety na „00:00:00:30”, albo słownie „30 GODZIN / 30 SEKUND”."},
+{id:"M4-08",m:"M4",sev:"S",fix:"C",t:"Critical opisuje porażkę, nie wykrycie; D6 casual za łagodny",
+ w:"stages.ts:291-293, 314-315, 308, 321-322",
+ r:"D5 „ANALITYK MICHAŁ WILK” / D6 „…ANALITYK USŁUG ENERGETYCZNYCH…”.",
+ s:"„WYKRYTY” przy „mail zostanie pominięty przez filtry HR”. Tymczasem body_casual (bez hasła) to tylko suboptimal, choć lekcja ideału mówi, że skaner wykryje załącznik.",
+ f:"ENG-15 + konsekwencja z M4-02 dla body_casual."},
+{id:"M4-09",m:"M4",sev:"N",fix:"C",t:"D5: podpowiedź mentora nie pasuje do opcji idealnej",
+ w:"stages.ts:279, 284, 599",
+ r:"//MAIL → czat → temat.",
+ s:"Mentor: „NAZWISKO ORAZ IMIĘ Z DOPISKIEM CV”; ideał „CV MICHAŁ WILK”, a „WILK CV” (bliższe podpowiedzi) = suboptimal.",
+ f:"Zmienić podpowiedź („CV I PEŁNE IMIĘ I NAZWISKO”) albo dodać opcję „WILK MICHAŁ CV” — do uzgodnienia z dokumentem VR."},
+{id:"M4-10",m:"M4",sev:"N",fix:"B",t:"D8: liczba plików do zabrania nieznana, mylące zmyłki",
+ w:"stages.ts:385-398, 436, 440",
+ r:"C2 → POBIERZ PLIKI.",
+ s:"„PLIKI, PO KTÓRE PRZYSZEDŁEŚ” bez liczby; zmyłki TECHNOLOGIA_OPIS.PDF, TECHNOLOGIA_SCHEMATY.PDF przy planie „technologii Freevolt”.",
+ f:"Licznik „WYBRANO X/3” albo wskazówka mentora „trzy pliki z nazwą Freevolt”."},
+{id:"M4-11",m:"M4",sev:"N",fix:"C",t:"Miniatura okna okupu w trybie dev pokazuje ideał",
+ w:"VictimChatApp.tsx:497-504; stages.ts:548",
+ r:"?mission=4&amp;dev=1 → //CZAT_Z_OFIARĄ bez kreatora.",
+ s:"Czerwone okno „TWOJE PLIKI ZOSTAŁY ZASZYFROWANE!” bez złożenia notki. Tylko w dev.",
+ f:"Ukryć miniaturę, gdy brak <code>m4_note</code>."},
+{id:"M4-12",m:"M4",sev:"N",fix:"B",t:"D2: suwak startuje na wartości critical",
+ w:"stages.ts:201-205; ransomLogic.ts:340, 344",
+ r:"Zatwierdzenie bez ruszania suwaka.",
+ s:"8 znaków = „ZOSTAŁEŚ WYKRYTY!”, 9 znaków = „średniej siły” — klif, a domyślny stan to porażka.",
+ f:"Start suwaka powyżej <code>criticalLength</code> albo <code>minLength: 9</code>."}
+];
+
+const MISSIONS=[["all","Wszystkie"],["ENG","Silnik"],["M1","M1 PetroLog"],["M2","M2 CarbonFlow"],["M3","M3 O&L"],["M4","M4 Energy Rock"]];
+const SEVS=[["all","Każda waga"],["W","Wysoka"],["S","Średnia"],["N","Niska"]];
+const SEVNAME={W:"WYSOKA",S:"ŚREDNIA",N:"NISKA"};
+const FIXNAME={A:"A · gra idzie za wyborem",B:"B · nie pozwól wybrać źle",C:"C · poprawka / tekst"};
+const ORDER={W:0,S:1,N:2};
+let fm="all",fs="all";
+
+function stats(){
+  const c=s=>F.filter(x=>x.sev===s).length;
+  const ms=["ENG","M1","M2","M3","M4"].map(m=>`${m==="ENG"?"Silnik":m}: ${F.filter(x=>x.m===m).length}`).join(" · ");
+  document.getElementById("stats").innerHTML=
+   `<div class="stat"><b>${F.length}</b><span>ustaleń</span></div>`+
+   `<div class="stat"><b style="color:var(--high)">${c("W")}</b><span>wysokich</span></div>`+
+   `<div class="stat"><b style="color:var(--mid)">${c("S")}</b><span>średnich</span></div>`+
+   `<div class="stat"><b>${c("N")}</b><span>niskich</span></div>`+
+   `<div class="stat" style="grid-column:span 2"><b style="font-size:15px;line-height:1.5">${ms}</b><span>podział</span></div>`;
+}
+function filters(){
+  const el=document.getElementById("filters");
+  const btn=(k,l,g)=>`<button data-g="${g}" data-k="${k}" aria-pressed="${(g==="m"?fm:fs)===k}">${l}</button>`;
+  el.innerHTML=MISSIONS.map(([k,l])=>btn(k,l,"m")).join("")+`<span class="sep"></span>`+SEVS.map(([k,l])=>btn(k,l,"s")).join("");
+  el.onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.g==="m")fm=b.dataset.k;else fs=b.dataset.k;filters();render();};
+}
+function render(){
+  const rows=F.filter(x=>(fm==="all"||x.m===fm)&&(fs==="all"||x.sev===fs))
+   .sort((a,b)=>(fm==="all"?0:0)||ORDER[a.sev]-ORDER[b.sev]||["ENG","M1","M2","M3","M4"].indexOf(a.m)-["ENG","M1","M2","M3","M4"].indexOf(b.m)||a.id.localeCompare(b.id));
+  document.getElementById("count").textContent=`Pokazano ${rows.length} z ${F.length}. Kliknij ustalenie, żeby rozwinąć.`;
+  document.getElementById("list").innerHTML=rows.map(x=>`
+   <details class="f"><summary>
+     <span class="id">${x.id}</span><span class="chip ${x.sev}">${SEVNAME[x.sev]}</span>
+     <span class="t">${x.t}</span><span class="chip f${x.fix}">${FIXNAME[x.fix]}</span>
+   </summary><div class="fb"><dl>
+     <dt>Gdzie</dt><dd><code>${x.w}</code></dd>
+     <dt>Jak odtworzyć</dt><dd>${x.r}</dd>
+     <dt>Co widzi gracz</dt><dd>${x.s}</dd>
+     <dt>Propozycja</dt><dd>${x.f}</dd>
+   </dl></div></details>`).join("");
+}
+stats();filters();render();
+</script>
+</body>
+</html>
