@@ -56,7 +56,6 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 | ENG-05 | S | Reakcja mentora na odpowiedź w intrze się nie wyświetla | zrobione | 9027b2c | mentorReaction jako dymek w intrze; introReplies zachowane przy „BEZ INTRO”. Sprawdzone w przeglądarce (M1 node_7). |
 | ENG-06 | S | Ponowne zgłoszenie decyzji psuje punktację | zrobione | fca0c9e | Pierwsze zgłoszenie numeru wygrywa; wynik, liczniki i BTC wyliczane z decisionTiers. |
 | ENG-08 | S | Timery DialogueTree przeżywają powtórkę | zrobione | a2052f5 | Timery w createTimerBag + AppRenderer ignoruje callbacki z poprzedniego appRunId (chroni wszystkie klocki). |
-| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | czeka na właściciela | | Właściciel prosi o wyjaśnienie; propozycja: przenieść do P3. |
 | ENG-11 | N | Wynik z długimi ułamkami w UI i SCORM | zrobione | 477f811 | SCORM: 2 miejsca po przecinku; UI: liczby całkowite. |
 | ENG-12 | N | completeStage nadpisuje trwający mostek | odrzucone | | Właściciel: występuje tylko w trybie dev, nie poprawiać. |
 | ENG-14 | N | `?dev=1` znika po powtórce | odrzucone | | Właściciel: bez znaczenia, zostawić. |
@@ -87,6 +86,7 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 |---|---|---|---|---|---|
 | ENG-04 | W | Silnik nie pamięta wybranej opcji | otwarte | | Szkic API w polu `f` ENG-04. Do tego `option.reject` (B2). |
 | ENG-16 | S | Lekcja w raporcie zawsze opisuje opcję idealną | otwarte | | |
+| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | otwarte | | Właściciel: przenieść do P3 (przy przebudowie raportu decyzji). |
 | M1-03 | W | D3 Prezes Buczek, a D4 proponuje adresy Kwiatkowskiego | otwarte | | |
 | M1-04 | W | Monitor ofiary zawsze mówi o „poradniku biegowym” | otwarte | | |
 | M2-05 | S | D3 ankieta przeciwpożarowa: treść maila przeczy feedbackowi | otwarte | | |
