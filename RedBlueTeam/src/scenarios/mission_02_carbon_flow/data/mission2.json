@@ -9,7 +9,7 @@
     "rewardBtc": 2.96,
     "maxScore": 100,
     "passingScore": 70,
-    "decisionCount": 5,
+    "decisionCount": 4,
     "targetCompany": "CarbonFlow Inc.",
     "description": "Scenariusz szkoleniowy SCORM symulujący dobór robaka 0-day, tunelowanie VPN, kampanię phishingową i utworzenie sieci zombie (botnet) na serwerach CarbonFlow Inc."
   },
@@ -172,7 +172,7 @@
       "subtitle": "UKOŃCZONO ZADANIE 2",
       "company": "CarbonFlow Inc.",
       "scorePercent": 100,
-      "perfectChoices": 5,
+      "perfectChoices": 4,
       "goodChoices": 0,
       "criticalErrors": 0,
       "btcReward": 2.96
@@ -180,15 +180,6 @@
     "choices": [
       {
         "num": 1,
-        "question": "WYBIERZ RODZAJ AKCJI:",
-        "answer": "WIRUS 0-DAY",
-        "correct": true,
-        "details": "Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary.",
-        "attack": "Atak nie kradnie jednego hasła, tylko wprowadza do firmy złośliwy kod wykorzystujący jeszcze nieznaną lukę. Antywirus oparty na znanych sygnaturach go nie rozpozna, a nieaktualizowany serwer pocztowy CarbonFlow ułatwia wejście.",
-        "defense": "Sygnały: nieoczekiwana ankieta z linkiem, pilna prośba o kliknięcie, brak wcześniejszej zapowiedzi od działu, którego rzekomo dotyczy. Co zrobić: aktualizuj systemy i serwer pocztowy, trzymaj antywirus włączony i zgłaszaj dziwne wiadomości administratorowi zamiast klikać."
-      },
-      {
-        "num": 2,
         "question": "WYBIERZ SZABLON FORMULARZA:",
         "answer": "POODLE FORMS",
         "correct": true,
@@ -197,7 +188,7 @@
         "defense": "Sygnały: formularz hostowany w zewnętrznym serwisie, a nie w firmowym systemie; adres strony nie należy do firmy. Co zrobić: sprawdź, czy dana ankieta naprawdę została rozesłana (zapytaj dział lub administratora) i nie wypełniaj formularzy z nieznanych serwisów w pracy."
       },
       {
-        "num": 3,
+        "num": 2,
         "question": "WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:",
         "answer": "OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO",
         "correct": true,
@@ -206,16 +197,16 @@
         "defense": "Sygnały: obowiązek i termin w mailu, nacisk na pośpiech, temat spoza codziennych zadań. Co zrobić: zatrzymaj się, gdy wiadomość naciska na natychmiastowe działanie, sprawdź jej prawdziwość innym kanałem i zgłoś ją, zanim klikniesz."
       },
       {
-        "num": 4,
+        "num": 3,
         "question": "WYBIERZ ODPOWIEDNIEGO WIRUSA:",
         "answer": "ROBAK",
         "correct": true,
         "details": "Robak samodzielnie powiela się w sieci i formuje botnet.",
-        "attack": "Robak powiela się sam i przechodzi z komputera na komputer bez udziału użytkownika. Jedno kliknięcie jednego pracownika wystarcza, by zbudować sieć zainfekowanych maszyn (botnet) i dać atakującemu zasłonę dymną.",
-        "defense": "Sygnały: nagłe spowolnienie stacji, nietypowy ruch sieciowy, alerty antywirusa na kilku komputerach naraz. Co zrobić: odłącz zainfekowaną stację od sieci, zgłoś incydent, segmentuj sieć i regularnie aktualizuj oprogramowanie, by robak nie miał luk do wykorzystania."
+        "attack": "Robak powiela się sam i przechodzi z komputera na komputer bez udziału użytkownika. Jedno kliknięcie jednego pracownika wystarcza, by zbudować sieć zainfekowanych maszyn (botnet) i dać atakującemu zasłonę dymną. Wersja 0-day wykorzystuje jeszcze nieznaną lukę, więc antywirus oparty na znanych sygnaturach jej nie rozpozna, a nieaktualizowany serwer pocztowy CarbonFlow ułatwia wejście.",
+        "defense": "Sygnały: nagłe spowolnienie stacji, nietypowy ruch sieciowy, alerty antywirusa na kilku komputerach naraz. Co zrobić: odłącz zainfekowaną stację od sieci, zgłoś incydent, segmentuj sieć i regularnie aktualizuj oprogramowanie (systemy i serwer pocztowy), by robak nie miał luk do wykorzystania."
       },
       {
-        "num": 5,
+        "num": 4,
         "question": "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:",
         "answer": "KADRY@CARDONFLOW.COM",
         "correct": true,

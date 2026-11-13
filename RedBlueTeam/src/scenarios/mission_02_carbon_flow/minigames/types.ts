@@ -1,11 +1,6 @@
 import type { ChoiceOption } from '../../../engine/types/mission';
 
 export interface PhishingCampaignConfig {
-  action: {
-    decisionNum: number;
-    question: string;
-    options: ChoiceOption[];
-  };
   template: {
     decisionNum: number;
     question: string;

@@ -4,9 +4,9 @@
 - nagroda: 2.96 BTC
 - kolor: #00FF66
 - data fabularna: 19.05.2026
-- ocenianych decyzji: 5
+- ocenianych decyzji: 4
 
-Źródło prawdy: `docs/Scenariusz Misja 2 - CarbonFlow (Specyfikacja 2D).md` (VR). Kolejność etapów i numeracja decyzji jak w VR: akcja / szablon / temat → VPN → wirus → nadawca.
+Źródło prawdy: `docs/Scenariusz Misja 2 - CarbonFlow (Specyfikacja 2D).md` (VR). Kolejność etapów jak w VR: szablon / temat → VPN → wirus → nadawca. Numeracja D1–D4 (VR ma D1–D5; decyzja o rodzaju akcji została usunięta, zob. „Odchylenia”).
 
 ## Intro (dialog z BYTE_MASTER)
 - BM: MAM DLA CIEBIE KOLEJNE ZADANIE
@@ -30,25 +30,22 @@
 - odblokuj: //PHISHING
 
 ## Etap 1: //PHISHING
-Klocek: NOWA MINIGRA (`PhishingCampaignApp`, kreator kampanii: akcja → szablon → temat → lista adresatów)
+Klocek: NOWA MINIGRA (`PhishingCampaignApp`, kreator kampanii: szablon → temat → lista adresatów)
 Cel dydaktyczny: dobór rodzaju ataku, serwisu-przykrywki i przynęty socjotechnicznej pod cel operacji (zainfekowanie sieci i zasłona dymna).
-Ekrany: „NOWA KAMPANIA PHISHINGOWA” z przyciskiem „KONTYNUUJ” (VR S01) → wybór akcji → wybór szablonu → wybór tematu → import listy adresatów od mentora z białą listą IP (flavor)
-Oceniane: D1, D2, D3 | Flavor (nieoceniane): import listy adresatów
+Ekrany: „NOWA KAMPANIA PHISHINGOWA” z przyciskiem „KONTYNUUJ” (VR S01) → wybór szablonu → wybór tematu → import listy adresatów od mentora z białą listą IP (flavor)
+Oceniane: D1, D2 | Flavor (nieoceniane): import listy adresatów
 
-Decyzja D1: "WYBIERZ RODZAJ AKCJI:"
-- WIRUS 0-DAY | ideal | Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary.
-- SZKOLENIE Z BEZPIECZEŃSTWA IT | suboptimal | Pozorowane szkolenie nie instaluje złośliwego oprogramowania i nie paraliżuje infrastruktury zgodnie z ustaleniami z mentorem.
-- ZBIERANIE WRAŻLIWYCH DANYCH | critical | Phishing nakierowany wyłącznie na kradzież poświadczeń nie infekuje maszyn robakiem i nie tworzy zasłony dymnej.
-
-Decyzja D2: "WYBIERZ SZABLON FORMULARZA:"
+Decyzja D1: "WYBIERZ SZABLON FORMULARZA:"
 - POODLE FORMS (TWOJA ANKIETA | WYPEŁNIJ FORMULARZ) | ideal | Profesjonalny szablon formularza ankietowego idealnie pasuje do planu wysłania fałszywej ankiety pracowniczej.
-- Quickgram (OBSERWUJ | SPRAWDŹ TO) | suboptimal | Szablon sieci społecznościowej wzbudza podejrzenia w środowisku korporacyjnym.
-- Kneenook (TWÓJ POST | ZOBACZ NA KNEENOOK) | critical | Szablon postu na forum jest niespójny z formatem ankiety.
+- Quickgram (OBSERWUJ | SPRAWDŹ TO) | suboptimal | Szablon sieci społecznościowej działa, ale w firmowej skrzynce wzbudza więcej podejrzeń niż zwykła ankieta, więc część pracowników nie kliknie.
+- Kneenook (TWÓJ POST | ZOBACZ NA KNEENOOK) | suboptimal, odrzucany przez mentora (B2) | Szablon postu na forum jest niespójny z formatem ankiety.
+  - mentor: POST NA FORUM NIE WYGLĄDA JAK ANKIETA OD FIRMY. NIKT TEGO NIE WYPEŁNI. WYBIERZ INACZEJ.
 
-Decyzja D3: "WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:"
+Decyzja D2: "WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:"
 - OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO | ideal | Przymus w połączeniu z tematem integracji tworzy idealną presję socjotechniczną.
-- ANKIETA DOTYCZĄCA ĆWICZEŃ PRZECIWPOŻAROWYCH | suboptimal | Temat formalny i nudny, część pracowników odłoży wypełnienie na później.
-- ULUBIONE OWOCE Z OWOCOWEGO CZWARTKU | critical | Błahy temat zostanie zignorowany przez większość personelu.
+- ANKIETA DOTYCZĄCA ĆWICZEŃ PRZECIWPOŻAROWYCH | suboptimal | Ankieta zadziała, ale temat jest formalny i nikogo nie ekscytuje, więc część pracowników odłoży wypełnienie na później.
+- ULUBIONE OWOCE Z OWOCOWEGO CZWARTKU | suboptimal, odrzucany przez mentora (B2) | Błahy temat zostanie zignorowany przez większość personelu.
+  - mentor: OWOCOWY CZWARTEK NIKOGO NIE PORUSZY. NIE KLIKNĄ W TO, A MY POTRZEBUJEMY KLIKNIĘĆ. WYBIERZ INACZEJ.
 
 Opcje w każdej decyzji wyświetlają się w losowej kolejności (konwencja silnika).
 
@@ -72,12 +69,13 @@ Mostek (rozmowa do kolejnego etapu):
 Klocek: NOWA MINIGRA (`WormBuilderApp`: wybór wirusa → modyfikacja kodu → kompilacja)
 Cel dydaktyczny: rozróżnienie typów malware i dobór tego, który tworzy sieć zainfekowanych komputerów (botnet).
 Ekrany: wybór wirusa → modyfikacja kodu (5 instrukcji przeciąganych na ekran kodu; przycisk „KOMPILUJ ŁADUNEK 0-DAY”) → kompilacja → „WIRUS GOTOWY!” z tekstem „AKTYWUJE SIĘ, GDY OFIARA GO OTWORZY” (VR S04)
-Oceniane: D4 | Flavor (nieoceniane): modyfikacja kodu i kompilacja
+Oceniane: D3 | Flavor (nieoceniane): modyfikacja kodu i kompilacja
 
-Decyzja D4: "WYBIERZ ODPOWIEDNIEGO WIRUSA:"
+Decyzja D3: "WYBIERZ ODPOWIEDNIEGO WIRUSA:"
 - ROBAK | ideal | Robak samodzielnie powiela się w sieci i formuje botnet.
-- KEYLOGGER | suboptimal | Przechwytuje dane na jednej stacji, nie tworzy botnetu.
-- RANSOMWARE | critical | Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.
+- KEYLOGGER | suboptimal, odrzucany przez mentora (B2) | Przechwytuje dane na jednej stacji, nie tworzy botnetu.
+  - mentor: KEYLOGGER ZBIERA DANE Z JEDNEJ STACJI, NIE DA NAM BOTNETU, A POTRZEBUJEMY ZASŁONY DYMNEJ. WYBIERZ INACZEJ.
+- RANSOMWARE | critical (wykrycie) | Szyfrowanie plików natychmiast alarmuje administratorów CarbonFlow: operacja zostaje wykryta i spalona.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "WIESZ JUŻ, Z JAKIEGO ADRESU WYŚLESZ ZAINFEKOWANĄ ANKIETĘ?"
@@ -88,12 +86,13 @@ Mostek (rozmowa do kolejnego etapu):
 Klocek: NOWA MINIGRA (`PhishingDispatchApp`: nadawca → podgląd → wysyłka)
 Cel dydaktyczny: dobór adresu nadawcy, któremu pracownicy zaufają, i egzekucja wysyłki kampanii.
 Ekrany: wybór nadawcy → podgląd maila (temat, szablon i nadawca z wcześniejszych wyborów) i przycisk „WYŚLIJ” (VR S05) → wysyłka SMTP → potwierdzenie „KAMPANIA PHISHINGOWA ZOSTAŁA WYSŁANA” (prawy monitor wraca wtedy do czatu)
-Oceniane: D5 | Flavor (nieoceniane): podgląd i wysyłka
+Oceniane: D4 | Flavor (nieoceniane): podgląd i wysyłka
 
-Decyzja D5: "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:"
+Decyzja D4: "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:"
 - KADRY@CARDONFLOW.COM | ideal | Typosquatting (podmiana 'b' na 'd' w nazwie domeny) połączony z wiarygodnym działem kadr.
-- MARKETING@CARBON.COM | suboptimal | Skrócona domena jest podejrzana w kontekście spraw kadrowych.
-- KATERING@OILFLOW.COM | critical | Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.
+- MARKETING@CARBON.COM | suboptimal | Adres zadziała, ale marketing rzadko pisze w sprawach kadrowych, więc wiadomość wzbudzi więcej podejrzeń niż od kadr.
+- KATERING@OILFLOW.COM | suboptimal, odrzucany przez mentora (B2) | Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.
+  - mentor: OBCA FIRMA CATERINGOWA W POLU NADAWCY? FILTR TO ZABLOKUJE ALBO PRACOWNICY ZIGNORUJĄ. WYBIERZ INACZEJ.
 
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "GOTOWE. TERAZ MUSIMY POCZEKAĆ, AŻ RYBKA CHWYCI HACZYK"
@@ -116,22 +115,18 @@ Lekcje przy decyzjach (rozwijane w raporcie pooperacyjnym):
 
 
 D1:
-- Atak: Atak nie kradnie jednego hasła, tylko wprowadza do firmy złośliwy kod wykorzystujący jeszcze nieznaną lukę. Antywirus oparty na znanych sygnaturach go nie rozpozna, a nieaktualizowany serwer pocztowy CarbonFlow ułatwia wejście.
-- Obrona: Sygnały: nieoczekiwana ankieta z linkiem, pilna prośba o kliknięcie, brak wcześniejszej zapowiedzi od działu, którego rzekomo dotyczy. Co zrobić: aktualizuj systemy i serwer pocztowy, trzymaj antywirus włączony i zgłaszaj dziwne wiadomości administratorowi zamiast klikać.
-
-D2:
 - Atak: Szablon udający serwis do ankiet pasuje do pretekstu: pracownicy dostają ankiety od działów i przywykli do linków do formularzy. Dzięki temu strona-pułapka wygląda zwyczajnie.
 - Obrona: Sygnały: formularz hostowany w zewnętrznym serwisie, a nie w firmowym systemie; adres strony nie należy do firmy. Co zrobić: sprawdź, czy dana ankieta naprawdę została rozesłana (zapytaj dział lub administratora) i nie wypełniaj formularzy z nieznanych serwisów w pracy.
 
-D3:
+D2:
 - Atak: Przynęta łączy dwa bodźce: temat, który ludzi obchodzi (wspólny wyjazd), i słowo „obowiązkowa”, które wymusza szybką reakcję. Presja zmniejsza ostrożność, a nikt nie chce być tym, kto nie wypełnił.
 - Obrona: Sygnały: obowiązek i termin w mailu, nacisk na pośpiech, temat spoza codziennych zadań. Co zrobić: zatrzymaj się, gdy wiadomość naciska na natychmiastowe działanie, sprawdź jej prawdziwość innym kanałem i zgłoś ją, zanim klikniesz.
 
-D4:
-- Atak: Robak powiela się sam i przechodzi z komputera na komputer bez udziału użytkownika. Jedno kliknięcie jednego pracownika wystarcza, by zbudować sieć zainfekowanych maszyn (botnet) i dać atakującemu zasłonę dymną.
-- Obrona: Sygnały: nagłe spowolnienie stacji, nietypowy ruch sieciowy, alerty antywirusa na kilku komputerach naraz. Co zrobić: odłącz zainfekowaną stację od sieci, zgłoś incydent, segmentuj sieć i regularnie aktualizuj oprogramowanie, by robak nie miał luk do wykorzystania.
+D3:
+- Atak: Robak powiela się sam i przechodzi z komputera na komputer bez udziału użytkownika. Jedno kliknięcie jednego pracownika wystarcza, by zbudować sieć zainfekowanych maszyn (botnet) i dać atakującemu zasłonę dymną. Wersja 0-day wykorzystuje jeszcze nieznaną lukę, więc antywirus oparty na znanych sygnaturach jej nie rozpozna, a nieaktualizowany serwer pocztowy CarbonFlow ułatwia wejście.
+- Obrona: Sygnały: nagłe spowolnienie stacji, nietypowy ruch sieciowy, alerty antywirusa na kilku komputerach naraz. Co zrobić: odłącz zainfekowaną stację od sieci, zgłoś incydent, segmentuj sieć i regularnie aktualizuj oprogramowanie (systemy i serwer pocztowy), by robak nie miał luk do wykorzystania.
 
-D5:
+D4:
 - Atak: Podmiana jednej litery w nazwie domeny (cardonflow zamiast carbonflow) daje adres, który na szybki rzut oka wygląda jak firmowy. Dział kadr to nadawca, któremu pracownicy ufają i na którego ankiety odpowiadają.
 - Obrona: Sygnały: domena różni się o jeden znak od firmowej, wiadomość od działu, który zwykle pisze inaczej. Co zrobić: czytaj cały adres nadawcy, litera po literze, najeżdżaj kursorem na linki i zgłaszaj wątpliwe wiadomości; firma powinna dodatkowo wykrywać domeny łudząco podobne do własnej.
 
@@ -142,9 +137,10 @@ D5:
 - [DO DECYZJI] Etap 1 w VR to dwa osobne ekrany (S01 ChoiceCards, S02 PoolSelect z przeciąganiem tematu). W webie wszystkie trzy wybory to karty (klik) w jednej aplikacji //PHISHING; przeciąganie tematu na formularz nie zostało zaimplementowane.
 - [DO DECYZJI] Etap 1 zawiera krok „import listy adresatów” (z kodu, nie z VR), bo pokazuje białą listę IP potrzebną w //TUNEL_VPN. W VR lista pada tylko w dialogu intro.
 - [DO DECYZJI] Etykiety kafelków: VR podaje „//PHISHING” i „//PHISHING (Wysyłka)”; „//TUNEL_VPN” (VR: „//VPN”) i „//MONITOR_BOTNETU” zostawiono z kodu.
-- [DO DECYZJI] D1 („WIRUS 0-DAY”) i D4 („ROBAK”) to w VR praktycznie ta sama wiedza dwa razy. Zostawione zgodnie z VR.
+- [ZMIANA WZGLĘDEM VR] Usunięta decyzja VR D1 („WYBIERZ RODZAJ AKCJI”: WIRUS 0-DAY / SZKOLENIE Z BEZPIECZEŃSTWA IT / ZBIERANIE WRAŻLIWYCH DANYCH), bo dublowała wybór wirusa (ROBAK). Decyzja właściciela D-03. Kreator zaczyna od szablonu; pomysł ankiety z wirusem 0-day gracz podaje w intro. Pozostałe decyzje przenumerowane: VR D2–D5 = D1–D4.
+- [ZMIANA WZGLĘDEM VR] Zły wybór bez wykrycia (szablon Kneenook, temat owocowy, KEYLOGGER, nadawca KATERING@OILFLOW.COM) nie kończy misji: mentor odrzuca go (B2, `reject.mentorLine`), kara to pół udziału decyzji, gracz wybiera ponownie. Krytyczny (wykrycie) zostaje RANSOMWARE.
 - [NIEPEWNE] Pytania w VR-owej tabeli debriefu różnią się od ekranowych (np. „WYBIERZ SZABLON MAILA” vs „WYBIERZ SZABLON FORMULARZA:”). W grze raport używa pytań z ekranu.
-- [DO ZAPROJEKTOWANIA] Lekcje atak/obrona w debriefie (D1–D5) nie istnieją w VR; propozycja do recenzji właściciela.
+- [DO ZAPROJEKTOWANIA] Lekcje atak/obrona w debriefie (D1–D4) nie istnieją w VR; propozycja do recenzji właściciela.
 - Opisy i tagi opcji spoza VR usunięto (oceniały opcje); zostawiono podtytuły szablonów z VR.
 - [DO DECYZJI] S04, krok 2: przycisk „KOMPILUJ ŁADUNEK 0-DAY” (aktywny po przeciągnięciu wszystkich 5 segmentów) to dodatek kodu (nieoceniany). Segmenty są na prawym monitorze, a strefą upuszczania jest podgląd assemblera na lewym ekranie (VR: „na grafikę robaka”).
 - [DO DECYZJI] S01, ekran startowy: VR podaje tytuł „NOWA KAMPANIA PHISHINGOWA” i przycisk „KONTYNUUJ”. W webie tytuł jest samym dużym przyciskiem startu (bez osobnego „KONTYNUUJ”, na prośbę właściciela); reszta ekranu (nagłówek aplikacji, ikona) to standard aplikacji z M1.

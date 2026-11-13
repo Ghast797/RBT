@@ -15,7 +15,7 @@ import type {
 // WSPÓLNE STAŁE (jedno źródło prawdy dla danych powtarzanych w kilku klockach)
 // ---------------------------------------------------------------------------
 
-/** Domena firmy-celu (nie mylić z domeną nadawcy z D5, która jest jej typosquattingiem). */
+/** Domena firmy-celu (nie mylić z domeną nadawcy z D4, która jest jej typosquattingiem). */
 const TARGET_DOMAIN = 'carbonflow.com';
 
 /**
@@ -58,10 +58,10 @@ const ALLOWED_SENDER_IPS = ['82.123.192.116', '77.141.195.139'];
 // DANE KLOCKÓW / MINIGIER
 // ---------------------------------------------------------------------------
 
-/** D4: Konstrukcja i modyfikacja robaka 0-day (Etap 4 - Uzbrojenie). */
+/** D3: Konstrukcja i modyfikacja robaka 0-day (Etap 4 - Uzbrojenie). */
 export const wormBuilderConfig: WormBuilderConfig = {
   virus: {
-    decisionNum: 4,
+    decisionNum: 3,
     question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA:',
     options: [
       {
@@ -76,14 +76,18 @@ export const wormBuilderConfig: WormBuilderConfig = {
         label: 'KEYLOGGER',
         desc: 'Program rejestrujący wszystkie naciśnięcia klawiszy na komputerze ofiary.',
         tier: 'suboptimal',
-        feedback: 'Przechwytuje dane na jednej stacji, nie tworzy botnetu.'
+        feedback: 'Przechwytuje dane na jednej stacji, nie tworzy botnetu.',
+        reject: {
+          mentorLine:
+            'KEYLOGGER ZBIERA DANE Z JEDNEJ STACJI, NIE DA NAM BOTNETU, A POTRZEBUJEMY ZASŁONY DYMNEJ. WYBIERZ INACZEJ.'
+        }
       },
       {
         id: 'ransomware',
         label: 'RANSOMWARE',
         desc: 'Program szyfrujący dane na komputerze ofiary i w jej sieci, by zażądać okupu za ich odblokowanie.',
         tier: 'critical',
-        feedback: 'Szyfrowanie przedwcześnie alarmuje administratorów i pali operację.'
+        feedback: 'Szyfrowanie plików natychmiast alarmuje administratorów CarbonFlow: operacja zostaje wykryta i spalona.'
       }
     ]
   },
@@ -107,37 +111,10 @@ export const vpnConfig: VpnConfig = {
   }
 };
 
-/** D1–D3: Konfiguracja kampanii phishingowej: akcja, szablon, temat (Etap 1 - //PHISHING). */
+/** D1–D2: Konfiguracja kampanii phishingowej: szablon, temat (Etap 1 - //PHISHING). */
 export const phishingCampaignConfig: PhishingCampaignConfig = {
-  action: {
-    decisionNum: 1,
-    question: 'WYBIERZ RODZAJ AKCJI:',
-    options: [
-      {
-        id: 'zero_day_worm',
-        label: 'WIRUS 0-DAY',
-        tier: 'ideal',
-        feedback:
-          'Wirus 0-day bezbłędnie realizuje cel zlecenia, omijając antywirusy i tworząc sieć botnetu na serwerach ofiary.'
-      },
-      {
-        id: 'security_training',
-        label: 'SZKOLENIE Z BEZPIECZEŃSTWA IT',
-        tier: 'suboptimal',
-        feedback:
-          'Pozorowane szkolenie nie instaluje złośliwego oprogramowania i nie paraliżuje infrastruktury zgodnie z ustaleniami z mentorem.'
-      },
-      {
-        id: 'data_harvesting',
-        label: 'ZBIERANIE WRAŻLIWYCH DANYCH',
-        tier: 'critical',
-        feedback:
-          'Phishing nakierowany wyłącznie na kradzież poświadczeń nie infekuje maszyn robakiem i nie tworzy zasłony dymnej.'
-      }
-    ]
-  },
   template: {
-    decisionNum: 2,
+    decisionNum: 1,
     question: 'WYBIERZ SZABLON FORMULARZA:',
     options: [
       {
@@ -154,20 +131,23 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
         desc: 'OBSERWUJ | SPRAWDŹ TO',
         tier: 'suboptimal',
         feedback:
-          'Szablon sieci społecznościowej wzbudza podejrzenia w środowisku korporacyjnym.'
+          'Szablon sieci społecznościowej działa, ale w firmowej skrzynce wzbudza więcej podejrzeń niż zwykła ankieta, więc część pracowników nie kliknie.'
       },
       {
         id: 'kneenook',
         label: 'Kneenook',
         desc: 'TWÓJ POST | ZOBACZ NA KNEENOOK',
-        tier: 'critical',
+        tier: 'suboptimal',
         feedback:
-          'Szablon postu na forum jest niespójny z formatem ankiety.'
+          'Szablon postu na forum jest niespójny z formatem ankiety.',
+        reject: {
+          mentorLine: 'POST NA FORUM NIE WYGLĄDA JAK ANKIETA OD FIRMY. NIKT TEGO NIE WYPEŁNI. WYBIERZ INACZEJ.'
+        }
       }
     ]
   },
   topic: {
-    decisionNum: 3,
+    decisionNum: 2,
     question: 'WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:',
     options: [
       {
@@ -182,14 +162,17 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
         label: 'ANKIETA DOTYCZĄCA ĆWICZEŃ PRZECIWPOŻAROWYCH',
         tier: 'suboptimal',
         feedback:
-          'Temat formalny i nudny, część pracowników odłoży wypełnienie na później.'
+          'Ankieta zadziała, ale temat jest formalny i nikogo nie ekscytuje, więc część pracowników odłoży wypełnienie na później.'
       },
       {
         id: 'fruit_thursday',
         label: 'ULUBIONE OWOCE Z OWOCOWEGO CZWARTKU',
-        tier: 'critical',
+        tier: 'suboptimal',
         feedback:
-          'Błahy temat zostanie zignorowany przez większość personelu.'
+          'Błahy temat zostanie zignorowany przez większość personelu.',
+        reject: {
+          mentorLine: 'OWOCOWY CZWARTEK NIKOGO NIE PORUSZY. NIE KLIKNĄ W TO, A MY POTRZEBUJEMY KLIKNIĘĆ. WYBIERZ INACZEJ.'
+        }
       }
     ]
   },
@@ -200,10 +183,10 @@ export const phishingCampaignConfig: PhishingCampaignConfig = {
   }
 };
 
-/** D5: Wybór adresu nadawcy i wysyłka kampanii (Etap 5 - Dostarczenie, //PHISHING (WYSYŁKA)). */
+/** D4: Wybór adresu nadawcy i wysyłka kampanii (Etap 5 - Dostarczenie, //PHISHING (WYSYŁKA)). */
 export const phishingDispatchConfig: PhishingDispatchConfig = {
   sender: {
-    decisionNum: 5,
+    decisionNum: 4,
     question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
     options: [
       {
@@ -216,13 +199,16 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
         id: 'marketing_carbon',
         label: 'MARKETING@CARBON.COM',
         tier: 'suboptimal',
-        feedback: 'Skrócona domena jest podejrzana w kontekście spraw kadrowych.'
+        feedback: 'Adres zadziała, ale marketing rzadko pisze w sprawach kadrowych, więc wiadomość wzbudzi więcej podejrzeń niż od kadr.'
       },
       {
         id: 'catering_oilflow',
         label: 'KATERING@OILFLOW.COM',
-        tier: 'critical',
-        feedback: 'Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.'
+        tier: 'suboptimal',
+        feedback: 'Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.',
+        reject: {
+          mentorLine: 'OBCA FIRMA CATERINGOWA W POLU NADAWCY? FILTR TO ZABLOKUJE ALBO PRACOWNICY ZIGNORUJĄ. WYBIERZ INACZEJ.'
+        }
       }
     ]
   },
@@ -283,7 +269,7 @@ export const mission2Stages: StageDefinition[] = [
   {
     id: 'phishing_app',
     appId: 'phishing_app',
-    decisions: [1, 2, 3],
+    decisions: [1, 2],
     completion: {
       conversation: [
         {
@@ -327,7 +313,7 @@ export const mission2Stages: StageDefinition[] = [
   {
     id: 'virus_database',
     appId: 'virus_database',
-    decisions: [4],
+    decisions: [3],
     completion: {
       conversation: [
         {
@@ -349,7 +335,7 @@ export const mission2Stages: StageDefinition[] = [
   {
     id: 'phishing_dispatch',
     appId: 'phishing_dispatch',
-    decisions: [5],
+    decisions: [4],
     completion: {
       conversation: [
         {
