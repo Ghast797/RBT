@@ -50,7 +50,8 @@ export const virusLabConfig: VirusLabConfig = {
         imageAlt: 'zdalnie sterowany pulpit (RAT)',
         tier: 'suboptimal',
         feedback:
-          'Pozwala na cichą infiltrację pulpitu, lecz nie paraliżuje całej organizacji i nie wywiera natychmiastowej presji na zarząd.'
+          'Pozwala na cichą infiltrację pulpitu, lecz nie paraliżuje całej organizacji i nie wywiera presji na zarząd, a ta misja opiera się na szantażu.',
+        reject: { mentorLine: 'RAT NIE DA NAM SZANTAŻU, A CAŁA TA MISJA NA NIM STOI. WYBIERZ INACZEJ.' }
       },
       {
         id: 'keylogger',
@@ -58,9 +59,10 @@ export const virusLabConfig: VirusLabConfig = {
         desc: 'POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE',
         image: { group: 'virus', name: 'keylogger' },
         imageAlt: 'klawiatura pod lupą (keylogger)',
-        tier: 'critical',
+        tier: 'suboptimal',
         feedback:
-          'Zbiera wpisywane znaki, lecz nie daje natychmiastowego dostępu do serwerów ani nie uniemożliwia pracy firmie.'
+          'Zbiera wpisywane znaki, lecz nie daje dostępu do serwerów ani nie uniemożliwia pracy firmie, więc nie ma czym szantażować zarządu.',
+        reject: { mentorLine: 'KEYLOGGER NIE ZROBI NA ZARZĄDZIE ŻADNEGO WRAŻENIA, A MY POTRZEBUJEMY SZANTAŻU. WYBIERZ INACZEJ.' }
       }
     ]
   },
@@ -74,7 +76,7 @@ export const virusLabConfig: VirusLabConfig = {
     loaderText: 'PRZYGOTOWANIE MATRYCY KOMPILACJI…',
     revealThreshold: 0.92,
     segments: 10,
-    // Keylogger (critical) kończy misję przed zdrapką, więc nie ma wariantu.
+    // RAT i keylogger odrzuca mentor (B2) przed zdrapką, więc zdrapka ma tylko wariant ransomware.
     variants: {
       ransomware: {
         programName: 'RANSOMWARE',
@@ -85,18 +87,6 @@ export const virusLabConfig: VirusLabConfig = {
           { id: 'key', label: 'KLUCZ', desc: 'klucz do odszyfrowania zostaje u Ciebie' },
           { id: 'spread', label: 'ROZPRZESTRZENIANIE', desc: 'sięga do innych komputerów w sieci' },
           { id: 'ransom', label: 'ŻĄDANIE OKUPU', desc: 'wyświetla ofierze komunikat z żądaniem zapłaty' }
-        ],
-        barColor: '#8A2BE2'
-      },
-      rat: {
-        programName: 'RAT',
-        image: { group: 'virus', name: 'rat' },
-        imageAlt: 'zdalnie sterowany pulpit (RAT)',
-        parts: [
-          { id: 'screen', label: 'PODGLĄD EKRANU', desc: 'widzisz pulpit ofiary' },
-          { id: 'control', label: 'STEROWANIE', desc: 'używasz jej myszy i klawiatury' },
-          { id: 'stealth', label: 'CICHE TŁO', desc: 'działa jak zwykły proces, nikt go nie zauważa' },
-          { id: 'link', label: 'ŁĄCZNOŚĆ', desc: 'łączy się z Twoim komputerem' }
         ],
         barColor: '#8A2BE2'
       }
@@ -154,9 +144,10 @@ const noteTiles: NoteTile[] = [
     id: 'time_30s',
     slot: 'time',
     label: 'POZOSTAŁY CZAS: 00:00:30:00',
-    tier: 'critical',
+    tier: 'suboptimal',
     reportPart: 'LIMIT 30 S',
-    feedback: 'Czas 30 sekund uniemożliwia ofierze podjęcie negocjacji i zakup kryptowalut.'
+    feedback: 'Czas 30 sekund uniemożliwia ofierze podjęcie negocjacji i zakup kryptowalut.',
+    reject: { mentorLine: '30 SEKUND TO NIE LIMIT, TYLKO ŻART. W TAKIM CZASIE NIKT NIE ZDĄŻY SIĘ Z NAMI SKONTAKTOWAĆ. WYBIERZ INACZEJ.' }
   }
 ];
 
@@ -222,8 +213,19 @@ export const builderConfig: BuilderConfig = {
         'Maksymalna długość i 4 dozwolone zestawy znaków, bez znaków niedozwolonych: klucza nie da się złamać w rozsądnym czasie.',
       suboptimal:
         'Krótsze hasło lub mniej zestawów znaków: klucz jest podatny na atak słownikowy i brute force.',
+      // Nieużywane w grze: słabe hasło i znaki niedozwolone odrzuca mentor (rejectLine), zanim ransomware powstanie.
       critical:
         'Zbyt słaby klucz (8 znaków) albo znaki niedozwolone (spacja, znaki narodowe), które powodują błąd parsera i uniemożliwiają odszyfrowanie.'
+    },
+    // B2: mentor wyłapuje te konfiguracje w kreatorze, zanim ransomware zostanie wysłany.
+    rejectLine: (ev) => {
+      if (ev.hasForbidden) {
+        return 'SPACJE I ZNAKI NARODOWE ZEPSUJĄ PARSER KLUCZA I SAMI NIE ODSZYFRUJEMY PLIKÓW. USTAW HASŁO INACZEJ.';
+      }
+      if (ev.score <= 2) {
+        return 'TAKIE HASŁO ICH SPECJALIŚCI ZŁAMIĄ W KILKA CHWIL. USTAW HASŁO INACZEJ.';
+      }
+      return undefined;
     }
   },
   note: {
@@ -288,8 +290,9 @@ export const mailConfig: MailConfig = {
       {
         id: 'subj_analyst',
         label: 'ANALITYK MICHAŁ WILK',
-        tier: 'critical', // plan: critical (dawniej suboptimal)
-        feedback: 'Brak słowa kluczowego „CV” powoduje pominięcie wiadomości przez filtry działu HR.'
+        tier: 'suboptimal', // B2 (D-06): mentor odrzuca, nikt nas nie wykrył
+        feedback: 'Brak słowa kluczowego „CV” w temacie sprawia, że filtry działu HR pomijają takie wiadomości.',
+        reject: { mentorLine: 'FILTRY HR POMINĄ MAIL Z TAKIM TEMATEM, REKRUTER GO NIE OTWORZY. WYBIERZ INACZEJ.' }
       }
     ]
   },
@@ -318,8 +321,9 @@ export const mailConfig: MailConfig = {
         id: 'body_no_pwd',
         label: 'CZEŚĆ, PRZESYŁAM CV NA STANOWISKO ANALITYK USŁUG ENERGETYCZNYCH. POZDRAWIAM, MICHAŁ WILK',
         reportAnswer: 'TREŚĆ NA STANOWISKO ANALITYK USŁUG ENERGETYCZNYCH, BEZ HASŁA',
-        tier: 'critical', // plan: „USŁUG” critical (dawniej suboptimal)
-        feedback: 'Błędna nazwa stanowiska („usług” zamiast „rynków”) i brak hasła.'
+        tier: 'suboptimal', // B2 (D-06): mentor odrzuca, nikt nas nie wykrył
+        feedback: 'Błędna nazwa stanowiska („usług” zamiast „rynków”) i brak hasła do pliku.',
+        reject: { mentorLine: 'REKRUTER ZIGNORUJE MAILA, KTÓRY APLIKUJE NA STANOWISKO, KTÓREGO NIE OGŁASZALI. WYBIERZ INACZEJ.' }
       }
     ]
   },
@@ -370,8 +374,9 @@ export const vpnConfig: VpnRouterConfig = {
       {
         id: 'sender_spam',
         label: 'NEWRAWGOODS@COMMERCIAL.BIZ',
-        tier: 'critical',
-        feedback: 'Domena komercyjna B2B całkowicie niezwiązana z kandydatem.'
+        tier: 'suboptimal', // B2 (D-06): mentor odrzuca, nikt nas nie wykrył
+        feedback: 'Domena komercyjna B2B całkowicie niezwiązana z kandydatem.',
+        reject: { mentorLine: 'CV Z ADRESU SKLEPU Z TOWARAMI TO OD RAZU SPAM. NIKT NIE OTWORZY TAKIEGO ZAŁĄCZNIKA. WYBIERZ INNEGO NADAWCĘ.' }
       }
     ]
   }
@@ -444,7 +449,11 @@ export const c2Config: C2Config = {
       ideal: 'Pozyskano kompletną dokumentację technologii Freevolt bez wzbudzania podejrzeń transferem zbędnych plików.',
       suboptimal: 'Niekompletny zestaw danych lub zbyt duży transfer, który ułatwia analizę powłamaniową.',
       critical: 'Żaden pobrany plik nie dotyczy Freevolt: całkowita porażka głównego celu operacji.'
-    }
+    },
+    // Nikt nas nie wykrył, ale cel przepadł: modal „OPERACJA NIEUDANA”, nie „ZOSTAŁEŚ WYKRYTY!”.
+    failTitle: 'OPERACJA NIEUDANA',
+    failText:
+      'Żaden z pobranych plików nie dotyczy technologii Freevolt. Dostęp do serwerów Energy Rock został zmarnowany, a cel operacji przepadł.'
   }
 };
 
@@ -473,14 +482,43 @@ const negotiationDialogue: DialogueTreeConfig = {
           id: 'aggression',
           label: 'NIE BOJĘ SIĘ POLICJI',
           tier: 'suboptimal',
-          feedback: 'Emocjonalna reakcja bez technicznego argumentu o bezradności służb wobec silnego klucza.',
-          nextNode: 'neg_2'
+          feedback: 'Emocjonalna reakcja bez technicznego argumentu o bezradności służb wobec silnego klucza; szef IT grozi zerwaniem rozmów.',
+          nextNode: 'neg_1_threat'
         },
         {
           id: 'surrender',
           label: 'OKEJ, JUŻ WAM NIE PRZESZKADZAM.',
-          tier: 'critical',
-          feedback: 'Natychmiastowa kapitulacja pod wpływem blefu ofiary.'
+          tier: 'suboptimal',
+          feedback: 'Kapitulacja pod wpływem blefu ofiary: osłabia pozycję negocjacyjną i trzeba wracać do rozmowy.',
+          nextNode: 'neg_1_retreat'
+        }
+      ]
+    },
+    {
+      // Po kapitulacji (D9): ofiara czuje ulgę, gracz wraca do stołu (kwestia bez oceny).
+      id: 'neg_1_retreat',
+      incoming: 'NO WRESZCIE ROZSĄDEK. W TAKIM RAZIE KOŃCZYMY TĘ ROZMOWĘ, A MY ZAJMIEMY SIĘ ODZYSKIWANIEM DANYCH',
+      options: [
+        {
+          id: 'retreat_return',
+          label: 'CHWILA, NIE TAK SZYBKO. SAMI SIĘ NIE ODZYSKACIE, TYLKO JA MAM KLUCZ. WRÓĆMY DO ROZMOWY',
+          tier: 'ideal',
+          feedback: 'Powrót do negocjacji (kwestia bez oceny).',
+          nextNode: 'neg_2'
+        }
+      ]
+    },
+    {
+      // Po agresywnej odpowiedzi (D9, M4-03): szef IT grozi zerwaniem rozmów (kwestia bez oceny).
+      id: 'neg_1_threat',
+      incoming: 'NIE BĘDĘ SIĘ Z TOBĄ PRZERZUCAŁ GROŹBAMI. JEŚLI NIE ZACZNIESZ ROZMAWIAĆ PO LUDZKU, ZRYWAM ROZMOWY I ZOSTAWIAM SPRAWĘ SŁUŻBOM',
+      options: [
+        {
+          id: 'threat_calm',
+          label: 'SPOKOJNIE, NIE ZRYWAJ. WRÓĆMY DO SPRAWY',
+          tier: 'ideal',
+          feedback: 'Powrót do negocjacji (kwestia bez oceny).',
+          nextNode: 'neg_2'
         }
       ]
     },
@@ -500,15 +538,20 @@ const negotiationDialogue: DialogueTreeConfig = {
         {
           id: 'troll',
           label: 'NICZEGO NIE ODSZYFRUJĘ, ROBIĘ TO DLA ZABAWY :D',
-          tier: 'suboptimal',
+          tier: 'critical',
           feedback: 'Niszczy szansę na okup i podważa wiarygodność grupy jako profesjonalnych szantażystów.',
-          nextNode: 'neg_3'
+          failTitle: 'OKUP PRZEPADŁ',
+          failText:
+            'Szef IT usłyszał, że to tylko zabawa, i zerwał rozmowę. Nikt nie zapłaci okupu, a bez niego atak traci przykrywkę dla kradzieży plików Freevolt.'
         },
         {
           id: 'reveal_motive',
           label: 'CHCĘ DOSTĘPU DO PLIKÓW FREEVOLT',
           tier: 'critical',
-          feedback: 'Błąd dekonspiracyjny: zdradza szpiegowski charakter ataku i prawdziwy cel napastników.'
+          feedback: 'Błąd dekonspiracyjny: zdradza szpiegowski charakter ataku i prawdziwy cel napastników.',
+          failTitle: 'DEKONSPIRACJA',
+          failText:
+            'Szef IT wie już, że chodzi o technologię Freevolt. Przykrywka ataku finansowego runęła, a operacja przestała być tajna.'
         }
       ]
     },
@@ -663,7 +706,7 @@ export const mission4Stages: StageDefinition[] = [
     completion: {
       // Meldunek u mentora: cztery osobne beaty.
       conversation: [
-        { from: 'player', id: 'm4_reply_neg_1', label: 'MAM TWOJE PLIKI, UDAŁO SIĘ BEZ WIĘKSZYCH PROBLEMÓW' },
+        { from: 'player', id: 'm4_reply_neg_1', label: 'SKOŃCZYŁEM ROZMOWĘ Z SZEFEM IT. CZAS NA PODSUMOWANIE' },
         { from: 'byte_master', text: 'TERAZ POWINNIŚMY MIEĆ JUŻ WSZYSTKO' },
         { from: 'player', id: 'm4_reply_neg_2', label: 'CZY TO ZNACZY, ŻE W KOŃCU PRZYJMIECIE MNIE DO DARKSUN?' },
         {

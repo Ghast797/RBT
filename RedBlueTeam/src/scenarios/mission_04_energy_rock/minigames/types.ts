@@ -248,6 +248,9 @@ export interface C2Config {
     files: ExfilFile[];
     answers: { ideal: string };
     feedback: Record<ChoiceOutcome, string>;
+    /** Tytuł i wyjaśnienie modala porażki przy `critical` (same fałszywe pliki: cel przepadł, nikt nas nie wykrył). */
+    failTitle?: string;
+    failText?: string;
   };
 }
 

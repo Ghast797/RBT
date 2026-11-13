@@ -52,8 +52,9 @@ describe('M4 kreator: komunikat', () => {
     const ideal = buildNoteReport(cfg.note, fillOf('title_encrypted', 'time_30h'));
     expect(ideal).toMatchObject({ tier: 'ideal', answer: 'OSTRZEŻENIE + LIMIT 30 H', num: 3 });
     expect(buildNoteReport(cfg.note, fillOf('title_casual', 'time_30h')).tier).toBe('suboptimal');
-    const crit = buildNoteReport(cfg.note, fillOf('title_casual', 'time_30s'));
-    expect(crit.tier).toBe('critical');
-    expect(crit.feedback).toBe(cfg.note.tiles.find((t) => t.id === 'time_30s')!.feedback);
+    // 30 s to B2 (mentor odrzuca w kreatorze), więc poziom raportu to suboptimal, nie critical.
+    const worse = buildNoteReport(cfg.note, fillOf('title_casual', 'time_30s'));
+    expect(worse.tier).toBe('suboptimal');
+    expect(worse.feedback).toContain(cfg.note.tiles.find((t) => t.id === 'time_30s')!.feedback);
   });
 });

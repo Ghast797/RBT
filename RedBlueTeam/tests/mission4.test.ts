@@ -114,7 +114,7 @@ describe('Misja 4 — metadane i raport', () => {
     expect(vpnConfig.sender!.question).toBe(q(7));
     expect(c2Config.exfil.question).toBe(q(8));
     expect(victimChatConfig.dialogue.nodes[0].question).toBe(q(9));
-    expect(victimChatConfig.dialogue.nodes[1].question).toBe(q(10));
+    expect(victimChatConfig.dialogue.nodes.find((n) => n.id === 'neg_2')!.question).toBe(q(10));
   });
 
   it('negocjacje w raporcie: transkrypt 3 tur przy pozycji 10, podpis rozmówcy SZEF IT', () => {
@@ -163,25 +163,26 @@ describe('Misja 4 — struktura etapów', () => {
 
   it('poziomy opcji wg planu: D1, D4, D5, D6, D7, D9, D10', () => {
     const tiers = (opts: Array<{ id: string; tier: ChoiceOutcome }>) => Object.fromEntries(opts.map((o) => [o.id, o.tier]));
-    expect(tiers(virusLabConfig.virus.options)).toEqual({ ransomware: 'ideal', rat: 'suboptimal', keylogger: 'critical' });
+    expect(tiers(virusLabConfig.virus.options)).toEqual({ ransomware: 'ideal', rat: 'suboptimal', keylogger: 'suboptimal' });
     expect(tiers(builderConfig.color.options)).toEqual({ red: 'ideal', white: 'suboptimal', green: 'suboptimal' });
-    expect(tiers(mailConfig.subject.options)).toEqual({ subj_cv_wilk: 'ideal', subj_wilk_cv: 'suboptimal', subj_analyst: 'critical' });
-    expect(tiers(mailConfig.body.options)).toEqual({ body_formal: 'ideal', body_casual: 'suboptimal', body_no_pwd: 'critical' });
-    expect(tiers(vpnConfig.sender!.options)).toEqual({ sender_wilk: 'ideal', sender_alex: 'suboptimal', sender_spam: 'critical' });
-    const [n1, n2, n3] = victimChatConfig.dialogue.nodes;
-    expect(tiers(n1.options)).toEqual({ firm_stance: 'ideal', aggression: 'suboptimal', surrender: 'critical' });
-    expect(tiers(n2.options)).toEqual({ btc_demand: 'ideal', troll: 'suboptimal', reveal_motive: 'critical' });
+    expect(tiers(mailConfig.subject.options)).toEqual({ subj_cv_wilk: 'ideal', subj_wilk_cv: 'suboptimal', subj_analyst: 'suboptimal' });
+    expect(tiers(mailConfig.body.options)).toEqual({ body_formal: 'ideal', body_casual: 'suboptimal', body_no_pwd: 'suboptimal' });
+    expect(tiers(vpnConfig.sender!.options)).toEqual({ sender_wilk: 'ideal', sender_alex: 'suboptimal', sender_spam: 'suboptimal' });
+    const byId = (id: string) => victimChatConfig.dialogue.nodes.find((n) => n.id === id)!;
+    const [n1, n2, n3] = [byId('neg_1'), byId('neg_2'), byId('neg_3')];
+    expect(tiers(n1.options)).toEqual({ firm_stance: 'ideal', aggression: 'suboptimal', surrender: 'suboptimal' });
+    expect(tiers(n2.options)).toEqual({ btc_demand: 'ideal', troll: 'critical', reveal_motive: 'critical' });
     expect(n3.options.length).toBe(1);
   });
 
-  it('D3: tytuł i czas to kafelki z poziomami (30 s critical), 4 kafelki stałe bez poziomu', () => {
+  it('D3: tytuł i czas to kafelki z poziomami (30 s odrzucane przez mentora), 4 kafelki stałe bez poziomu', () => {
     const t = Object.fromEntries(builderConfig.note.tiles.map((x) => [x.id, x]));
     expect(builderConfig.note.tiles.length).toBe(8);
     expect(builderConfig.note.slots.map((s) => s.id)).toEqual(['icon', 'title', 'time', 'amount', 'address', 'contact']);
     expect(t.title_encrypted.tier).toBe('ideal');
     expect(t.title_casual.tier).toBe('suboptimal');
     expect(t.time_30h.tier).toBe('ideal');
-    expect(t.time_30s.tier).toBe('critical');
+    expect(t.time_30s.tier).toBe('suboptimal');
     builderConfig.note.tiles.filter((x) => x.tier === undefined).forEach((x) => expect(['icon', 'amount', 'address', 'contact']).toContain(x.slot));
   });
 
@@ -215,7 +216,13 @@ describe('Misja 4 — struktura etapów', () => {
 
   it('negocjacje per-węzeł: D9 na węźle 1, D10 na węźle 2, węzeł 3 bez oceny, bez closingMessage i trybu agregującego', () => {
     const d = victimChatConfig.dialogue;
-    expect(d.nodes.map((n) => [n.id, n.decisionNum])).toEqual([['neg_1', 9], ['neg_2', 10], ['neg_3', undefined]]);
+    expect(d.nodes.map((n) => [n.id, n.decisionNum])).toEqual([
+      ['neg_1', 9],
+      ['neg_1_retreat', undefined],
+      ['neg_1_threat', undefined],
+      ['neg_2', 10],
+      ['neg_3', undefined]
+    ]);
     expect(d.closingMessage).toBeUndefined();
     expect(d.decisionNum).toBeUndefined();
     expect(victimChatConfig.preview.fallback.colorId).toBe('red');
