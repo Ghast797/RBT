@@ -66,19 +66,19 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-15 | S | Każdy critical ma tytuł „ZOSTAŁEŚ WYKRYTY!” | otwarte | | Zrobić pierwsze w P2: tytuł porażki konfigurowalny per opcja. |
-| M1-06 | S | Muffin: pełne punkty za przynętę, której ofiara nie szukała | otwarte | | `guide_muffins` → suboptimal. |
-| M2-02 | W | D4 KEYLOGGER, a gra buduje robaka i botnet | czeka na właściciela | | D-04 |
-| M2-03 | W | D1 SZKOLENIE IT, a reszta zakłada wirusa 0-day | czeka na właściciela | | D-03 |
+| ENG-15 | S | Każdy critical ma tytuł „ZOSTAŁEŚ WYKRYTY!” | w toku |  | Właściciel: tytuł porażki dopasowany do kontekstu opcji (failTitle), domyślnie „ZOSTAŁEŚ WYKRYTY!”. |
+| M1-06 | S | Muffin: pełne punkty za przynętę, której ofiara nie szukała | w toku |  | Właściciel: najlepsza opcja zależy od poprzedniego wyboru — na stronie z muffinkami ideal to poradnik o muffinkach (już tak jest). Poziomów nie zmieniać; poprawić tylko feedback, by nie przeczył D1. |
+| M2-02 | W | D4 KEYLOGGER, a gra buduje robaka i botnet | w toku |  | D-04: B2 — mentor odrzuca KEYLOGGER, kara zostaje, gracz wybiera ponownie. |
+| M2-03 | W | D1 SZKOLENIE IT, a reszta zakłada wirusa 0-day | w toku |  | D-03: usunąć D1 z M2 (przenumerować decyzje, raport, testy). Znika też M2-07. |
 | M2-04 | S | Suboptimal, które według opisu nie realizują celu | otwarte | | |
-| M3-01 | W | D2 kobieta jako cel, a 4 etapy mówią o Mateuszu | otwarte | | Wiktoria, Agnieszka → critical. |
+| M3-01 | W | D2 kobieta jako cel, a 4 etapy mówią o Mateuszu | w toku |  | Wiktoria, Agnieszka → B2 (mentor odrzuca: zbyt ostrożne), zamiast critical. |
 | M3-02 | W | D1 RANSOMWARE, a reszta misji jako RAT | otwarte | | → critical. |
-| M3-03 | S | D1 poziomy odwrócone (keylogger „WYKRYTY”) | czeka na właściciela | | D-05 |
-| M3-04 | W | D5 zły adres i tak trafia do ofiary | otwarte | | OŁAWSKA 51B, DRZYMAŁY 38D → critical. |
-| M3-05 | W | D6 złe auto i tak aktywuje wirusa u Mateusza | otwarte | | 7 złych aut → critical. |
-| M3-06 | W | D3 „dokumenty HR” psuje ocenę D4 | otwarte | | Poziomy D4 zależne od `m3_plan`. |
-| M4-01 | W | D1 RAT, a reszta misji zakłada ransomware | czeka na właściciela | | D-04 |
-| M4-03 | W | D10 „troll” i D9 „agresja”: rozmowa zakłada ideał | otwarte | | D10 „ROBIĘ TO DLA ZABAWY :D” → critical. |
+| M3-03 | S | D1 poziomy odwrócone (keylogger „WYKRYTY”) | w toku |  | D-05: KEYLOGGER w D1 → B2 (mentor odrzuca). |
+| M3-04 | W | D5 zły adres i tak trafia do ofiary | w toku |  | Oławska 51B, Drzymały 38D → critical z wyjaśnieniem na ekranie (failTitle). |
+| M3-05 | W | D6 złe auto i tak aktywuje wirusa u Mateusza | w toku |  | 7 złych aut → critical; „PUSTY ASFALT” → suboptimal (Mateusz znajdzie kopertę na ziemi, gra idzie dalej). |
+| M3-06 | W | D3 „dokumenty HR” psuje ocenę D4 | w toku |  | Właściciel: poziomy D4 (nazwa dysku, podpis) zależne od planu z D3 — przy planie HR ideal to podpis pasujący do dokumentów HR. |
+| M4-01 | W | D1 RAT, a reszta misji zakłada ransomware | w toku |  | RAT → B2, spójnie z M2 KEYLOGGER (właściciel zmienił zdanie z critical). |
+| M4-03 | W | D10 „troll” i D9 „agresja”: rozmowa zakłada ideał | w toku |  | Troll → critical; agresja (D9) → nowa kwestia, w której szef IT grozi zerwaniem rozmów. Tekst do akceptacji właściciela. |
 
 ### P3 — pamięć wyborów (ENG-04) i treść za graczem
 
@@ -146,10 +146,10 @@ Agent wpisuje tu odpowiedź dopiero, gdy właściciel ją poda w czacie.
 |---|---|---|---|
 | D-01 | Ukrywać WYNIK i BTC na pasku zadań w M2+? Bez tego odroczoną konsekwencję widać od razu jako spadek procentów. | ENG-17, P4 | |
 | D-02 | Spoiler w M2: zostawić tekst 1:1 z VR czy usunąć zapowiedź przed decyzją? | M2-12 | |
-| D-03 | M2 D1 SZKOLENIE IT: zrobić critical czy usunąć D1 (dubluje D4)? | M2-03, M2-07 | |
-| D-04 | Wirus sprzeczny z planem (M2 D4 KEYLOGGER, M4 D1 RAT): critical (B1) czy mentor odrzuca i gracz wybiera ponownie (B2)? | M2-02, M4-01 | |
-| D-05 | M3 D1 KEYLOGGER: suboptimal z odroczonym skutkiem czy critical z tytułem „OPERACJA NIEUDANA”? | M3-03 | |
-| D-06 | Więcej opcji critical = więcej powtórek od zera. Dodać powtórkę od bieżącego etapu? | P2 | |
+| D-03 | M2 D1 SZKOLENIE IT: zrobić critical czy usunąć D1 (dubluje D4)? | M2-03, M2-07 | Usunąć D1. |
+| D-04 | Wirus sprzeczny z planem (M2 D4 KEYLOGGER, M4 D1 RAT): critical (B1) czy mentor odrzuca i gracz wybiera ponownie (B2)? | M2-02, M4-01 | M2 KEYLOGGER: B2. M4 RAT: B2. |
+| D-05 | M3 D1 KEYLOGGER: suboptimal z odroczonym skutkiem czy critical z tytułem „OPERACJA NIEUDANA”? | M3-03 | B2. |
+| D-06 | Więcej opcji critical = więcej powtórek od zera. Dodać powtórkę od bieżącego etapu? | P2 | B2 wszędzie, gdzie nie ma wykrycia. Critical tylko dla wykrycia albo nieodwracalnej porażki operacji (np. koperta pod złym adresem). |
 
 ## Nowe ustalenia
 
