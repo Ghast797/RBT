@@ -146,7 +146,7 @@ describe('Misja 3 — metadane, intro i raport (dokument VR)', () => {
     expect(def().mission.targetCompany).toBe('O&L Company');
     expect(def().mission.rewardBtc).toBe(4.02);
     expect(def().mission.decisionCount).toBe(6);
-    expect(def().mission.passingScore).toBe(80);
+    expect(def().mission.passingScore).toBe(70);
     expect(def().mission.date).toBe('19.05.2026');
   });
 

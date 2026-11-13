@@ -1,3 +1,4 @@
+import { scormStatus, roundScore, displayScore, DEFAULT_PASSING_SCORE } from '../core/scoring';
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldAlert,
@@ -90,7 +91,7 @@ export const Taskbar: React.FC = () => {
         {/* Mission Score */}
         <div className="hidden sm:flex items-center space-x-1 px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.6875rem]">
           <span className="text-[#00ff66]/60">WYNIK:</span>
-          <span className={`font-bold ${score >= 80 ? 'text-[#00ff66]' : 'text-[#ff3366]'}`}>{score}%</span>
+          <span className={`font-bold ${scormStatus(roundScore(score), activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE) === 'passed' ? 'text-[#00ff66]' : 'text-[#ff3366]'}`}>{displayScore(score)}%</span>
         </div>
 
         {/* Clock */}

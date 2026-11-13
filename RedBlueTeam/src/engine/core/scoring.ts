@@ -50,6 +50,19 @@ export function btcForScore(scorePercent: number, rewardBtc: number): number {
   return +(rewardBtc * ratio).toFixed(2);
 }
 
+/** Domyślny próg zaliczenia (%), gdy misja nie ustawia `passingScore`. */
+export const DEFAULT_PASSING_SCORE = 70;
+
+/** Wynik do zapisu i porównań z progiem: 2 miejsca po przecinku (bez ułamków float). */
+export function roundScore(score: number): number {
+  return Math.round(score * 100) / 100;
+}
+
+/** Wynik do wyświetlania graczowi: liczba całkowita. */
+export function displayScore(score: number): number {
+  return Math.round(score);
+}
+
 /** Status SCORM na podstawie wyniku i progu zaliczenia. */
 export function scormStatus(scorePercent: number, passingScore: number): 'passed' | 'failed' {
   return scorePercent >= passingScore ? 'passed' : 'failed';

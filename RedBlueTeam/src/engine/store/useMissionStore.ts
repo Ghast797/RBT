@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, ConversationBeat } from '../types/mission';
-import { penaltyForTier, btcForScore, resolveDecisionCount } from '../core/scoring';
+import { penaltyForTier, btcForScore, resolveDecisionCount, DEFAULT_PASSING_SCORE, roundScore } from '../core/scoring';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
 import { createMissionCompletionStatement, MockLRS } from '../scorm/xapi';
@@ -799,9 +799,10 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     MockLRS.sendStatement(
       createMissionCompletionStatement(
         undefined, // domyślny aktor xAPI (neutralny); tożsamość ucznia nadaje LMS
-        score,
+        roundScore(score),
         `Ukończono ${title}${subTitle ? ` — ${subTitle}` : ''}`,
-        activeMission.mission
+        activeMission.mission,
+        activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE
       )
     );
     set({
@@ -849,7 +850,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const result = scorm2004.saveResult({
       missionId: activeMission.mission.id,
       scoreRaw: score,
-      passingScore: activeMission.mission.passingScore ?? 70,
+      passingScore: activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE,
       sessionSeconds,
       interactions,
       suspendData

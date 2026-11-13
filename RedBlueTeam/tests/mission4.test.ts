@@ -81,7 +81,7 @@ describe('Misja 4 — metadane i raport', () => {
     expect(def().mission.targetCompany).toBe('Energy Rock');
     expect(def().mission.rewardBtc).toBe(3.79);
     expect(def().mission.decisionCount).toBe(10);
-    expect(def().mission.passingScore).toBe(80);
+    expect(def().mission.passingScore).toBe(70);
     expect(def().mission.accentColor).toBe('#FF0033');
     expect(def().mission.date).toBe('19.05.2026');
     expect(resolveDecisionCount(def())).toBe(10);

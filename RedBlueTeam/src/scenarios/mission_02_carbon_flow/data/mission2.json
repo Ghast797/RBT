@@ -8,7 +8,7 @@
     "accentColor": "#00ff66",
     "rewardBtc": 2.96,
     "maxScore": 100,
-    "passingScore": 80,
+    "passingScore": 70,
     "decisionCount": 5,
     "targetCompany": "CarbonFlow Inc.",
     "description": "Scenariusz szkoleniowy SCORM symulujący dobór robaka 0-day, tunelowanie VPN, kampanię phishingową i utworzenie sieci zombie (botnet) na serwerach CarbonFlow Inc."

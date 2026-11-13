@@ -8,7 +8,7 @@
     "accentColor": "#FF0033",
     "rewardBtc": 3.79,
     "maxScore": 100,
-    "passingScore": 80,
+    "passingScore": 70,
     "decisionCount": 10,
     "targetCompany": "Energy Rock",
     "description": "Scenariusz szkoleniowy SCORM symulujący atak ransomware i spear-phishing na firmę Energy Rock w celu podniesienia świadomości zagrożeń i procedur obronnych."

@@ -1,6 +1,8 @@
 // SCORM 2004 (4th Edition) API Bridge & Tracking Engine
 // Supports both iframe embedded mode and popup/new tab mode (scanning window.opener)
 
+import { roundScore, scormStatus, DEFAULT_PASSING_SCORE } from '../core/scoring';
+
 export interface ScormInteraction {
   id: string;
   type: 'choice' | 'true-false' | 'fill-in' | 'long-fill-in' | 'matching' | 'performance' | 'sequencing' | 'likert' | 'numeric' | 'other';
@@ -52,8 +54,16 @@ export class MockSCORM2004 implements SCORM2004API {
   public isInitialized = false;
   public isTerminated = false;
   public commitCount = 0;
+  /** Tryb „strict” jak prawdziwy LMS: drugie Initialize zwraca "false" z błędem 103. */
+  public strict = false;
+  private lastError = '0';
 
   Initialize(_param: string): string {
+    if (this.strict && this.isInitialized) {
+      this.lastError = '103';
+      return 'false';
+    }
+    this.lastError = '0';
     this.isInitialized = true;
     this.data['cmi.completion_status'] = 'incomplete';
     this.data['cmi.success_status'] = 'unknown';
@@ -84,7 +94,7 @@ export class MockSCORM2004 implements SCORM2004API {
   }
 
   GetLastError(): string {
-    return '0';
+    return this.lastError;
   }
 
   GetErrorString(_errorCode: string): string {
@@ -101,6 +111,9 @@ class Scorm2004Manager {
   private isConnected = false;
   private isMock = false;
   private startTime: number = Date.now();
+  /** Najlepszy dotychczasowy wynik (z LMS lub z tej sesji) i jego status. */
+  private bestScore: number | null = null;
+  private bestPassed = false;
 
   /**
    * Search for API_1484_11 in window, parents, and window.opener (for new tab mode)
@@ -162,7 +175,8 @@ class Scorm2004Manager {
   }
 
   public initialize(mockFallback = true): boolean {
-    this.startTime = Date.now();
+    // Idempotentne: LMS pozwala na jedno Initialize na sesję (drugie = błąd 103).
+    if (this.isConnected && this.api) return true;
     const foundApi = this.findApi();
 
     if (foundApi) {
@@ -179,8 +193,18 @@ class Scorm2004Manager {
 
     try {
       const res = this.api.Initialize('');
-      this.isConnected = res === 'true';
+      let alreadyInitialized = false;
+      if (res !== 'true') {
+        try {
+          alreadyInitialized = this.api.GetLastError() === '103';
+        } catch {
+          alreadyInitialized = false;
+        }
+      }
+      this.isConnected = res === 'true' || alreadyInitialized;
       if (this.isConnected) {
+        this.startTime = Date.now();
+        this.loadBestResult();
         console.log('[SCORM 2004] Initialized successfully. Mode:', this.isMock ? 'MOCK' : 'LIVE LMS');
         this.terminateOnPageHide();
       }
@@ -188,6 +212,21 @@ class Scorm2004Manager {
     } catch (err) {
       console.error('[SCORM 2004] Exception during Initialize:', err);
       return false;
+    }
+  }
+
+  /** Wczytuje dotychczasowy wynik z LMS, żeby nie nadpisać go gorszym. */
+  private loadBestResult(): void {
+    try {
+      const raw = parseFloat(this.api!.GetValue('cmi.score.raw'));
+      if (Number.isFinite(raw)) {
+        if (this.bestScore === null || raw > this.bestScore) {
+          this.bestScore = raw;
+          this.bestPassed = this.api!.GetValue('cmi.success_status') === 'passed';
+        }
+      }
+    } catch {
+      /* brak odczytu — traktujemy jak brak wyniku */
     }
   }
 
@@ -259,6 +298,8 @@ class Scorm2004Manager {
     this.isConnected = false;
     this.isMock = false;
     this.startTime = Date.now();
+    this.bestScore = null;
+    this.bestPassed = false;
   }
 
   /**
@@ -286,22 +327,28 @@ class Scorm2004Manager {
       return { success: false, message: 'Nie odnaleziono interfejsu SCORM 2004.' };
     }
 
-    const passingScore = data.passingScore ?? 70;
-    const isPassed = data.scoreRaw >= passingScore;
-    const scoreScaled = +(data.scoreRaw / 100).toFixed(2);
+    const passingScore = data.passingScore ?? DEFAULT_PASSING_SCORE;
+    const scoreRaw = roundScore(data.scoreRaw);
+    const isPassed = scormStatus(scoreRaw, passingScore) === 'passed';
+    const scoreScaled = +(scoreRaw / 100).toFixed(2);
     const durationIso = formatIso8601Duration(data.sessionSeconds);
+    const keepBest = this.bestScore !== null && scoreRaw < this.bestScore;
+    const shown = Math.round(scoreRaw);
 
     try {
-      // 1. Completion & Success status
       this.setValue('cmi.completion_status', 'completed');
-      this.setValue('cmi.success_status', isPassed ? 'passed' : 'failed');
       this.setValue('cmi.exit', 'normal');
 
-      // 2. Score parameters
-      this.setValue('cmi.score.raw', data.scoreRaw.toString());
-      this.setValue('cmi.score.scaled', scoreScaled.toString());
-      this.setValue('cmi.score.min', (data.scoreMin ?? 0).toString());
-      this.setValue('cmi.score.max', (data.scoreMax ?? 100).toString());
+      if (!keepBest) {
+        // Zapisujemy tylko wynik nie gorszy od najlepszego (i nie pogarszamy passed -> failed).
+        this.setValue('cmi.success_status', isPassed ? 'passed' : 'failed');
+        this.setValue('cmi.score.raw', scoreRaw.toString());
+        this.setValue('cmi.score.scaled', scoreScaled.toString());
+        this.setValue('cmi.score.min', (data.scoreMin ?? 0).toString());
+        this.setValue('cmi.score.max', (data.scoreMax ?? 100).toString());
+        this.bestScore = scoreRaw;
+        this.bestPassed = isPassed;
+      }
 
       // 3. Location and Session Time
       const finalLocation = data.location || (data.missionId ? `${data.missionId}_debriefing_completed` : 'debriefing_completed');
@@ -332,9 +379,11 @@ class Scorm2004Manager {
 
       return {
         success: true,
-        message: isPassed
-          ? `Wynik ${data.scoreRaw}/100 pkt został pomyślnie zapisany w Moodle jako ZALICZONY (passed).`
-          : `Wynik ${data.scoreRaw}/100 pkt został zapisany w Moodle jako NIEZALICZONY (failed, próg: ${passingScore}%).`
+        message: keepBest
+          ? `Wynik ${shown}/100 pkt jest niższy od najlepszego (${Math.round(this.bestScore!)}/100 pkt) — w Moodle zostaje najlepszy wynik${this.bestPassed ? ' (ZALICZONY)' : ''}.`
+          : isPassed
+            ? `Wynik ${shown}/100 pkt został pomyślnie zapisany w Moodle jako ZALICZONY (passed).`
+            : `Wynik ${shown}/100 pkt został zapisany w Moodle jako NIEZALICZONY (failed, próg: ${passingScore}%).`
       };
     } catch (err: any) {
       console.error('[SCORM 2004] Error during saveResult:', err);

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { formatIso8601Duration, MockSCORM2004, scorm2004 } from '../src/engine/scorm/scorm2004';
 import { useMissionStore } from '../src/engine/store/useMissionStore';
 
@@ -106,5 +106,77 @@ describe('SCORM 2004 (4th Edition) Engine', () => {
 
     store.openExitModal();
     expect(useMissionStore.getState().isExitModalOpen).toBe(true);
+  });
+});
+
+
+describe('SCORM 2004 — LMS (strict): ponowna inicjalizacja i najlepszy wynik', () => {
+  const strictLms = () => {
+    const lms = new MockSCORM2004();
+    lms.strict = true;
+    (globalThis as any).window = { API_1484_11: lms, addEventListener: () => {} };
+    return lms;
+  };
+
+  beforeEach(() => {
+    scorm2004.reset();
+    useMissionStore.getState().resetGame();
+  });
+
+  afterEach(() => {
+    delete (globalThis as any).window;
+  });
+
+  it('initialize() jest idempotentne i traktuje błąd 103 jako połączenie', () => {
+    const lms = strictLms();
+    expect(scorm2004.initialize(false)).toBe(true);
+    expect(scorm2004.initialize(false)).toBe(true);
+    scorm2004.reset();
+    expect(scorm2004.initialize(false)).toBe(true);
+    expect(lms.GetLastError()).toBe('103');
+  });
+
+  it('critical -> OD POCZĄTKU -> ukończenie: wynik trafia do LMS', () => {
+    const lms = strictLms();
+    useMissionStore.getState().finishBiosBoot();
+    useMissionStore.getState().resetGame();
+    useMissionStore.getState().finishBiosBoot();
+    const res = useMissionStore.getState().saveMissionResult();
+    expect(res.success).toBe(true);
+    expect(lms.GetValue('cmi.score.raw')).not.toBe('');
+  });
+
+  it('zapisuje najlepszy wynik: 100 -> powtórka 75 zostawia 100 i passed', () => {
+    const lms = strictLms();
+    scorm2004.initialize(false);
+    scorm2004.saveResult({ scoreRaw: 100, passingScore: 70, sessionSeconds: 10 });
+    const res = scorm2004.saveResult({ scoreRaw: 75, passingScore: 70, sessionSeconds: 20 });
+    expect(res.success).toBe(true);
+    expect(lms.GetValue('cmi.score.raw')).toBe('100');
+    expect(lms.GetValue('cmi.success_status')).toBe('passed');
+    scorm2004.saveResult({ scoreRaw: 60, passingScore: 70, sessionSeconds: 30 });
+    expect(lms.GetValue('cmi.success_status')).toBe('passed');
+  });
+
+  it('czyta dotychczasowy wynik z LMS przy inicjalizacji', () => {
+    const lms = strictLms();
+    const origInit = lms.Initialize.bind(lms);
+    lms.Initialize = (p: string) => {
+      const r = origInit(p);
+      lms.data['cmi.score.raw'] = '90';
+      lms.data['cmi.success_status'] = 'passed';
+      return r;
+    };
+    scorm2004.initialize(false);
+    scorm2004.saveResult({ scoreRaw: 80, passingScore: 70, sessionSeconds: 5 });
+    expect(lms.GetValue('cmi.score.raw')).toBe('90');
+  });
+
+  it('zaokrągla wynik do 2 miejsc i komunikat do całości', () => {
+    const lms = strictLms();
+    scorm2004.initialize(false);
+    const res = scorm2004.saveResult({ scoreRaw: 91.66666666666667, passingScore: 70, sessionSeconds: 5 });
+    expect(lms.GetValue('cmi.score.raw')).toBe('91.67');
+    expect(res.message).toContain('92/100');
   });
 });

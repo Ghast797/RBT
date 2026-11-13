@@ -45,7 +45,7 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
     expect(mission?.mission.targetCompany).toBe('CarbonFlow Inc.');
     expect(mission?.mission.rewardBtc).toBe(2.96);
     expect(mission?.mission.decisionCount).toBe(5);
-    expect(mission?.mission.passingScore).toBe(80);
+    expect(mission?.mission.passingScore).toBe(70);
     expect(mission?.step6.choices.length).toBe(5);
     expect(mission?.step6.educationalSlides.length).toBe(5);
   });

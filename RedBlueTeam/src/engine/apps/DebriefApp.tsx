@@ -19,7 +19,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
-import { resolveDecisionCount } from '../core/scoring';
+import { resolveDecisionCount, scormStatus, roundScore, displayScore, DEFAULT_PASSING_SCORE } from '../core/scoring';
 import { scorm2004 } from '../scorm/scorm2004';
 
 export const DebriefApp: React.FC = () => {
@@ -41,6 +41,8 @@ export const DebriefApp: React.FC = () => {
     openRetryModal
   } = useMissionStore();
   const isMockScorm = scorm2004.isUsingMock();
+  const passingScore = activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE;
+  const isPassed = scormStatus(roundScore(score), passingScore) === 'passed';
 
   const [hasExited, setHasExited] = useState<boolean>(false);
   const [isCloseAttempted, setIsCloseAttempted] = useState<boolean>(false);
@@ -344,7 +346,7 @@ export const DebriefApp: React.FC = () => {
           </div>
           <div className="px-2.5 py-1 bg-[#081219] border border-[#00f0ff] rounded flex items-center gap-1.5 text-[#00f0ff]">
             <Trophy size={14} />
-            <span className="text-sm font-black">{score}%</span>
+            <span className="text-sm font-black">{displayScore(score)}%</span>
           </div>
         </div>
       </div>
@@ -352,10 +354,10 @@ export const DebriefApp: React.FC = () => {
       {/* Pasek wyniku, zapis w Moodle i BTC */}
       <div className="px-3 py-1 bg-[#081219] border border-[#00ff66]/30 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-2 text-xs shrink-0">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
-          <span className="font-bold text-[#00ff66] text-sm">{score}%</span>
+          <span className="font-bold text-[#00ff66] text-sm">{displayScore(score)}%</span>
           <div className="w-40 h-2.5 bg-[#050a0f] border border-[#00ff66]/40 rounded-full overflow-hidden">
             <div
-              className={`h-full shadow-[0_0_10px_#00ff66] ${score >= 80 ? 'bg-[#00ff66]' : 'bg-[#ff3366]'}`}
+              className={`h-full shadow-[0_0_10px_#00ff66] ${isPassed ? 'bg-[#00ff66]' : 'bg-[#ff3366]'}`}
               style={{ width: `${score}%` }}
             />
           </div>
@@ -486,14 +488,14 @@ export const DebriefApp: React.FC = () => {
             <div className="p-3 bg-[#050a0f] border border-[#00ff66]/40 rounded-xl space-y-2 text-left text-xs">
               <div className="flex justify-between items-center pb-2 border-b border-gray-800">
                 <span className="text-gray-400">STATUS ZALICZENIA:</span>
-                <span className={`font-black px-2 py-0.5 rounded text-xs ${score >= 70 ? 'bg-[#00ff66]/20 text-[#00ff66] border border-[#00ff66]/50' : 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/50'
+                <span className={`font-black px-2 py-0.5 rounded text-xs ${isPassed ? 'bg-[#00ff66]/20 text-[#00ff66] border border-[#00ff66]/50' : 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/50'
                   }`}>
-                  {score >= 70 ? 'ZALICZONO (PASSED)' : 'NIEZALICZONO (FAILED)'}
+                  {isPassed ? 'ZALICZONO (PASSED)' : 'NIEZALICZONO (FAILED)'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">OCENA PUNKTOWA:</span>
-                <span className="text-[#00ff66] font-black">{score} / 100 PKT</span>
+                <span className="text-[#00ff66] font-black">{displayScore(score)} / {activeMission.mission.maxScore ?? 100} PKT</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">ZAPISANE INTERAKCJE:</span>
