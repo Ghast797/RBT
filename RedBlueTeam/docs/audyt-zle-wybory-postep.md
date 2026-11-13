@@ -50,18 +50,18 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-01 | W | Po „OD POCZĄTKU” wynik nie zapisuje się w Moodle | otwarte | | |
-| ENG-02 | W | Raport: ZALICZONO od 70, SCORM failed poniżej passingScore | otwarte | | |
-| ENG-03 | W | „TYLKO NAJLEPSZY WYNIK ZOSTANIE ZAPISANY” — nieprawda | otwarte | | |
-| ENG-05 | S | Reakcja mentora na odpowiedź w intrze się nie wyświetla | otwarte | | |
-| ENG-06 | S | Ponowne zgłoszenie decyzji psuje punktację | otwarte | | |
-| ENG-08 | S | Timery DialogueTree przeżywają powtórkę | otwarte | | |
-| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | otwarte | | |
-| ENG-11 | N | Wynik z długimi ułamkami w UI i SCORM | otwarte | | |
-| ENG-12 | N | completeStage nadpisuje trwający mostek | otwarte | | |
-| ENG-14 | N | `?dev=1` znika po powtórce | otwarte | | |
-| M1-02 | W | WRÓĆ w poczcie zgłasza D3 drugi raz | otwarte | | Usunąć WRÓĆ albo zablokować ponowne zgłoszenie (ENG-06). |
-| M3-10 | S | Wynik z ułamkami i fałszywe „najlepszy wynik” | otwarte | | Znika razem z ENG-03 i ENG-11 — sprawdzić. |
+| ENG-01 | W | Po „OD POCZĄTKU” wynik nie zapisuje się w Moodle | zrobione | 477f811 | initialize() idempotentne, błąd 103 = połączenie, mock strict. Nieobsłużone: ponowne Initialize po Terminate (NEW-01). |
+| ENG-02 | W | Raport: ZALICZONO od 70, SCORM failed poniżej passingScore | zrobione | 477f811, 571077f | Próg 70% we wszystkich misjach; modal, pasek, SCORM i xAPI przez scormStatus. Status liczony z wyniku wyświetlanego (69,6% = „70%” = zaliczone). |
+| ENG-03 | W | „TYLKO NAJLEPSZY WYNIK ZOSTANIE ZAPISANY” — nieprawda | zrobione | 477f811 | Zapis tylko gdy wynik ≥ najlepszego (z LMS i z sesji); gorszy wynik zapisuje tylko completion i czas. |
+| ENG-05 | S | Reakcja mentora na odpowiedź w intrze się nie wyświetla | zrobione | 9027b2c | mentorReaction jako dymek w intrze; introReplies zachowane przy „BEZ INTRO”. Sprawdzone w przeglądarce (M1 node_7). |
+| ENG-06 | S | Ponowne zgłoszenie decyzji psuje punktację | zrobione | fca0c9e | Pierwsze zgłoszenie numeru wygrywa; wynik, liczniki i BTC wyliczane z decisionTiers. |
+| ENG-08 | S | Timery DialogueTree przeżywają powtórkę | zrobione | a2052f5 | Timery w createTimerBag + AppRenderer ignoruje callbacki z poprzedniego appRunId (chroni wszystkie klocki). |
+| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | czeka na właściciela | | Właściciel prosi o wyjaśnienie; propozycja: przenieść do P3. |
+| ENG-11 | N | Wynik z długimi ułamkami w UI i SCORM | zrobione | 477f811 | SCORM: 2 miejsca po przecinku; UI: liczby całkowite. |
+| ENG-12 | N | completeStage nadpisuje trwający mostek | odrzucone | | Właściciel: występuje tylko w trybie dev, nie poprawiać. |
+| ENG-14 | N | `?dev=1` znika po powtórce | odrzucone | | Właściciel: bez znaczenia, zostawić. |
+| M1-02 | W | WRÓĆ w poczcie zgłasza D3 drugi raz | zrobione | 6816f1b | WRÓĆ usunięty z ekranu adresu (D4). Sprawdzone w przeglądarce. |
+| M3-10 | S | Wynik z ułamkami i fałszywe „najlepszy wynik” | zrobione | 477f811 | Zamknięte przez ENG-03 i ENG-11. |
 
 ### P2 — zmiana poziomów
 
@@ -153,4 +153,7 @@ Agent wpisuje tu odpowiedź dopiero, gdy właściciel ją poda w czacie.
 
 ## Nowe ustalenia
 
-Brak.
+| ID | Waga | Opis | Paczka | Status | Commit | Notatka |
+|---|---|---|---|---|---|---|
+| NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. |
+| NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | — | otwarte | | Decyzja: dodać zależność dev czy zostać przy testach logiki. |
