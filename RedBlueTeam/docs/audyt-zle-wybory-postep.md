@@ -9,6 +9,14 @@ Treść ustaleń (gdzie, jak odtworzyć, co widzi gracz, propozycja) jest w
 | `audyt-zle-wybory.html` | Zamrożony zapis audytu z 13.11.2026, stan kodu na commicie `5814fd8`. Numery linii dotyczą tego commita. | Nikt. Tylko do odczytu. |
 | `audyt-zle-wybory-postep.md` (ten plik) | Kolejność prac, statusy, decyzje właściciela, nowe ustalenia. | Agent po każdej poprawce. |
 
+### Commity po audycie, sprawdzone pod kątem ustaleń
+
+| Commit | Co zmienia | Wpływ na ustalenia |
+|---|---|---|
+| `1ae5dca` | Grafiki M2 (formularze) i M3 (pracownicy, imprezy, wirusy, tapeta RAT, koperta); w M3 `PendriveApp` ekran podpisu z poziomą kopertą i podpisem na niej | Brak. Poziomy i logika D4 bez zmian (M3-06, M3-11 dalej otwarte). |
+
+Agent, który zaczyna pracę po przerwie, dopisuje tu commity spoza poprawek audytu, które dotykają `stages.ts`, danych misji, minigier albo silnika.
+
 ## Zasady dla agenta
 
 1. **Szczegóły ustalenia:** wyszukaj w HTML tekst `id:"M3-04"` (z cudzysłowem). Pola obiektu:
