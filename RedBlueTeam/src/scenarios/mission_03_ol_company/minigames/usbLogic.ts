@@ -4,7 +4,7 @@
 
 import type { ChoiceOutcome, DecisionReport } from '../../../engine/types/mission';
 import { buildReport, reportAnswerOf } from '../../../engine/core/report';
-import type { GradedDecision, PendriveConfig, ReportableOption, UsbAttachment, UsbPlanRule, UsbState } from './types';
+import type { GradedDecision, PendriveConfig, PlanOption, ReportableOption, UsbAttachment, UsbPlanRule, UsbState } from './types';
 
 /** Waga poziomu: im wyższa, tym gorszy. */
 export const TIER_RANK: Record<ChoiceOutcome, number> = { ideal: 0, suboptimal: 1, critical: 2 };
@@ -32,6 +32,20 @@ export function resolvePlanRule(
 /** Czy plik wolno wgrać na pendrive'a przy tej regule planu. */
 export function fileMatchesPlan(rule: UsbPlanRule | undefined, fileId: string): boolean {
   return !!rule && rule.fileIds.includes(fileId);
+}
+
+/**
+ * Opcje kroku D4 dla planu z D3 (`vectorOptionId` reguły planu): odfiltrowane przez `forPlans` i z poziomem
+ * oraz feedbackiem z `byPlan[plan]`, gdy istnieje. Bez `byPlan`/`forPlans` opcja przechodzi bez zmian.
+ * Jedyne miejsce, w którym ocena D4 zależy od planu (poziom musi pasować do tego, co faktycznie jest na pendrive'ie).
+ */
+export function resolveOptionsForPlan<O extends PlanOption>(options: readonly O[], planId: string | undefined): O[] {
+  return options
+    .filter((o) => !o.forPlans || (planId !== undefined && o.forPlans.includes(planId)))
+    .map((o) => {
+      const variant = planId !== undefined ? o.byPlan?.[planId] : undefined;
+      return variant ? { ...o, tier: variant.tier, feedback: variant.feedback } : o;
+    });
 }
 
 /** Przedrostki odpowiedzi D4 w raporcie (teksty z configu: `pendriveConfig.reportLabels`). */

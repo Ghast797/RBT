@@ -13,8 +13,8 @@ describe('zdrapka w configu M3', () => {
   });
 
   it('każda opcja D1 prowadząca do zdrapki (nie critical) ma wariant: nazwa, grafika z alt i cztery podpisy', () => {
-    const reachable = virusLabConfig.virus.options.filter((o) => o.tier !== 'critical');
-    expect(reachable.length).toBeGreaterThanOrEqual(2);
+    const reachable = virusLabConfig.virus.options.filter((o) => o.tier !== 'critical' && !o.reject);
+    expect(reachable.map((o) => o.id)).toEqual(['rat']);
     for (const o of reachable) {
       const v = m.variants[o.id];
       expect(v, `wariant ${o.id}`).toBeDefined();
@@ -25,15 +25,10 @@ describe('zdrapka w configu M3', () => {
     expect(m.variants.rat.image).toEqual({ group: 'virus', name: 'rat' });
   });
 
-  it('ransomware nie dostaje grafiki ani podpisów RAT-a', () => {
-    const rat = m.variants.rat;
-    const ransom = m.variants.ransomware;
-    expect(ransom.image).not.toEqual(rat.image);
-    expect(ransom.programName).toBe('RANSOMWARE');
-    expect(ransom.parts.map((p) => p.id)).not.toEqual(rat.parts.map((p) => p.id));
-    const text = JSON.stringify(ransom).toUpperCase();
-    expect(text).not.toMatch(/PODGLĄD EKRANU|STEROWANIE|RAT/);
+  it('wariantów zdrapki nie ma dla opcji, które nie dochodzą do zdrapki (ransomware critical, keylogger B2)', () => {
+    expect(Object.keys(m.variants)).toEqual(['rat']);
   });
+
 
   it('żargon „matryca kompilacji” nie trafia do widocznych tekstów', () => {
     const visible = [m.heading, m.programPrefix, m.loaderText, m.doneMessage, m.task, m.hint].join(' ').toLowerCase();

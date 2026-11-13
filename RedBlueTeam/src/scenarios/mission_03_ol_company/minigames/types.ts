@@ -185,6 +185,23 @@ export interface OsintBrowserConfig {
 // Etap 3: //DYSK E: PENDRIVE (załączniki -> archiwum -> nazwa dysku -> podpis, D4)
 // ---------------------------------------------------------------------------
 
+/** Poziom i feedback opcji D4 przy konkretnym planie z D3 (nadpisują wartości bazowe opcji). */
+export interface PlanVariant {
+  tier: ChoiceOutcome;
+  feedback: string;
+}
+
+/**
+ * Opcja kroku D4 (nazwa dysku, podpis), której ocena zależy od planu z D3 (M3-06). Wartości bazowe
+ * (`tier`, `feedback`) obowiązują przy planie zdjęć z imprezy (plan zapasowy); `byPlan[vectorOptionId]`
+ * nadpisuje je dla innego planu. `forPlans` ogranicza opcję do wskazanych planów (nazwa dysku pasująca do
+ * zawartości pendrive'a istnieje tylko dla jednego planu); bez niego opcja jest widoczna przy każdym planie.
+ */
+export interface PlanOption extends ReportableOption {
+  forPlans?: string[];
+  byPlan?: Record<string, PlanVariant>;
+}
+
 /** Plik z panelu ZAŁĄCZNIKI (pobierany od BYTE_MASTERA). */
 export interface UsbAttachment {
   id: string;
@@ -248,9 +265,9 @@ export interface PendriveConfig {
    * (poziom D4 = najgorszy z dwóch kroków: nazwa, podpis). To NIE jest osobna decyzja SCORM.
    * `KEYLOGGER` (critical) zgłasza D4 od razu z `answer`: „NAZWA DYSKU: KEYLOGGER”.
    */
-  volume: GradedStep & { confirmLabel: string; loader: string; task: string };
+  volume: GradedStep<PlanOption> & { confirmLabel: string; loader: string; task: string };
   /** D4: podpis na kopercie (4 wiersze). `confirmLabel` = „WYSUŃ PAMIĘĆ USB” zatwierdza D4 i wysuwa nośnik. */
-  signature: GradedDecision & { confirmLabel: string; task: string };
+  signature: GradedDecision<PlanOption> & { confirmLabel: string; task: string };
   /** Przedrostki odpowiedzi D4 w raporcie, gdy ocenę obniżyła nazwa dysku: `NAZWA DYSKU: X / PODPIS: Y`. */
   reportLabels: { volume: string; signature: string };
   /** Komunikat po wysunięciu nośnika (→ `onComplete`). */

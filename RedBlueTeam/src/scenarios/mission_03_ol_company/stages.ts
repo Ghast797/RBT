@@ -54,17 +54,20 @@ export const virusLabConfig: VirusLabConfig = {
         id: 'ransomware',
         label: 'RANSOMWARE',
         desc: 'PROGRAM SZYFRUJĄCY DANE NA KOMPUTERZE I W SIECI, ŻEBY ZAŻĄDAĆ OKUPU ZA ICH ODBLOKOWANIE',
-        tier: 'suboptimal',
+        tier: 'critical',
         feedback:
-          'Zablokowanie stacji ofiary natychmiast postawi na nogi dział IT i zablokuje możliwość cichego wykradzenia dokumentacji Freevolt.'
+          'Zaszyfrowanie danych na stacji ofiary od razu postawi na nogi dział IT, który wykryje włamanie, odetnie stację od sieci i zablokuje możliwość cichego wykradzenia dokumentacji Freevolt.'
       },
       {
         id: 'keylogger',
         label: 'KEYLOGGER',
         desc: 'PROGRAM REJESTRUJĄCY WSZYSTKIE KLAWISZE WCIŚNIĘTE NA ZAINFEKOWANYM KOMPUTERZE',
-        tier: 'critical',
+        tier: 'suboptimal',
         feedback:
-          'Samo przechwytywanie wciśnięć klawiszy nie gwarantuje dostępu do zgromadzonych na dyskach plików projektowych i schematów.'
+          'Samo przechwytywanie wciśnięć klawiszy nie gwarantuje dostępu do zgromadzonych na dyskach plików projektowych i schematów.',
+        reject: {
+          mentorLine: 'KEYLOGGER ZAPISZE TYLKO WCIŚNIĘTE KLAWISZE, A MY POTRZEBUJEMY DOSTĘPU DO PLIKÓW. PRZEMYŚL TO JESZCZE RAZ.'
+        }
       }
     ]
   },
@@ -80,7 +83,8 @@ export const virusLabConfig: VirusLabConfig = {
     loaderText: 'PRZYGOTOWANIE PROGRAMU DO SKŁADANIA…',
     revealThreshold: 0.92,
     segments: 10,
-    // Wariant wg wyboru z D1. Keylogger (critical) kończy misję przed zdrapką, więc nie ma wariantu.
+    // Wariant wg wyboru z D1. Do zdrapki dochodzi tylko RAT: ransomware (critical) kończy misję, keylogger
+    // (odrzucony przez mentora) zostaje na wyborze wirusa, więc dla nich wariantu nie ma.
     variants: {
       rat: {
         programName: 'RAT',
@@ -91,17 +95,6 @@ export const virusLabConfig: VirusLabConfig = {
           { id: 'control', label: 'STEROWANIE', desc: 'używasz jej myszy i klawiatury' },
           { id: 'stealth', label: 'CICHE TŁO', desc: 'działa jak zwykły proces, nikt go nie zauważa' },
           { id: 'link', label: 'ŁĄCZNOŚĆ', desc: 'łączy się z Twoim komputerem' }
-        ]
-      },
-      ransomware: {
-        programName: 'RANSOMWARE',
-        image: { group: 'virus', name: 'ransomware' },
-        imageAlt: 'zamknięta na kłódkę teczka z żądaniem okupu (ransomware)',
-        parts: [
-          { id: 'encrypt', label: 'SZYFROWANIE', desc: 'zamienia pliki w nieczytelne dane' },
-          { id: 'key', label: 'KLUCZ', desc: 'klucz do odszyfrowania zostaje u Ciebie' },
-          { id: 'spread', label: 'ROZPRZESTRZENIANIE', desc: 'sięga do innych komputerów w sieci' },
-          { id: 'ransom', label: 'ŻĄDANIE OKUPU', desc: 'wyświetla ofierze komunikat z żądaniem zapłaty' }
         ]
       }
     },
@@ -231,7 +224,11 @@ export const osintBrowserConfig: OsintBrowserConfig = {
         reportAnswer: 'SPECJALISTKA DS. LOGISTYKI',
         tier: 'suboptimal',
         feedback:
-          'Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.'
+          'Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.',
+        reject: {
+          mentorLine:
+            'WIKTORIA PRACUJE TU OD SZEŚCIU LAT I ZNA PROCEDURY. NIEZNANY PENDRIVE RACZEJ ZANIESIE DO IT. WYBIERZ KOGOŚ INNEGO.'
+        }
       },
       {
         id: 'choose_sales',
@@ -239,7 +236,11 @@ export const osintBrowserConfig: OsintBrowserConfig = {
         reportAnswer: 'SZEFOWA DZIAŁU SPRZEDAŻY',
         tier: 'suboptimal',
         feedback:
-          'Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.'
+          'Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.',
+        reject: {
+          mentorLine:
+            'AGNIESZKA KIERUJE ZESPOŁEM I ZGŁOSI KAŻDĄ PODEJRZANĄ RZECZ. TO ZBYT OSTROŻNA OSOBA NA TAKI ATAK. SPRÓBUJ JESZCZE RAZ.'
+        }
       },
       {
         id: 'choose_ciso',
@@ -305,6 +306,10 @@ export const osintBrowserConfig: OsintBrowserConfig = {
 // ETAP 3: //DYSK E: PENDRIVE — załączniki, archiwum, nazwa dysku, podpis (D4)
 // ---------------------------------------------------------------------------
 
+/** Id opcji D3 (plan), od których zależą poziomy D4. Bazowe poziomy D4 odpowiadają planowi zdjęć z imprezy. */
+const PLAN_PARTY = 'vector_party_zip';
+const PLAN_HR = 'vector_hr_docs';
+
 /** Pliki D3 -> pliki pasujące do planu: pliki do wgrania wynikają z tego, co gracz wybrał w D3. */
 const vectorAnswer = (optionId: string): string => {
   const opt = osintBrowserConfig.vector.options.find((o) => o.id === optionId);
@@ -319,8 +324,8 @@ export const pendriveConfig: PendriveConfig = {
   // Ideal D3 -> zdjęcia; suboptimal D3 -> dokumenty HR lub wypowiedzenie; critical D3 kończy się wykryciem
   // (do //DYSK E nie dochodzi), więc reguła nie ma plików.
   plan: [
-    { vectorOptionId: 'vector_party_zip', planLabel: vectorAnswer('vector_party_zip'), fileIds: ['party_photos'] },
-    { vectorOptionId: 'vector_hr_docs', planLabel: vectorAnswer('vector_hr_docs'), fileIds: ['hr_docs', 'termination'] },
+    { vectorOptionId: PLAN_PARTY, planLabel: vectorAnswer('vector_party_zip'), fileIds: ['party_photos'] },
+    { vectorOptionId: PLAN_HR, planLabel: vectorAnswer('vector_hr_docs'), fileIds: ['hr_docs', 'termination'] },
     { vectorOptionId: 'vector_empty_keylogger', planLabel: vectorAnswer('vector_empty_keylogger'), fileIds: [] }
   ],
   planFallbackVectorOptionId: 'vector_party_zip',
@@ -358,31 +363,61 @@ export const pendriveConfig: PendriveConfig = {
     loader: 'ZAPIS ETYKIETY…',
     task: "WYBIERZ NAZWĘ DLA PENDRIVE'A.",
     // Dokument podaje tylko wybór idealny (`IMPREZA`); poziomy pozostałych nazw to odchylenie O4 (z poprzedniej implementacji).
+    // Poziomy bazowe obowiązują przy planie zdjęć z imprezy; `forPlans`/`byPlan` dostosowują je do planu HR (M3-06):
+    // nazwa pasująca do tego, co faktycznie jest na pendrive'ie, jest idealna, a „KEYLOGGER” zawsze zdradza nośnik.
     options: [
       {
         id: 'vol_keylogger',
         label: 'KEYLOGGER',
         reportAnswer: 'NAZWA DYSKU: KEYLOGGER',
         tier: 'critical',
-        feedback: 'Nazwa „KEYLOGGER” to natychmiastowa kompromitacja nośnika.'
+        feedback:
+          'Nazwa „KEYLOGGER” zdradza, czym jest ten nośnik: ofiara albo dział IT od razu zgłoszą go do administratora i operacja zostanie wykryta.'
       },
       {
         id: 'vol_bo',
         label: 'ZDJĘCIA B&O COMPANY',
+        forPlans: [PLAN_PARTY],
         tier: 'suboptimal',
-        feedback: 'Błędna nazwa firmy („B&O” zamiast „O&L”) może zaalarmować użytkownika lub analityka.'
+        feedback:
+          'Na pendrive\'ie są zdjęcia z imprezy, więc nazwa pasuje do zawartości, ale błędna nazwa firmy („B&O” zamiast „O&L”) może zaalarmować użytkownika lub analityka.'
       },
       {
         id: 'vol_impreza',
         label: 'IMPREZA',
+        forPlans: [PLAN_PARTY],
         tier: 'ideal',
-        feedback: 'Naturalna, wiarygodna etykieta woluminu spójna z przygotowaną przynętą.'
+        feedback: 'Naturalna, wiarygodna etykieta woluminu spójna z zawartością (zdjęcia z imprezy) i z przygotowaną przynętą.'
+      },
+      {
+        id: 'vol_hr_docs',
+        label: 'DOKUMENTY HR',
+        forPlans: [PLAN_HR],
+        tier: 'ideal',
+        feedback:
+          'Naturalna etykieta woluminu spójna z zawartością (dokumenty HR o zwolnieniach) i z przygotowaną przynętą: od razu budzi niepokój.'
+      },
+      {
+        id: 'vol_hr_bo',
+        label: 'DOKUMENTY B&O COMPANY',
+        forPlans: [PLAN_HR],
+        tier: 'suboptimal',
+        feedback:
+          'Nazwa pasuje do zawartości (dokumenty HR), ale błędna nazwa firmy („B&O” zamiast „O&L”) może zaalarmować użytkownika lub analityka.'
       },
       {
         id: 'vol_new_disk',
         label: 'NOWY DYSK',
         tier: 'suboptimal',
-        feedback: 'Zbyt ogólna nazwa nie wzmacnia przynęty i może budzić obojętność.'
+        feedback:
+          'Zbyt ogólna nazwa nie wzmacnia przynęty (na pendrive\'ie są zdjęcia z imprezy) i może budzić obojętność.',
+        byPlan: {
+          [PLAN_HR]: {
+            tier: 'suboptimal',
+            feedback:
+              'Zbyt ogólna nazwa nie wzmacnia przynęty (na pendrive\'ie są dokumenty HR o zwolnieniach) i może budzić obojętność.'
+          }
+        }
       }
     ]
   },
@@ -391,34 +426,64 @@ export const pendriveConfig: PendriveConfig = {
     question: 'WYBIERZ PODPIS NA KOPERCIE',
     confirmLabel: 'WYSUŃ PAMIĘĆ USB',
     task: 'WYBIERZ PODPIS, KTÓRY ZNAJDZIE SIĘ NA KOPERCIE.',
+    // Poziomy bazowe: plan zdjęć z imprezy. Przy planie HR (`byPlan`) pendrive zawiera dokumenty o zwolnieniach,
+    // więc oceniamy podpis względem tego, co ofiara faktycznie zobaczy po otwarciu koperty (M3-06).
     options: [
       {
         id: 'env_afterparty',
         label: 'ZDJĘCIA Z AFTERPARTY O&L COMPANY!',
         tier: 'ideal',
         feedback:
-          'Precyzyjnie nawiązuje do właściwej nazwy koncernu i nieformalnego charakteru imprezy, wzbudzając maksymalne zaufanie i motywację do natychmiastowego otwarcia.'
+          'Precyzyjnie nawiązuje do właściwej nazwy koncernu i nieformalnego charakteru imprezy, wzbudzając maksymalne zaufanie i motywację do natychmiastowego otwarcia.',
+        byPlan: {
+          [PLAN_HR]: {
+            tier: 'critical',
+            feedback:
+              'Na kopercie obiecano zdjęcia z afterparty, a na pendrive\'ie są dokumenty HR o zwolnieniach. Ofiara otwiera archiwum, widzi coś innego niż zapowiedziano, uznaje nośnik za podejrzany i oddaje kopertę do ochrony.'
+          }
+        }
       },
       {
         id: 'env_bo',
         label: 'PENDRIVE ZE ZDJĘCIAMI B&O COMPANY',
         tier: 'suboptimal',
         feedback:
-          'Błędna nazwa firmy („B&O” zamiast „O&L”) wprowadza dysonans i może skłonić ofiarę do zignorowania nośnika jako cudzej własności.'
+          'Błędna nazwa firmy („B&O” zamiast „O&L”) wprowadza dysonans i może skłonić ofiarę do zignorowania nośnika jako cudzej własności.',
+        byPlan: {
+          [PLAN_HR]: {
+            tier: 'critical',
+            feedback:
+              'Podpis obiecuje zdjęcia (w dodatku z błędną nazwą firmy), a na pendrive\'ie są dokumenty HR o zwolnieniach. Ofiara otwiera archiwum, widzi coś innego niż zapowiedziano i oddaje kopertę do ochrony.'
+          }
+        }
       },
       {
         id: 'env_lost_docs',
         label: 'ZGUBIONE DOKUMENTY',
         tier: 'critical',
         feedback:
-          'Etykieta stoi w całkowitej sprzeczności ze spakowanymi zdjęciami i przygotowaną legendą socjotechniczną, prowokując oddanie koperty do ochrony.'
+          'Podpis obiecuje dokumenty, a na pendrive\'ie są zdjęcia z imprezy. Ofiara otwiera archiwum, widzi coś innego niż zapowiedziano i oddaje kopertę do ochrony.',
+        byPlan: {
+          [PLAN_HR]: {
+            tier: 'suboptimal',
+            feedback:
+              'Podpis pasuje do zawartości (na pendrive\'ie są dokumenty HR), ale jest ogólny i nie budzi lęku o zwolnienia. Junior może uznać, że to cudza pomyłka, i odnieść kopertę do kadr albo ochrony zamiast ją otworzyć.'
+          }
+        }
       },
       {
         id: 'env_termination',
         label: 'WYPOWIEDZENIE UMOWY',
         tier: 'critical',
         feedback:
-          'Etykieta stoi w całkowitej sprzeczności ze spakowanymi zdjęciami i przygotowaną legendą socjotechniczną, prowokując oddanie koperty do ochrony.'
+          'Podpis obiecuje wypowiedzenie umowy, a na pendrive\'ie są zdjęcia z imprezy. Ofiara otwiera archiwum, widzi coś innego niż zapowiedziano i oddaje kopertę do ochrony.',
+        byPlan: {
+          [PLAN_HR]: {
+            tier: 'ideal',
+            feedback:
+              'Podpis zapowiada wypowiedzenie umowy i zgadza się z zawartością (dokumenty HR o zwolnieniach). Strach o własne stanowisko skłania do natychmiastowego otwarcia pendrive\'a.'
+          }
+        }
       }
     ]
   },
@@ -432,42 +497,68 @@ export const pendriveConfig: PendriveConfig = {
 // ---------------------------------------------------------------------------
 
 const droneMapLocations: DroneMapLocation[] = [
-  { id: 'loc_1', number: 1, address: 'OŁAWSKA 51B', district: 'NADODRZE', x: 60, y: 16, tier: 'suboptimal' },
-  { id: 'loc_2', number: 2, address: 'DRZYMAŁY 38D', district: 'PILCZYCE', x: 18, y: 24, tier: 'suboptimal' },
+  { id: 'loc_1', number: 1, address: 'OŁAWSKA 51B', district: 'NADODRZE', x: 60, y: 16, tier: 'critical' },
+  { id: 'loc_2', number: 2, address: 'DRZYMAŁY 38D', district: 'PILCZYCE', x: 18, y: 24, tier: 'critical' },
   { id: 'loc_3', number: 3, address: 'WYSTAWOWA 23A', district: 'ZALESIE', x: 82, y: 55, tier: 'critical' },
   { id: 'loc_4', number: 4, address: 'OŁTASZYŃSKA 92C', district: 'PARTYNICE', x: 28, y: 78, tier: 'ideal' }
 ];
 
 // 8 aut w dwóch rzędach po 4: 5 z dokumentu + 3 łudząco podobne do auta ofiary (opis BM ma mieć znaczenie).
 const droneParkingCars: DroneCar[] = [
-  { id: 'car_suv', desc: 'CIEMNY SUV', shape: 'suv', body: '#1f2937', roof: '#1f2937', tier: 'suboptimal' },
-  { id: 'car_white_sedan', desc: 'BIAŁY SEDAN Z BIAŁYM DACHEM', shape: 'sedan', body: '#f8fafc', roof: '#f8fafc', tier: 'suboptimal' },
+  { id: 'car_suv', desc: 'CIEMNY SUV', shape: 'suv', body: '#1f2937', roof: '#1f2937', tier: 'critical' },
+  { id: 'car_white_sedan', desc: 'BIAŁY SEDAN Z BIAŁYM DACHEM', shape: 'sedan', body: '#f8fafc', roof: '#f8fafc', tier: 'critical' },
   { id: 'car_target', desc: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM', shape: 'hatchback', body: '#f8fafc', roof: '#dc2626', tier: 'ideal' },
-  { id: 'car_green_hatch', desc: 'ZIELONY HATCHBACK', shape: 'hatchback', body: '#15803d', roof: '#15803d', tier: 'suboptimal' },
-  { id: 'car_silver_sedan', desc: 'SREBRNY SEDAN', shape: 'sedan', body: '#94a3b8', roof: '#94a3b8', tier: 'suboptimal' },
-  { id: 'car_red_hatch', desc: 'CZERWONY HATCHBACK Z BIAŁYM DACHEM', shape: 'hatchback', body: '#dc2626', roof: '#f8fafc', tier: 'suboptimal' },
-  { id: 'car_orange_van', desc: 'POMARAŃCZOWY VAN', shape: 'van', body: '#f97316', roof: '#f97316', tier: 'suboptimal' },
-  { id: 'car_black_wagon', desc: 'CZARNE KOMBI', shape: 'wagon', body: '#0f172a', roof: '#0f172a', tier: 'suboptimal' }
+  { id: 'car_green_hatch', desc: 'ZIELONY HATCHBACK', shape: 'hatchback', body: '#15803d', roof: '#15803d', tier: 'critical' },
+  { id: 'car_silver_sedan', desc: 'SREBRNY SEDAN', shape: 'sedan', body: '#94a3b8', roof: '#94a3b8', tier: 'critical' },
+  { id: 'car_red_hatch', desc: 'CZERWONY HATCHBACK Z BIAŁYM DACHEM', shape: 'hatchback', body: '#dc2626', roof: '#f8fafc', tier: 'critical' },
+  { id: 'car_orange_van', desc: 'POMARAŃCZOWY VAN', shape: 'van', body: '#f97316', roof: '#f97316', tier: 'critical' },
+  { id: 'car_black_wagon', desc: 'CZARNE KOMBI', shape: 'wagon', body: '#0f172a', roof: '#0f172a', tier: 'critical' }
 ];
 
-const ADDRESS_FEEDBACK: Record<ChoiceOutcome, string> = {
+const ADDRESS_FEEDBACK = {
   ideal: 'Prawidłowy adres domowy Mateusza Klimowicza przekazany wcześniej przez mentora w wywiadzie operacyjnym.',
-  suboptimal: 'Skierowanie drona w zupełnie inną dzielnicę Wrocławia; ładunek nie trafi do rąk wytypowanej ofiary.',
-  critical:
-    'Wysłanie drona w rejon obiektów użyteczności publicznej (Hala Stulecia) grozi przechwyceniem nośnika przez osoby trzecie.'
+  // Zły adres to nieodwracalna porażka (nikt nas nie wykrył, ale koperta nie trafi do ofiary): critical z własnym tytułem.
+  wrong: 'Dron zostawił kopertę pod adresem obcych ludzi w innej dzielnicy Wrocławia; nośnik nigdy nie trafi do wytypowanej ofiary, a operacja kończy się niepowodzeniem.',
+  publicPlace:
+    'Dron poleciał w rejon obiektów użyteczności publicznej (Hala Stulecia): koperta trafia do osób trzecich, nie do wytypowanej ofiary, a operacja kończy się niepowodzeniem.'
 };
 
-const CAR_FEEDBACK: Record<ChoiceOutcome, string> = {
+const ADDRESS_FAIL_TITLE = 'KOPERTA POD ZŁYM ADRESEM';
+
+/** Wyjaśnienie na ekranie porażki D5: gdzie trafiła koperta i skąd gracz znał prawidłowy adres (bez jego zdradzania). */
+const addressFailText = (loc: DroneMapLocation): string =>
+  `Dron zostawił kopertę przy adresie ${loc.address} (${loc.district}). To nie jest dom Mateusza, więc nośnik nigdy do niego nie trafi, a operacji nie da się już uratować. Adres ofiary podał Ci BYTE_MASTER w rozmowie.`;
+
+/** Opcja D5 dla pinu na mapie: poziom pochodzi z listy lokalizacji, teksty porażki z jednego miejsca. */
+const addressOption = (l: DroneMapLocation) => ({
+  id: l.id,
+  label: l.address,
+  desc: l.district,
+  tier: l.tier,
+  feedback:
+    l.tier === 'ideal' ? ADDRESS_FEEDBACK.ideal : l.id === 'loc_3' ? ADDRESS_FEEDBACK.publicPlace : ADDRESS_FEEDBACK.wrong,
+  ...(l.tier === 'critical' ? { failTitle: ADDRESS_FAIL_TITLE, failText: addressFailText(l) } : {})
+});
+
+const CAR_FEEDBACK = {
   ideal: 'Koperta zostaje precyzyjnie umieszczona na samochodzie Mateusza, gwarantując jej odnalezienie przed wyjazdem do biura.',
-  suboptimal:
-    'Koperta trafi do przypadkowego sąsiada, co drastycznie zmniejsza szansę na dostarczenie payloadu do biura O&L Company.',
-  critical: 'Zgubienie lub zniszczenie nośnika pod kołami innych pojazdów oraz całkowite fiasko operacji drop USB.'
+  // Złe auto to nieodwracalna porażka: koperta u przypadkowego sąsiada, nośnik nie trafi do Mateusza.
+  wrong:
+    'Koperta trafiła do przypadkowego sąsiada: nośnik nie dotrze do Mateusza i biura O&L Company, a podejrzana przesyłka może zostać zgłoszona.',
+  asphalt:
+    'Koperta leży na ziemi między miejscami parkingowymi, a nie na aucie Mateusza. Mateusz może ją zauważyć i podnieść, ale równie dobrze może ją ominąć, więc powodzenie operacji jest niepewne.'
 };
+
+const CAR_FAIL_TITLE = 'KOPERTA U PRZYPADKOWEGO SĄSIADA';
+
+/** Wyjaśnienie na ekranie porażki D6: które auto dostało kopertę (opis z etykiety), bez wskazywania właściwego. */
+const carFailText = (car: DroneCar): string =>
+  `Dron zostawił kopertę na aucie: ${car.desc.toLowerCase()}. To nie jest samochód Mateusza. Koperta trafiła do przypadkowego sąsiada, więc nośnik nie dotrze do biura O&L Company, a operacji nie da się już uratować. Opis auta ofiary podał Ci BYTE_MASTER w rozmowie.`;
 
 const droneAsphalt = {
   id: 'asphalt',
   label: 'PUSTY ASFALT MIĘDZY MIEJSCAMI PARKINGOWYMI',
-  tier: 'critical' as ChoiceOutcome
+  tier: 'suboptimal' as ChoiceOutcome
 };
 
 export const droneConfig: DroneConfig = {
@@ -513,13 +604,7 @@ export const droneConfig: DroneConfig = {
   address: {
     decisionNum: 5,
     question: 'WSKAŻ DRONOWI ADRES DOMU OFIARY',
-    options: droneMapLocations.map((l) => ({
-      id: l.id,
-      label: l.address,
-      desc: l.district,
-      tier: l.tier,
-      feedback: ADDRESS_FEEDBACK[l.tier]
-    }))
+    options: droneMapLocations.map(addressOption)
   },
   car: {
     decisionNum: 6,
@@ -531,9 +616,10 @@ export const droneConfig: DroneConfig = {
         // Odpowiedź w raporcie dla auta ofiary jest dłuższa niż opis na scenie.
         ...(c.tier === 'ideal' ? { reportAnswer: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM – SAMOCHÓD OFIARY' } : {}),
         tier: c.tier,
-        feedback: CAR_FEEDBACK[c.tier]
+        feedback: c.tier === 'ideal' ? CAR_FEEDBACK.ideal : CAR_FEEDBACK.wrong,
+        ...(c.tier === 'critical' ? { failTitle: CAR_FAIL_TITLE, failText: carFailText(c) } : {})
       })),
-      { id: droneAsphalt.id, label: droneAsphalt.label, tier: droneAsphalt.tier, feedback: CAR_FEEDBACK[droneAsphalt.tier] }
+      { id: droneAsphalt.id, label: droneAsphalt.label, tier: droneAsphalt.tier, feedback: CAR_FEEDBACK.asphalt }
     ]
   },
   mapLocations: droneMapLocations,

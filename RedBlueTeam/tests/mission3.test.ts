@@ -61,7 +61,7 @@ const EXPECTED_ANSWERS: Record<number, string> = {
 
 /** Poziomy opcji wg dokumentu (opcje „LUB” rozpisane na osobne id). */
 const EXPECTED_TIERS: Record<number, Record<ChoiceOutcome, string[]>> = {
-  1: { ideal: ['rat'], suboptimal: ['ransomware'], critical: ['keylogger'] },
+  1: { ideal: ['rat'], suboptimal: ['keylogger'], critical: ['ransomware'] },
   2: {
     ideal: ['choose_mateusz'],
     suboptimal: ['choose_logistics', 'choose_sales'],
@@ -69,10 +69,11 @@ const EXPECTED_TIERS: Record<number, Record<ChoiceOutcome, string[]>> = {
   },
   3: { ideal: ['vector_party_zip'], suboptimal: ['vector_hr_docs'], critical: ['vector_empty_keylogger'] },
   4: { ideal: ['env_afterparty'], suboptimal: ['env_bo'], critical: ['env_lost_docs', 'env_termination'] },
-  5: { ideal: ['loc_4'], suboptimal: ['loc_1', 'loc_2'], critical: ['loc_3'] },
+  5: { ideal: ['loc_4'], suboptimal: [], critical: ['loc_1', 'loc_2', 'loc_3'] },
   6: {
     ideal: ['car_target'],
-    suboptimal: [
+    suboptimal: ['asphalt'],
+    critical: [
       'car_suv',
       'car_white_sedan',
       'car_green_hatch',
@@ -80,8 +81,7 @@ const EXPECTED_TIERS: Record<number, Record<ChoiceOutcome, string[]>> = {
       'car_red_hatch',
       'car_orange_van',
       'car_black_wagon'
-    ],
-    critical: ['asphalt']
+    ]
   }
 };
 
@@ -281,11 +281,15 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
     }
   });
 
-  it('D1: RAT ideal, Ransomware suboptimal, Keylogger critical; etykiety z dokumentu, opisy to neutralne definicje', () => {
+  it('D1: RAT ideal, Ransomware critical (wykrycie), Keylogger B2; etykiety z dokumentu, opisy to neutralne definicje', () => {
     const byId = Object.fromEntries(virusLabConfig.virus.options.map((o) => [o.id, o]));
     expect(byId.rat.tier).toBe('ideal');
-    expect(byId.ransomware.tier).toBe('suboptimal');
-    expect(byId.keylogger.tier).toBe('critical');
+    expect(byId.ransomware.tier).toBe('critical');
+    expect(byId.ransomware.feedback).toMatch(/dział IT/);
+    expect(byId.ransomware.feedback).toMatch(/wykryje/);
+    expect(byId.ransomware).not.toHaveProperty('reject');
+    expect(byId.keylogger.tier).toBe('suboptimal');
+    expect(byId.keylogger.reject?.mentorLine).toMatch(/KEYLOGGER/);
     expect(byId.rat.label).toBe('RAT: REMOTE ACCESS TROJAN');
     expect(byId.ransomware.label).toBe('RANSOMWARE');
     expect(byId.keylogger.label).toBe('KEYLOGGER');
@@ -319,7 +323,14 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
     // Nazwa dysku nie jest osobną decyzją (brak decisionNum), ale ma poziomy do agregacji D4.
     expect(pendriveConfig.volume).not.toHaveProperty('decisionNum');
     const vol = Object.fromEntries(pendriveConfig.volume.options.map((o) => [o.label, o]));
-    expect(Object.keys(vol).sort()).toEqual(['IMPREZA', 'KEYLOGGER', 'NOWY DYSK', 'ZDJĘCIA B&O COMPANY']);
+    expect(Object.keys(vol).sort()).toEqual([
+      'DOKUMENTY B&O COMPANY',
+      'DOKUMENTY HR',
+      'IMPREZA',
+      'KEYLOGGER',
+      'NOWY DYSK',
+      'ZDJĘCIA B&O COMPANY'
+    ]);
     expect(vol['IMPREZA'].tier).toBe('ideal');
     expect(vol['ZDJĘCIA B&O COMPANY'].tier).toBe('suboptimal');
     expect(vol['NOWY DYSK'].tier).toBe('suboptimal');
@@ -367,8 +378,8 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
       expect([o.label, o.tier]).toEqual([c.desc, c.tier]);
       expect(c).not.toHaveProperty('isTarget');
     });
-    expect(droneConfig.car.options.find((o) => o.id === droneConfig.asphalt.id)!.tier).toBe('critical');
-    // Dokładnie jedno auto z czerwonym dachem jest białe (ideal); łudząco podobne auta są suboptimal.
+    expect(droneConfig.car.options.find((o) => o.id === droneConfig.asphalt.id)!.tier).toBe('suboptimal');
+    // Dokładnie jedno auto z czerwonym dachem jest białe (ideal); łudząco podobne auta są critical (koperta u sąsiada).
     const target = droneConfig.parkingCars.find((c) => c.tier === 'ideal')!;
     expect([target.body, target.roof]).toEqual(['#f8fafc', '#dc2626']);
     expect(droneConfig.parkingCars.filter((c) => c.tier === 'ideal')).toHaveLength(1);
@@ -392,7 +403,7 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
     expect(ratSessionConfig.desktop.icons.find((i) => i.label === 'FREEVOLT')!.warning).toBe(true);
     expect(ratSessionConfig.network.headline).toBe('UZYSKAŁEŚ ZDALNY DOSTĘP DO SIECI O&L COMPANY');
     // Wartości zapasowe (dev) = ścieżka 100%: ideal nazwa dysku, ideal podpis, archiwum ze zdjęć.
-    const idealVolume = pendriveConfig.volume.options.find((o) => o.tier === 'ideal')!.label;
+    const idealVolume = pendriveConfig.volume.options.find((o) => o.tier === 'ideal' && !o.forPlans?.includes('vector_hr_docs'))!.label;
     const idealSignature = pendriveConfig.signature.options.find((o) => o.tier === 'ideal')!.label;
     const photosArchive = pendriveConfig.attachments.find((a) => a.id === 'party_photos')!.archive;
     for (const fb of [ratSessionConfig.usbFallback, droneConfig.usbFallback]) {
@@ -406,7 +417,7 @@ describe('Misja 3 — struktura etapów (wzorzec B)', () => {
     refs.forEach((r) => (byGroup[r.group] = [...(byGroup[r.group] ?? []), r.name]));
     Object.values(byGroup).forEach((names) => names.sort());
     expect(byGroup).toEqual({
-      virus: ['ransomware', 'rat'],
+      virus: ['rat'],
       employees: ['agnieszka_leman', 'jan_lukasiewicz', 'mateusz_klimowicz', 'slawomir_bialek', 'wiktoria_galecka'],
       events: ['meeting_logistics_1', 'meeting_logistics_2', 'party_sales_1', 'party_sales_2', 'party_sales_3'],
       usb: ['envelope', 'party_photos'],
@@ -709,10 +720,10 @@ describe('Misja 3 — przepływ przez silnik', () => {
     });
   });
 
-  it('suboptimal (np. D1 ransomware, D2 Wiktoria, D5 Oławska, D6 inne auto) obniża wynik bez wykrycia', () => {
+  it('suboptimal (np. D1 keylogger, D2 Wiktoria, D3 dokumenty HR, D6 pusty asfalt) obniża wynik bez wykrycia', () => {
     report(1, 'suboptimal');
     report(2, 'suboptimal');
-    report(5, 'suboptimal');
+    report(3, 'suboptimal');
     report(6, 'suboptimal');
     const st = useMissionStore.getState();
     expect(st.isDetectedModalOpen).toBe(false);

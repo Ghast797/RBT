@@ -184,7 +184,7 @@
         "answer": "ZDJĘCIA Z AFTERPARTY O&L COMPANY!",
         "correct": true,
         "details": "Precyzyjnie nawiązuje do właściwej nazwy koncernu i nieformalnego charakteru imprezy, wzbudzając maksymalne zaufanie i motywację do natychmiastowego otwarcia.",
-        "attack": "Nazwa dysku („IMPREZA”) i podpis na kopercie budują legendę nośnika: „zdjęcia z afterparty” z poprawną nazwą firmy sugerują, że ktoś zgubił coś bliskiego pracownikowi i warto to sprawdzić. Błędna nazwa firmy (B&O zamiast O&L) wprowadza dysonans, a podpis „WYPOWIEDZENIE UMOWY” lub „ZGUBIONE DOKUMENTY” sprzeczny ze zdjęciami skłoniłby do oddania koperty ochronie. Nazwa „KEYLOGGER” zdradziłaby nośnik od razu.",
+        "attack": "Nazwa dysku i podpis na kopercie budują legendę nośnika i muszą pasować do tego, co ofiara znajdzie po otwarciu. Przy zdjęciach z imprezy pasuje nazwa „IMPREZA” i podpis „ZDJĘCIA Z AFTERPARTY O&L COMPANY!” z poprawną nazwą firmy, a przy dokumentach HR o zwolnieniach nazwa „DOKUMENTY HR” i podpis „WYPOWIEDZENIE UMOWY”. Błędna nazwa firmy (B&O zamiast O&L) wprowadza dysonans, a podpis niezgodny z zawartością (np. wypowiedzenie umowy na pendrive'ie ze zdjęciami albo zdjęcia na pendrive'ie z dokumentami HR) skłoniłby ofiarę do oddania koperty ochronie. Nazwa „KEYLOGGER” zdradziłaby nośnik od razu, bo ofiara albo dział IT natychmiast by go zgłosili.",
         "defense": "Sygnały: koperta z pendrive'em zostawiona tam, gdzie na pewno ją znajdziesz, z podpisem skłaniającym do ciekawości. Co zrobić: nie wkładaj znalezionych ani podejrzanych pendrive'ów do swojego komputera, bo każdy nośnik pamięci to potencjalne ryzyko infekcji. Nazwa dysku i podpis niczego nie dowodzą, bo każdy może je ustawić. Zanieś kopertę do IT lub ochrony, a w programie antywirusowym włącz skanowanie dysków przenośnych."
       },
       {
@@ -193,7 +193,7 @@
         "answer": "OŁTASZYŃSKA 92C",
         "correct": true,
         "details": "Prawidłowy adres domowy Mateusza Klimowicza przekazany wcześniej przez mentora w wywiadzie operacyjnym.",
-        "attack": "Atak sięgnął poza sieć: dron dostarcza przynętę pod dom ofiary, bo adres da się ustalić z publicznych źródeł i danych zdobytych w rozpoznaniu. Zostawienie koperty przy samochodzie, którym ofiara jedzie do pracy, przenosi zainfekowany nośnik prosto do firmy. Pomyłka adresu oznaczałaby koniec operacji, a w rejonie obiektów użyteczności publicznej nośnik przechwyciłyby osoby trzecie.",
+        "attack": "Atak sięgnął poza sieć: dron dostarcza przynętę pod dom ofiary, bo adres da się ustalić z publicznych źródeł i danych zdobytych w rozpoznaniu. Zostawienie koperty przy samochodzie, którym ofiara jedzie do pracy, przenosi zainfekowany nośnik prosto do firmy. Pomyłka adresu oznacza koniec operacji: koperta zostaje pod domem obcych ludzi, a w rejonie obiektów użyteczności publicznej nośnik przechwyciłyby też osoby trzecie.",
         "defense": "Sygnały: tajemnicza przesyłka lub drobny przedmiot pozostawiony przy domu albo samochodzie bez nadawcy. Co zrobić: ogranicz publikowanie adresu, zdjęć domu i auta w mediach społecznościowych (higiena OSINT) i traktuj niezamówione przesyłki jako podejrzane. Firma powinna uczyć, że ataki mogą zacząć się poza biurem i że znaleziony nośnik niezależnie od miejsca to zagrożenie."
       },
       {
@@ -202,7 +202,7 @@
         "answer": "BIAŁY SAMOCHÓD Z CZERWONYM DACHEM – SAMOCHÓD OFIARY",
         "correct": true,
         "details": "Koperta zostaje precyzyjnie umieszczona na samochodzie Mateusza, gwarantując jej odnalezienie przed wyjazdem do biura.",
-        "attack": "Dokładne rozpoznanie pojazdu ofiary na parkingu pokazuje, jak szczegółowe jest przygotowanie takiego ataku. Wystarczy opis auta z rozmowy lub zdjęcie z mediów społecznościowych. Koperta na złym samochodzie trafia do przypadkowego sąsiada i zdradza próbę ataku, a koperta upuszczona na asfalt może zostać zgubiona lub zniszczona.",
+        "attack": "Dokładne rozpoznanie pojazdu ofiary na parkingu pokazuje, jak szczegółowe jest przygotowanie takiego ataku. Wystarczy opis auta z rozmowy lub zdjęcie z mediów społecznościowych. Koperta na złym samochodzie trafia do przypadkowego sąsiada, nośnik nie dociera do biura, a podejrzana przesyłka może zostać zgłoszona. Koperta upuszczona na asfalt leży na ziemi i Mateusz może ją podnieść albo ominąć, więc to wybór niepewny.",
         "defense": "Sygnały: obce przedmioty lub koperty pozostawione na szybie albo pod wycieraczką, szczególnie bez wiadomego nadawcy. Co zrobić: nie sprawdzaj takiej przesyłki w komputerze, zgłoś ją ochronie lub IT. Nie wrzucaj zdjęć, na których widać swój samochód i tablice, i zachowaj zasadę ograniczonego zaufania do podrzuconych rzeczy na parkingu."
       }
     ]
