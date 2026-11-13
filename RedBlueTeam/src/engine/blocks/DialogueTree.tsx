@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquareCode, Send } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
 import { sounds } from '../audio/soundEffects';
 import { AppHeader } from '../components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../components/ChoiceZone';
+import { createTimerBag } from '../core/runGuard';
 import { useShuffled } from '../core/shuffle';
 import type { BlockProps, DialogueTreeConfig, DialogueNode, ChoiceOutcome } from '../types/mission';
 
@@ -49,6 +50,11 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
     firstNode ? [{ sender: config.respondent, text: firstNode.incoming, isPlayer: false }] : []
   );
 
+  // Id opóźnionych kroków — sprzątane przy odmontowaniu (np. powtórka misji w trakcie opóźnienia).
+  const timerBag = useRef(createTimerBag()).current;
+  useEffect(() => () => timerBag.clear(), [timerBag]);
+  const later = timerBag.later;
+
   const currentNode: DialogueNode | undefined = config.nodes.find((n) => n.id === currentNodeId);
   const currentOptions = useShuffled(currentNode?.options ?? []);
 
@@ -63,7 +69,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
     setCurrentNodeId(null);
     const willShowClosing = closing && !!config.closingMessage;
     if (willShowClosing) setIsRespondentTyping(true);
-    setTimeout(() => {
+    later(() => {
       if (willShowClosing) {
         setIsRespondentTyping(false);
         sounds.playNotification();
@@ -121,7 +127,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
     if (nextNode) {
       setCurrentNodeId(null);
       setIsRespondentTyping(true);
-      setTimeout(() => {
+      later(() => {
         setIsRespondentTyping(false);
         sounds.playNotification();
         setLines((prev) => [
