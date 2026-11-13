@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PhoneCall, ShieldAlert, Terminal } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
 import type { ChatMessage } from '../store/useMissionStore';
@@ -12,6 +12,7 @@ export const BootSequence: React.FC = () => {
     introDialogIndex,
     acceptIncomingCall,
     nextIntroDialog,
+    recordIntroReply,
     startBiosBoot,
     finishBiosBoot
   } = useMissionStore();
@@ -20,6 +21,11 @@ export const BootSequence: React.FC = () => {
   const [bootProgress, setBootProgress] = useState<number>(0);
   const [sent, setSent] = useState<Record<string, string>>({});
   const [typing, setTyping] = useState<boolean>(true);
+  // Reakcja mentora na wybraną odpowiedź (mentorReaction): „pisze…”, potem dymek.
+  const [reactionTyping, setReactionTyping] = useState<boolean>(false);
+  const [reactions, setReactions] = useState<Record<string, string>>({});
+  const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (reactionTimer.current) clearTimeout(reactionTimer.current); }, []);
 
   const introDialogue = activeMission.intro?.dialogue || [];
   const currentDialog = introDialogue[introDialogIndex] || { id: '', text: '', playerResponse: '' };
@@ -109,12 +115,15 @@ export const BootSequence: React.FC = () => {
       if (sent[node.id]) {
         messages.push({ id: `p-${node.id}`, sender: 'PLAYER', text: sent[node.id] });
       }
+      if (reactions[node.id]) {
+        messages.push({ id: `r-${node.id}`, sender: 'BYTE_MASTER', text: reactions[node.id] });
+      }
     });
 
     // Ostatnia kwestia też może mieć odpowiedź gracza — dopiero po jej wysłaniu pojawia się start systemu.
     const needsReply = options.length > 0 || sendText !== '' || !isLastDialog;
     const replied = sent[currentDialog.id] !== undefined;
-    const showStart = isLastDialog && (!needsReply || replied);
+    const showStart = isLastDialog && (!needsReply || (replied && !reactionTyping));
 
     const choices = showStart || replied
       ? []
@@ -127,7 +136,21 @@ export const BootSequence: React.FC = () => {
       const label = choices.find((c) => c.id === id)?.label || '';
       const text = id === 'send' && !sendText ? '' : label;
       setSent((prev) => ({ ...prev, [currentDialog.id]: text }));
-      nextIntroDialog({ dialogId: currentDialog.id, text });
+      const reaction = options.find((o) => o.id === id)?.mentorReaction;
+      if (!reaction) {
+        nextIntroDialog({ dialogId: currentDialog.id, text });
+        return;
+      }
+      // Najpierw zapamiętaj odpowiedź, potem pokaż reakcję mentora i dopiero przejdź dalej.
+      const dialogId = currentDialog.id;
+      recordIntroReply({ dialogId, text });
+      setReactionTyping(true);
+      reactionTimer.current = setTimeout(() => {
+        setReactionTyping(false);
+        sounds.playNotification();
+        setReactions((prev) => ({ ...prev, [dialogId]: reaction }));
+        nextIntroDialog();
+      }, Math.min(3200, 1400 + reaction.length * 8));
     };
 
     return (
@@ -136,7 +159,7 @@ export const BootSequence: React.FC = () => {
           <ChatView
             messages={messages}
             choices={choices}
-            isTyping={typing}
+            isTyping={typing || reactionTyping}
             onChoose={choose}
             title={callerName}
             footer={

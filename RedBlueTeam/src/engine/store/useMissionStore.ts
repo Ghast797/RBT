@@ -143,6 +143,8 @@ export interface MissionState {
   // Boot Actions
   acceptIncomingCall: () => void;
   nextIntroDialog: (reply?: { dialogId: string; text: string }) => void;
+  /** Zapamiętuje odpowiedź gracza w intrze bez przechodzenia dalej (gdy najpierw pokazujemy mentorReaction). */
+  recordIntroReply: (reply: { dialogId: string; text: string }) => void;
   startBiosBoot: () => void;
   finishBiosBoot: () => void;
 
@@ -195,6 +197,9 @@ function resolveOpeningChat(mission: MissionDefinition, introReplies: Record<str
     if (d.text) history.push({ id: `intro_bm_${i}`, sender: 'BYTE_MASTER', text: d.text });
     const reply = introReplies[d.id] ?? d.playerResponse ?? d.playerOptions?.[0]?.label;
     if (reply) history.push({ id: `intro_pl_${i}`, sender: 'PLAYER', text: reply });
+    // Reakcja mentora na faktycznie wybraną odpowiedź (jeśli dane ją przewidują).
+    const reaction = (d.playerOptions || []).find((o: any) => o.label === introReplies[d.id])?.mentorReaction;
+    if (reaction) history.push({ id: `intro_mr_${i}`, sender: 'BYTE_MASTER', text: reaction });
   });
 
   // Wzorzec B: intro kończy się kwestią gracza (firstChoice), która odblokowuje pierwszą aplikację.
@@ -410,10 +415,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     cancelBridgeTimers();
     const currentMission = get().activeMission;
     const baseInitial = getInitialMissionState(currentMission);
-    const opening = resolveOpeningChat(currentMission, get().introReplies);
+    const introReplies = get().introReplies;
+    const opening = resolveOpeningChat(currentMission, introReplies);
 
     set({
       ...baseInitial,
+      introReplies, // „BEZ INTRO” zachowuje odpowiedzi gracza z intra
       timeJump: null,
       bootStage: 'desktop',
       activeApp: null,
@@ -718,6 +725,10 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     if (introDialogIndex < maxIndex) {
       set({ introDialogIndex: introDialogIndex + 1 });
     }
+  },
+
+  recordIntroReply: (reply) => {
+    set({ introReplies: { ...get().introReplies, [reply.dialogId]: reply.text } });
   },
 
   startBiosBoot: () => {
