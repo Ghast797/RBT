@@ -86,3 +86,49 @@ describe('Store silnika: boot, otwarcie czatu i xAPI', () => {
     expect(json).toContain(title);
   });
 });
+
+describe('Store silnika: ponowne zgłoszenie decyzji (ENG-06)', () => {
+  const report = (num: number, tier: 'ideal' | 'suboptimal' | 'critical') =>
+    useMissionStore.getState().reportDecision({ num, question: `Q${num}`, answer: `A${num}`, feedback: 'f', tier });
+
+  beforeEach(() => {
+    scorm2004.reset();
+    useMissionStore.getState().loadMission(MISSION_ID);
+  });
+
+  it('suboptimal 2x daje ten sam stan co jedno zgłoszenie', () => {
+    report(1, 'suboptimal');
+    const once = { ...useMissionStore.getState() };
+    report(1, 'suboptimal');
+    const twice = useMissionStore.getState();
+    expect(twice.score).toBe(once.score);
+    expect(twice.goodChoicesCount).toBe(once.goodChoicesCount);
+    expect(twice.perfectChoicesCount).toBe(once.perfectChoicesCount);
+    expect(twice.btcReward).toBe(once.btcReward);
+    expect(once.score).toBeLessThan(once.activeMission.mission.maxScore);
+  });
+
+  it('suboptimal, potem ideal: zostaje suboptimal (wiersz i wynik)', () => {
+    report(1, 'suboptimal');
+    const once = { ...useMissionStore.getState() };
+    report(1, 'ideal');
+    const s = useMissionStore.getState();
+    expect(s.playerChoices.find((c) => c.num === 1)?.outcome).toBe('suboptimal');
+    expect(s.score).toBe(once.score);
+    expect(s.goodChoicesCount).toBe(once.goodChoicesCount);
+    expect(s.btcReward).toBe(once.btcReward);
+  });
+
+  it('powtórka po critical czyści rekordy i decyzja liczy się od nowa', () => {
+    report(1, 'critical');
+    expect(useMissionStore.getState().criticalErrorsCount).toBe(1);
+    report(1, 'ideal');
+    expect(useMissionStore.getState().criticalErrorsCount).toBe(1);
+    useMissionStore.getState().retryFromChoices();
+    expect(useMissionStore.getState().criticalErrorsCount).toBe(0);
+    report(1, 'ideal');
+    const s = useMissionStore.getState();
+    expect(s.score).toBe(s.activeMission.mission.maxScore);
+    expect(s.playerChoices.find((c) => c.num === 1)?.outcome).toBe('ideal');
+  });
+});

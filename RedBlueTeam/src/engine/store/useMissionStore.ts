@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, ConversationBeat } from '../types/mission';
+import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, ConversationBeat, ChoiceOutcome } from '../types/mission';
 import { penaltyForTier, btcForScore, resolveDecisionCount } from '../core/scoring';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
@@ -115,6 +115,7 @@ export interface MissionState {
   playerChoices: PlayerChoiceRecord[];
   /** Numery decyzji zgłoszonych w tym podejściu (bez `critical`) — podstawa autozapisu SCORM. */
   reportedDecisions: number[];
+  decisionTiers: Record<number, ChoiceOutcome>;
   recordChoice: (choice: PlayerChoiceRecord, penalty?: number) => void;
   /**
    * Kontrakt klocka/minigry: zgłoszenie ocenianej decyzji.
@@ -297,6 +298,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     expandedChoiceIndex: null as number | null,
     playerChoices: choices,
     reportedDecisions: [] as number[],
+    decisionTiers: {} as Record<number, ChoiceOutcome>,
 
     // Detection & Retry Modals
     isDetectedModalOpen: false,
@@ -481,12 +483,12 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   // ----------------- KONTRAKT KLOCKA: DECYZJA -----------------
   reportDecision: (report: DecisionReport) => {
+    // Liczy się pierwsze zgłoszenie decyzji o danym numerze w podejściu (powtórka czyści rekordy).
+    if (get().decisionTiers[report.num] !== undefined) return;
     const { activeMission } = get();
     const maxScore = activeMission.mission?.maxScore ?? 100;
     const rewardBtc = activeMission.mission?.rewardBtc ?? 0;
     const decisionCount = resolveDecisionCount(activeMission);
-
-    const penalty = penaltyForTier(report.tier, maxScore, decisionCount);
 
     get().recordChoice(
       {
@@ -497,11 +499,25 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         isCorrect: report.tier === 'ideal',
         outcome: report.tier
       },
-      penalty
+      0
     );
 
-    // Nagroda BTC wynika liniowo z wyniku — nie z osobnych kar w widgetach.
-    set((s) => ({ btcReward: btcForScore(s.score, rewardBtc) }));
+    // Wynik, liczniki i BTC są funkcją rekordów decyzji (nie sumą przyrostową).
+    const tiers = { ...get().decisionTiers, [report.num]: report.tier };
+    const base = getInitialMissionState(activeMission);
+    const all = Object.values(tiers);
+    const totalPenalty = all.reduce((sum, t) => sum + penaltyForTier(t, maxScore, decisionCount), 0);
+    const nonIdeal = all.filter((t) => t !== 'ideal').length;
+    const score = Math.max(0, maxScore - totalPenalty);
+    set({
+      decisionTiers: tiers,
+      score,
+      goodChoicesCount: base.goodChoicesCount + all.filter((t) => t === 'suboptimal').length,
+      criticalErrorsCount: all.filter((t) => t === 'critical').length,
+      perfectChoicesCount: Math.max(0, base.perfectChoicesCount - nonIdeal),
+      // Nagroda BTC wynika liniowo z wyniku — nie z osobnych kar w widgetach.
+      btcReward: btcForScore(score, rewardBtc)
+    });
 
     // Ostatnia decyzja misji = wynik ostateczny. Zapisujemy go od razu, zanim gracz
     // zobaczy finał i raport — zamknięcie karty w tym miejscu nie gubi oceny.
