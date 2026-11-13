@@ -6,7 +6,8 @@ import {
   pointsForTier,
   penaltyForTier,
   btcForScore,
-  resolveDecisionCount
+  resolveDecisionCount,
+  scormStatus
 } from '../src/engine/core/scoring';
 import {
   resolveVpnStep,
@@ -37,6 +38,12 @@ describe('Scoring (poziomy decyzji)', () => {
     expect(btcForScore(100, 3.79)).toBe(3.79);
     expect(btcForScore(0, 3.79)).toBe(0);
     expect(btcForScore(50, 4)).toBe(2);
+  });
+
+  it('status zaliczenia zgadza się z wynikiem wyświetlanym graczowi', () => {
+    expect(scormStatus(69.6, 70)).toBe('passed');
+    expect(scormStatus(69.4, 70)).toBe('failed');
+    expect(scormStatus(70, 70)).toBe('passed');
   });
 
   it('liczy decyzje z definicji M4', () => {

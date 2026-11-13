@@ -63,9 +63,12 @@ export function displayScore(score: number): number {
   return Math.round(score);
 }
 
-/** Status SCORM na podstawie wyniku i progu zaliczenia. */
+/**
+ * Status SCORM na podstawie wyniku i progu zaliczenia. Porównuje wynik wyświetlany
+ * graczowi (`displayScore`), więc „70%” na ekranie zawsze znaczy zaliczenie przy progu 70.
+ */
 export function scormStatus(scorePercent: number, passingScore: number): 'passed' | 'failed' {
-  return scorePercent >= passingScore ? 'passed' : 'failed';
+  return displayScore(scorePercent) >= passingScore ? 'passed' : 'failed';
 }
 
 /**
