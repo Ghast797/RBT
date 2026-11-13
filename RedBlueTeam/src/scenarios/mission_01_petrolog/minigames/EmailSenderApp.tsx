@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Mail,
-  ArrowLeft,
   Send,
   Sparkles,
 } from 'lucide-react';
@@ -210,19 +209,9 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
           '//POCZTA: WYBÓR',
           config.senderEmail?.question || 'Wybierz adres e-mail nadawcy',
           renderEmailButtons(config.senderEmail?.options || [], selectedEmailId, setSelectedEmailId),
-          <div className="shrink-0 flex gap-2">
-            <button
-              onClick={() => {
-                sounds.playClick();
-                setSelectedEmailId(null);
-                setScreen('sender');
-              }}
-              className="px-4 py-2.5 rounded font-bold text-xs uppercase tracking-wider text-gray-400 hover:text-white hover:bg-gray-800 border border-gray-800 transition-all flex items-center space-x-1.5 cursor-pointer"
-            >
-              <ArrowLeft size={14} />
-              <span>WRÓĆ</span>
-            </button>
-            <div className="flex-1">{confirmButton('ZATWIERDŹ ADRES EMAIL', !!selectedEmail, handleEmailConfirm)}</div>
+          // D3 jest już zatwierdzone i jednorazowe: brak WRÓĆ do wyboru nadawcy.
+          <div className="shrink-0">
+            {confirmButton('ZATWIERDŹ ADRES EMAIL', !!selectedEmail, handleEmailConfirm)}
           </div>
         )
       : screen === 'summary'
