@@ -24,6 +24,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
+import { guardByRun } from '../core/runGuard';
 import { ActiveAppProvider } from '../components/SideMonitor';
 import { ChatApp } from '../apps/ChatApp';
 import { DebriefApp } from '../apps/DebriefApp';
@@ -78,7 +79,23 @@ export function registerApp(componentId: string, component: React.ComponentType<
 export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }> = ({ componentId: appKey }) => {
   const activeMission = useMissionStore(s => s.activeMission);
   const reportDecision = useMissionStore(s => s.reportDecision);
-  const completeStage = useMissionStore(s => s.completeStage);
+  const completeStageRaw = useMissionStore(s => s.completeStage);
+  const appRunId = useMissionStore(s => s.appRunId);
+
+  // Zabezpieczenie przed „duchami” poprzedniego podejścia: callbacki przekazane klockowi
+  // w danym podejściu (appRunId) są ignorowane, gdy misję zresetowano w międzyczasie
+  // (np. opóźniony setTimeout klocka woła onComplete po powtórce).
+  const runIdRef = React.useRef(appRunId);
+  const getRun = () => useMissionStore.getState().appRunId;
+  const completeStage = React.useCallback(
+    (stageId: string) => guardByRun(getRun, runIdRef.current, completeStageRaw)(stageId),
+    [completeStageRaw]
+  );
+  const guardedDecision = React.useCallback(
+    (report: Parameters<typeof reportDecision>[0]) =>
+      guardByRun(getRun, runIdRef.current, reportDecision)(report),
+    [reportDecision]
+  );
 
   const tiles = activeMission?.desktopApps || [];
   const tile = tiles.find(t => t.id === appKey) || tiles.find(t => t.componentId === appKey);
@@ -113,7 +130,7 @@ export const AppRenderer: React.FC<{ componentId: string; onClose?: () => void }
     );
   }
 
-  return <Component config={config} onDecision={reportDecision} onComplete={handleComplete} />;
+  return <Component config={config} onDecision={guardedDecision} onComplete={handleComplete} />;
 };
 
 /**
