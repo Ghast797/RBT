@@ -12,10 +12,10 @@ import { AppHeader } from '../../../engine/components/AppHeader';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { LOADER_LONG_MS, LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { ChoiceCardGrid, ChoiceTile, ChoiceZone } from '../../../engine/components/ChoiceZone';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import { PLAN_STATE_KEY, type OsintBrowserConfig, type ReportableOption } from './types';
-import { buildReport } from '../../../engine/core/report';
+import { buildReport, submitDecision } from '../../../engine/core/report';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { SiteView } from './SiteView';
 import {
   INITIAL_READ_STATE,
@@ -60,6 +60,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   }, [screen, done, read]);
 
   const targetOptions = useShuffled(config.target.options);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
   const vectorOptions = useShuffled(config.vector.options);
 
   const getScroll = useCallback((t: SiteTab) => scrollMemory.current[t], []);
@@ -74,7 +75,11 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
   const handleTargetConfirm = () => {
     if (!target || locked) return;
     sounds.playSuccess();
-    onDecision(buildReport(config.target, target));
+    // B2: mentor odrzuca wybór celu — zostajemy na ekranie wyboru, opcja się blokuje.
+    if (submitDecision(config.target, target, { onDecision, rejectDecision }) === 'rejected') {
+      setTargetId(null);
+      return;
+    }
     if (afterDecision(target.tier) === 'stop') {
       setLocked(true);
       return;
@@ -187,6 +192,7 @@ export const OsintBrowserApp: React.FC<BlockProps<OsintBrowserConfig>> = ({ conf
                 setTargetId(id);
               }}
               label={config.target.question}
+              decisionNum={config.target.decisionNum}
               columns={3}
             />
           </div>

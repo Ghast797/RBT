@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, ConversationBeat, ChoiceOutcome } from '../types/mission';
-import { penaltyForTier, btcForScore, resolveDecisionCount, DEFAULT_PASSING_SCORE, roundScore } from '../core/scoring';
+import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, DecisionRejection, RejectedAttempt, ConversationBeat, ChoiceOutcome } from '../types/mission';
+import { scoreFromDecisions, btcForScore, resolveDecisionCount, DEFAULT_PASSING_SCORE, roundScore } from '../core/scoring';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
 import { createMissionCompletionStatement, MockLRS } from '../scorm/xapi';
@@ -116,12 +116,19 @@ export interface MissionState {
   /** Numery decyzji zgłoszonych w tym podejściu (bez `critical`) — podstawa autozapisu SCORM. */
   reportedDecisions: number[];
   decisionTiers: Record<number, ChoiceOutcome>;
+  /** Próby odrzucone przez mentora (B2) wg numeru decyzji — kara naliczona, decyzja nadal otwarta. Czyści je powtórka. */
+  rejectedAttempts: Record<number, RejectedAttempt[]>;
   recordChoice: (choice: PlayerChoiceRecord, penalty?: number) => void;
   /**
    * Kontrakt klocka/minigry: zgłoszenie ocenianej decyzji.
    * Silnik liczy punkty i karę BTC z `tier` oraz odpala wykrycie przy 'critical'.
    */
   reportDecision: (report: DecisionReport) => void;
+  /**
+   * Kontrakt klocka/minigry (B2): mentor odrzuca wybór. Nalicza karę wg `tier`, dopisuje kwestię mentora
+   * do czatu, ale NIE zamyka decyzji (`decisionTiers`) ani etapu. Po zamkniętej decyzji nic nie robi.
+   */
+  rejectDecision: (rejection: DecisionRejection) => void;
   /** Kontrakt klocka/minigry: ukończenie etapu (odblokowania, badge, wiadomość mentora). */
   completeStage: (stageId: string) => void;
   advanceBridge: () => void;
@@ -243,6 +250,9 @@ function resolveOpeningChat(mission: MissionDefinition, introReplies: Record<str
   };
 }
 
+/** Domyślny tytuł modala porażki (`critical`), gdy opcja nie ustawia `failTitle`. */
+export const DEFAULT_FAIL_TITLE = 'ZOSTAŁEŚ WYKRYTY!';
+
 let appRunCounter = 0;
 
 const withOpenedApp = (opened: WindowId[], app: WindowId): WindowId[] =>
@@ -304,6 +314,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     playerChoices: choices,
     reportedDecisions: [] as number[],
     decisionTiers: {} as Record<number, ChoiceOutcome>,
+    rejectedAttempts: {} as Record<number, RejectedAttempt[]>,
 
     // Detection & Retry Modals
     isDetectedModalOpen: false,
@@ -504,7 +515,8 @@ export const useMissionStore = create<MissionState>((set, get) => ({
         answer: report.answer,
         details: report.feedback,
         isCorrect: report.tier === 'ideal',
-        outcome: report.tier
+        outcome: report.tier,
+        rejectedAttempts: get().rejectedAttempts[report.num]
       },
       0
     );
@@ -513,9 +525,9 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const tiers = { ...get().decisionTiers, [report.num]: report.tier };
     const base = getInitialMissionState(activeMission);
     const all = Object.values(tiers);
-    const totalPenalty = all.reduce((sum, t) => sum + penaltyForTier(t, maxScore, decisionCount), 0);
     const nonIdeal = all.filter((t) => t !== 'ideal').length;
-    const score = Math.max(0, maxScore - totalPenalty);
+    // Max − kary z poziomów − kary za odrzucone próby (limit na decyzję w `scoreFromDecisions`).
+    const score = scoreFromDecisions(tiers, get().rejectedAttempts, maxScore, decisionCount);
     set({
       decisionTiers: tiers,
       score,
@@ -543,12 +555,41 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       set({
         isDetectedModalOpen: true,
         detectionReason: {
-          title: 'ZOSTAŁEŚ WYKRYTY!',
-          details: report.feedback,
+          title: report.failTitle ?? DEFAULT_FAIL_TITLE,
+          details: report.failText ?? report.feedback,
           choiceNum: report.num
         }
       });
     }
+  },
+
+  // ----------------- KONTRAKT KLOCKA: ODRZUCENIE WYBORU PRZEZ MENTORA (B2) -----------------
+  rejectDecision: (rejection: DecisionRejection) => {
+    // Decyzja już zamknięta (pierwsze zgłoszenie wygrywa) albo ta sama odpowiedź odrzucona wcześniej.
+    if (get().decisionTiers[rejection.num] !== undefined) return;
+    const prior = get().rejectedAttempts[rejection.num] || [];
+    if (prior.some((r) => r.answer === rejection.answer)) return;
+
+    const { activeMission } = get();
+    const maxScore = activeMission.mission?.maxScore ?? 100;
+    const rewardBtc = activeMission.mission?.rewardBtc ?? 0;
+    const decisionCount = resolveDecisionCount(activeMission);
+
+    const rejectedAttempts = {
+      ...get().rejectedAttempts,
+      [rejection.num]: [...prior, { answer: rejection.answer, tier: rejection.tier, mentorLine: rejection.mentorLine }]
+    };
+    const score = scoreFromDecisions(get().decisionTiers, rejectedAttempts, maxScore, decisionCount);
+    sounds.playNotification();
+    set((s) => ({
+      rejectedAttempts,
+      score,
+      btcReward: btcForScore(score, rewardBtc),
+      // Kwestia mentora ląduje w historii czatu; plakietka czatu zwraca uwagę, że coś w nim przybyło.
+      chatMessages: [...s.chatMessages, { id: nextMessageId('bm'), sender: 'BYTE_MASTER' as const, text: rejection.mentorLine }],
+      notificationBadges:
+        s.activeApp === 'chat' ? s.notificationBadges : { ...s.notificationBadges, chat: (s.notificationBadges.chat || 0) + 1 }
+    }));
   },
 
   // ----------------- KONTRAKT KLOCKA: UKOŃCZENIE ETAPU -----------------

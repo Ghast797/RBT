@@ -85,6 +85,16 @@ export interface NegotiationTurn {
   psychology: string;
 }
 
+/** Próba decyzji odrzucona przez mentora (B2): kara naliczona, decyzja nadal otwarta. */
+export interface RejectedAttempt {
+  /** Odpowiedź (etykieta opcji), którą mentor odrzucił. */
+  answer: string;
+  /** Poziom odrzuconej opcji — z niego silnik liczy karę za próbę. */
+  tier: ChoiceOutcome;
+  /** Kwestia BYTE_MASTERA pokazana graczowi (i zapisana w czacie). */
+  mentorLine: string;
+}
+
 export interface PlayerChoiceRecord {
   num: number;
   question: string;
@@ -94,6 +104,8 @@ export interface PlayerChoiceRecord {
   outcome?: ChoiceOutcome;
   btcPenalty?: number;
   negotiationTranscript?: NegotiationTurn[];
+  /** Próby tej decyzji odrzucone przez mentora (B2) przed ostatecznym wyborem — do raportu. */
+  rejectedAttempts?: RejectedAttempt[];
 }
 
 export interface DebriefSummaryConfig {
@@ -156,6 +168,23 @@ export interface DecisionReport {
   tier: ChoiceOutcome;
   /** Zdanie wyjaśnienia do raportu pooperacyjnego. */
   feedback: string;
+  /** Tytuł modala porażki (tylko `critical`); domyślnie „ZOSTAŁEŚ WYKRYTY!”. */
+  failTitle?: string;
+  /** Wyjaśnienie w modalu porażki (tylko `critical`); domyślnie `feedback`. */
+  failText?: string;
+}
+
+/**
+ * Odrzucenie wyboru przez mentora (B2): wybór jest zły, ale nikt nas nie wykrył.
+ * Silnik nalicza karę wg `tier`, NIE zamyka decyzji i dopisuje `mentorLine` do czatu.
+ */
+export interface DecisionRejection {
+  num: number;
+  question: string;
+  /** Odpowiedź (etykieta opcji) odrzucona przez mentora. */
+  answer: string;
+  tier: ChoiceOutcome;
+  mentorLine: string;
 }
 
 /** Props, które silnik podaje każdemu klockowi i każdej minigrze. */
@@ -182,6 +211,19 @@ export interface ChoiceOption {
   feedback: string;
   /** Dodatkowe znaczniki wyświetlane na karcie. */
   tags?: string[];
+  /**
+   * Tytuł modala porażki dla `tier: 'critical'` (np. „TRANSAKCJA ODRZUCONA”).
+   * Domyślnie „ZOSTAŁEŚ WYKRYTY!”. Używaj, gdy gracz nie został wykryty, a operacja po prostu się nie udała.
+   */
+  failTitle?: string;
+  /** Wyjaśnienie w modalu porażki zamiast `feedback` (gdy `feedback` jest za długi lub pisany do raportu). */
+  failText?: string;
+  /**
+   * B2: mentor odrzuca ten wybór. Kara za próbę zostaje (wg `tier`), ale decyzja nie jest zamknięta —
+   * gracz widzi `mentorLine`, opcja się blokuje i wybiera ponownie. Dla złych wyborów, po których nikt nas
+   * nie wykrył (reguła D-06); `critical` zostaje dla wykrycia i nieodwracalnej porażki.
+   */
+  reject?: { mentorLine: string };
 }
 
 /** Wybór 1 z N kart. */

@@ -1,4 +1,5 @@
 import React from 'react';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from './MentorRejectNotice';
 
 /**
  * Strefa wyboru: wszystko, co gracz wybiera, stoi w ramce z etykietą „▼ WYBIERZ…”,
@@ -133,6 +134,8 @@ interface ChoiceLayoutProps {
   label?: string;
   /** Tekst etykiet zapisany czcionką monospace (adresy, kod). */
   mono?: boolean;
+  /** Numer decyzji: odpowiedzi odrzucone przez mentora (B2) są blokowane, a nad nimi widać jego kwestię. */
+  decisionNum?: number;
 }
 
 /**
@@ -141,17 +144,20 @@ interface ChoiceLayoutProps {
  */
 export const ChoiceCardGrid: React.FC<
   ChoiceLayoutProps & { columns?: 1 | 2 | 3; size?: 'md' | 'lg'; className?: string }
-> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false, columns = 3, size = 'md', className = '' }) => {
+> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', mono = false, columns = 3, size = 'md', className = '', decisionNum }) => {
+  const rejected = useRejectedAttempts(decisionNum);
   const cols = columns === 1 ? 'grid-cols-1' : columns === 2 ? 'grid-cols-2' : 'grid-cols-3';
   const big = size === 'lg';
   return (
     <ChoiceZone accent={accent} label={label} className={className}>
+      <MentorRejectNotice attempts={rejected} />
       <div className={`grid ${cols} gap-3`}>
         {options.map((opt) => (
           <ChoiceTile
             key={opt.id}
             accent={accent}
-            state={selectedId === opt.id ? 'selected' : 'idle'}
+            state={isRejected(rejected, opt.label) ? 'wrong' : selectedId === opt.id ? 'selected' : 'idle'}
+            disabled={isRejected(rejected, opt.label)}
             markerPosition="corner"
             onClick={() => onSelect(opt.id)}
             className={big ? 'p-4 min-h-[11rem]' : 'p-4 min-h-[7rem]'}

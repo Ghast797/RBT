@@ -6,7 +6,9 @@ import { AppHeader } from '../components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../components/ChoiceZone';
 import { createTimerBag } from '../core/runGuard';
 import { useShuffled } from '../core/shuffle';
-import type { BlockProps, DialogueTreeConfig, DialogueNode, ChoiceOutcome } from '../types/mission';
+import { failFieldsOf } from '../core/report';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../components/MentorRejectNotice';
+import type { BlockProps, DialogueTreeConfig, DialogueNode, ChoiceOutcome, ChoiceOption, DecisionReport } from '../types/mission';
 
 interface Line {
   sender: string;
@@ -57,13 +59,18 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
 
   const currentNode: DialogueNode | undefined = config.nodes.find((n) => n.id === currentNodeId);
   const currentOptions = useShuffled(currentNode?.options ?? []);
+  // Numer decyzji bieżącego węzła (tryb agregujący: jeden na całą rozmowę) — dla odrzuceń mentora (B2).
+  const currentNum = aggregate ? config.decisionNum : currentNode?.decisionNum;
+  const rejected = useRejectedAttempts(currentNum);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
 
   const finish = (
     closing: boolean,
     tier: ChoiceOutcome,
     feedback: string,
     question: string,
-    answer: string
+    answer: string,
+    failOption?: ChoiceOption
   ) => {
     setIsFinished(true);
     setCurrentNodeId(null);
@@ -79,7 +86,9 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
         ]);
       }
       if (aggregate) {
-        onDecision({ num: config.decisionNum!, question, answer, tier, feedback });
+        const report: DecisionReport = { num: config.decisionNum!, question, answer, tier, feedback };
+        if (failOption) Object.assign(report, failFieldsOf(failOption, tier));
+        onDecision(report);
       }
       if (tier !== 'critical') {
         sounds.playSuccess();
@@ -92,6 +101,21 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
     if (!currentNode || isFinished) return;
     const option = currentNode.options.find((o) => o.id === optionId);
     if (!option) return;
+
+    // B2: mentor odrzuca tę odpowiedź — kara za próbę, rozmowa stoi w miejscu, odpowiedź się blokuje.
+    if (option.reject && currentNum !== undefined) {
+      if (isRejected(rejected, option.label)) return;
+      rejectDecision({
+        num: currentNum,
+        question: aggregate
+          ? config.question || firstNode.incoming
+          : currentNode.question || currentNode.incoming,
+        answer: option.label,
+        tier: option.tier,
+        mentorLine: option.reject.mentorLine
+      });
+      return;
+    }
 
     sounds.playClick();
     setLines((prev) => [...prev, { sender: 'TY', text: option.label, isPlayer: true }]);
@@ -107,14 +131,15 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
         question: currentNode.question || currentNode.incoming,
         answer: option.label,
         tier: option.tier,
-        feedback: option.feedback
+        feedback: option.feedback,
+        ...failFieldsOf(option, option.tier)
       });
     }
 
     // Błąd krytyczny kończy rozmowę natychmiast.
     if (option.tier === 'critical') {
       if (aggregate) {
-        finish(false, combinedTier, option.feedback, config.question || firstNode.incoming, option.label);
+        finish(false, combinedTier, option.feedback, config.question || firstNode.incoming, option.label, option);
       } else {
         setIsFinished(true);
         setCurrentNodeId(null);
@@ -140,7 +165,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
     }
 
     // Brak kolejnego węzła = koniec rozmowy.
-    finish(true, combinedTier, option.feedback, config.question || firstNode.incoming, option.label);
+    finish(true, combinedTier, option.feedback, config.question || firstNode.incoming, option.label, option);
   };
 
   return (
@@ -192,11 +217,14 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
 
       {currentNode && currentNode.options.length > 0 && !isFinished && (
         <ChoiceZone accent={accent} label="WYBIERZ ODPOWIEDŹ" className="shrink-0">
+          <MentorRejectNotice attempts={rejected} />
           <div className="flex flex-col gap-2">
             {currentOptions.map((option) => (
               <ChoiceTile
                 key={option.id}
                 accent={accent}
+                state={isRejected(rejected, option.label) ? 'wrong' : 'idle'}
+                disabled={isRejected(rejected, option.label)}
                 onClick={() => handleChoose(option.id)}
                 className="px-3.5 py-2.5 items-center"
               >

@@ -149,6 +149,17 @@ Wspólne pomocniki minigier (nie klocki):
 - `components/ModuleLoader.tsx`: `LOADER_MS` (1700) i `LOADER_LONG_MS` (2000), czasy ładowania między ekranami.
 - Grafiki misji (`ImageSlot`, `siteAssets.ts` z `import.meta.glob`) zostają w folderze misji: wspólny glob wciągnąłby assety wszystkich misji do każdej paczki SCORM.
 
+### 6.1. Porażka i odrzucenie wyboru: `failTitle`, `failText`, `reject`
+
+Reguła właściciela (D-06): `critical` tylko gdy gracz zostaje **wykryty** albo operacja **nieodwracalnie się nie udaje**. Gdy wybór jest zły, ale nikt nas nie wykrył, mentor odrzuca go (B2) zamiast palić operację.
+
+- **`failTitle?: string`** (opcja `critical`): tytuł modala porażki, gdy „ZOSTAŁEŚ WYKRYTY!” nie pasuje (np. `TRANSAKCJA ODRZUCONA`, gdy operacja się nie udała, a nikt nas nie namierzył). Domyślnie `ZOSTAŁEŚ WYKRYTY!`.
+- **`failText?: string`** (opcja `critical`): wyjaśnienie w modalu zamiast `feedback`, gdy `feedback` pisany do raportu nie wystarcza jako „co poszło nie tak”.
+- **`reject?: { mentorLine: string }`** (dowolna opcja, zwykle `suboptimal`/`critical` bez wykrycia): zatwierdzenie takiej opcji nalicza karę za próbę (wg `tier`, `penaltyForTier`), ale **nie zamyka decyzji** (brak `decisionTiers[num]`, brak `completeStage`, brak modala). Gracz widzi kwestię BYTE_MASTERA przy opcjach (`MentorRejectNotice`) i w czacie z mentorem (plakietka na czacie), a odrzucona opcja jest zablokowana. Kolejny wybór idzie normalną drogą `reportDecision`.
+- Punktacja: wynik = max − Σ kar z `decisionTiers` − Σ kar za odrzucone próby; łączna kara za jedną decyzję nie przekracza jej udziału (`decisionPenalty` w `core/scoring.ts`, tyle co `critical`). Raport pooperacyjny pokazuje ostateczny wybór i „Najpierw: X — odrzucone przez BYTE_MASTERA”. Stan (`rejectedAttempts` w store) czyści powtórka, zamknięcie aplikacji go zachowuje. Odrzucenie nie jest osobną decyzją SCORM (`reportedDecisions` i interakcje liczą tylko ostateczny wybór).
+- Dane misji: `{ id: 'keylogger', label: 'KEYLOGGER', tier: 'suboptimal', feedback: '…', reject: { mentorLine: 'Keylogger nie zrobi botnetu. Wybierz inaczej.' } }`.
+- Obsługa: `ChoiceCards`, `DialogueTree` (także tryb agregujący), `ChoiceCardGrid` (prop `decisionNum`). Minigra z własnym ekranem wyboru używa `submitDecision(decision, option, { onDecision, rejectDecision })` z `core/report.ts`: gdy zwróci `'rejected'`, zostaje na ekranie wyboru i czyści zaznaczenie. `buildReport` sam przenosi `failTitle`/`failText`.
+
 ## 7. Jak rośnie katalog (reguła dwóch)
 
 Dla każdej interakcji nowego scenariusza:

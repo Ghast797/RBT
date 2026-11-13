@@ -196,6 +196,12 @@ export const DebriefApp: React.FC = () => {
           TWOJA ODPOWIEDŹ: <span className={t.text}>{selected.answer}</span>
         </div>
 
+        {(selected.rejectedAttempts || []).map((r, i) => (
+          <div key={i} data-rejected-attempt="true" className="text-[0.6875rem] text-[#ff3366] leading-snug pl-3">
+            Najpierw: {r.answer} — odrzucone przez BYTE_MASTERA
+          </div>
+        ))}
+
         <div
           className={`px-2 py-1.5 rounded border text-xs leading-snug flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
             outcome === 'ideal'

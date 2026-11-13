@@ -8,6 +8,8 @@ import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import type { BlockProps } from '../../../engine/types/mission';
+import { submitDecision } from '../../../engine/core/report';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { WormBuilderConfig } from './types';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { SidePanel } from '../../../engine/components/SidePanel';
@@ -31,6 +33,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
   const [enabledInstructions, setEnabledInstructions] = useState<string[]>([]);
 
   const virusOptions = useShuffled(config.virus.options);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
   const completedRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
@@ -89,14 +92,12 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
 
   const handleVirusConfirm = () => {
     if (!selectedVirus) return;
+    // B2: mentor odrzuca wybór (np. KEYLOGGER) — zostajemy na ekranie wyboru, opcja się blokuje.
+    if (submitDecision(config.virus, selectedVirus, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedVirusId(null);
+      return;
+    }
     sounds.playSuccess();
-    onDecision({
-      num: config.virus.decisionNum,
-      question: config.virus.question,
-      answer: selectedVirus.label,
-      tier: selectedVirus.tier,
-      feedback: selectedVirus.feedback
-    });
     if (selectedVirus.tier !== 'critical') {
       setScreen('code_edit');
     }
@@ -186,7 +187,7 @@ export const WormBuilderApp: React.FC<BlockProps<WormBuilderConfig>> = ({
             'Wybierz rodzaj wirusa, który posłuży w operacji przeciwko CarbonFlow Inc.',
             'KROK 1/2'
           )}
-          <NameCards accent={accent} options={virusOptions} selectedId={selectedVirusId} onSelect={setSelectedVirusId} />
+          <NameCards accent={accent} options={virusOptions} selectedId={selectedVirusId} onSelect={setSelectedVirusId} decisionNum={config.virus.decisionNum} />
           <div className="flex justify-end">
             <ConfirmButton
               accent={accent}

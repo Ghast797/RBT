@@ -5,6 +5,8 @@ import { sounds } from '../audio/soundEffects';
 import { AppHeader } from '../components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../components/ChoiceZone';
 import { useShuffled } from '../core/shuffle';
+import { failFieldsOf } from '../core/report';
+import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../components/MentorRejectNotice';
 import type { BlockProps, ChoiceCardsConfig } from '../types/mission';
 
 /**
@@ -22,17 +24,33 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const options = useShuffled(config.options);
+  const rejected = useRejectedAttempts(config.decisionNum);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
 
   const selected = config.options.find((o) => o.id === selectedId);
 
   const handleSelect = (id: string) => {
-    if (isConfirmed) return;
+    if (isConfirmed || isRejected(rejected, config.options.find((o) => o.id === id)?.label ?? '')) return;
     sounds.playClick();
     setSelectedId(id);
   };
 
   const handleConfirm = () => {
     if (!selected || isConfirmed) return;
+
+    // B2: mentor odrzuca wybór — kara za próbę, decyzja otwarta, opcja się blokuje.
+    if (selected.reject) {
+      rejectDecision({
+        num: config.decisionNum,
+        question: config.question,
+        answer: selected.label,
+        tier: selected.tier,
+        mentorLine: selected.reject.mentorLine
+      });
+      setSelectedId(null);
+      return;
+    }
+
     sounds.playSuccess();
     setIsConfirmed(true);
 
@@ -41,7 +59,8 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
       question: config.question,
       answer: selected.label,
       tier: selected.tier,
-      feedback: selected.feedback
+      feedback: selected.feedback,
+      ...failFieldsOf(selected, selected.tier)
     });
 
     if (selected.tier !== 'critical') {
@@ -63,13 +82,14 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
       />
 
       <ChoiceZone accent={accent} label={config.choiceLabel || 'WYBIERZ JEDNO'}>
+        <MentorRejectNotice attempts={rejected} />
         <div className={`grid grid-cols-1 ${columns} gap-3`}>
           {options.map((option) => (
             <ChoiceTile
               key={option.id}
               accent={accent}
-              state={selectedId === option.id ? 'selected' : 'idle'}
-              disabled={isConfirmed}
+              state={isRejected(rejected, option.label) ? 'wrong' : selectedId === option.id ? 'selected' : 'idle'}
+              disabled={isConfirmed || isRejected(rejected, option.label)}
               markerPosition="corner"
               onClick={() => handleSelect(option.id)}
               className="p-3.5 h-full"

@@ -12,7 +12,8 @@ import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { LOADER_LONG_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VirusLabConfig } from './types';
-import { buildReport } from '../../../engine/core/report';
+import { submitDecision } from '../../../engine/core/report';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
 import { ScratchMatrix } from '../../../engine/blocks/ScratchMatrix';
 import { ImageSlot } from './ui';
 
@@ -29,6 +30,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
   const [done, setDone] = useState(false);
 
   const options = useShuffled(config.virus.options);
+  const rejectDecision = useMissionStore((s) => s.rejectDecision);
   const selected = config.virus.options.find((o) => o.id === selectedId);
   // Wariant zdrapki wg wyboru z D1 (grafika i podpisy zależą od wybranego programu).
   const variant = selected ? config.matrix.variants[selected.id] : undefined;
@@ -52,8 +54,12 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
   const handleConfirm = () => {
     if (!selected || locked) return;
     sounds.playClick();
+    // B2: mentor odrzuca wybór — zostajemy na ekranie wyboru, opcja się blokuje.
+    if (submitDecision(config.virus, selected, { onDecision, rejectDecision }) === 'rejected') {
+      setSelectedId(null);
+      return;
+    }
     setLocked(true);
-    onDecision(buildReport(config.virus, selected));
     if (selected.tier !== 'critical') setScreen('loader');
   };
 
@@ -80,6 +86,7 @@ export const VirusLabApp: React.FC<BlockProps<VirusLabConfig>> = ({ config, onDe
                 setSelectedId(id);
               }}
               label={config.virus.question}
+              decisionNum={config.virus.decisionNum}
               size="lg"
             />
           </div>

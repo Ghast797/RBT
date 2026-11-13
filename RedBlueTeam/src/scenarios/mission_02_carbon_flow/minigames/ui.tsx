@@ -118,7 +118,8 @@ export const NameCards: React.FC<{
   selectedId: string | null;
   onSelect: (id: string) => void;
   label?: string;
-}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO' }) => (
+  decisionNum?: number;
+}> = ({ accent, options, selectedId, onSelect, label = 'WYBIERZ JEDNO', decisionNum }) => (
   <ChoiceCardGrid
     accent={accent}
     options={options}
@@ -129,5 +130,6 @@ export const NameCards: React.FC<{
     }}
     label={label}
     size="lg"
+    decisionNum={decisionNum}
   />
 );

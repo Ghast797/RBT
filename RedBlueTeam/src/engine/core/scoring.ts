@@ -91,3 +91,34 @@ export function resolveDecisionCount(mission: any): number {
   );
   return fromStages > 0 ? fromStages : 1;
 }
+
+/**
+ * Łączna kara za jedną decyzję: kara za ostateczny poziom (jeśli decyzja zamknięta) plus kary za próby
+ * odrzucone przez mentora (B2), z limitem równym udziałowi decyzji (tyle co `critical`).
+ */
+export function decisionPenalty(
+  finalTier: ChoiceOutcome | undefined,
+  rejectedTiers: readonly ChoiceOutcome[],
+  maxScore: number,
+  decisionCount: number
+): number {
+  const share = decisionShare(maxScore, decisionCount);
+  const final = finalTier ? penaltyForTier(finalTier, maxScore, decisionCount) : 0;
+  const rejected = rejectedTiers.reduce((sum, t) => sum + penaltyForTier(t, maxScore, decisionCount), 0);
+  return Math.min(share, final + rejected);
+}
+
+/** Wynik misji: max − Σ kar za decyzje (zamknięte i odrzucone próby), nie mniej niż 0. */
+export function scoreFromDecisions(
+  tiers: Record<number, ChoiceOutcome>,
+  rejected: Record<number, readonly { tier: ChoiceOutcome }[]>,
+  maxScore: number,
+  decisionCount: number
+): number {
+  const nums = new Set<number>([...Object.keys(tiers), ...Object.keys(rejected)].map(Number));
+  let total = 0;
+  nums.forEach((n) => {
+    total += decisionPenalty(tiers[n], (rejected[n] || []).map((r) => r.tier), maxScore, decisionCount);
+  });
+  return Math.max(0, maxScore - total);
+}
