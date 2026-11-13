@@ -284,3 +284,13 @@ describe('B2: wyliczane oceny M4 (hasło D2, komunikat D3) i VPN D7', () => {
     expect(vpnSenderRejection(sender, { ...opt, reject: undefined }, '1.2.3.4')).toBeNull();
   });
 });
+
+describe('Kara za odrzuconą próbę (B2) — pół udziału', () => {
+  it('odrzucona opcja critical kosztuje pół udziału, nie cały', async () => {
+    const { decisionPenalty } = await import('../src/engine/core/scoring');
+    expect(decisionPenalty('ideal', ['critical'], 100, 4)).toBe(12.5);
+    expect(decisionPenalty('ideal', ['suboptimal'], 100, 4)).toBe(12.5);
+    expect(decisionPenalty('suboptimal', ['critical'], 100, 4)).toBe(25);
+    expect(decisionPenalty('ideal', ['critical', 'critical', 'critical'], 100, 4)).toBe(25);
+  });
+});

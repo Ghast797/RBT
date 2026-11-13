@@ -151,6 +151,44 @@ Agent wpisuje tu odpowiedź dopiero, gdy właściciel ją poda w czacie.
 | D-05 | M3 D1 KEYLOGGER: suboptimal z odroczonym skutkiem czy critical z tytułem „OPERACJA NIEUDANA”? | M3-03 | B2. |
 | D-06 | Więcej opcji critical = więcej powtórek od zera. Dodać powtórkę od bieżącego etapu? | P2 | B2 wszędzie, gdzie nie ma wykrycia. Critical tylko dla wykrycia albo nieodwracalnej porażki operacji (np. koperta pod złym adresem). |
 
+### Podział critical / B2 / suboptimal wg D-06 (zatwierdzony przez właściciela)
+
+Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poziomu opcji (silnik, `decisionPenalty`).
+
+| Misja | Decyzja | Opcja | Nowy poziom |
+|---|---|---|---|
+| M1 | D1 | MEDIKARZ.IQ | B2 |
+| M1 | D2 | KOD ŹRÓDŁOWY (3 warianty strony) | B2 |
+| M1 | D3 | TWÓJ SYNEK | B2 |
+| M1 | D4 | DARKSUN.JAKUB@GMAIL.COM | B2 |
+| M2 | D1 | (cała decyzja) | usunięta |
+| M2 | D2 | KNEENOOK | B2 |
+| M2 | D3 | ULUBIONE OWOCE… | B2 |
+| M2 | D4 | KEYLOGGER | B2 |
+| M2 | D4 | RANSOMWARE | critical (wykrycie) |
+| M2 | D5 | KATERING@OILFLOW.COM | B2 |
+| M3 | D1 | RANSOMWARE | critical (wykrycie) |
+| M3 | D1 | KEYLOGGER | B2 |
+| M3 | D2 | WIKTORIA GAŁECKA, AGNIESZKA LEMAN | B2 |
+| M3 | D2 | SŁAWOMIR BIAŁEK, JAN ŁUKASIEWICZ | critical (wykrycie) |
+| M3 | D3 | PUSTY PENDRIVE „KEYLOGGER” | critical (wykrycie) |
+| M3 | D4 | nazwa dysku KEYLOGGER | critical (wykrycie; dopisać w feedbacku) |
+| M3 | D4 | podpis niepasujący do planu z D3 | critical (oddanie do ochrony); poziomy zależne od D3 (M3-06) |
+| M3 | D5 | OŁAWSKA 51B, DRZYMAŁY 38D, WYSTAWOWA 23A | critical (nieodwracalne, wyjaśnienie na ekranie) |
+| M3 | D6 | 7 złych aut | critical (nieodwracalne) |
+| M3 | D6 | PUSTY ASFALT | suboptimal |
+| M4 | D1 | RAT, KEYLOGGER | B2 |
+| M4 | D2 | hasło 8 znaków / zakazane znaki | B2 |
+| M4 | D3 | czas 30 sekund | B2 |
+| M4 | D5 | ANALITYK MICHAŁ WILK | B2 |
+| M4 | D6 | …USŁUG ENERGETYCZNYCH (bez hasła) | B2 |
+| M4 | D7 | NEWRAWGOODS@COMMERCIAL.BIZ | B2 |
+| M4 | D8 | same fałszywe pliki | critical („OPERACJA NIEUDANA”) |
+| M4 | D9 | „OKEJ, JUŻ WAM NIE PRZESZKADZAM” | suboptimal (rozmowa musi logicznie iść dalej) |
+| M4 | D9 | agresja | suboptimal + nowa kwestia: szef IT grozi zerwaniem (M4-03) |
+| M4 | D10 | „ROBIĘ TO DLA ZABAWY :D” | critical (M4-03) |
+| M4 | D10 | „CHCĘ DOSTĘPU DO PLIKÓW FREEVOLT” | critical (dekonspiracja) |
+
 ## Nowe ustalenia
 
 | ID | Waga | Opis | Paczka | Status | Commit | Notatka |

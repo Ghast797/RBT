@@ -95,6 +95,9 @@ export function resolveDecisionCount(mission: any): number {
 /**
  * Łączna kara za jedną decyzję: kara za ostateczny poziom (jeśli decyzja zamknięta) plus kary za próby
  * odrzucone przez mentora (B2), z limitem równym udziałowi decyzji (tyle co `critical`).
+ *
+ * Każda odrzucona próba kosztuje pół udziału (jak `suboptimal`), niezależnie od poziomu opcji — mentor
+ * wyłapał błąd, zanim zaszkodził operacji (decyzja właściciela, P2).
  */
 export function decisionPenalty(
   finalTier: ChoiceOutcome | undefined,
@@ -104,7 +107,7 @@ export function decisionPenalty(
 ): number {
   const share = decisionShare(maxScore, decisionCount);
   const final = finalTier ? penaltyForTier(finalTier, maxScore, decisionCount) : 0;
-  const rejected = rejectedTiers.reduce((sum, t) => sum + penaltyForTier(t, maxScore, decisionCount), 0);
+  const rejected = rejectedTiers.length * penaltyForTier('suboptimal', maxScore, decisionCount);
   return Math.min(share, final + rejected);
 }
 
