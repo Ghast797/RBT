@@ -227,16 +227,17 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(api.GetValue('cmi.success_status')).toBe('passed');
     });
 
-    it('reaguje na błąd krytyczny wyzwalając modal dekonspiracji', () => {
+    it('reaguje na błąd krytyczny wyzwalając modal dekonspiracji (silnik, bez opcji M1)', () => {
       const store = useMissionStore.getState();
       driveBridge();
 
+      // M1 nie ma już opcji critical (złe wybory są odrzucane przez mentora, B2); test sprawdza sam silnik.
       store.reportDecision({
         num: 1,
-        question: 'Wybór strony WWW',
-        answer: 'MEDIKARZ.IQ',
+        question: 'Test krytycznej decyzji',
+        answer: 'TEST KRYTYCZNEJ DECYZJI',
         tier: 'critical',
-        feedback: 'Tematyka medyczna wzbudzi natychmiastową nieufność.'
+        feedback: 'Test silnika: wybór krytyczny wyzwala modal.'
       });
 
       const st = useMissionStore.getState();
@@ -376,6 +377,39 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(htmlSocial).toContain('PRECYZJA WYWIADU');
     });
 
+    it('odrzucane przez mentora (B2): złe opcje D1–D4 mają reject.mentorLine i poziom suboptimal, nie critical', async () => {
+      const { phishingBuilderConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+      const { domain, payload, payloadByDomain, senderName, senderEmail } = phishingBuilderConfig;
+
+      const rejectedIds: Array<[string, { id: string; tier: string; reject?: { mentorLine: string } } | undefined]> = [
+        ['medikarz_iq', domain?.options.find((o) => o.id === 'medikarz_iq')],
+        ['source_code', payload?.options.find((o) => o.id === 'source_code')],
+        ['source_code', payloadByDomain?.dalekbieg_info?.options.find((o) => o.id === 'source_code')],
+        ['source_code_muffins', payloadByDomain?.mufina_org_pl?.options.find((o) => o.id === 'source_code_muffins')],
+        ['twoj_synek', senderName?.options.find((o) => o.id === 'twoj_synek')],
+        ['darksun_gmail', senderEmail?.options.find((o) => o.id === 'darksun_gmail')]
+      ];
+
+      for (const [id, option] of rejectedIds) {
+        expect(option, `opcja ${id} istnieje`).toBeDefined();
+        expect(option?.tier, `opcja ${id} ma tier suboptimal`).toBe('suboptimal');
+        expect(option?.reject?.mentorLine, `opcja ${id} ma mentorLine`).toBeTruthy();
+      }
+    });
+
+    it('M1 nie ma opcji critical: wszystkie wybory krytyczne przeszły na odrzucenie przez mentora', async () => {
+      const { phishingBuilderConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
+      const { domain, payload, payloadByDomain, senderName, senderEmail } = phishingBuilderConfig;
+      const all = [
+        ...(domain?.options ?? []),
+        ...(payload?.options ?? []),
+        ...Object.values(payloadByDomain ?? {}).flatMap((p) => p.options),
+        ...(senderName?.options ?? []),
+        ...(senderEmail?.options ?? [])
+      ];
+      expect(all.filter((o) => o.tier === 'critical')).toEqual([]);
+    });
+
     it('posiada drzewo decyzyjne w PhishingBuilder: mufina.org.pl oferuje opcje wypieku muffinek a dalekbieg.info opcje biegowe', async () => {
       const { phishingBuilderConfig } = await import('../src/scenarios/mission_01_petrolog/stages');
       expect(phishingBuilderConfig.payloadByDomain).toBeDefined();
@@ -401,7 +435,8 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(subMuffin?.label).toContain('TAPETY');
 
       const critMuffin = muffinPayload?.options.find((o) => o.id === 'source_code_muffins');
-      expect(critMuffin?.tier).toBe('critical');
+      expect(critMuffin?.tier).toBe('suboptimal');
+      expect(critMuffin?.reject?.mentorLine).toBeTruthy();
       expect(critMuffin?.label).toContain('KOD ŹRÓDŁOWY');
     });
 

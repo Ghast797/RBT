@@ -598,9 +598,12 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
         label: 'MEDIKARZ.IQ',
         desc: 'Portal telemedycyny i komercyjnych porad lekarskich online.',
         tags: ['MEDYCYNA', 'ZDROWIE', 'SPAM'],
-        tier: 'critical',
+        tier: 'suboptimal',
         feedback:
-          'Tematyka medyczna jest całkowicie oderwana od zainteresowań ofiary i wzbudzi natychmiastową nieufność.'
+          'Tematyka medyczna nie ma związku z zainteresowaniami ofiary – Anita nie szuka porad lekarskich, więc taki portal nie przyciągnie jej uwagi.',
+        reject: {
+          mentorLine: 'MEDYCYNA? ANITA NIE SZUKA LEKARZA, TYLKO PORAD DO SWOJEJ PASJI. PRZYPOMNIJ SOBIE, CO JĄ PRZYCIĄGA W SIECI, I WYBIERZ INACZEJ.'
+        }
       }
     ]
   },
@@ -631,9 +634,12 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
         label: 'KOD ŹRÓDŁOWY STRONY',
         desc: 'Surowe pliki źródłowe HTML/JS skompresowane w archiwum.',
         tags: ['KOD', 'DEV', 'ARCHIWUM'],
-        tier: 'critical',
+        tier: 'suboptimal',
         feedback:
-          'Całkowity błąd profilowania – księgowa nigdy nie zainteresuje się pobieraniem surowego kodu.'
+          'Kod źródłowy nie odpowiada na żadną potrzebę ofiary – księgowa szuka porad, a nie plików do przeglądania.',
+        reject: {
+          mentorLine: 'KOD ŹRÓDŁOWY? ANITA NIE BĘDZIE PRZEGLĄDAĆ SZABLONU STRONY. PRZYPOMNIJ SOBIE, CZEGO SZUKAŁA NA JOININ, I WYBIERZ INACZEJ.'
+        }
       }
     ]
   },
@@ -665,9 +671,12 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
           label: 'KOD ŹRÓDŁOWY STRONY',
           desc: 'Surowe pliki źródłowe HTML/JS skompresowane w archiwum.',
           tags: ['KOD', 'DEV', 'ARCHIWUM'],
-          tier: 'critical',
+          tier: 'suboptimal',
           feedback:
-            'Całkowity błąd profilowania – księgowa nigdy nie zainteresuje się pobieraniem surowego kodu.'
+            'Kod źródłowy nie odpowiada na żadną potrzebę ofiary – księgowa szuka porad, a nie plików do przeglądania.',
+          reject: {
+            mentorLine: 'KOD ŹRÓDŁOWY? ANITA NIE BĘDZIE PRZEGLĄDAĆ SZABLONU STRONY. PRZYPOMNIJ SOBIE, CZEGO SZUKAŁA NA JOININ, I WYBIERZ INACZEJ.'
+          }
         }
       ]
     },
@@ -683,7 +692,7 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
           tags: ['PDF', 'EBOOK', 'PRZEPISY'],
           tier: 'ideal',
           feedback:
-            'Trafny dobór pliku dla serwisu kulinarnego – merytoryczny e-book z przepisami nawiązuje do pasji pieczenia ciast i wzbudza zaufanie.'
+            'Najlepsza przynęta dostępna na tej stronie – merytoryczny e-book z przepisami pasuje do serwisu kulinarnego i wzbudza zaufanie. Anita szukała porad biegowych, więc sam temat kulinarny był chybiony; ten koszt poniosłeś już przy wyborze domeny (D1).'
         },
         {
           id: 'wallpapers_muffins',
@@ -699,9 +708,12 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
           label: 'KOD ŹRÓDŁOWY BLOGA KULINARNEGO',
           desc: 'Surowe pliki szablonu bloga PHP/JS skompresowane w archiwum.',
           tags: ['KOD', 'DEV', 'ARCHIWUM'],
-          tier: 'critical',
+          tier: 'suboptimal',
           feedback:
-            'Całkowity błąd profilowania – miłośniczka domowych wypieków nigdy nie zainteresuje się pobieraniem surowego kodu strony.'
+            'Kod źródłowy bloga nie daje ofierze nic, czego szuka – miłośniczka wypieków chce przepisów, a nie szablonu strony.',
+          reject: {
+            mentorLine: 'KOD ŹRÓDŁOWY BLOGA? OFIARA NIE POBIERA SZABLONÓW, TYLKO COŚ DO UŻYCIA. WYBIERZ INACZEJ.'
+          }
         }
       ]
     }
@@ -741,8 +753,11 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
         label: 'TWÓJ SYNEK',
         desc: 'Tożsamość podszywająca się pod dziecko ofiary.',
         tags: ['RODZINA', 'DZIECKO'],
-        tier: 'critical',
-        feedback: 'Małe dzieci nie wysyłają maili ze skrzynki korporacyjnej PetroLog.'
+        tier: 'suboptimal',
+        feedback: 'Wiadomość od dziecka nie pasuje do służbowej korespondencji PetroLog, więc ofiara nie uzna jej za wiarygodną.',
+        reject: {
+          mentorLine: 'DZIECKO NIE PISZE DO KSIĘGOWEJ MAILI Z WEWNĘTRZNEJ DOMENY. ANITA UFA SWOIM WSPÓŁPRACOWNIKOM, WYBIERZ KOGOŚ Z JEJ OTOCZENIA.'
+        }
       }
     ]
   },
@@ -754,9 +769,12 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
       {
         id: 'darksun_gmail',
         label: 'DARKSUN.JAKUB@GMAIL.COM',
-        tier: 'critical',
+        tier: 'suboptimal',
         feedback:
-          'Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.'
+          'Jawna nazwa grupy hakerskiej i publiczny Gmail nie pasują do służbowej korespondencji – taki adres ryzykuje blokadę przez filtr antyspamowy i zwraca uwagę ofiary.',
+        reject: {
+          mentorLine: 'DARKSUN TO JAWNA NAZWA GRUPY, A GMAIL NIE WYGLĄDA JAK SŁUŻBOWY ADRES. ZMIEŃ ADRES NA TAKI, KTÓRY ANITA UZNA ZA FIRMOWY. WYBIERZ INACZEJ.'
+        }
       },
       {
         id: 'kwiatkowski_hack',
