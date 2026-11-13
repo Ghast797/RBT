@@ -6,31 +6,26 @@ describe('//BAZA_WIRUSÓW w configu M4', () => {
   const m = virusLabConfig.matrix;
   const opts = virusLabConfig.virus.options;
 
-  it('D1 ma trzy opcje o poziomach ideal, suboptimal i critical', () => {
-    expect(opts.map((o) => o.tier).sort()).toEqual(['critical', 'ideal', 'suboptimal']);
+  it('D1 ma trzy opcje: ransomware ideal, RAT i keylogger suboptimal z odrzuceniem mentora (B2)', () => {
+    expect(opts.map((o) => o.tier).sort()).toEqual(['ideal', 'suboptimal', 'suboptimal']);
     expect(virusLabConfig.virus.decisionNum).toBe(1);
-  });
-
-  it('ransomware i RAT mają wariant z czterema częściami, nazwą i opisem grafiki', () => {
-    for (const id of ['ransomware', 'rat']) {
-      const v = m.variants[id];
-      expect(v, `wariant ${id}`).toBeDefined();
-      expect(v.parts).toHaveLength(4);
-      expect(v.programName.length).toBeGreaterThan(0);
-      expect(v.imageAlt.length).toBeGreaterThan(0);
-      expect(v.barColor).toBeTruthy();
+    for (const id of ['rat', 'keylogger']) {
+      const o = opts.find((x) => x.id === id)!;
+      expect(o.tier).toBe('suboptimal');
+      expect(o.reject?.mentorLine, id).toBeTruthy();
+      expect(o.reject!.mentorLine).toMatch(/WYBIERZ INACZEJ/);
     }
+    expect(opts.find((x) => x.id === 'ransomware')!.reject).toBeUndefined();
   });
 
-  it('keylogger (critical) nie ma wariantu zdrapki, a każda opcja poza critical ma', () => {
-    expect(m.variants.keylogger).toBeUndefined();
-    for (const o of opts.filter((x) => x.tier !== 'critical')) expect(m.variants[o.id]).toBeDefined();
-    expect(opts.find((o) => o.id === 'keylogger')?.tier).toBe('critical');
-  });
-
-  it('warianty różnią się grafiką i częściami', () => {
-    expect(m.variants.ransomware.image).not.toEqual(m.variants.rat.image);
-    expect(m.variants.ransomware.parts.map((p) => p.id)).not.toEqual(m.variants.rat.parts.map((p) => p.id));
+  it('ransomware ma wariant z czterema częściami, nazwą i opisem grafiki; odrzucane opcje go nie potrzebują', () => {
+    const v = m.variants.ransomware;
+    expect(v).toBeDefined();
+    expect(v.parts).toHaveLength(4);
+    expect(v.programName.length).toBeGreaterThan(0);
+    expect(v.imageAlt.length).toBeGreaterThan(0);
+    expect(v.barColor).toBeTruthy();
+    for (const o of opts.filter((x) => !x.reject)) expect(m.variants[o.id]).toBeDefined();
   });
 
   it('próg, segmenty i kolory z configu są ustawione', () => {

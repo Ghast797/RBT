@@ -46,6 +46,8 @@ export function buildExfilReport(exfil: C2Config['exfil'], selected: readonly st
     question: exfil.question,
     answer: tier === 'ideal' ? exfil.answers.ideal : listNames(exfil.files, selected),
     tier,
-    feedback: exfil.feedback[tier]
+    feedback: exfil.feedback[tier],
+    ...(tier === 'critical' && exfil.failTitle ? { failTitle: exfil.failTitle } : {}),
+    ...(tier === 'critical' && exfil.failText ? { failText: exfil.failText } : {})
   };
 }
