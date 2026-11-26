@@ -190,7 +190,7 @@
         "answer": "OSTRZEŻENIE + LIMIT 30 H",
         "correct": true,
         "details": "Jasny komunikat i wiarygodny zegar budują presję, a jednocześnie pozwalają ofierze zebrać okup.",
-        "attack": "Formalny, alarmujący nagłówek w połączeniu z 30-godzinnym limitem czasu skutecznie wywołał presję psychologiczną, dając ofierze realne ramy na podjęcie decyzji i zebranie środków. Zbyt krótki czas, jak 30 sekund, uniemożliwiłby ofierze reakcję i zakup kryptowaluty, skłaniając ją do natychmiastowego sformatowania dysków. Z kolei niepoważny tytuł obniżyłby wiarygodność żądania i mógłby zostać zignorowany jako zwykły żart.",
+        "attack": "Formalny, alarmujący nagłówek w połączeniu z 30-godzinnym limitem czasu skutecznie wywołał presję psychologiczną, dając ofierze realne ramy na podjęcie decyzji i zebranie środków. Zbyt krótki czas, jak 30 minut, uniemożliwiłby ofierze reakcję i zakup kryptowaluty, skłaniając ją do natychmiastowego sformatowania dysków. Z kolei niepoważny tytuł obniżyłby wiarygodność żądania i mógłby zostać zignorowany jako zwykły żart.",
         "defense": "Sygnały: odliczający zegar, wywieranie silnej presji czasu, groźby bezpowrotnego skasowania danych oraz żądanie wpłaty w kryptowalutach. Co zrobić: zachowaj spokój i nie podejmuj pochopnych działań pod wpływem emocji, ponieważ pośpiech utrudnia racjonalną ocenę sytuacji. Natychmiast zgłoś incydent do zespołu bezpieczeństwa IT i wdroż procedurę reagowania na incydenty. Nigdy nie płać okupu na własną rękę, gdyż nie gwarantuje to odzyskania danych i finansuje dalszą działalność przestępczą."
       },
       {
@@ -234,8 +234,8 @@
         "question": "EKSFILTRACJA PLIKÓW",
         "answer": "3 PLIKI FREEVOLT (DOCX, PDF, XCF)",
         "correct": true,
-        "details": "Pobranie dokładnie trzech plików dokumentacji Freevolt realizuje główny cel zlecenia bez generowania podejrzanego transferu.",
-        "attack": "Precyzyjne skopiowanie wyłącznie trzech kluczowych plików technologii Freevolt pozwoliło osiągnąć cel wywiadowczy operacji. Pobranie zbyt wielu przypadkowych dokumentów wygenerowałoby duży wolumen transferu wychodzącego, co mogłoby zaalarmować systemy DLP i ułatwić analizę powłamaniową. Z kolei pominięcie któregokolwiek z plików technologii skutkowałoby pozyskaniem niekompletnej dokumentacji.",
+        "details": "Rozpoznanie i pobranie wszystkich trzech plików dokumentacji Freevolt realizuje główny cel zlecenia.",
+        "attack": "Rozpoznanie wśród zasobów firmy trzech kluczowych plików technologii Freevolt i pobranie ich wszystkich pozwoliło osiągnąć cel wywiadowczy operacji. Pominięcie któregokolwiek z nich skutkowałoby pozyskaniem niekompletnej dokumentacji, a więc niepełnym wykonaniem zlecenia. Pliki niezwiązane z Freevolt nie przybliżają do celu, więc liczy się trafne wskazanie dokumentów, a nie ich liczba.",
         "defense": "Sygnały: nietypowy transfer dużych ilości danych poza sieć firmową, dostęp do poufnych plików projektowych o nietypowej porze lub z nieuprawnionej stacji roboczej. Co zrobić: wdrażaj systemy zapobiegania wyciekowi danych (DLP) oraz monitoruj ruch wychodzący z sieci pod kątem anomalii transferu. Stosuj zasadę najmniejszych uprawnień – pliki o strategicznym znaczeniu powinny być szyfrowane i dostępne wyłącznie dla ograniczonego kręgu pracowników. Regularnie audytuj logi dostępu do zasobów sieciowych."
       },
       {
