@@ -25,7 +25,7 @@
 - GRACZ: CZASEM NAJPROSTSZE ROZWIĄZANIA SĄ NAJLEPSZE
 - BM: DOBRZE SIĘ SKŁADA, BO MAM AKURAT DLA CIEBIE LISTĘ MAILINGOWĄ PRACOWNIKÓW CARBONFLOW I ADRESY IP, KTÓRE SĄ NA BIAŁEJ LIŚCIE NADAWCÓW
 - GRACZ: CZYLI OD POCZĄTKU WIEDZIAŁEŚ, ŻE BĘDĘ PLANOWAĆ ATAK PHISHINGOWY?
-- BM: PAMIĘTAJ, JESTEM ZAWSZE DWA KROKI PRZED TOBĄ. A TERAZ ZABIERAJ SIĘ DO PRACY
+- BM: PAMIĘTAJ, JESTEM ZAWSZE DWA KROKI PRZED TOBĄ. W FIRMOWEJ SKRZYNCE NAJLEPIEJ SPRAWDZI SIĘ COŚ, CO WYGLĄDA NA SŁUŻBOWE. A TERAZ ZABIERAJ SIĘ DO PRACY
 - GRACZ: DO ROBOTY. ZACZYNAM OD PRZYGOTOWANIA KAMPANII. [SPÓJNIK]
 - odblokuj: //PHISHING
 
@@ -50,7 +50,7 @@ Decyzja D2: "WYBIERZ TEMAT I PRZYNĘTĘ ANKIETY:"
 Opcje w każdej decyzji wyświetlają się w losowej kolejności (konwencja silnika).
 
 Mostek (rozmowa do kolejnego etapu):
-- BM: "NIE ZAPOMNIJ, ŻE MAJĄ CZARNĄ LISTĘ ANTYSPAMOWĄ. MUSISZ WYBRAĆ JEDEN Z TYCH ADRESÓW IP, ABY W OGÓLE ZOBACZYLI MAILA OD CIEBIE"
+- BM: "NIE ZAPOMNIJ, ŻE MAJĄ BIAŁĄ LISTĘ NADAWCÓW. MUSISZ WYBRAĆ JEDEN Z TYCH ADRESÓW IP, ABY W OGÓLE ZOBACZYLI MAILA OD CIEBIE"
 - GRACZ: "WIEM, SKORZYSTAM Z VPN, ABY OMINĄĆ ICH SYSTEMY ANTYSPAMOWE"
 - odblokuj: //TUNEL_VPN
 
@@ -150,3 +150,5 @@ D4:
 - [DO DECYZJI] S05: wysyłka i potwierdzenie mają wizualizację (pasek postępu, licznik dostarczonych, skrzynki, słupki) — dodatek kodu; liczby z `recipientsCount`/`targetDomain`.
 - [DO DECYZJI] S05: ekran potwierdzenia po „WYŚLIJ” (podsumowanie wysyłki, „POWRÓT DO PULPITU”) to dodatek kodu; VR kończy się na kliknięciu „WYŚLIJ”.
 - [DO DECYZJI] S04, D4: VR podaje opcje jako „NAZWA – opis”. W webie to karty w siatce: duża nazwa na środku i neutralna definicja pod spodem (pole `desc`: robak – samoreplikujący się program rozprzestrzeniający się po sieci; keylogger – program rejestrujący naciśnięcia klawiszy; ransomware – program szyfrujący dane w celu okupu). Opisy z VR („tworzy komputery zombie”, „pokaże wszystko…”) zastąpiono neutralnymi, bo wskazywały odpowiedź; etykieta w raporcie to sama nazwa typu.
+- [ZMIANA WZGLĘDEM VR] Mentor mówi „BIAŁA LISTA NADAWCÓW” (nie „CZARNA LISTA ANTYSPAMOWA” jak w nagraniu VR, mostek po //PHISHING). Filtr w //TUNEL_VPN działa na białej liście adresów, więc gracz wybiera adres z tej listy; zapis VR byłby sprzeczny z zadaniem. Decyzja właściciela M2-11.
+- [ZMIANA WZGLĘDEM VR] Intro: w ostatniej kwestii BM dopisano podpowiedź „W FIRMOWEJ SKRZYNCE NAJLEPIEJ SPRAWDZI SIĘ COŚ, CO WYGLĄDA NA SŁUŻBOWE”, żeby gracz miał powód wybrać ankietę zamiast Quickgrama w D1 (decyzja właściciela M2-09). Dopisana do tej samej kwestii, bo BootSequence wymaga odpowiedzi gracza po każdej kwestii poza ostatnią, więc osobna kwestia BM przed „DO ROBOTY” wymagałaby sztucznej odpowiedzi.
