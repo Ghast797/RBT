@@ -26,10 +26,18 @@ export function countSelection(files: readonly ExfilFile[], selected: readonly s
   return { t, f };
 }
 
-export function exfilTier({ t, f }: ExfilCounts, requiredTargets: number): ChoiceOutcome {
+/** Liczy się tylko, czy wszystkie cele są w zestawie; nadmiarowe pliki nie obniżają poziomu. */
+export function exfilTier({ t }: ExfilCounts, requiredTargets: number): ChoiceOutcome {
   if (t === 0) return 'critical';
-  if (t >= requiredTargets && f === 0) return 'ideal';
+  if (t >= requiredTargets) return 'ideal';
   return 'suboptimal';
+}
+
+/** Dopisek o nadmiarowych plikach w odpowiedzi raportu: „+ 1 INNY”, „+ 2 INNE”, „+ 5 INNYCH”. */
+export function extrasPhrase(f: number): string {
+  if (f === 1) return '+ 1 INNY';
+  if (f >= 2 && f <= 4) return `+ ${f} INNE`;
+  return `+ ${f} INNYCH`;
 }
 
 /** Lista nazw wybranych plików (maks. 3, dalej „…”), w kolejności configu. */
@@ -41,11 +49,18 @@ export function listNames(files: readonly ExfilFile[], selected: readonly string
 }
 
 export function buildExfilReport(exfil: C2Config['exfil'], selected: readonly string[]): DecisionReport {
-  const tier = exfilTier(countSelection(exfil.files, selected), exfil.requiredTargets);
+  const counts = countSelection(exfil.files, selected);
+  const tier = exfilTier(counts, exfil.requiredTargets);
+  const answer =
+    tier === 'ideal'
+      ? counts.f > 0
+        ? `${exfil.answers.ideal} ${extrasPhrase(counts.f)}`
+        : exfil.answers.ideal
+      : listNames(exfil.files, selected);
   return {
     num: exfil.decisionNum,
     question: exfil.question,
-    answer: tier === 'ideal' ? exfil.answers.ideal : listNames(exfil.files, selected),
+    answer,
     tier,
     feedback: exfil.feedback[tier],
     ...(tier === 'critical' && exfil.failTitle ? { failTitle: exfil.failTitle } : {}),
@@ -53,18 +68,15 @@ export function buildExfilReport(exfil: C2Config['exfil'], selected: readonly st
   };
 }
 
-/** Zaznaczenie pliku: dodanie ponad limit (`max`) jest ignorowane, usunięcie zawsze działa. */
-export function applySelection(selected: readonly string[], id: string, inField: boolean, max: number): string[] {
+/** Zaznaczenie pliku: przeciągnięcie do pola dodaje, wyciągnięcie usuwa. Bez limitu liczby plików. */
+export function applySelection(selected: readonly string[], id: string, inField: boolean): string[] {
   if (!inField) return selected.filter((x) => x !== id);
-  if (selected.includes(id) || selected.length >= max) return [...selected];
+  if (selected.includes(id)) return [...selected];
   return [...selected, id];
 }
 
-/** Zatwierdzić można dopiero przy dokładnie `required` plikach. */
-export const canConfirmExfil = (selected: readonly string[], required: number): boolean => selected.length === required;
-
-export const exfilCounterText = (label: string, selected: readonly string[], required: number): string =>
-  `${label} ${selected.length}/${required}`;
+/** Zatwierdzić można, gdy w polu jest co najmniej jeden plik. */
+export const canConfirmExfil = (selected: readonly string[]): boolean => selected.length >= 1;
 
 /** Ekran startowy C2: status i dopiski o słabszych wyborach D5–D7 (z pamięci wyborów); ideał = status bez dopisków. */
 export function c2StartInfo(
