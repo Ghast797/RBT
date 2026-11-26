@@ -288,7 +288,7 @@ export const mission2Stages: StageDefinition[] = [
       conversation: [
         {
           from: 'byte_master',
-          text: 'NIE ZAPOMNIJ, ŻE MAJĄ CZARNĄ LISTĘ ANTYSPAMOWĄ. MUSISZ WYBRAĆ JEDEN Z TYCH ADRESÓW IP, ABY W OGÓLE ZOBACZYLI MAILA OD CIEBIE'
+          text: 'NIE ZAPOMNIJ, ŻE MAJĄ BIAŁĄ LISTĘ NADAWCÓW. MUSISZ WYBRAĆ JEDEN Z TYCH ADRESÓW IP, ABY W OGÓLE ZOBACZYLI MAILA OD CIEBIE'
         },
         {
           from: 'player',

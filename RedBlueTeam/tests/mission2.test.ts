@@ -232,8 +232,22 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
         'CZYLI OD POCZĄTKU WIEDZIAŁEŚ, ŻE BĘDĘ PLANOWAĆ ATAK PHISHINGOWY?'
       );
       expect(intro.dialogue[7].playerResponse).toBeUndefined();
+      expect(intro.dialogue[7].text).toContain(
+        'W FIRMOWEJ SKRZYNCE NAJLEPIEJ SPRAWDZI SIĘ COŚ, CO WYGLĄDA NA SŁUŻBOWE'
+      );
+      expect(intro.dialogue[7].text.indexOf('W FIRMOWEJ SKRZYNCE')).toBeLessThan(
+        intro.dialogue[7].text.indexOf('ZABIERAJ SIĘ DO PRACY')
+      );
+      expect(intro.firstChoice.label).toBe('DO ROBOTY. ZACZYNAM OD PRZYGOTOWANIA KAMPANII.');
       const bridge = stages.find((s) => s.id === 'phishing_dispatch')!.completion.conversation!;
       expect(bridge.map((b) => b.from)).toEqual(['player', 'time_jump']);
+    });
+
+    it('mostek po //PHISHING mówi o białej liście nadawców (nie czarnej), a gracz wybiera adres z tej listy', () => {
+      const bridge = stages.find((s) => s.id === 'phishing_app')!.completion.conversation!;
+      const mentor = bridge.find((b) => b.from === 'byte_master');
+      expect(mentor?.text).toContain('BIAŁĄ LISTĘ NADAWCÓW');
+      expect(mentor?.text).not.toContain('CZARNĄ LISTĘ');
     });
   });
 
