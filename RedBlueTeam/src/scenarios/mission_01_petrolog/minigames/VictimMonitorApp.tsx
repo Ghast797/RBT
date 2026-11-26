@@ -16,6 +16,7 @@ import { useDecisionChoice } from '../../../engine/store/useMissionStore';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VictimMonitorConfig } from './types';
+import { MailBody } from './MailBody';
 
 type MonitorStep = 'email_inbox' | 'browser_page' | 'infection' | 'network_takeover';
 
@@ -134,18 +135,20 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
             </div>
 
             {/* Email Body with click link */}
-            <div className="text-sm text-gray-100 leading-relaxed pt-2 space-y-2">
-              <p>Koniecznie musisz zobaczyć tę stronę:</p>
-              <div
-                onClick={handleOpenLink}
-                className="inline-block p-2 rounded bg-sky-950/40 border border-sky-500/50 text-sky-300 font-mono text-xs font-bold hover:bg-sky-900/50 cursor-pointer transition-all shadow-[0_0_10px_rgba(56,189,248,0.3)] animate-pulse"
-              >
-                🔗 https://{targetDomain.toLowerCase()} (KLIKNIJ ABY OTWORZYĆ)
-              </div>
-              <p>{payloadTexts?.mailText}</p>
-              <p>Coś, czego szukałaś!</p>
-              <p className="text-gray-400 pt-2 font-mono text-xs">{senderName}</p>
-            </div>
+            <MailBody
+              className="text-sm text-gray-100 leading-relaxed pt-2 space-y-2"
+              signatureClassName="text-gray-400 pt-2 font-mono text-xs"
+              mailText={payloadTexts?.mailText}
+              senderName={senderName}
+              link={
+                <div
+                  onClick={handleOpenLink}
+                  className="inline-block p-2 rounded bg-sky-950/40 border border-sky-500/50 text-sky-300 font-mono text-xs font-bold hover:bg-sky-900/50 cursor-pointer transition-all shadow-[0_0_10px_rgba(56,189,248,0.3)] animate-pulse"
+                >
+                  🔗 https://{targetDomain.toLowerCase()} (KLIKNIJ ABY OTWORZYĆ)
+                </div>
+              }
+            />
           </div>
 
           <div className="pt-3 border-t border-gray-800 flex items-center justify-between">

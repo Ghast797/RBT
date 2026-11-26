@@ -138,13 +138,13 @@ export const osintSearchConfig: OsintSearchConfig = {
       avatarText: 'MS',
       isPublic: false,
       privacyNotice:
-        "ERROR: MARCELINA SOJKA USTAWIŁA WSZYSTKIE SWOJE SOCIAL MEDIA NA 'PRYWATNE'. NIE MAMY JAK ZDOBYĆ O NIEJ INFORMACJI.\n\n[WSKAZÓWKA EDUKACYJNA T2]: Profil prywatny to najskuteczniejsza ochrona pracownika przed białym wywiadem (OSINT). Ukrycie informacji przed osobami z zewnątrz uniemożliwia przestępcom poznanie relacji, nawyków czy zainteresowań ofiary, co całkowicie paraliżuje próbę przygotowania spersonalizowanego ataku phishingowego.",
+        "ERROR: MARCELINA SOJKA USTAWIŁA WSZYSTKIE SWOJE SOCIAL MEDIA NA 'PRYWATNE'. NIE MAMY JAK ZDOBYĆ O NIEJ INFORMACJI.\n\nWSKAZÓWKA EDUKACYJNA: Profil prywatny to najskuteczniejsza ochrona pracownika przed białym wywiadem (OSINT). Ukrycie informacji przed osobami z zewnątrz uniemożliwia przestępcom poznanie relacji, nawyków czy zainteresowań ofiary, co całkowicie paraliżuje próbę przygotowania spersonalizowanego ataku phishingowego.",
       tags: ['SPRZEDAŻ', 'LOGISTYKA', 'B2B', 'PROFIL PRYWATNY']
     },
     {
       id: 'anita_klimek',
       name: 'ANITA KLIMEK',
-      role: 'Specjalista ds. Rozliczeń',
+      role: 'Specjalista ds. Księgowości',
       department: 'Dział Księgowy',
       avatarText: 'AK',
       isPublic: true,
@@ -574,7 +574,7 @@ export const socialIntelConfig: SocialIntelConfig = {
 const senderEmailKwiatkowski: PhishingStepChoice = {
   decisionNum: 4,
   question: 'WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ.',
-  subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (spoofing)',
+  subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (podobna domena)',
   options: [
     {
       id: 'darksun_gmail',
@@ -607,7 +607,7 @@ const senderEmailKwiatkowski: PhishingStepChoice = {
 const senderEmailBuczek: PhishingStepChoice = {
   decisionNum: 4,
   question: 'WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ.',
-  subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (spoofing)',
+  subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (podobna domena)',
   options: [
     {
       id: 'darksun_gmail_buczek',
@@ -1060,7 +1060,13 @@ export const mission1Stages: StageDefinition[] = [
       conversation: [
         {
           from: 'byte_master',
-          text: 'DOSKONAŁA ROBOTA! OFIARA POBRAŁA PLIK, A MY MAMY DOSTĘP DO WEWNĘTRZNEJ SIECI PETROLOG. DANE O ŁAŃCUCHU DOSTAW FREEVOLT SĄ NASZE. ZASŁUŻYŁEŚ NA SWOJĄ DOLĘ W BITCOINACH.'
+          text: 'DOSKONAŁA ROBOTA! OFIARA POBRAŁA PLIK, A MY MAMY DOSTĘP DO WEWNĘTRZNEJ SIECI PETROLOG. DANE O ŁAŃCUCHU DOSTAW FREEVOLT SĄ NASZE. ZASŁUŻYŁEŚ NA SWOJĄ DOLĘ W BITCOINACH.',
+          when: { allOf: [{ decision: 1, tier: 'ideal' }, { decision: 2, tier: 'ideal' }, { decision: 3, tier: 'ideal' }, { decision: 4, tier: 'ideal' }] }
+        },
+        {
+          from: 'byte_master',
+          text: 'UDAŁO SIĘ, ALE NIE IDEALNIE. OFIARA POBRAŁA PLIK, A MY MAMY DOSTĘP DO SIECI PETROLOG. DANE O ŁAŃCUCHU DOSTAW FREEVOLT SĄ NASZE. W RAPORCIE SPRAWDŹ, CO MOGŁO PÓJŚĆ LEPIEJ.',
+          when: { anyOf: [{ decision: 1, tier: 'suboptimal' }, { decision: 2, tier: 'suboptimal' }, { decision: 3, tier: 'suboptimal' }, { decision: 4, tier: 'suboptimal' }] }
         },
         {
           from: 'player',

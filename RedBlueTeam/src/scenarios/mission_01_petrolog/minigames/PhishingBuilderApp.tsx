@@ -19,6 +19,7 @@ import type { PhishingBuilderConfig } from './types';
 import { WebsitePreview } from './WebsitePreview';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { SidePanel } from '../../../engine/components/SidePanel';
+import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
 
 type BuilderScreen =
   | 'domain'
@@ -39,7 +40,14 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
   const [selectedDomainId, setSelectedDomainId] = useState<string | null>(null);
   const [selectedPayloadId, setSelectedPayloadId] = useState<string | null>(null);
   const [isPayloadInjected, setIsPayloadInjected] = useState<boolean>(false);
-  const [isDragOver, setIsDragOver] = useState<boolean>(false);
+
+  // Wstrzyknięcie wirusa: przeciągnięcie (mysz i dotyk) albo zwykłe stuknięcie/klik w kafel.
+  const PAYLOAD_DRAG_ID = 'malware-payload';
+  const drag = usePointerDrag<string>({
+    onDrop: () => handleInjectPayload(),
+    onTap: () => handleInjectPayload(),
+    canDrag: () => !isPayloadInjected
+  });
 
   const domainOptions = useMemo(() => shuffled(config.domain.options), [config.domain.options]);
 
@@ -193,11 +201,9 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
         DOSTĘPNY MODUŁ MALWARE:
       </span>
       <div
-        draggable={!isPayloadInjected}
-        onDragStart={(e) => {
-          e.dataTransfer.setData('text/plain', 'malware-payload');
-          e.dataTransfer.effectAllowed = 'copyMove';
-        }}
+        data-testid="malware-tile"
+        {...drag.getDragProps(PAYLOAD_DRAG_ID)}
+        style={{ ...drag.getDragProps(PAYLOAD_DRAG_ID).style, opacity: drag.draggedId === PAYLOAD_DRAG_ID ? 0.4 : undefined }}
         className={`p-4 rounded-xl border-2 transition-all flex items-center space-x-3 ${
           isPayloadInjected
             ? 'border-gray-700 bg-gray-900/60 opacity-60 cursor-default'
@@ -246,6 +252,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
   };
 
   const handleInjectPayload = () => {
+    if (isPayloadInjected) return;
     sounds.playSuccess();
     setIsPayloadInjected(true);
   };
@@ -292,6 +299,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
   return (
     <div className="flex flex-col h-full bg-[#05090f] text-gray-200 font-mono select-none overflow-y-auto p-4 space-y-4">
       <SideMonitor>{sideContent}</SideMonitor>
+      <DragGhost dragging={drag.dragging}>//PRZEKIEROWANIE</DragGhost>
 
       {/* 1. DOMAIN SCREEN (D1) */}
       {screen === 'domain' && (
@@ -373,13 +381,8 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
               payloadLabel={selectedPayload?.label}
               isPayloadInjected={isPayloadInjected}
               isInteractiveTarget={true}
-              isDragOver={isDragOver}
-              onDragOver={() => setIsDragOver(true)}
-              onDragLeave={() => setIsDragOver(false)}
-              onDrop={() => {
-                setIsDragOver(false);
-                handleInjectPayload();
-              }}
+              isDragOver={drag.isOver('site_button')}
+              dropZoneRef={drag.zoneRef('site_button')}
             />
           </div>
         </div>

@@ -100,8 +100,8 @@ Mostek (rozmowa do kolejnego etapu):
 
 ## Etap 5: //WYSYŁANIE_MAILA
 Klocek: NOWA MINIGRA (Konfigurator i wysyłka wiadomości spear-phishing)
-Cel dydaktyczny: dobór tożsamości współpracownika oraz spoofing domeny firmowej z podglądem wiadomości e-mail na żywo.
-Ekrany: D3 (tożsamość nadawcy) → D4 (adres spoofing) → podgląd i wysyłka maila
+Cel dydaktyczny: dobór tożsamości współpracownika oraz domena-sobowtór (typosquatting) z podglądem wiadomości e-mail na żywo.
+Ekrany: D3 (tożsamość nadawcy) → D4 (adres w domenie-sobowtórze) → podgląd i wysyłka maila
 Oceniane: D3, D4
 
 Decyzja D3: "WYBIERZ, KTO BĘDZIE NADAWCĄ WIADOMOŚCI. ANITA ZOBACZY TO IMIĘ W POLU „OD:”, WIĘC PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ."
@@ -110,9 +110,9 @@ Decyzja D3: "WYBIERZ, KTO BĘDZIE NADAWCĄ WIADOMOŚCI. ANITA ZOBACZY TO IMIĘ W
 - TWÓJ SYNEK | critical | Małe dzieci nie wysyłają maili ze skrzynki korporacyjnej PetroLog.
 
 Decyzja D4: "WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ."
-- K.KWIATKOWSKI@PETROLOG.COM | ideal | Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary.
+- K.KWIATKOWSKI@PETR0LOG.COM | ideal | Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”): adres wygląda jak służbowy adres pracownika i usypia czujność ofiary.
 - K.KWIATKOWSKI@HACK.COM | suboptimal | Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.
-- DARKSUN.JAKUB@GMAIL.COM | critical | Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.
+- DARKSUN.JAKUB@GMAIL.COM | suboptimal (odrzucone przez mentora, bez karty „wykryty”) | Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "MAIL ZOSTAŁ WYSŁANY DO ANITY KLIMEK. PRZEŁĄCZ SIĘ NA MONITOR OFIARY I SPRAWDŹ, CZY POŁKNIE PRZYNĘTĘ."
@@ -146,8 +146,8 @@ D3:
 - Obrona: Sygnały: znajoma osoba pisze nietypowo — link do nieznanej strony, inny styl, pośpiech. Co zrobić: zapytaj nadawcę innym kanałem (telefon, rozmowa przy biurku), czy naprawdę to wysłał. Nie odpisuj na podejrzany mail, bo odpowiedź trafi do atakującego.
 
 D4:
-- Atak: Spoofing: podrobiony adres w firmowej domenie. Serwer poczty PetroLog nie sprawdzał, czy nadawca naprawdę wysyła z firmy, więc fałszywa wiadomość wyglądała jak wewnętrzna.
-- Obrona: Sygnały: ostrzeżenie programu pocztowego („nie można zweryfikować nadawcy”), adres w polu „Odpowiedz do” inny niż nadawca. Co zrobić: zgłoś podejrzany mail do działu IT. Firma powinna włączyć SPF, DKIM i DMARC — wtedy serwer odrzuca maile podszywające się pod jej domenę.
+- Atak: Domena-sobowtór (typosquatting): PETR0LOG.COM, z zerem zamiast litery „o”, na pierwszy rzut oka wygląda jak firmowa, więc mail od „kolegi” nie budzi podejrzeń. Atakujący nie musi włamywać się na serwer pocztowy – wystarczy zarejestrować podobną domenę.
+- Obrona: Sygnały: adres nadawcy różni się od firmowego jednym znakiem (0 zamiast o), mail przychodzi z domeny spoza firmy. Co zrobić: czytaj adres nadawcy znak po znaku i zgłoś podejrzany mail do IT. Firma powinna oznaczać wiadomości z zewnątrz, blokować domeny łudząco podobne do firmowej i rejestrować najbardziej oczywiste warianty własnej domeny.
 
 Baza wiedzy (kurs Moodle, poza paczką SCORM): `docs/moodle-baza-wiedzy.md`.
 

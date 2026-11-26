@@ -228,11 +228,11 @@
       {
         "num": 4,
         "question": "Wybór adresu e-mail nadawcy",
-        "answer": "K.KWIATKOWSKI@PETROLOG.COM",
+        "answer": "ADRES W DOMENIE-SOBOWTÓRZE PETR0LOG.COM (ZERO ZAMIAST „O”), PASUJĄCY DO WYBRANEGO NADAWCY",
         "correct": true,
-        "details": "Domena firmowa PetroLog – serwer pocztowy firmy jest słabo zabezpieczony i nie weryfikuje tożsamości nadawcy, co pozwala podszyć się pod pracownika i uśpić czujność ofiary.",
-        "attack": "Spoofing: podrobiony adres w firmowej domenie. Serwer poczty PetroLog nie sprawdzał, czy nadawca naprawdę wysyła z firmy, więc fałszywa wiadomość wyglądała jak wewnętrzna.",
-        "defense": "Sygnały: ostrzeżenie programu pocztowego („nie można zweryfikować nadawcy”), adres w polu „Odpowiedz do” inny niż nadawca. Co zrobić: zgłoś podejrzany mail do działu IT. Firma powinna włączyć SPF, DKIM i DMARC — wtedy serwer odrzuca maile podszywające się pod jej domenę."
+        "details": "Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”): adres wygląda jak służbowy adres pracownika i usypia czujność ofiary.",
+        "attack": "Domena-sobowtór (typosquatting): PETR0LOG.COM, z zerem zamiast litery „o”, na pierwszy rzut oka wygląda jak firmowa, więc mail od „kolegi” nie budzi podejrzeń. Atakujący nie musi włamywać się na serwer pocztowy – wystarczy zarejestrować podobną domenę.",
+        "defense": "Sygnały: adres nadawcy różni się od firmowego jednym znakiem (0 zamiast o), mail przychodzi z domeny spoza firmy. Co zrobić: czytaj adres nadawcy znak po znaku i zgłoś podejrzany mail do IT. Firma powinna oznaczać wiadomości z zewnątrz, blokować domeny łudząco podobne do firmowej i rejestrować najbardziej oczywiste warianty własnej domeny."
       }
     ]
   }
