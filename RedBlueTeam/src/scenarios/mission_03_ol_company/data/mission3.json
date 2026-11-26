@@ -6,6 +6,7 @@
     "systemOs": "//HACKERS.OS",
     "date": "19.05.2026",
     "accentColor": "#00ff66",
+    "idleHints": { "t1Ms": 30000, "t2Ms": 90000 },
     "rewardBtc": 4.02,
     "maxScore": 100,
     "hideLiveScore": true,

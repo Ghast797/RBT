@@ -64,7 +64,7 @@ Implementuje je silnik raz. Scenariusz ich nie opisuje — zakłada je.
 | Tempo | BYTE_MASTER „pisze" (animacja) z delayem; rozmowa z NPC (`DialogueTree`) też ma delay i wskaźnik pisania (rozmowa telefoniczna) |
 | Ekrany aplikacji | jeden kafelek = jedna aplikacja; kroki w środku to sekwencyjne pełne ekrany (bez zakładek/cofania), z krótkim ekranem ładowania `ModuleLoader` między nimi |
 | Przejście dalej | przycisk „dalej" wyszarzony, dopóki krok nie spełnia kryterium ukończenia |
-| Podpowiedzi | po bezczynności: T1 subtelna (pulsowanie celu), T2 wyraźna (komunikat tekstowy) |
+| Podpowiedzi | po bezczynności (hook `src/engine/hooks/useIdleHint.ts`, progi w `core/idleHints.ts`): T1 subtelna (pulsuje `WSKAZÓWKA [?]` i następny kafelek), T2 wyraźna (otwiera się pasek podpowiedzi operacyjnej z tekstem ogólnym, zależnym od stanu). Domyślnie 20 s / 45 s; misje 2–4 mają 30 s / 90 s w `mission.idleHints` (`{ t1Ms, t2Ms }`, `t2Ms: null` = bez T2, `false` = wyłączone). Zerowane aktywnością gracza i postępem gry; wstrzymane podczas intro, modali, przeskoku czasu i granego mostka |
 | Dźwięki | stały zestaw: klik, sukces, błąd, powiadomienie, alarm (`soundEffects.ts`) |
 | Układ ekranu | lewy monitor = pulpit i okna, prawy monitor = czat BYTE_MASTER |
 | Przeciąganie z VR | w webie: drag & drop **lub** klik kafelka (decyzja per klocek, nie per scenariusz) |

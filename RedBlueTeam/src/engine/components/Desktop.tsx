@@ -20,6 +20,7 @@ import { SideMonitorProvider, SideMonitorSlot, useSideMonitorActive } from './Si
 import { sounds } from '../audio/soundEffects';
 import { TimeJump } from './TimeJump';
 import { isDevMode } from '../core/devMode';
+import { useIdleHint } from '../hooks/useIdleHint';
 
 /**
  * Zawartość prawego monitora: czat z BYTE_MASTEREM albo — gdy aktywna aplikacja przejęła
@@ -67,6 +68,11 @@ export const Desktop: React.FC = () => {
   } = useMissionStore();
 
   const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
+  // Podpowiedzi po bezczynności: T1 (1) pulsuje następny krok, T2 (2) otwiera podpowiedź operacyjną.
+  const idleLevel = useIdleHint();
+  React.useEffect(() => {
+    if (idleLevel === 2) setIsHelpOpen(true);
+  }, [idleLevel]);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -151,7 +157,8 @@ export const Desktop: React.FC = () => {
                   isHelpOpen
                     ? 'bg-[#00f0ff] text-[#050b10] border-[#00f0ff] shadow-[0_0_10px_#00f0ff]'
                     : 'bg-[#00f0ff]/15 text-[#00f0ff] border-[#00f0ff]/50 hover:bg-[#00f0ff]/30'
-                }`}
+                } ${idleLevel >= 1 && !isHelpOpen ? 'animate-pulse ring-2 ring-[#00f0ff] shadow-[0_0_12px_#00f0ff]' : ''}`}
+                data-idle-cue={idleLevel >= 1 ? 'true' : undefined}
                 title="Wskazówka taktyczna misji"
               >
                 <HelpCircle size={12} />
@@ -237,6 +244,8 @@ export const Desktop: React.FC = () => {
                     const badgeCount = tile.isChatFocus
                       ? (chatAvailableChoices.length > 0 ? (notificationBadges['chat'] || 1) : 0)
                       : notificationBadges[tile.id];
+                    // T1: subtelnie podkreśl kafelek będący następnym krokiem (podświetlony lub z powiadomieniem).
+                    const idleCue = idleLevel >= 1 && !isChatActiveTile && (isHighlighted || (!tile.isChatFocus && !!badgeCount && badgeCount > 0));
 
                     return (
                       <div
@@ -248,9 +257,10 @@ export const Desktop: React.FC = () => {
                             openApp(tile.id as WindowId);
                           }
                         }}
+                        data-idle-cue={idleCue ? 'true' : undefined}
                         className={`group flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 relative animate-in fade-in zoom-in-95 duration-500 ${
-                          isChatActiveTile || isHighlighted ? 'scale-105' : ''
-                        }`}
+                          isChatActiveTile || isHighlighted || idleCue ? 'scale-105' : ''
+                        } ${idleCue ? 'ring-2 ring-[#00ff66]/70 animate-pulse' : ''}`}
                       >
                         {/* Tile Icon with L-shaped colored brackets */}
                         <div
