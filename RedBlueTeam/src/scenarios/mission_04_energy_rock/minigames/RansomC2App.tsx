@@ -9,10 +9,19 @@ import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { useShuffled } from '../../../engine/core/shuffle';
 import { sounds } from '../../../engine/audio/soundEffects';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
 import type { BlockProps } from '../../../engine/types/mission';
 import { EncryptNetwork } from './EncryptNetwork';
 import { ExfilFiles } from './ExfilFiles';
-import { buildExfilReport, countSelection, exfilTier } from './exfilLogic';
+import {
+  applySelection,
+  buildExfilReport,
+  c2StartInfo,
+  canConfirmExfil,
+  countSelection,
+  exfilCounterText,
+  exfilTier
+} from './exfilLogic';
 import type { C2Config } from './types';
 
 type Screen = 'start' | 'loader_scan' | 'encrypt' | 'exfil' | 'loader_download';
@@ -26,6 +35,7 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
   const [selected, setSelected] = useState<string[]>([]);
   const files = useShuffled(exfil.files);
   const decidedRef = useRef(false);
+  const choices = useMissionStore((s) => s.decisionChoices);
 
   const targets = encrypt.nodes.filter((n) => n.kind !== 'vector');
   const allEncrypted = targets.length > 0 && targets.every((n) => encrypted.has(n.id));
@@ -60,10 +70,10 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
   };
 
   const setInField = (id: string, inField: boolean) =>
-    setSelected((prev) => (inField ? (prev.includes(id) ? prev : [...prev, id]) : prev.filter((x) => x !== id)));
+    setSelected((prev) => applySelection(prev, id, inField, exfil.requiredTargets));
 
   const confirm = () => {
-    if (decidedRef.current || selected.length === 0) return;
+    if (decidedRef.current || !canConfirmExfil(selected, exfil.requiredTargets)) return;
     decidedRef.current = true;
     sounds.playClick();
     onDecision(buildExfilReport(exfil, selected));
@@ -91,6 +101,7 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
       [start.hostLabel, start.host],
       [start.ipLabel, start.ip]
     ];
+    const { status, notes } = c2StartInfo(start, choices);
     return shell(
       <div className="flex-1 min-h-0 flex items-center justify-center">
         <div
@@ -99,8 +110,15 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
         >
           <div className="flex items-center gap-3 text-base 2xl:text-2xl font-black tracking-wide text-red-300">
             <AlertTriangle size={26} className="shrink-0 text-red-400" />
-            <span>{start.status}</span>
+            <span>{status}</span>
           </div>
+          {notes.length > 0 && (
+            <ul className="space-y-1.5 text-xs 2xl:text-base font-bold tracking-wide text-yellow-300/90">
+              {notes.map((n) => (
+                <li key={n}>&gt; {n}</li>
+              ))}
+            </ul>
+          )}
           <div className="space-y-2">
             {rows.map(([label, value]) => (
               <div
@@ -158,10 +176,11 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
         files={files}
         selected={selected}
         fieldLabel={exfil.fieldLabel}
+        counter={exfilCounterText(exfil.counterLabel, selected, exfil.requiredTargets)}
         onToggle={(id) => setInField(id, !selected.includes(id))}
         onSet={setInField}
       />
-      <ConfirmButton accent={ACCENT} label={exfil.confirmLabel} enabled={selected.length >= 1} onClick={confirm} />
+      <ConfirmButton accent={ACCENT} label={exfil.confirmLabel} enabled={canConfirmExfil(selected, exfil.requiredTargets)} onClick={confirm} />
     </>
   );
 };
