@@ -4,8 +4,17 @@ import { AppHeader } from '../../../engine/components/AppHeader';
 import { sounds } from '../../../engine/audio/soundEffects';
 import type { BlockProps } from '../../../engine/types/mission';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
-import { summarizeBotnet } from './botnet';
+import { resolveBotnetOutcome, summarizeBotnet } from './botnet';
 import type { BotnetMonitorConfig } from './types';
+import { useMissionStore } from '../../../engine/store/useMissionStore';
+
+/** Polska odmiana słowa „alarm” dla liczby alarmów IDS. */
+function alarmsLabel(n: number): string {
+  if (n === 0) return '0 ALARMÓW';
+  if (n === 1) return '1 ALARM';
+  if (n >= 2 && n <= 4) return `${n} ALARMY`;
+  return `${n} ALARMÓW`;
+}
 
 export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
   config,
@@ -14,8 +23,15 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
   // Akcent = kolor kafelka //MONITOR_BOTNETU na pulpicie (jak w Misji 1).
   const accent = '#3b82f6';
 
-  const { targetPercentage, totalWorkstations } = config;
-  const { infectedCount, secureCount, nodes } = useMemo(() => summarizeBotnet(config), [config]);
+  // Wybory gracza z poprzednich etapów zmieniają stopień penetracji i alarmy (konsekwencje z konfiguracji).
+  const choices = useMissionStore((s) => s.decisionChoices);
+  const outcome = useMemo(() => resolveBotnetOutcome(config, choices), [config, choices]);
+  const { targetPercentage } = outcome;
+  const { totalWorkstations } = config;
+  const { infectedCount, secureCount, nodes } = useMemo(
+    () => summarizeBotnet({ targetPercentage, totalWorkstations }),
+    [targetPercentage, totalWorkstations]
+  );
 
   const [percentage, setPercentage] = useState(0);
   const [activeStep, setActiveStep] = useState<'alert' | 'telemetry'>('alert');
@@ -107,8 +123,11 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
 
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">
               <span className="text-xs text-gray-400 uppercase tracking-widest">Reakcja systemów IDS:</span>
-              <div className="text-2xl font-bold font-mono text-white">0 ALARMÓW</div>
-              <span className="text-xs text-white">ŁADUNEK 0-DAY NIEWYKRYTY</span>
+              <div className="text-2xl font-bold font-mono text-white">{alarmsLabel(outcome.alarms)}</div>
+              {outcome.alarmTexts.map((text) => (
+                <span key={text} className="block text-xs text-red-300">{text}</span>
+              ))}
+              <span className="block text-xs text-white">ŁADUNEK 0-DAY NIEWYKRYTY</span>
             </div>
           </div>
 
