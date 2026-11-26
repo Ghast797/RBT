@@ -3,23 +3,12 @@
 
 import { roundScore, scormStatus, DEFAULT_PASSING_SCORE } from '../core/scoring';
 
-export interface ScormInteraction {
-  id: string;
-  type: 'choice' | 'true-false' | 'fill-in' | 'long-fill-in' | 'matching' | 'performance' | 'sequencing' | 'likert' | 'numeric' | 'other';
-  description: string;
-  learnerResponse: string;
-  result: 'correct' | 'incorrect' | 'unanticipated' | 'neutral';
-  timestamp?: string;
-}
-
 export interface ScormSubmissionData {
   scoreRaw: number; // 0 - 100
   scoreMin?: number;
   scoreMax?: number;
   passingScore?: number; // default 70
   sessionSeconds: number;
-  interactions?: ScormInteraction[];
-  suspendData?: string;
   location?: string;
   missionId?: string;
 }
@@ -54,11 +43,16 @@ export class MockSCORM2004 implements SCORM2004API {
   public isInitialized = false;
   public isTerminated = false;
   public commitCount = 0;
-  /** Tryb „strict” jak prawdziwy LMS: drugie Initialize zwraca "false" z błędem 103. */
+  /** Tryb „strict” jak prawdziwy LMS: drugie Initialize = błąd 103, Initialize po Terminate = błąd 104. */
   public strict = false;
   private lastError = '0';
 
   Initialize(_param: string): string {
+    // Jak prawdziwy LMS: po Terminate sesji nie da się zacząć od nowa (błąd 104).
+    if (this.strict && this.isTerminated) {
+      this.lastError = '104';
+      return 'false';
+    }
     if (this.strict && this.isInitialized) {
       this.lastError = '103';
       return 'false';
@@ -114,6 +108,8 @@ class Scorm2004Manager {
   /** Najlepszy dotychczasowy wynik (z LMS lub z tej sesji) i jego status. */
   private bestScore: number | null = null;
   private bestPassed = false;
+  /** Sesja zakończona (Terminate) — LMS nie przyjmie już Initialize ani zapisu (błąd 104). */
+  private terminated = false;
 
   /**
    * Search for API_1484_11 in window, parents, and window.opener (for new tab mode)
@@ -177,6 +173,7 @@ class Scorm2004Manager {
   public initialize(mockFallback = true): boolean {
     // Idempotentne: LMS pozwala na jedno Initialize na sesję (drugie = błąd 103).
     if (this.isConnected && this.api) return true;
+    if (this.terminated) return false;
     const foundApi = this.findApi();
 
     if (foundApi) {
@@ -286,6 +283,7 @@ class Scorm2004Manager {
     try {
       const res = this.api.Terminate('') === 'true';
       this.isConnected = false;
+      if (res) this.terminated = true;
       return res;
     } catch (err) {
       console.error('[SCORM 2004] Error during Terminate:', err);
@@ -293,7 +291,13 @@ class Scorm2004Manager {
     }
   }
 
+  /** Czy sesja SCORM została zakończona (Terminate) w tej karcie. */
+  public isTerminated(): boolean {
+    return this.terminated;
+  }
+
   public reset(): void {
+    this.terminated = false;
     this.api = null;
     this.isConnected = false;
     this.isMock = false;
@@ -303,7 +307,7 @@ class Scorm2004Manager {
   }
 
   /**
-   * Submit complete final results, scoring, time and interactions to Moodle,
+   * Submit complete final results, scoring and time to Moodle,
    * then terminate the session.
    */
   public submitFinalScore(data: ScormSubmissionData): { success: boolean; message: string } {
@@ -313,12 +317,15 @@ class Scorm2004Manager {
   }
 
   /**
-   * Zapisuje wynik, czas i interakcje do Moodle (Commit) BEZ kończenia sesji.
+   * Zapisuje wynik, status i czas do Moodle (Commit) BEZ kończenia sesji.
    * Można wołać wielokrotnie — kolejny zapis nadpisuje poprzedni. Silnik woła to
    * zaraz po ostatniej decyzji misji, żeby wynik był w dzienniku ocen, nawet gdy
    * gracz zamknie kartę przed raportem pooperacyjnym.
    */
   public saveResult(data: ScormSubmissionData): { success: boolean; message: string } {
+    if (this.terminated) {
+      return { success: false, message: 'Sesja SCORM została już zakończona — wynik nie może być zapisany ponownie.' };
+    }
     if (!this.api || !this.isConnected) {
       this.initialize(true);
     }
@@ -355,26 +362,8 @@ class Scorm2004Manager {
       this.setValue('cmi.location', finalLocation);
       this.setValue('cmi.session_time', durationIso);
 
-      // 4. Suspend data
-      if (data.suspendData) {
-        this.setValue('cmi.suspend_data', data.suspendData);
-      }
-
-      // 5. Interactions (cmi.interactions.n.*)
-      if (data.interactions && data.interactions.length > 0) {
-        data.interactions.forEach((inter, idx) => {
-          this.setValue(`cmi.interactions.${idx}.id`, inter.id);
-          this.setValue(`cmi.interactions.${idx}.type`, inter.type);
-          this.setValue(`cmi.interactions.${idx}.description`, inter.description);
-          this.setValue(`cmi.interactions.${idx}.learner_response`, inter.learnerResponse);
-          this.setValue(`cmi.interactions.${idx}.result`, inter.result);
-          if (inter.timestamp) {
-            this.setValue(`cmi.interactions.${idx}.timestamp`, inter.timestamp);
-          }
-        });
-      }
-
-      // 6. Commit to LMS database
+      // Bez cmi.interactions.* i cmi.suspend_data (zob. docs/scenario-engine.md, sekcja SCORM).
+      // Commit to LMS database
       this.commit();
 
       return {
