@@ -84,16 +84,16 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-04 | W | Silnik nie pamięta wybranej opcji | otwarte | | Szkic API w polu `f` ENG-04. Do tego `option.reject` (B2). |
-| ENG-16 | S | Lekcja w raporcie zawsze opisuje opcję idealną | otwarte | | Właściciel (P3): przy nieidealnym wyborze nagłówek „CO ZADZIAŁAŁOBY LEPIEJ” i pokazana opcja idealna; lekcje bez zmian, bez lekcji per opcja. |
-| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | otwarte | | Właściciel (P3): usunąć nieużywany tryb aggregate z DialogueTree. |
-| M1-03 | W | D3 Prezes Buczek, a D4 proponuje adresy Kwiatkowskiego | otwarte | | Właściciel (P3): adresy D4 zależne od nadawcy z D3 (np. p.buczek@…), monitor ofiary zależny od nadawcy. |
-| M1-04 | W | Monitor ofiary zawsze mówi o „poradniku biegowym” | otwarte | | |
-| M2-05 | S | D3 ankieta przeciwpożarowa: treść maila przeczy feedbackowi | otwarte | | |
+| ENG-04 | W | Silnik nie pamięta wybranej opcji | zrobione | d764f82
+| ENG-16 | S | Lekcja w raporcie zawsze opisuje opcję idealną | zrobione | d764f82
+| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | zrobione | d764f82
+| M1-03 | W | D3 Prezes Buczek, a D4 proponuje adresy Kwiatkowskiego | zrobione | 9b7a57d
+| M1-04 | W | Monitor ofiary zawsze mówi o „poradniku biegowym” | zrobione | 9b7a57d, e4e3062
+| M2-05 | S | D3 ankieta przeciwpożarowa: treść maila przeczy feedbackowi | zrobione | 43d717a
 | M2-07 | S | Po D1 mentor zawsze każe „STWÓRZ WIRUSA 0-DAY” | zrobione | 6d91d81 | Zniknęło z usunięciem D1: typ wirusa wybiera się dopiero w D3, więc kwestia mentora nie przeczy wyborowi. |
-| M3-07 | S | Mostki po etapach mówią o ścieżce idealnej | otwarte | | Właściciel (P3): warianty wg planu z D3. Plan zdjęć bez zmian; plan HR: mentor „DOKUMENTY O ZWOLNIENIACH GO ZANIEPOKOJĄ, ALE MOŻE ODDAĆ PENDRIVE DO KADR. TERAZ PRZYGOTUJ PENDRIVE”. Razem z NEW-03. |
-| M3-08 | S | Raport: lekcja zawsze opisuje opcję idealną | otwarte | | Razem z ENG-16. |
-| M3-11 | N | Raport D4 przy remisie gubi nazwę dysku | otwarte | | |
+| M3-07 | S | Mostki po etapach mówią o ścieżce idealnej | zrobione | 91c9224
+| M3-08 | S | Raport: lekcja zawsze opisuje opcję idealną | zrobione | d764f82
+| M3-11 | N | Raport D4 przy remisie gubi nazwę dysku | zrobione | 91c9224
 | M4-05 | S | Słaby klucz w D2, a w D9 „ideał” to „nie odszyfrują plików” | odrzucone | | Właściciel: zostaje. Lekcja ma utrwalić, że ransomware nie da się odszyfrować nawet z pomocą służb; drobna niespójność z D2 jest akceptowalna. |
 
 ### P4 — konsekwencje odroczone
@@ -196,9 +196,10 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 | ID | Waga | Opis | Paczka | Status | Commit | Notatka |
 |---|---|---|---|---|---|---|
 | NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. |
-| NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | P3 | otwarte | | D-08: dodać jsdom + Testing Library (dev) przy P3. |
-| NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | otwarte | | Właściciel (P3): wariant dla planu HR: „GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY…”. |
+| NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | P3 | zrobione | 53bc335, d764f82
+| NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | zrobione | 91c9224
 | NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | otwarte | | |
 | NEW-05 | N | M4: lekcja D9 w `mission4.json` mówi, że uległość „oznaczałaby natychmiastową porażkę”, a „JUŻ WAM NIE PRZESZKADZAM” jest teraz suboptimal z powrotem do rozmowy. Lekcje M4 pisze właściciel. | P5 | zrobione | | D-07: zdanie o uległości zmienione na „oddałoby inicjatywę… wracać do rozmowy z gorszej pozycji” (zaakceptowane przez właściciela). |
-| NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | otwarte | | |
-| NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | otwarte | | Właściciel (P3): pokazać feedback odrzuconej opcji w raporcie pod „Najpierw: X”. |
+| NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | zrobione | d764f82
+| NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | zrobione | d764f82
+| NEW-08 | N | M1, ścieżka z PREZESEM BUCZKIEM: przy nieidealnym adresie w D4 raport pod „CO ZADZIAŁAŁOBY LEPIEJ” pokazuje idealny adres Kwiatkowskiego (`mission1.json` ma jedną odpowiedź idealną na decyzję). Przy okazji: powitanie „Cześć Anita,” i „Pozdrawiam,” brzmią tak samo od prezesa jak od kolegi. | P5 | otwarte | | Zgłoszone przez agenta M1 w P3. |
