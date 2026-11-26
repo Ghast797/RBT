@@ -8,6 +8,7 @@
     "accentColor": "#00ff66",
     "rewardBtc": 4.02,
     "maxScore": 100,
+    "hideLiveScore": true,
     "decisionCount": 6,
     "targetCompany": "O&L Company",
     "passingScore": 70

@@ -8,6 +8,7 @@
     "accentColor": "#FF0033",
     "rewardBtc": 3.79,
     "maxScore": 100,
+    "hideLiveScore": true,
     "passingScore": 70,
     "decisionCount": 10,
     "targetCompany": "Energy Rock",
