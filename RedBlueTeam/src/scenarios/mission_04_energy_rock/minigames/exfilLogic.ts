@@ -1,7 +1,8 @@
 // Czysta logika D8 (eksfiltracja): poziom z liczby celów (t) i pozostałych plików (f), odpowiedź do raportu.
 // Reguły: docs/rebuild-plan.md, sekcja 3.5 (P5). Interfejs nie ocenia wyboru, ocenia tylko ta funkcja.
 
-import type { ChoiceOutcome, DecisionReport } from '../../../engine/types/mission';
+import { matchesChoices } from '../../../engine/core/beatCondition';
+import type { ChoiceOutcome, DecisionChoice, DecisionReport } from '../../../engine/types/mission';
 import type { C2Config, ExfilFile } from './types';
 
 export interface ExfilCounts {
@@ -50,4 +51,26 @@ export function buildExfilReport(exfil: C2Config['exfil'], selected: readonly st
     ...(tier === 'critical' && exfil.failTitle ? { failTitle: exfil.failTitle } : {}),
     ...(tier === 'critical' && exfil.failText ? { failText: exfil.failText } : {})
   };
+}
+
+/** Zaznaczenie pliku: dodanie ponad limit (`max`) jest ignorowane, usunięcie zawsze działa. */
+export function applySelection(selected: readonly string[], id: string, inField: boolean, max: number): string[] {
+  if (!inField) return selected.filter((x) => x !== id);
+  if (selected.includes(id) || selected.length >= max) return [...selected];
+  return [...selected, id];
+}
+
+/** Zatwierdzić można dopiero przy dokładnie `required` plikach. */
+export const canConfirmExfil = (selected: readonly string[], required: number): boolean => selected.length === required;
+
+export const exfilCounterText = (label: string, selected: readonly string[], required: number): string =>
+  `${label} ${selected.length}/${required}`;
+
+/** Ekran startowy C2: status i dopiski o słabszych wyborach D5–D7 (z pamięci wyborów); ideał = status bez dopisków. */
+export function c2StartInfo(
+  start: C2Config['start'],
+  choices: Record<number, DecisionChoice>
+): { status: string; notes: string[] } {
+  const notes = (start.delayNotes ?? []).filter((n) => matchesChoices(n.when, choices)).map((n) => n.text);
+  return { status: notes.length > 0 && start.statusDelayed ? start.statusDelayed : start.status, notes };
 }

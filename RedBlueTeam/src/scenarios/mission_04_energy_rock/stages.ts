@@ -4,7 +4,7 @@
 // Teksty opcji, feedback i dialogi 1:1 z dokumentu (WERSALIKI w opcjach i dialogach); teksty interfejsu
 // spoza dokumentu (ZADANIE, loadery, podpisy) wg planu. Odchylenia: plan, sekcja 7.
 
-import type { DialogueTreeConfig, StageDefinition } from '../../engine/types/mission';
+import type { BeatCondition, ChoiceOutcome, DialogueTreeConfig, StageDefinition } from '../../engine/types/mission';
 import type { VpnRouterConfig } from '../../engine/blocks/VpnRouter';
 import type {
   BuilderConfig,
@@ -18,6 +18,24 @@ import type {
   VictimChatConfig,
   VirusLabConfig
 } from './minigames/types';
+
+// Skutki słabszych wyborów w mailu (D5 temat, D6 treść, D7 nadawca): późniejsze otwarcie CV i dopiski w panelu C2.
+// Punkty zdjęto przy decyzji; to tylko fabuła. Dokładnie jeden z dwóch warunków pasuje, gdy D5–D7 są zgłoszone.
+const WEAKER_TIERS: ChoiceOutcome[] = ['suboptimal', 'critical'];
+const MAIL_IDEAL: BeatCondition = {
+  allOf: [
+    { decision: 5, tier: 'ideal' },
+    { decision: 6, tier: 'ideal' },
+    { decision: 7, tier: 'ideal' }
+  ]
+};
+const MAIL_WEAKER: BeatCondition = {
+  anyOf: [
+    { decision: 5, tier: WEAKER_TIERS },
+    { decision: 6, tier: WEAKER_TIERS },
+    { decision: 7, tier: WEAKER_TIERS }
+  ]
+};
 
 // ---------------------------------------------------------------------------
 // ETAP 1: er_virus_lab — D1 + zdrapka (flavor bez oceny)
@@ -421,6 +439,22 @@ export const c2Config: C2Config = {
   start: {
     task: 'URUCHOM SZYFROWANIE ZASOBÓW FIRMY.',
     status: 'CV ZOSTAŁO OTWARTE – MALWARE ZOSTAŁ AKTYWOWANY',
+    // Odroczone skutki słabszych wyborów D5–D7 (punkty zdjęto przy decyzji; tu tylko fabuła).
+    statusDelayed: 'CV ZOSTAŁO OTWARTE Z OPÓŹNIENIEM – MALWARE ZOSTAŁ AKTYWOWANY',
+    delayNotes: [
+      {
+        when: { decision: 5, tier: WEAKER_TIERS },
+        text: 'NAZWA PLIKU WZBUDZIŁA WĄTPLIWOŚCI REKRUTERA – OTWORZYŁ GO Z OPÓŹNIENIEM'
+      },
+      {
+        when: { decision: 6, tier: WEAKER_TIERS },
+        text: 'SKANER POCZTY ZATRZYMAŁ ZAŁĄCZNIK BEZ HASŁA – REKRUTER ZWOLNIŁ GO RĘCZNIE DOPIERO PO POŁUDNIU'
+      },
+      {
+        when: { decision: 7, tier: WEAKER_TIERS },
+        text: 'REKRUTER ZGŁOSIŁ DO IT NIETYPOWY ADRES NADAWCY'
+      }
+    ],
     hostLabel: 'NAZWA KOMPUTERA:',
     host: 'ENERGY_ROCK_01_PC',
     ipLabel: 'AKTYWOWANE NA IP:',
@@ -443,6 +477,8 @@ export const c2Config: C2Config = {
     confirmLabel: 'POBIERZ ZAZNACZONE',
     loader: 'POBIERANIE PLIKÓW…',
     requiredTargets: 3,
+    // Licznik „WYBRANO X/3” (limit z requiredTargets); nie zdradza, które pliki są właściwe.
+    counterLabel: 'WYBRANO',
     files: exfilFiles,
     answers: { ideal: '3 PLIKI FREEVOLT (DOCX, PDF, XCF)' },
     feedback: {
@@ -672,8 +708,9 @@ export const mission4Stages: StageDefinition[] = [
           label: 'WSZYSTKO ZROBIONE. CZEKAMY AŻ OTWORZĄ CV I AKTYWUJĄ RANSOMWARE. JAK NIE PRZYJMIECIE MNIE DO DARKSUN, TO MOŻE DOSTANĘ PRACĘ W ENERGY ROCK'
         },
         { from: 'byte_master', text: 'KTO WIE?' },
-        // Wysłanie późnym popołudniem, otwarcie CV rano (plan P7).
-        { from: 'time_jump', clockFrom: '16:40', clock: '09:10', label: 'DO GODZIN PRACY REKRUTERA…' }
+        // Wysłanie późnym popołudniem, otwarcie CV rano (plan P7). Słabszy wybór w D5–D7: otwarcie dopiero po południu.
+        { from: 'time_jump', clockFrom: '16:40', clock: '09:10', label: 'DO GODZIN PRACY REKRUTERA…', when: MAIL_IDEAL },
+        { from: 'time_jump', clockFrom: '16:40', clock: '12:25', label: 'DO GODZIN PRACY REKRUTERA…', when: MAIL_WEAKER }
       ],
       unlockIcons: ['victim_workstation_unlocked', 'victim_workstation'],
       badges: { victim_workstation: 1, chat: 1 },
@@ -690,7 +727,9 @@ export const mission4Stages: StageDefinition[] = [
       conversation: [
         { from: 'player', id: 'm4_reply_workstation', label: 'AKTYWOWALI RANSOMWARE I STRACILI DOSTĘP DO PLIKÓW. TERAZ CZEKAMY AŻ SIĘ ZE MNĄ SKONTAKTUJĄ' },
         { from: 'byte_master', text: 'PAMIĘTAJ TYLKO, ŻE POTRZEBUJEMY I PLIKÓW, I OKUPU' },
-        { from: 'time_jump', clockFrom: '09:10', clock: '11:35', label: 'DO REAKCJI SZEFA IT…' }
+        { from: 'byte_master', text: 'IT JUŻ COŚ PODEJRZEWA. DZIAŁAJ SZYBKO.', when: MAIL_WEAKER },
+        { from: 'time_jump', clockFrom: '09:10', clock: '11:35', label: 'DO REAKCJI SZEFA IT…', when: MAIL_IDEAL },
+        { from: 'time_jump', clockFrom: '12:25', clock: '14:50', label: 'DO REAKCJI SZEFA IT…', when: MAIL_WEAKER }
       ],
       unlockIcons: ['negotiation_unlocked', 'negotiation'],
       badges: { negotiation: 1, chat: 1 },

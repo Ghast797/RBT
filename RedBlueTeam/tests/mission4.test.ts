@@ -232,8 +232,14 @@ describe('Misja 4 — struktura etapów', () => {
     expect(bridgeKinds('virus_database')).toEqual(['player']);
     expect(bridgeKinds('ransomware_builder')).toEqual(['byte_master', 'player', 'byte_master']);
     expect(bridgeKinds('mail')).toEqual(['player']);
-    expect(bridgeKinds('vpn_app')).toEqual(['player', 'byte_master', 'time_jump 16:40->09:10']);
-    expect(bridgeKinds('victim_workstation')).toEqual(['player', 'byte_master', 'time_jump 09:10->11:35']);
+    expect(bridgeKinds('vpn_app')).toEqual(['player', 'byte_master', 'time_jump 16:40->09:10', 'time_jump 16:40->12:25']);
+    expect(bridgeKinds('victim_workstation')).toEqual([
+      'player',
+      'byte_master',
+      'byte_master',
+      'time_jump 09:10->11:35',
+      'time_jump 12:25->14:50'
+    ]);
     expect(bridgeKinds('negotiation')).toEqual(['player', 'byte_master', 'player', 'byte_master']);
     const call = (id: string) => stages().find((s) => s.id === id)!.completion.incomingCall;
     expect(call('vpn_app')).toEqual({ appId: 'victim_workstation', label: 'MALWARE ZOSTAŁ AKTYWOWANY' });

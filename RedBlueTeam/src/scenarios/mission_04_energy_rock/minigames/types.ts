@@ -6,6 +6,7 @@
 
 import type {
   ChoiceOutcome,
+  DecisionCondition,
   DialogueTreeConfig,
   MatrixVariant as EngineMatrixVariant,
   ScratchMatrixConfig
@@ -229,6 +230,10 @@ export interface C2Config {
     /** ZADANIE ekranu startowego. */
     task: string;
     status: string;
+    /** Status zamiast `status`, gdy któryś wybór z `delayNotes` był słabszy (CV otwarte z opóźnieniem). */
+    statusDelayed?: string;
+    /** Po jednej linii na słaby wybór (warunek z pamięci wyborów); pokazywane pod statusem. */
+    delayNotes?: { when: DecisionCondition; text: string }[];
     hostLabel: string;
     host: string;
     ipLabel: string;
@@ -245,6 +250,8 @@ export interface C2Config {
     confirmLabel: string;
     loader: string;
     requiredTargets: number;
+    /** Podpis licznika „WYBRANO X/N” (N = `requiredTargets`); zatwierdzić można dopiero przy dokładnie N plikach. */
+    counterLabel: string;
     files: ExfilFile[];
     answers: { ideal: string };
     feedback: Record<ChoiceOutcome, string>;
