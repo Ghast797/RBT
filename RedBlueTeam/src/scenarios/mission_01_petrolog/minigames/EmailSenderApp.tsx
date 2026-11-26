@@ -17,6 +17,7 @@ import type { EmailSenderConfig } from './types';
 import { EmailPreview } from './EmailPreview';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
 import { SidePanel } from '../../../engine/components/SidePanel';
+import { MailBody } from './MailBody';
 
 type EmailScreen = 'sender' | 'load_email' | 'email' | 'summary';
 
@@ -175,7 +176,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
       { label: 'DOMENA PUŁAPKI', value: targetDomain, done: true },
       { label: 'PRZYNĘTA (PAYLOAD)', value: targetPayload, done: true },
       { label: 'PODSZYTY NADAWCA', value: selectedSender?.label, done: screen !== 'sender' },
-      { label: 'SPOOFING EMAIL', value: selectedEmail?.label, done: screen === 'summary' }
+      { label: 'ADRES NADAWCY', value: selectedEmail?.label, done: screen === 'summary' }
     ];
     return sidePanel(
       heading,
@@ -274,7 +275,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
       {/* LOADER TO EMAIL */}
       {screen === 'load_email' && (
         <ModuleLoader
-          label="ANALIZA ZABEZPIECZEŃ SPF/DKIM I WYBÓR ADRESU SPOOFINGOWEGO..."
+          label="ANALIZA DOMEN I WYBÓR ADRESU NADAWCY..."
           accent={accent}
           onComplete={() => setScreen('email')}
         />
@@ -330,19 +331,16 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               <div className="text-xs text-gray-300">
                 <strong>TEMAT:</strong> Zobacz to!
               </div>
-              <div className="text-xs text-gray-200 leading-relaxed font-sans pt-1">
-                Koniecznie musisz zobaczyć tę stronę:
-                <br />
-                <span className="text-sky-400 font-bold underline font-mono">
-                  https://{targetDomain.toLowerCase()}
-                </span>
-                <br />
-                {mailText ?? ''}
-                <br />
-                Coś, czego szukałaś!
-                <br />
-                <span className="text-gray-400 mt-2 block">{selectedSender?.label || 'Jakub Kwiatkowski'}</span>
-              </div>
+              <MailBody
+                className="text-xs text-gray-200 leading-relaxed font-sans pt-1 space-y-2"
+                mailText={mailText}
+                senderName={selectedSender?.label || 'Jakub Kwiatkowski'}
+                link={
+                  <span className="text-sky-400 font-bold underline font-mono block">
+                    https://{targetDomain.toLowerCase()}
+                  </span>
+                }
+              />
             </div>
           </div>
         </div>

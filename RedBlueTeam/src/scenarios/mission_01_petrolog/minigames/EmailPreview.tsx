@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, ExternalLink } from 'lucide-react';
+import { MailBody } from './MailBody';
 
 export interface EmailPreviewProps {
   senderName: string | null;
@@ -66,13 +67,12 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
       </div>
 
       {/* Email Body */}
-      <div className="p-4 bg-[#05090f] text-gray-200 space-y-3 font-sans text-xs leading-relaxed">
-        <p>Cześć Anita,</p>
-        <p>
-          Koniecznie musisz zobaczyć tę stronę:
-        </p>
-
-        {/* Highlighted phishing link */}
+      <MailBody
+        className="p-4 bg-[#05090f] text-gray-200 space-y-3 font-sans text-xs leading-relaxed"
+        signatureClassName="pt-2 text-gray-400 font-mono"
+        mailText={mailText}
+        senderName={senderName ?? undefined}
+        link={
         <div className="p-3 rounded-lg bg-black/60 border border-sky-500/40 flex items-center justify-between font-mono my-2">
           <div className="flex items-center space-x-2 text-sky-400">
             <ExternalLink size={16} />
@@ -84,17 +84,8 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
             LINK DOCELOWY
           </span>
         </div>
-
-        <p>
-          {mailText ? `${mailText} ` : ''}Coś, czego szukałaś!
-        </p>
-
-        <p className="pt-2 text-gray-400 font-mono">
-          Pozdrawiam,
-          <br />
-          <strong className="text-white">{senderName || '[Nadawca]'}</strong>
-        </p>
-      </div>
+        }
+      />
     </div>
   );
 };

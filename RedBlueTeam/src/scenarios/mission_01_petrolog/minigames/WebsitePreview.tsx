@@ -23,9 +23,8 @@ export interface WebsitePreviewProps {
   isPayloadInjected?: boolean;
   isInteractiveTarget?: boolean;
   isDragOver?: boolean;
-  onDragOver?: (e: React.DragEvent) => void;
-  onDragLeave?: () => void;
-  onDrop?: (e: React.DragEvent) => void;
+  /** Ref strefy upuszczania (z `usePointerDrag().zoneRef`): przycisk strony przyjmuje przeciągany moduł. */
+  dropZoneRef?: (el: HTMLElement | null) => void;
   className?: string;
 }
 
@@ -37,9 +36,7 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   isPayloadInjected = false,
   isInteractiveTarget = false,
   isDragOver = false,
-  onDragOver,
-  onDragLeave,
-  onDrop,
+  dropZoneRef,
   className = ''
 }) => {
   // Theme definitions for the 3 domains (unified, neutral palettes without right/wrong color cues)
@@ -227,20 +224,7 @@ export const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     // Interactive target for malware injection (Step 3)
     return (
       <div
-        onDragOver={(e) => {
-          if (!isPayloadInjected && onDragOver) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-            onDragOver(e);
-          }
-        }}
-        onDragLeave={onDragLeave}
-        onDrop={(e) => {
-          if (!isPayloadInjected && onDrop) {
-            e.preventDefault();
-            onDrop(e);
-          }
-        }}
+        ref={dropZoneRef}
         className={`pt-2 transition-all duration-200 font-mono ${isDragOver ? 'scale-105' : ''}`}
       >
         <div
