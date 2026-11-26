@@ -14,7 +14,7 @@ import { OptionCards } from './ui';
 
 type Screen = 'sender_select' | 'preview' | 'dispatching' | 'sent';
 
-const NEUTRAL_TOPIC = { label: '…', body: '…', slug: '…' };
+const NEUTRAL_TOPIC: PhishingDispatchConfig['topics'][number] = { label: '…', body: '…', slug: '…' };
 const NEUTRAL_TEMPLATE = { label: '…', serviceName: '…', domainHost: '…' };
 
 const DISPATCH_DURATION_MS = 4800;
@@ -197,7 +197,7 @@ export const PhishingDispatchApp: React.FC<BlockProps<PhishingDispatchConfig>> =
         <p>Dzień dobry,</p>
         <p>{topic.body}</p>
         <p>
-          Czas na wypełnienie formularza upływa dzisiaj o godzinie 16:00. Link do formularza w serwisie{' '}
+          {topic.deadline && <>{topic.deadline} </>}Link do formularza w serwisie{' '}
           {template.serviceName}:
         </p>
         <div

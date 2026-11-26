@@ -55,8 +55,11 @@ export interface PhishingDispatchConfig {
   /** Numery decyzji z poprzedniego etapu, z których czytamy wybór (temat, szablon). */
   topicDecisionNum: number;
   templateDecisionNum: number;
-  /** Warianty treści kluczowane etykietą wybranej opcji (jak w `PlayerChoiceRecord.answer`). */
-  topics: Array<{ label: string; body: string; slug: string }>;
+  /**
+   * Warianty treści kluczowane etykietą wybranej opcji (jak w `PlayerChoiceRecord.answer`).
+   * `deadline` (opcjonalny) to zdanie o terminie/presji; tylko temat, którego feedback tej presji wymaga, je ma.
+   */
+  topics: Array<{ label: string; body: string; slug: string; deadline?: string }>;
   templates: Array<{ label: string; serviceName: string; domainHost: string }>;
   /** Podpis w mailu zależny od wybranego nadawcy (klucz: id opcji nadawcy). */
   signoffs: Record<string, string>;
