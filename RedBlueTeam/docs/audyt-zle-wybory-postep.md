@@ -135,8 +135,8 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-07 | S | Interakcje SCORM prawdopodobnie odrzucane przez Moodle | otwarte | | Potwierdzić na prawdziwym Moodle przed poprawką. |
-| ENG-10 | S | Brak wznowienia sesji (suspend_data zapisywane, nieczytane) | otwarte | | |
+| ENG-07 | S | Interakcje SCORM prawdopodobnie odrzucane przez Moodle | otwarte | | Właściciel (P6): nie wysyłać interakcji do Moodle (tylko wynik, status, czas). |
+| ENG-10 | S | Brak wznowienia sesji (suspend_data zapisywane, nieczytane) | otwarte | | Właściciel (P6): misja zawsze od zera; przestać zapisywać mylące suspend_data i opisać to w dokumentacji. |
 
 ## Decyzje właściciela
 
@@ -195,7 +195,7 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 
 | ID | Waga | Opis | Paczka | Status | Commit | Notatka |
 |---|---|---|---|---|---|---|
-| NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. |
+| NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. Właściciel (P6): po „ZAKOŃCZ I WRÓĆ DO MOODLE” zablokować dalszą grę w tej karcie z komunikatem, że powtórka wymaga ponownego uruchomienia aktywności w Moodle. Test na Moodle robi właściciel. |
 | NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | P3 | zrobione | 53bc335, d764f82 | D-08: dodać jsdom + Testing Library (dev) przy P3. |
 | NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | zrobione | 91c9224 | Właściciel (P3): wariant dla planu HR: „GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY…”. |
 | NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | zrobione | ea8777b | scenario.md M3 zgodny z kodem; rebuild-plan.md ma sekcję „Zmiany po audycie” (sekcje 1–9 historyczne). |
@@ -203,5 +203,5 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 | NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | zrobione | d764f82 | |
 | NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | zrobione | d764f82 | Właściciel (P3): pokazać feedback odrzuconej opcji w raporcie pod „Najpierw: X”. |
 | NEW-08 | N | M1, ścieżka z PREZESEM BUCZKIEM: przy nieidealnym adresie w D4 raport pod „CO ZADZIAŁAŁOBY LEPIEJ” pokazuje idealny adres Kwiatkowskiego (`mission1.json` ma jedną odpowiedź idealną na decyzję). Przy okazji: powitanie „Cześć Anita,” i „Pozdrawiam,” brzmią tak samo od prezesa jak od kolegi. | P5 | zrobione | 941a1b1 | Właściciel (P5): neutralna odpowiedź w raporcie M1 D4, np. „ADRES W DOMENIE-SOBOWTÓRZE PETR0LOG.COM (ZERO ZAMIAST „O”), PASUJĄCY DO WYBRANEGO NADAWCY”. Powitanie zostaje. |
-| NEW-09 | N | M4: lekcja D8 w `mission4.json` mówi, że sukces to „precyzyjne skopiowanie wyłącznie trzech kluczowych plików”, a zbyt wiele plików „mogłoby zaalarmować systemy DLP”. Po zmianie zasady D8 (dodatkowe pliki bez kary) przeczy mechanice. Lekcje M4 pisze właściciel. Specyfikacje w `mission_04_energy_rock/docs/` też opisują limit 3. | P5 | czeka na właściciela | | |
-| NEW-10 | N | M4: lekcja D3 w `mission4.json` (atak) mówi „Zbyt krótki czas, jak 30 sekund…”, a po P5 krótsza opcja to „30 MINUT”. Lekcje M4 pisze właściciel. | P5 | czeka na właściciela | | |
+| NEW-09 | N | M4: lekcja D8 w `mission4.json` mówi, że sukces to „precyzyjne skopiowanie wyłącznie trzech kluczowych plików”, a zbyt wiele plików „mogłoby zaalarmować systemy DLP”. Po zmianie zasady D8 (dodatkowe pliki bez kary) przeczy mechanice. Lekcje M4 pisze właściciel. Specyfikacje w `mission_04_energy_rock/docs/` też opisują limit 3. | P5 | zrobione | 00b6dbf | Na prośbę właściciela agent przepisał details i attack D8: liczy się rozpoznanie i pobranie wszystkich trzech plików, dodatkowe nie przybliżają do celu. Specyfikacja VR w docs/ nadal opisuje limit 3. |
+| NEW-10 | N | M4: lekcja D3 w `mission4.json` (atak) mówi „Zbyt krótki czas, jak 30 sekund…”, a po P5 krótsza opcja to „30 MINUT”. Lekcje M4 pisze właściciel. | P5 | zrobione | 00b6dbf | Na prośbę właściciela „30 sekund” → „30 minut” w lekcji D3. |
