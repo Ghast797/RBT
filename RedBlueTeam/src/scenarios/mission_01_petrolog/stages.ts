@@ -9,7 +9,9 @@ import type {
   SocialIntelConfig,
   PhishingBuilderConfig,
   EmailSenderConfig,
-  VictimMonitorConfig
+  VictimMonitorConfig,
+  PayloadTexts,
+  PhishingStepChoice
 } from './minigames/types';
 
 // ---------------------------------------------------------------------------
@@ -568,6 +570,72 @@ export const socialIntelConfig: SocialIntelConfig = {
   ]
 };
 
+/** D4 dla nadawcy JAKUB KWIATKOWSKI (D3 = ideał). */
+const senderEmailKwiatkowski: PhishingStepChoice = {
+  decisionNum: 4,
+  question: 'WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ.',
+  subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (spoofing)',
+  options: [
+    {
+      id: 'darksun_gmail',
+      label: 'DARKSUN.JAKUB@GMAIL.COM',
+      tier: 'suboptimal',
+      feedback:
+        'Jawna nazwa grupy hakerskiej i publiczny Gmail nie pasują do służbowej korespondencji – taki adres ryzykuje blokadę przez filtr antyspamowy i zwraca uwagę ofiary.',
+      reject: {
+        mentorLine: 'DARKSUN TO JAWNA NAZWA GRUPY, A GMAIL NIE WYGLĄDA JAK SŁUŻBOWY ADRES. ZMIEŃ ADRES NA TAKI, KTÓRY ANITA UZNA ZA FIRMOWY. WYBIERZ INACZEJ.'
+      }
+    },
+    {
+      id: 'kwiatkowski_hack',
+      label: 'K.KWIATKOWSKI@HACK.COM',
+      tier: 'suboptimal',
+      feedback:
+        'Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.'
+    },
+    {
+      id: 'kwiatkowski_petrolog',
+      label: 'K.KWIATKOWSKI@PETR0LOG.COM',
+      tier: 'ideal',
+      feedback:
+        'Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”) – adres wygląda jak służbowy adres pracownika i usypia czujność ofiary, a Ty nie musisz włamywać się na serwer pocztowy firmy.'
+    }
+  ]
+};
+
+/** D4 dla nadawcy PREZES BUCZEK (D3 = suboptimal): te same poziomy i budowa co zestaw Kwiatkowskiego. */
+const senderEmailBuczek: PhishingStepChoice = {
+  decisionNum: 4,
+  question: 'WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ.',
+  subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (spoofing)',
+  options: [
+    {
+      id: 'darksun_gmail_buczek',
+      label: 'DARKSUN.BUCZEK@GMAIL.COM',
+      tier: 'suboptimal',
+      feedback:
+        'Jawna nazwa grupy hakerskiej i publiczny Gmail nie pasują do korespondencji prezesa firmy – taki adres ryzykuje blokadę przez filtr antyspamowy i zwraca uwagę ofiary.',
+      reject: {
+        mentorLine: 'PREZES PISZE Z FIRMOWEJ POCZTY, A NIE Z GMAILA POD NAZWĄ GRUPY HAKERSKIEJ. ZMIEŃ ADRES NA TAKI, KTÓRY ANITA UZNA ZA FIRMOWY. WYBIERZ INACZEJ.'
+      }
+    },
+    {
+      id: 'buczek_hack',
+      label: 'P.BUCZEK@HACK.COM',
+      tier: 'suboptimal',
+      feedback:
+        'Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków – prezes nie pisze z zewnętrznego serwera.'
+    },
+    {
+      id: 'buczek_petrolog',
+      label: 'P.BUCZEK@PETR0LOG.COM',
+      tier: 'ideal',
+      feedback:
+        'Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”) – adres wygląda jak służbowy adres prezesa, a Ty nie musisz włamywać się na serwer pocztowy firmy.'
+    }
+  ]
+};
+
 /** S04: Przygotowanie kampanii spear-phishingowej (D1–D4 + Flavor). */
 export const phishingBuilderConfig: PhishingBuilderConfig = {
   domain: {
@@ -761,45 +829,57 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
       }
     ]
   },
-  senderEmail: {
-    decisionNum: 4,
-    question: 'WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ.',
-    subtitle: 'Decyzja D4: Wybór adresu e-mail nadawcy (spoofing)',
-    options: [
-      {
-        id: 'darksun_gmail',
-        label: 'DARKSUN.JAKUB@GMAIL.COM',
-        tier: 'suboptimal',
-        feedback:
-          'Jawna nazwa grupy hakerskiej i publiczny Gmail nie pasują do służbowej korespondencji – taki adres ryzykuje blokadę przez filtr antyspamowy i zwraca uwagę ofiary.',
-        reject: {
-          mentorLine: 'DARKSUN TO JAWNA NAZWA GRUPY, A GMAIL NIE WYGLĄDA JAK SŁUŻBOWY ADRES. ZMIEŃ ADRES NA TAKI, KTÓRY ANITA UZNA ZA FIRMOWY. WYBIERZ INACZEJ.'
-        }
-      },
-      {
-        id: 'kwiatkowski_hack',
-        label: 'K.KWIATKOWSKI@HACK.COM',
-        tier: 'suboptimal',
-        feedback:
-          'Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.'
-      },
-      {
-        id: 'kwiatkowski_petrolog',
-        label: 'K.KWIATKOWSKI@PETR0LOG.COM',
-        tier: 'ideal',
-        feedback:
-          'Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”) – adres wygląda jak służbowy adres pracownika i usypia czujność ofiary, a Ty nie musisz włamywać się na serwer pocztowy firmy.'
-      }
-    ]
+  senderEmail: senderEmailKwiatkowski,
+  senderEmailBySender: {
+    jakub_kwiatkowski: senderEmailKwiatkowski,
+    prezes_buczek: senderEmailBuczek
   }
 };
 
 /** S05: Egzekucja ataku i monitoring reakcji ofiary. */
 
 /** S05: Wysyłanie maila spear-phishingowego (D3–D4). */
+/** Teksty maila i strony ofiary wg pliku-przynęty z D2 — dla każdej opcji, po której gra idzie dalej (obie domeny). */
+export const payloadTexts: Record<string, PayloadTexts> = {
+  guide_running: {
+    mailText: 'Mają super poradnik dla biegaczy długodystansowych!',
+    pageBadge: 'PORTAL BIEGOWY // DALEKOBIEŻNI',
+    pageDescription:
+      'Zdobądź przewagę na trasie maratonu. 10 sprawdzonych technik regeneracji, planów interwałowych i doboru sprzętu biegowego.',
+    downloadButton: 'POBIERZ DARMOWY PORADNIK (PDF)',
+    footer: 'Anita zdecydowała się pobrać poradnik biegowy na dysk służbowego komputera.'
+  },
+  wallpapers_running: {
+    mailText: 'Mają super tapety dla biegaczy na telefon!',
+    pageBadge: 'PORTAL BIEGOWY // DALEKOBIEŻNI',
+    pageDescription:
+      'Motywacyjne grafiki dla biegaczy w wysokiej rozdzielczości. Pasują do każdego ekranu telefonu i dodają energii przed każdym treningiem.',
+    downloadButton: 'POBIERZ PAKIET TAPET (.ZIP)',
+    footer: 'Anita zdecydowała się pobrać paczkę z tapetami na dysk służbowego komputera.'
+  },
+  guide_muffins: {
+    mailText: 'Mają super przepisy na pyszne domowe muffinki!',
+    pageBadge: 'SERWIS KULINARNY // MUFINA.ORG.PL',
+    pageDescription:
+      'Sprawdzone receptury na puszyste babeczki i domowe wypieki. Wskazówki krok po kroku od składników po idealną temperaturę pieczenia.',
+    downloadButton: 'POBIERZ PRZEPIS (PDF)',
+    footer: 'Anita zdecydowała się pobrać plik z przepisami na dysk służbowego komputera.'
+  },
+  wallpapers_muffins: {
+    mailText: 'Mają super tapety ze słodkimi muffinkami!',
+    pageBadge: 'SERWIS KULINARNY // MUFINA.ORG.PL',
+    pageDescription:
+      'Kolorowe zdjęcia babeczek w wysokiej rozdzielczości, idealne jako tło ekranu telefonu.',
+    downloadButton: 'POBIERZ PAKIET TAPET (.ZIP)',
+    footer: 'Anita zdecydowała się pobrać paczkę z tapetami na dysk służbowego komputera.'
+  }
+};
+
 export const emailSenderConfig: EmailSenderConfig = {
   senderName: phishingBuilderConfig.senderName!,
   senderEmail: phishingBuilderConfig.senderEmail!,
+  senderEmailBySender: phishingBuilderConfig.senderEmailBySender,
+  byPayload: payloadTexts,
   defaultDomain: 'dalekbieg.info',
   defaultPayload: 'PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK'
 };
@@ -810,15 +890,19 @@ export const victimMonitorConfig: VictimMonitorConfig = {
   recipientName: 'Anita Klimek',
   recipientEmail: 'a.klimek@petrolog.com',
   emailSubject: 'Zobacz to!',
-  emailBody: [
-    'Koniecznie musisz zobaczyć tę stronę:',
-    'dalekbieg.info',
-    'Mają super poradnik dla biegaczy długodystansowych!',
-    'Coś, czego szukałaś!',
-    'Jakub Kwiatkowski'
-  ],
   targetDomain: 'dalekbieg.info',
   payloadFileName: 'PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK',
+  defaultPayloadId: 'guide_running',
+  byPayload: payloadTexts,
+  bySender: {
+    jakub_kwiatkowski: {
+      reaction: 'Anita właśnie otrzymała maila i widzi rekomendację od zaufanego współpracownika.'
+    },
+    prezes_buczek: {
+      reaction:
+        'Anita właśnie otrzymała maila od prezesa i dziwi się, że zarząd pisze do niej o bieganiu. Ciekawość jednak wygrywa.'
+    }
+  },
   networkNodes: [
     {
       id: 'n1',

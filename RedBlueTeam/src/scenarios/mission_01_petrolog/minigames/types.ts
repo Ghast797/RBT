@@ -133,12 +133,33 @@ export interface PhishingBuilderConfig {
     downloadButtonText: string;
   };
   senderName?: PhishingStepChoice;
+  /** Adresy D4 domyślne (zestaw nadawcy z D3 = ideał). */
   senderEmail?: PhishingStepChoice;
+  /** Adresy D4 zależne od nadawcy wybranego w D3 (klucz = id opcji D3). */
+  senderEmailBySender?: Record<string, PhishingStepChoice>;
+}
+
+/** Teksty maila i strony-pułapki zależne od pliku-przynęty wybranego w D2 (klucz = id opcji D2). */
+export interface PayloadTexts {
+  /** Zdanie o przynęcie w mailu, np. „Mają super poradnik…!”. */
+  mailText: string;
+  /** Plakietka nad nagłówkiem strony ofiary. */
+  pageBadge: string;
+  /** Opis pod nagłówkiem (nagłówkiem jest nazwa pliku z D2). */
+  pageDescription: string;
+  /** Napis na przycisku pobierania. */
+  downloadButton: string;
+  /** Stopka kroku „strona”: co Anita pobiera. */
+  footer: string;
 }
 
 export interface EmailSenderConfig {
   senderName: PhishingStepChoice;
   senderEmail: PhishingStepChoice;
+  /** Adresy D4 zależne od nadawcy z D3 (klucz = id opcji D3); brak klucza = `senderEmail`. */
+  senderEmailBySender?: Record<string, PhishingStepChoice>;
+  /** Teksty maila wg pliku-przynęty z D2 (klucz = id opcji D2). */
+  byPayload?: Record<string, PayloadTexts>;
   defaultDomain?: string;
   defaultPayload?: string;
 }
@@ -149,9 +170,14 @@ export interface VictimMonitorConfig {
   recipientName: string;
   recipientEmail: string;
   emailSubject: string;
-  emailBody: string[];
   targetDomain: string;
   payloadFileName: string;
+  /** Id opcji D2 używane, gdy decyzja nie została zgłoszona (podgląd/test). */
+  defaultPayloadId: string;
+  /** Teksty maila i strony wg pliku-przynęty z D2 (klucz = id opcji D2). */
+  byPayload: Record<string, PayloadTexts>;
+  /** Reakcja Anity wg nadawcy z D3 (klucz = id opcji D3). */
+  bySender: Record<string, { reaction: string }>;
   networkNodes: Array<{
     id: string;
     label: string;
