@@ -16,6 +16,12 @@ export interface MissionMeta {
   decisionCount?: number;
   targetCompany: string; // e.g. "O&L Company"
   description?: string;
+  /**
+   * Podpowiedzi po bezczynności gracza: T1 (subtelne podświetlenie następnego kroku) po `t1Ms`,
+   * T2 (tekst podpowiedzi operacyjnej) po `t2Ms`; `t2Ms: null` wyłącza T2. `false` wyłącza całość.
+   * Domyślnie 20 s / 45 s (`DEFAULT_IDLE_HINTS`).
+   */
+  idleHints?: { t1Ms?: number; t2Ms?: number | null } | false;
 }
 
 export interface IntroDialogueOption {
