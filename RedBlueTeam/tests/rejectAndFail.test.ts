@@ -137,7 +137,7 @@ describe('B2: mentor odrzuca wybór', () => {
     const rejectDecision = vi.fn();
     const d = { decisionNum: 4, question: 'q' };
     expect(submitDecision(d, option({ reject: { mentorLine: 'Nie.' }, tier: 'suboptimal' }), { onDecision, rejectDecision })).toBe('rejected');
-    expect(rejectDecision).toHaveBeenCalledWith({ num: 4, question: 'q', optionId: 'o', answer: 'KEYLOGGER', tier: 'suboptimal', mentorLine: 'Nie.' });
+    expect(rejectDecision).toHaveBeenCalledWith({ num: 4, question: 'q', optionId: 'o', answer: 'KEYLOGGER', tier: 'suboptimal', mentorLine: 'Nie.', feedback: 'fb' });
     expect(onDecision).not.toHaveBeenCalled();
     expect(submitDecision(d, option({ tier: 'ideal' }), { onDecision, rejectDecision })).toBe('reported');
     expect(onDecision).toHaveBeenCalledOnce();

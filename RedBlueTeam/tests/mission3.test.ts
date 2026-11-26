@@ -583,6 +583,7 @@ describe('Misja 3 — raport i helpery zgłaszania decyzji', () => {
     expect(buildReport(virusLabConfig.virus, rat)).toEqual({
       num: 1,
       question: 'WYBIERZ ODPOWIEDNIEGO WIRUSA',
+      optionId: 'rat',
       answer: 'RAT',
       tier: 'ideal',
       feedback: rat.feedback

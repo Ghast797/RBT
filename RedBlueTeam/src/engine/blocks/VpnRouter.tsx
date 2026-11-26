@@ -125,6 +125,7 @@ export function vpnConnectResult(config: VpnRouterConfig, ip: string): { ok: boo
           num: step.decisionNum,
           question: step.question,
           answer: ip,
+          optionId: ip,
           tier: ok ? 'ideal' : 'critical',
           feedback: ok ? step.feedback.ideal : step.feedback.critical
         };
@@ -141,6 +142,7 @@ export function vpnSenderReport(
   return {
     num: sender.decisionNum,
     question: sender.question,
+    optionId: option.id,
     answer: sender.includeIpInAnswer ? `${ip} + ${answer}` : answer,
     tier: option.tier,
     feedback: option.feedback,
@@ -162,7 +164,8 @@ export function vpnSenderRejection(
     optionId: option.id,
     answer: report.answer,
     tier: option.tier,
-    mentorLine: option.reject.mentorLine
+    mentorLine: option.reject.mentorLine,
+    feedback: option.feedback
   };
 }
 

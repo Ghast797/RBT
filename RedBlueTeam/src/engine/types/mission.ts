@@ -95,6 +95,25 @@ export interface RejectedAttempt {
   tier: ChoiceOutcome;
   /** Kwestia BYTE_MASTERA pokazana graczowi (i zapisana w czacie). */
   mentorLine: string;
+  /** Feedback odrzuconej opcji — raport pokazuje go pod linią „odrzucone przez BYTE_MASTERA”. */
+  feedback?: string;
+}
+
+/** Co silnik pamięta o wyborze gracza w decyzji (pierwsze zgłoszenie wygrywa). */
+export interface DecisionChoice {
+  optionId?: string;
+  answer: string;
+  tier: ChoiceOutcome;
+}
+
+/**
+ * Warunek wyświetlenia beatu rozmowy: beat gra tylko, gdy decyzja `decision` została zgłoszona
+ * i pasuje `optionId` (jeśli podano) oraz `tier` (jeśli podano). Brak decyzji = beat pominięty.
+ */
+export interface BeatCondition {
+  decision: number;
+  optionId?: string | string[];
+  tier?: ChoiceOutcome | ChoiceOutcome[];
 }
 
 export interface PlayerChoiceRecord {
@@ -108,6 +127,8 @@ export interface PlayerChoiceRecord {
   negotiationTranscript?: NegotiationTurn[];
   /** Próby tej decyzji odrzucone przez mentora (B2) przed ostatecznym wyborem — do raportu. */
   rejectedAttempts?: RejectedAttempt[];
+  /** Odpowiedzi wybrane w nieocenianych węzłach rozmowy po tej decyzji (np. „CHWILA, NIE TAK SZYBKO…”) — do raportu. */
+  followUps?: string[];
 }
 
 export interface DebriefSummaryConfig {
@@ -166,6 +187,8 @@ export interface DecisionReport {
   question: string;
   /** Odpowiedź wybrana przez gracza (etykieta opcji). */
   answer: string;
+  /** `id` wybranej opcji, gdy klocek je zna — silnik zapamiętuje je w `decisionChoices` (treść może za nim podążać). */
+  optionId?: string;
   /** Poziom decyzji — jedyne, co decyduje o punktacji. */
   tier: ChoiceOutcome;
   /** Zdanie wyjaśnienia do raportu pooperacyjnego. */
@@ -189,6 +212,8 @@ export interface DecisionRejection {
   answer: string;
   tier: ChoiceOutcome;
   mentorLine: string;
+  /** Feedback odrzuconej opcji (do raportu). */
+  feedback?: string;
 }
 
 /** Props, które silnik podaje każdemu klockowi i każdej minigrze. */
@@ -274,15 +299,6 @@ export interface DialogueTreeConfig {
   nodes: DialogueNode[];
   /** Wiadomość zamykająca rozmowę po ostatnim węźle. */
   closingMessage?: string;
-  /**
-   * Tryb agregujący: cała rozmowa to JEDNA oceniana decyzja o tym numerze.
-   * Poziom = najgorszy wybór na ścieżce (critical > suboptimal > ideal).
-   * Błąd krytyczny w dowolnej turze przerywa rozmowę natychmiast.
-   * Gdy pominięty, każdy węzeł z własnym `decisionNum` jest oceniany osobno.
-   */
-  decisionNum?: number;
-  /** Pytanie do debriefu w trybie agregującym. */
-  question?: string;
 }
 
 /** Jedna podpisana część programu pod zdrapką `ScratchMatrix` (zapala się w miarę odsłaniania). */
@@ -341,7 +357,7 @@ export interface ScratchMatrixConfig<TImage = unknown> {
  * z animacją „pisze" i delayem), albo kwestia gracza z VR (przycisk w czacie; klik
  * wysyła echo i przesuwa rozmowę — NIE otwiera aplikacji).
  */
-export type ConversationBeat =
+export type ConversationBeat = (
   | { from: 'byte_master'; text: string }
   | { from: 'player'; id: string; label: string }
   /**
@@ -363,7 +379,11 @@ export type ConversationBeat =
       clockFrom?: string;
       /** Godzina docelowa („HH:MM”). */
       clock?: string;
-    };
+    }
+) & {
+  /** Beat gra tylko, gdy wcześniejsza decyzja gracza pasuje (zob. `BeatCondition`). Bez `when` gra zawsze. */
+  when?: BeatCondition;
+};
 
 /** Co dzieje się po ukończeniu etapu: rozmowa z mentorem, a na jej końcu odblokowania. */
 export interface StageCompletion {

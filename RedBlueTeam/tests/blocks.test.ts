@@ -153,6 +153,7 @@ describe('VpnRouter: bramka IP + jedna decyzja nadawcy (kontrakt 10.1 pkt 5)', (
     expect(r).toEqual({
       num: 7,
       question: 'WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:',
+      optionId: config.sender!.options[0].id,
       answer: '109.43.200.124 + M.WILK@PRIV.COM',
       tier: 'ideal',
       feedback: 'ok'

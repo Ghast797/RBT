@@ -169,6 +169,7 @@ export const DebriefApp: React.FC = () => {
     }
     const outcome = outcomeOf(selected);
     const t = tone(outcome);
+    const isIdeal = outcome === 'ideal';
     const lesson = lessonFor(selected.num);
     const hasLesson = !!(lesson?.attack || lesson?.defense);
     const transcript = selected.negotiationTranscript || lesson?.negotiationTranscript;
@@ -196,9 +197,20 @@ export const DebriefApp: React.FC = () => {
           TWOJA ODPOWIEDŹ: <span className={t.text}>{selected.answer}</span>
         </div>
 
+        {(selected.followUps || []).map((reply, i) => (
+          <div key={i} data-follow-up="true" className="text-xs text-gray-300 leading-snug pl-6">
+            → {reply}
+          </div>
+        ))}
+
         {(selected.rejectedAttempts || []).map((r, i) => (
           <div key={i} data-rejected-attempt="true" className="text-[0.6875rem] text-[#ff3366] leading-snug pl-3">
             Najpierw: {r.answer} — odrzucone przez BYTE_MASTERA
+            {r.feedback && (
+              <div data-rejected-feedback="true" className="text-[0.625rem] text-[#ff3366]/70 leading-snug pt-0.5">
+                {r.feedback}
+              </div>
+            )}
           </div>
         ))}
 
@@ -226,12 +238,24 @@ export const DebriefApp: React.FC = () => {
           )}
         </div>
 
+        {!isIdeal && hasLesson && (
+          <div data-better-header="true" className="text-xs leading-snug">
+            <span className="font-black uppercase text-xs text-[#60a5fa]">CO ZADZIAŁAŁOBY LEPIEJ</span>
+            {lesson?.answer && (
+              <span className="font-sans text-gray-100">
+                {': '}
+                {lesson.answer}
+              </span>
+            )}
+          </div>
+        )}
+
         {lesson?.attack && (
           <div className="px-2 py-1.5 rounded border border-[#ff3366]/40 bg-[#ff3366]/10 text-red-100 flex items-start gap-2 text-xs leading-snug">
             <Crosshair size={14} className="text-[#ff3366] shrink-0 mt-0.5" />
             <div>
               <span className="mr-1.5 font-black uppercase text-xs text-[#ff3366]">
-                Atak — dlaczego to zadziałało:
+                {isIdeal ? 'Atak — dlaczego to zadziałało:' : 'Atak:'}
               </span>
               <span className="font-sans">{lesson.attack}</span>
             </div>
@@ -243,7 +267,7 @@ export const DebriefApp: React.FC = () => {
             <ShieldCheck size={14} className="text-[#3b82f6] shrink-0 mt-0.5" />
             <div>
               <span className="mr-1.5 font-black uppercase text-xs text-[#60a5fa]">
-                Obrona — jak to rozpoznać i co zrobić:
+                {isIdeal ? 'Obrona — jak to rozpoznać i co zrobić:' : 'Obrona:'}
               </span>
               <span className="font-sans">{lesson.defense}</span>
             </div>
