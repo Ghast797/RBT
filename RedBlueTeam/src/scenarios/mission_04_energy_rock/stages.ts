@@ -477,13 +477,12 @@ export const c2Config: C2Config = {
     confirmLabel: 'POBIERZ ZAZNACZONE',
     loader: 'POBIERANIE PLIKÓW…',
     requiredTargets: 3,
-    // Licznik „WYBRANO X/3” (limit z requiredTargets); nie zdradza, które pliki są właściwe.
-    counterLabel: 'WYBRANO',
     files: exfilFiles,
+    // Ideał z dopiskiem o nadmiarowych plikach dokłada silnik (`extrasPhrase`), tekst tutaj to same 3 cele.
     answers: { ideal: '3 PLIKI FREEVOLT (DOCX, PDF, XCF)' },
     feedback: {
-      ideal: 'Pozyskano kompletną dokumentację technologii Freevolt bez wzbudzania podejrzeń transferem zbędnych plików.',
-      suboptimal: 'Niekompletny zestaw danych lub zbyt duży transfer, który ułatwia analizę powłamaniową.',
+      ideal: 'Pozyskano kompletną dokumentację technologii Freevolt.',
+      suboptimal: 'Niekompletny zestaw: części dokumentacji Freevolt brakuje, więc cel operacji został osiągnięty tylko częściowo.',
       critical: 'Żaden pobrany plik nie dotyczy Freevolt: całkowita porażka głównego celu operacji.'
     },
     // Nikt nas nie wykrył, ale cel przepadł: modal „OPERACJA NIEUDANA”, nie „ZOSTAŁEŚ WYKRYTY!”.

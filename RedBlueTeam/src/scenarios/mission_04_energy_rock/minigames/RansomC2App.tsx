@@ -19,7 +19,6 @@ import {
   c2StartInfo,
   canConfirmExfil,
   countSelection,
-  exfilCounterText,
   exfilTier
 } from './exfilLogic';
 import type { C2Config } from './types';
@@ -70,10 +69,10 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
   };
 
   const setInField = (id: string, inField: boolean) =>
-    setSelected((prev) => applySelection(prev, id, inField, exfil.requiredTargets));
+    setSelected((prev) => applySelection(prev, id, inField));
 
   const confirm = () => {
-    if (decidedRef.current || !canConfirmExfil(selected, exfil.requiredTargets)) return;
+    if (decidedRef.current || !canConfirmExfil(selected)) return;
     decidedRef.current = true;
     sounds.playClick();
     onDecision(buildExfilReport(exfil, selected));
@@ -176,11 +175,10 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
         files={files}
         selected={selected}
         fieldLabel={exfil.fieldLabel}
-        counter={exfilCounterText(exfil.counterLabel, selected, exfil.requiredTargets)}
         onToggle={(id) => setInField(id, !selected.includes(id))}
         onSet={setInField}
       />
-      <ConfirmButton accent={ACCENT} label={exfil.confirmLabel} enabled={canConfirmExfil(selected, exfil.requiredTargets)} onClick={confirm} />
+      <ConfirmButton accent={ACCENT} label={exfil.confirmLabel} enabled={canConfirmExfil(selected)} onClick={confirm} />
     </>
   );
 };

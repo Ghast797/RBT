@@ -34,11 +34,9 @@ export const ExfilFiles: React.FC<{
   files: ExfilFile[];
   selected: string[];
   fieldLabel: string;
-  /** Licznik pola, np. „WYBRANO 2/3”. */
-  counter: string;
   onToggle: (id: string) => void;
   onSet: (id: string, inField: boolean) => void;
-}> = ({ accent, files, selected, fieldLabel, counter, onToggle, onSet }) => {
+}> = ({ accent, files, selected, fieldLabel, onToggle, onSet }) => {
   const inField = new Set(selected);
   const drag = usePointerDrag<string>({
     onDrop: ({ itemId, zoneId }) => onSet(itemId, zoneId === FIELD_ZONE),
@@ -101,7 +99,7 @@ export const ExfilFiles: React.FC<{
             </span>
           </div>
           <span className="text-xs font-mono font-black" style={{ color: accent }}>
-            {counter}
+            {field.length}
           </span>
         </div>
         <div className="flex-1 min-h-0 p-3 grid grid-cols-2 gap-2 content-start">{field.map(chip)}</div>

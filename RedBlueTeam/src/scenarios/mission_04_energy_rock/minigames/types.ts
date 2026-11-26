@@ -249,9 +249,8 @@ export interface C2Config {
     fieldLabel: string;
     confirmLabel: string;
     loader: string;
+    /** Liczba plików Freevolt, bez których zestaw jest tylko częściowy (poziom `suboptimal`). */
     requiredTargets: number;
-    /** Podpis licznika „WYBRANO X/N” (N = `requiredTargets`); zatwierdzić można dopiero przy dokładnie N plikach. */
-    counterLabel: string;
     files: ExfilFile[];
     answers: { ideal: string };
     feedback: Record<ChoiceOutcome, string>;

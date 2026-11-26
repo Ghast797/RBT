@@ -4,12 +4,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { useMissionStore, __setBridgeDelayForTests } from '../src/engine/store/useMissionStore';
 import type { ChoiceOutcome, DecisionChoice } from '../src/engine/types/mission';
 import { c2Config } from '../src/scenarios/mission_04_energy_rock/stages';
-import {
-  applySelection,
-  c2StartInfo,
-  canConfirmExfil,
-  exfilCounterText
-} from '../src/scenarios/mission_04_energy_rock/minigames/exfilLogic';
+import { applySelection, c2StartInfo, canConfirmExfil } from '../src/scenarios/mission_04_energy_rock/minigames/exfilLogic';
 import { ExfilFiles } from '../src/scenarios/mission_04_energy_rock/minigames/ExfilFiles';
 
 const MISSION_ID = 'mission-4-energy-rock';
@@ -122,42 +117,38 @@ describe('M4-02: ekran startowy C2', () => {
   });
 });
 
-describe('M4-04: licznik plików D8', () => {
+describe('M4-04: pole pobranych plików D8 (bez limitu)', () => {
   const { exfil } = c2Config;
-  const max = exfil.requiredTargets;
 
   afterEach(cleanup);
 
-  it('limit 3 z configu, nie można dodać czwartego, usunięcie działa', () => {
-    expect(max).toBe(3);
+  it('bez limitu: można dodać pięć plików, usunięcie działa', () => {
     let sel: string[] = [];
-    for (const id of ['a', 'b', 'c', 'd']) sel = applySelection(sel, id, true, max);
-    expect(sel).toEqual(['a', 'b', 'c']);
-    expect(applySelection(sel, 'b', true, max)).toEqual(['a', 'b', 'c']);
-    expect(applySelection(sel, 'b', false, max)).toEqual(['a', 'c']);
+    for (const id of ['a', 'b', 'c', 'd', 'e']) sel = applySelection(sel, id, true);
+    expect(sel).toEqual(['a', 'b', 'c', 'd', 'e']);
+    expect(applySelection(sel, 'b', true)).toEqual(['a', 'b', 'c', 'd', 'e']);
+    expect(applySelection(sel, 'b', false)).toEqual(['a', 'c', 'd', 'e']);
   });
 
-  it('zatwierdzenie tylko przy dokładnie 3 plikach', () => {
-    expect(canConfirmExfil([], max)).toBe(false);
-    expect(canConfirmExfil(['a', 'b'], max)).toBe(false);
-    expect(canConfirmExfil(['a', 'b', 'c'], max)).toBe(true);
-    expect(canConfirmExfil(['a', 'b', 'c', 'd'], max)).toBe(false);
+  it('zatwierdzenie od jednego pliku', () => {
+    expect(canConfirmExfil([])).toBe(false);
+    expect(canConfirmExfil(['a'])).toBe(true);
+    expect(canConfirmExfil(['a', 'b', 'c', 'd', 'e'])).toBe(true);
   });
 
-  it('tekst licznika i render w polu pobranych plików', () => {
+  it('brak licznika „WYBRANO”: nagłówek pola pokazuje liczbę plików', () => {
     const sel = [exfil.files[0].id];
-    expect(exfilCounterText(exfil.counterLabel, sel, max)).toBe('WYBRANO 1/3');
     render(
       <ExfilFiles
         accent="#fff"
         files={exfil.files}
         selected={sel}
         fieldLabel={exfil.fieldLabel}
-        counter={exfilCounterText(exfil.counterLabel, sel, max)}
         onToggle={() => {}}
         onSet={() => {}}
       />
     );
-    expect(screen.getByText('WYBRANO 1/3')).toBeTruthy();
+    expect(screen.queryByText(/WYBRANO/)).toBeNull();
+    expect(screen.getByText('1')).toBeTruthy();
   });
 });
