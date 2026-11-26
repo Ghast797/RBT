@@ -45,6 +45,23 @@ describe('M3 //DYSK E: logika pendrive', () => {
     expect(aggregateD4(vol('vol_bo'), sig('env_bo'), cfg.reportLabels).tier).toBe('suboptimal');
   });
 
+  it('D4 remis na poziomie nieidealnym: raport pokazuje nazwę i podpis (NOWY DYSK + B&O)', () => {
+    const tie = aggregateD4(vol('vol_new_disk'), sig('env_bo'), cfg.reportLabels);
+    expect(tie.tier).toBe('suboptimal');
+    expect(tie.source).toBe('signature');
+    expect(tie.feedback).toBe(sig('env_bo').feedback);
+    expect(tie.answer).toBe('NAZWA DYSKU: NOWY DYSK / PODPIS: PENDRIVE ZE ZDJĘCIAMI B&O COMPANY');
+
+    const tieBo = aggregateD4(vol('vol_bo'), sig('env_bo'), cfg.reportLabels);
+    expect(tieBo.answer).toBe('NAZWA DYSKU: ZDJĘCIA B&O COMPANY / PODPIS: PENDRIVE ZE ZDJĘCIAMI B&O COMPANY');
+  });
+
+  it('D4 ideal/ideal nadal pokazuje sam podpis', () => {
+    const ideal = aggregateD4(vol('vol_impreza'), sig('env_afterparty'), cfg.reportLabels);
+    expect(ideal.answer).not.toContain('NAZWA DYSKU');
+    expect(ideal.answer).toBe('ZDJĘCIA Z AFTERPARTY O&L COMPANY!');
+  });
+
   it('buildD4Report: numer 4 i pytanie z podpisu', () => {
     const r = buildD4Report(cfg.signature, vol('vol_bo'), sig('env_afterparty'), cfg.reportLabels);
     expect(r.num).toBe(4);
