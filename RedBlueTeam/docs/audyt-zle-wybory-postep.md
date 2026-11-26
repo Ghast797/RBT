@@ -135,8 +135,8 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-07 | S | Interakcje SCORM prawdopodobnie odrzucane przez Moodle | otwarte | | Właściciel (P6): nie wysyłać interakcji do Moodle (tylko wynik, status, czas). |
-| ENG-10 | S | Brak wznowienia sesji (suspend_data zapisywane, nieczytane) | otwarte | | Właściciel (P6): misja zawsze od zera; przestać zapisywać mylące suspend_data i opisać to w dokumentacji. |
+| ENG-07 | S | Interakcje SCORM prawdopodobnie odrzucane przez Moodle | zrobione | 1caa0cc | Właściciel (P6): interakcje nie są wysyłane (tylko wynik, status, czas, location, exit). Do potwierdzenia testem w Moodle (właściciel). |
+| ENG-10 | S | Brak wznowienia sesji (suspend_data zapisywane, nieczytane) | zrobione | 1caa0cc | Właściciel (P6): misja zawsze od zera; suspend_data nie jest zapisywane; opis w scenario-engine.md sekcja 11. |
 
 ## Decyzje właściciela
 
@@ -195,7 +195,7 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 
 | ID | Waga | Opis | Paczka | Status | Commit | Notatka |
 |---|---|---|---|---|---|---|
-| NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. Właściciel (P6): po „ZAKOŃCZ I WRÓĆ DO MOODLE” zablokować dalszą grę w tej karcie z komunikatem, że powtórka wymaga ponownego uruchomienia aktywności w Moodle. Test na Moodle robi właściciel. |
+| NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | zrobione | 1caa0cc | Właściciel (P6): po udanym wysłaniu i Terminate gra blokuje każdą ścieżkę powtórki i pokazuje „WYNIK ZOSTAŁ WYSŁANY DO MOODLE…”. Bez LMS (mock) powtórka działa. Do potwierdzenia testem w Moodle (właściciel). |
 | NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | P3 | zrobione | 53bc335, d764f82 | D-08: dodać jsdom + Testing Library (dev) przy P3. |
 | NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | zrobione | 91c9224 | Właściciel (P3): wariant dla planu HR: „GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY…”. |
 | NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | zrobione | ea8777b | scenario.md M3 zgodny z kodem; rebuild-plan.md ma sekcję „Zmiany po audycie” (sekcje 1–9 historyczne). |
