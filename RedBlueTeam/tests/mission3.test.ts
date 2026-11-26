@@ -14,6 +14,8 @@ import {
   ratSessionConfig
 } from '../src/scenarios/mission_03_ol_company/stages';
 import { buildReport, reportAnswerOf } from '../src/engine/core/report';
+import { beatMatches } from '../src/engine/core/beatCondition';
+import type { DecisionChoice } from '../src/engine/types/mission';
 
 // ---------------------------------------------------------------------------
 // TESTY MISJI 3 (O&L COMPANY), wzorzec B (etapy + klocki/minigry, jak M2/M4)
@@ -92,11 +94,19 @@ const beatLine = (b: ConversationBeat): string => {
   return `PRZESKOK: ${b.clockFrom}->${b.clock}`;
 };
 const stageOf = (id: string) => (def().stages ?? []).find((s) => s.id === id)!;
-/** Kwestie mostka dla planu D3 (domyślnie plan zdjęć): beaty z `when` innego planu odpadają. */
-const bridgeOf = (id: string, plan = 'vector_party_zip') =>
-  (stageOf(id).completion.conversation ?? [])
-    .filter((b) => !b.when || ([b.when.optionId ?? []].flat() as string[]).includes(plan))
-    .map(beatLine);
+/**
+ * Kwestie mostka dla planu D3 (domyślnie plan zdjęć) i poziomów D4/D6 (domyślnie ideał):
+ * beaty z niespełnionym `when` odpadają (ta sama reguła co w silniku: `beatMatches`).
+ */
+const bridgeOf = (id: string, plan = 'vector_party_zip', overrides: Record<number, DecisionChoice> = {}) => {
+  const choices: Record<number, DecisionChoice> = {
+    3: { optionId: plan, answer: 'X', tier: plan === 'vector_party_zip' ? 'ideal' : 'suboptimal' },
+    4: { answer: 'X', tier: 'ideal' },
+    6: { answer: 'X', tier: 'ideal' },
+    ...overrides
+  };
+  return (stageOf(id).completion.conversation ?? []).filter((b) => beatMatches(b.when, choices)).map(beatLine);
+};
 
 /** Wszystkie opcje ocenianych decyzji (numer decyzji + pytanie + opcje) z danych klocków. */
 function collectDecisions(): Record<number, { question: string; options: any[] }> {
@@ -849,6 +859,10 @@ describe('Misja 3 — przepływ przez silnik', () => {
       store.completeStage(id);
       driveBridge();
     }
+    // Wybory D3, D4, D6 (idealne) muszą być zgłoszone, bo od nich zależy długość przeskoku.
+    store.reportDecision({ num: 3, question: 'JAK GO OSZUKASZ?', answer: 'X', tier: 'ideal', feedback: '', optionId: 'vector_party_zip' });
+    store.reportDecision({ num: 4, question: 'WYBIERZ PODPIS NA KOPERCIE', answer: 'X', tier: 'ideal', feedback: '' });
+    store.reportDecision({ num: 6, question: 'WYBIERZ MIEJSCE NA PARKINGU', answer: 'X', tier: 'ideal', feedback: '', optionId: 'car_target' });
     store.completeStage('drone_app');
     for (let i = 0; i < 20 && !useMissionStore.getState().timeJump; i++) {
       vi.runAllTimers();
@@ -898,5 +912,80 @@ describe('Misja 3 — przepływ przez silnik', () => {
     useMissionStore.getState().openApp('drone_app');
     driveBridge();
     expect(dronTexts()).toHaveLength(1);
+  });
+});
+
+describe('Misja 3 — przeskok 08:12 albo 11:40 zależnie od D3, D4, D6 (when)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    __setBridgeDelayForTests(0);
+    useMissionStore.getState().loadMission(MISSION_ID);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    __setBridgeDelayForTests(2000);
+  });
+
+  const PLAYER_DROP = 'GRACZ: OK. DAM CI ZNAĆ, KIEDY MATEUSZ PODŁĄCZY PENDRIVE I AKTYWUJE WIRUSA';
+  const MENTOR_LATE = 'CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ.';
+  const ON_TIME = [PLAYER_DROP, 'PRZESKOK: 06:02->08:12'];
+  const LATE = [PLAYER_DROP, 'PRZESKOK: 06:02->11:40', `BM: ${MENTOR_LATE}`];
+
+  it('same ideały D3, D4, D6: przeskok 06:02 -> 08:12 i brak kwestii mentora', () => {
+    expect(bridgeOf('drone_app')).toEqual(ON_TIME);
+  });
+
+  const weaker: Array<[string, string, Record<number, DecisionChoice>]> = [
+    ['D3 plan HR (vector_hr_docs)', 'vector_hr_docs', {}],
+    ['D4 suboptymalny (env_bo)', 'vector_party_zip', { 4: { answer: 'X', tier: 'suboptimal' } }],
+    ['D6 pusty asfalt', 'vector_party_zip', { 6: { optionId: 'asphalt', answer: 'X', tier: 'suboptimal' } }]
+  ];
+  it.each(weaker)('%s z osobna: przeskok 06:02 -> 11:40 i kwestia mentora', (_label, plan, overrides) => {
+    expect(bridgeOf('drone_app', plan, overrides)).toEqual(LATE);
+  });
+
+  /** Gra całą misję: decyzje wg `tiers` (domyślnie ideał), mostki odtwarzane do końca; zwraca przeskoki. */
+  const playAll = (tiers: Partial<Record<number, ChoiceOutcome>>) => {
+    const store = useMissionStore.getState();
+    store.finishBiosBoot();
+    const jumps: Array<{ clockFrom?: string; clock?: string; label?: string }> = [];
+    driveBridge(jumps);
+    for (const stage of def().stages ?? []) {
+      (stage.decisions ?? []).forEach((num) =>
+        store.reportDecision({ num, question: `D${num}`, answer: 'X', tier: tiers[num] ?? 'ideal', feedback: '' })
+      );
+      store.completeStage(stage.id);
+      driveBridge(jumps);
+    }
+    return jumps;
+  };
+
+  it('ideał: dokładnie dwa przeskoki (noc, poranek 08:12), zegar pulpitu 08:12, bez kwestii mentora', () => {
+    const jumps = playAll({});
+    expect(jumps).toEqual([
+      { clockFrom: '22:15', clock: '06:02', label: 'DO PORANKA…' },
+      { clockFrom: '06:02', clock: '08:12', label: 'DO GODZIN PRACY BIURA…' }
+    ]);
+    expect(useMissionStore.getState().systemTime).toBe('08:12');
+    expect(useMissionStore.getState().chatMessages.map((m) => m.text)).not.toContain(MENTOR_LATE);
+  });
+
+  it.each([
+    ['D3', { 3: 'suboptimal' as ChoiceOutcome }],
+    ['D4', { 4: 'suboptimal' as ChoiceOutcome }],
+    ['D6', { 6: 'suboptimal' as ChoiceOutcome }]
+  ])('słabszy %s (reszta ideał): dokładnie jeden poranny przeskok 11:40, zegar 11:40, mentor, RAT odblokowany', (_n, tiers) => {
+    const jumps = playAll(tiers);
+    expect(jumps).toEqual([
+      { clockFrom: '22:15', clock: '06:02', label: 'DO PORANKA…' },
+      { clockFrom: '06:02', clock: '11:40', label: "MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…" }
+    ]);
+    const st = useMissionStore.getState();
+    expect(st.systemTime).toBe('11:40');
+    expect(st.chatMessages.map((m) => m.text)).toContain(MENTOR_LATE);
+    expect(st.unlockedIcons).toContain('debrief_app');
+    // Konsekwencja fabularna nie zmienia punktacji: słabszy wybór kosztuje jak dotąd (połowa udziału).
+    expect(st.score).toBeCloseTo(100 - 100 / 6 / 2, 1);
+    expect(st.criticalErrorsCount).toBe(0);
   });
 });

@@ -4,7 +4,7 @@
 // Mostki (conversation) to rozmowy po zaliczeniu etapu; kafelek następnego etapu odblokowuje się
 // dopiero po kwestii gracza (i po przeskoku czasu). Źródło prawdy: scenario.md + docs/rebuild-plan.md.
 
-import type { ChoiceOutcome, StageDefinition } from '../../engine/types/mission';
+import type { BeatCondition, ChoiceOutcome, StageDefinition } from '../../engine/types/mission';
 import type {
   VirusLabConfig,
   OsintBrowserConfig,
@@ -703,6 +703,24 @@ export const mission3Blocks: Record<string, unknown> = {
   rat_session: ratSessionConfig
 };
 
+/** Idealny przebieg D3, D4 i D6: Mateusz podłącza pendrive'a o czasie z dokumentu (06:02 -> 08:12). */
+const ON_TIME_CHOICES: BeatCondition = {
+  allOf: [
+    { decision: 3, tier: 'ideal' },
+    { decision: 4, tier: 'ideal' },
+    { decision: 6, tier: 'ideal' }
+  ]
+};
+
+/** Którykolwiek z D3, D4, D6 suboptymalny: Mateusz zwleka z podłączeniem pendrive'a (konsekwencja fabularna, nie punkty). */
+const LATE_PENDRIVE_CHOICES: BeatCondition = {
+  anyOf: [
+    { decision: 3, tier: 'suboptimal' },
+    { decision: 4, tier: 'suboptimal' },
+    { decision: 6, tier: 'suboptimal' }
+  ]
+};
+
 // ---------------------------------------------------------------------------
 // ETAPY MISJI — przebieg przez completeStage (wzorzec B).
 // Kolejność Kill Chain: uzbrojenie -> rekonesans/cel -> nośnik -> dostarczenie -> egzekucja.
@@ -813,8 +831,18 @@ export const mission3Stages: StageDefinition[] = [
           id: 'm3_reply_drop',
           label: 'OK. DAM CI ZNAĆ, KIEDY MATEUSZ PODŁĄCZY PENDRIVE I AKTYWUJE WIRUSA'
         },
-        // Poranek: 06:02 -> 08:12 (godziny pracy biura).
-        { from: 'time_jump', clockFrom: '06:02', clock: '08:12', label: 'DO GODZIN PRACY BIURA…' }
+        // Poranek: 06:02 -> 08:12 (godziny pracy biura) przy idealnych D3, D4, D6. Przy słabszym wyborze
+        // (suboptymalnym) Mateusz zwleka z pendrive'em: przeskok kończy się o 11:40 i mentor to komentuje.
+        // Wariant wybierany wg `when`, więc gra dokładnie jeden przeskok.
+        { from: 'time_jump', clockFrom: '06:02', clock: '08:12', label: 'DO GODZIN PRACY BIURA…', when: ON_TIME_CHOICES },
+        {
+          from: 'time_jump',
+          clockFrom: '06:02',
+          clock: '11:40',
+          label: "MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…",
+          when: LATE_PENDRIVE_CHOICES
+        },
+        { from: 'byte_master', text: 'CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ.', when: LATE_PENDRIVE_CHOICES }
       ],
       unlockIcons: ['rat_session_unlocked', 'rat_session'],
       badges: { rat_session: 1, chat: 1 },
