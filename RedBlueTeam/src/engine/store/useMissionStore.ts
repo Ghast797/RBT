@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, DecisionRejection, RejectedAttempt, ConversationBeat, ChoiceOutcome } from '../types/mission';
+import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, DecisionRejection, RejectedAttempt, ConversationBeat, ChoiceOutcome, DecisionChoice } from '../types/mission';
 import { scoreFromDecisions, countedTier, btcForScore, resolveDecisionCount, DEFAULT_PASSING_SCORE, roundScore } from '../core/scoring';
+import { beatMatches } from '../core/beatCondition';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
 import { createMissionCompletionStatement, MockLRS } from '../scorm/xapi';
@@ -116,9 +117,20 @@ export interface MissionState {
   /** Numery decyzji zgłoszonych w tym podejściu (bez `critical`) — podstawa autozapisu SCORM. */
   reportedDecisions: number[];
   decisionTiers: Record<number, ChoiceOutcome>;
+  /**
+   * Faktyczne wybory gracza wg numeru decyzji (`optionId`, odpowiedź, poziom) — puste na starcie,
+   * wypełnia je tylko `reportDecision` (pierwsze zgłoszenie wygrywa), czyści powtórka.
+   * Treść misji czyta je przez `useDecisionChoice(num)` albo warunek `when` beatu rozmowy.
+   */
+  decisionChoices: Record<number, DecisionChoice>;
   /** Próby odrzucone przez mentora (B2) wg numeru decyzji — kara naliczona, decyzja nadal otwarta. Czyści je powtórka. */
   rejectedAttempts: Record<number, RejectedAttempt[]>;
   recordChoice: (choice: PlayerChoiceRecord, penalty?: number) => void;
+  /**
+   * Kontrakt klocka (rozmowy): odpowiedź wybrana w nieocenianym węźle dopisuje się jako „ciąg dalszy”
+   * ostatniej ocenianej decyzji `num` (raport: „→ odpowiedź”). Bez zgłoszonej decyzji nic nie robi.
+   */
+  appendFollowUp: (num: number, reply: string) => void;
   /**
    * Kontrakt klocka/minigry: zgłoszenie ocenianej decyzji.
    * Silnik liczy punkty i karę BTC z `tier` oraz odpala wykrycie przy 'critical'.
@@ -314,6 +326,7 @@ const getInitialMissionState = (mission: MissionDefinition) => {
     playerChoices: choices,
     reportedDecisions: [] as number[],
     decisionTiers: {} as Record<number, ChoiceOutcome>,
+    decisionChoices: {} as Record<number, DecisionChoice>,
     rejectedAttempts: {} as Record<number, RejectedAttempt[]>,
 
     // Detection & Retry Modals
@@ -532,6 +545,10 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const score = scoreFromDecisions(tiers, rejectedNow, maxScore, decisionCount);
     set({
       decisionTiers: tiers,
+      decisionChoices: {
+        ...get().decisionChoices,
+        [report.num]: { ...(report.optionId !== undefined ? { optionId: report.optionId } : {}), answer: report.answer, tier: report.tier }
+      },
       score,
       goodChoicesCount: base.goodChoicesCount + all.filter((t) => t === 'suboptimal').length,
       criticalErrorsCount: all.filter((t) => t === 'critical').length,
@@ -565,6 +582,16 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     }
   },
 
+  appendFollowUp: (num, reply) => {
+    set((s) => {
+      const idx = s.playerChoices.findIndex((c) => c.num === num);
+      if (idx < 0 || s.decisionTiers[num] === undefined) return {};
+      const choices = [...s.playerChoices];
+      choices[idx] = { ...choices[idx], followUps: [...(choices[idx].followUps || []), reply] };
+      return { playerChoices: choices };
+    });
+  },
+
   // ----------------- KONTRAKT KLOCKA: ODRZUCENIE WYBORU PRZEZ MENTORA (B2) -----------------
   rejectDecision: (rejection: DecisionRejection) => {
     // Decyzja już zamknięta (pierwsze zgłoszenie wygrywa) albo ta sama odpowiedź odrzucona wcześniej.
@@ -579,7 +606,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
     const rejectedAttempts = {
       ...get().rejectedAttempts,
-      [rejection.num]: [...prior, { optionId: rejection.optionId, answer: rejection.answer, tier: rejection.tier, mentorLine: rejection.mentorLine }]
+      [rejection.num]: [...prior, { optionId: rejection.optionId, answer: rejection.answer, tier: rejection.tier, mentorLine: rejection.mentorLine, ...(rejection.feedback ? { feedback: rejection.feedback } : {}) }]
     };
     const score = scoreFromDecisions(get().decisionTiers, rejectedAttempts, maxScore, decisionCount);
     sounds.playNotification();
@@ -696,6 +723,13 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     }
 
     const beat = pb.beats[i];
+
+    // Beat z niespełnionym warunkiem `when` (wybór gracza w decyzji) jest pomijany bez śladu w czacie.
+    if (!beatMatches(beat.when, get().decisionChoices)) {
+      set((s) => ({ pendingBridge: s.pendingBridge ? { ...s.pendingBridge, index: i + 1 } : null }));
+      get().advanceBridge();
+      return;
+    }
 
     // Przeskok czasu → nakładka na pulpicie; mostek czeka na `endTimeJump`.
     if (beat.from === 'time_jump') {
@@ -999,3 +1033,7 @@ function playQueuedOpening() {
   }
   startOpeningConversation(next);
 }
+
+/** Faktyczny wybór gracza w decyzji `num` (`undefined`, dopóki decyzja nie została zgłoszona). Dla minigier podążających za wcześniejszym wyborem. */
+export const useDecisionChoice = (num: number): DecisionChoice | undefined =>
+  useMissionStore((s) => s.decisionChoices[num]);

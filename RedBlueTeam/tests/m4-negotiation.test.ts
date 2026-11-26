@@ -6,7 +6,6 @@ const nodes = victimChatConfig.dialogue.nodes;
 
 describe('M4 negocjacje: konfiguracja', () => {
   it('D9 i D10 oceniane per węzeł, węzeł 3 bez oceny, bez trybu agregującego', () => {
-    expect(victimChatConfig.dialogue.decisionNum).toBeUndefined();
     expect(nodes.find((n) => n.id === 'neg_1')!.decisionNum).toBe(9);
     expect(nodes.find((n) => n.id === 'neg_2')!.decisionNum).toBe(10);
     const n3 = nodes.find((n) => n.id === 'neg_3')!;

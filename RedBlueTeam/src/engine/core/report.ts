@@ -48,7 +48,8 @@ export function buildRejection(decision: ReportableDecision, option: ReportableO
     optionId: option.id,
     answer: reportAnswerOf(option),
     tier: option.tier,
-    mentorLine: option.reject.mentorLine
+    mentorLine: option.reject.mentorLine,
+    ...(option.feedback ? { feedback: option.feedback } : {})
   };
 }
 
@@ -73,6 +74,7 @@ export function buildReport(
   return {
     num: decision.decisionNum,
     question: decision.question,
+    optionId: option.id,
     answer: overrides.answer ?? reportAnswerOf(option),
     tier: overrides.tier ?? option.tier,
     feedback: overrides.feedback ?? option.feedback,

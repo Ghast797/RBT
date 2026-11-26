@@ -46,7 +46,8 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
         optionId: selected.id,
         answer: selected.label,
         tier: selected.tier,
-        mentorLine: selected.reject.mentorLine
+        mentorLine: selected.reject.mentorLine,
+        feedback: selected.feedback
       });
       setSelectedId(null);
       return;
@@ -58,6 +59,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
     onDecision({
       num: config.decisionNum,
       question: config.question,
+      optionId: selected.id,
       answer: selected.label,
       tier: selected.tier,
       feedback: selected.feedback,
