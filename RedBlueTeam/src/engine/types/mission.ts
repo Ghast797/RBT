@@ -10,6 +10,8 @@ export interface MissionMeta {
   rewardBtc: number; // e.g. 4.02
   maxScore: number; // e.g. 100
   passingScore?: number; // default 70
+  /** Ukrywa wynik (WYNIK, BTC) na pasku zadań w trakcie gry; gracz widzi go dopiero w raporcie. */
+  hideLiveScore?: boolean;
   /** Liczba ocenianych decyzji; dzieli maxScore na równe części. */
   decisionCount?: number;
   targetCompany: string; // e.g. "O&L Company"
@@ -107,14 +109,20 @@ export interface DecisionChoice {
 }
 
 /**
- * Warunek wyświetlenia beatu rozmowy: beat gra tylko, gdy decyzja `decision` została zgłoszona
- * i pasuje `optionId` (jeśli podano) oraz `tier` (jeśli podano). Brak decyzji = beat pominięty.
+ * Warunek pojedynczej decyzji: pasuje, gdy decyzja `decision` została zgłoszona
+ * i pasuje `optionId` (jeśli podano) oraz `tier` (jeśli podano). Brak decyzji = brak dopasowania.
  */
-export interface BeatCondition {
+export interface DecisionCondition {
   decision: number;
   optionId?: string | string[];
   tier?: ChoiceOutcome | ChoiceOutcome[];
 }
+
+/**
+ * Warunek `when` beatu rozmowy: pojedynczy warunek decyzji albo złożony
+ * `{ allOf: [...] }` (wszystkie pasują) / `{ anyOf: [...] }` (którykolwiek pasuje).
+ */
+export type BeatCondition = DecisionCondition | { allOf: DecisionCondition[] } | { anyOf: DecisionCondition[] };
 
 export interface PlayerChoiceRecord {
   num: number;

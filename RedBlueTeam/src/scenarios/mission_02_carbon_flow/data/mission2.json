@@ -8,6 +8,7 @@
     "accentColor": "#00ff66",
     "rewardBtc": 2.96,
     "maxScore": 100,
+    "hideLiveScore": true,
     "passingScore": 70,
     "decisionCount": 4,
     "targetCompany": "CarbonFlow Inc.",

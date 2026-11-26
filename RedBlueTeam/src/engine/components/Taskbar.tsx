@@ -35,6 +35,7 @@ export const Taskbar: React.FC = () => {
   }, []);
 
   const apps = activeMission.desktopApps || [];
+  const showScore = !activeMission.mission.hideLiveScore;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-11 bg-[#05090d]/95 border-t border-[#00ff66]/30 backdrop-blur-lg z-50 flex items-center justify-between px-3 font-mono text-xs select-none">
@@ -82,6 +83,8 @@ export const Taskbar: React.FC = () => {
 
       {/* Right: Mission Stats, Wallet & Clock */}
       <div className="flex items-center space-x-3 text-[#00ff66]/90">
+        {showScore && (
+          <>
         {/* BTC Reward */}
         <div className="hidden md:flex items-center space-x-1 px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.6875rem] text-[#ffaa00]">
           <Coins size={13} />
@@ -93,6 +96,8 @@ export const Taskbar: React.FC = () => {
           <span className="text-[#00ff66]/60">WYNIK:</span>
           <span className={`font-bold ${scormStatus(roundScore(score), activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE) === 'passed' ? 'text-[#00ff66]' : 'text-[#ff3366]'}`}>{displayScore(score)}%</span>
         </div>
+          </>
+        )}
 
         {/* Clock */}
         <div className="px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[0.6875rem] tracking-widest text-[#00ff66]">

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useMissionStore, __setBridgeDelayForTests } from '../src/engine/store/useMissionStore';
-import { beatMatches } from '../src/engine/core/beatCondition';
+import { beatMatches, matchesChoices } from '../src/engine/core/beatCondition';
 import { buildReport, buildRejection } from '../src/engine/core/report';
 import { mission2Definition } from '../src/scenarios/mission_02_carbon_flow';
 import type { ConversationBeat, DecisionReport, MissionDefinition } from '../src/engine/types/mission';
@@ -174,4 +174,19 @@ describe('NEW-06: appendFollowUp', () => {
     st().appendFollowUp(5, 'druga');
     expect(st().playerChoices.find((c) => c.num === 5)?.followUps).toEqual(['pierwsza', 'druga']);
   });
+});
+
+describe('P4: warunki złożone', () => {
+  const c = { 1: { optionId: 'a', answer: 'x', tier: 'ideal' as const }, 2: { answer: 'y', tier: 'suboptimal' as const } };
+  it('allOf: wszystkie muszą pasować', () => {
+    expect(beatMatches({ allOf: [{ decision: 1, tier: 'ideal' }, { decision: 2 }] }, c)).toBe(true);
+    expect(beatMatches({ allOf: [{ decision: 1, tier: 'ideal' }, { decision: 2, tier: 'ideal' }] }, c)).toBe(false);
+    expect(beatMatches({ allOf: [{ decision: 1 }, { decision: 3 }] }, c)).toBe(false);
+  });
+  it('anyOf: wystarczy jeden', () => {
+    expect(beatMatches({ anyOf: [{ decision: 1, tier: 'critical' }, { decision: 2, tier: 'suboptimal' }] }, c)).toBe(true);
+    expect(beatMatches({ anyOf: [{ decision: 1, tier: 'critical' }, { decision: 3 }] }, c)).toBe(false);
+    expect(beatMatches({ anyOf: [] }, c)).toBe(false);
+  });
+  it('matchesChoices to ta sama funkcja', () => expect(matchesChoices({ decision: 1 }, c)).toBe(true));
 });
