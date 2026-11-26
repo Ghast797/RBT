@@ -100,11 +100,11 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-17 | S | WYNIK i BTC na pasku zdradzają słaby wybór od razu | otwarte | | D-01: w M2+ ukryć WYNIK i BTC w trakcie gry, pokazać dopiero w raporcie. M1 (samouczek) bez zmian. Zasada P4: skutki odroczone są tylko fabularne, punkty bez zmian (odjęte przy decyzji). |
-| M2-01 | W | Monitor botnetu zawsze taki sam | otwarte | | Właściciel (P4): monitor liczy skutek ze słabszych wyborów (Quickgram −12 pkt %, ankieta przeciwpożarowa −10 pkt %, MARKETING@ → 1 alarm „FILTR POCZTY OZNACZYŁ NADAWCĘ JAKO PODEJRZANEGO”) + inna kwestia końcowa mentora przy dowolnym słabszym wyborze. Bez panelu Blue Teamu. |
-| M3-09 | S | Brak odroczonych konsekwencji; wynik spada od razu | otwarte | | Właściciel (P4): tylko opóźnienie. Przy słabszym wyborze (plan HR, nazwa/podpis dysku, pusty asfalt) przeskok czasu do późniejszej godziny z podpisem „MATEUSZ ZWLEKAŁ…” i kwestia mentora; pliki kopiują się wszystkie. |
-| M4-02 | W | Brak odroczonych konsekwencji; `m4_mail` nieczytany | otwarte | | Właściciel (P4): przy słabszym wyborze w mailu (nazwa pliku, treść bez hasła, adres ALEX@PRIV.COM) później otwarte CV (przeskok do późniejszej godziny), dopisek na panelu ransomware co poszło nie tak, mentor „IT JUŻ COŚ PODEJRZEWA…”. |
-| M4-04 | S | D8 niepełny zestaw plików, a mostek „mamy wszystko” | otwarte | | Właściciel (P4): licznik „WYBRANO X/3” i zatwierdzenie dopiero przy 3 plikach (łączy się z M4-10). Bez osobnej kwestii mentora dla zestawu ze zmyłkami. |
+| ENG-17 | S | WYNIK i BTC na pasku zdradzają słaby wybór od razu | zrobione | 2877572 | D-01: w M2+ ukryć WYNIK i BTC w trakcie gry, pokazać dopiero w raporcie. M1 (samouczek) bez zmian. Zasada P4: skutki odroczone są tylko fabularne, punkty bez zmian (odjęte przy decyzji). |
+| M2-01 | W | Monitor botnetu zawsze taki sam | zrobione | aa84229 | Właściciel (P4): monitor liczy skutek ze słabszych wyborów (Quickgram −12 pkt %, ankieta przeciwpożarowa −10 pkt %, MARKETING@ → 1 alarm „FILTR POCZTY OZNACZYŁ NADAWCĘ JAKO PODEJRZANEGO”) + inna kwestia końcowa mentora przy dowolnym słabszym wyborze. Bez panelu Blue Teamu. |
+| M3-09 | S | Brak odroczonych konsekwencji; wynik spada od razu | zrobione | 6c962a6 | Właściciel (P4): tylko opóźnienie. Przy słabszym wyborze (plan HR, nazwa/podpis dysku, pusty asfalt) przeskok czasu do późniejszej godziny z podpisem „MATEUSZ ZWLEKAŁ…” i kwestia mentora; pliki kopiują się wszystkie. |
+| M4-02 | W | Brak odroczonych konsekwencji; `m4_mail` nieczytany | zrobione | 7ce19f3 | Właściciel (P4): przy słabszym wyborze w mailu (nazwa pliku, treść bez hasła, adres ALEX@PRIV.COM) później otwarte CV (przeskok do późniejszej godziny), dopisek na panelu ransomware co poszło nie tak, mentor „IT JUŻ COŚ PODEJRZEWA…”. |
+| M4-04 | S | D8 niepełny zestaw plików, a mostek „mamy wszystko” | zrobione | 7ce19f3 | Właściciel (P4): licznik „WYBRANO X/3” i zatwierdzenie dopiero przy 3 plikach (łączy się z M4-10). Bez osobnej kwestii mentora dla zestawu ze zmyłkami. |
 
 ### P5 — teksty i drobne
 
@@ -127,7 +127,7 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 | M4-07 | S | D3: format czasu niejednoznaczny | otwarte | | |
 | M4-08 | S | Critical opisuje porażkę, nie wykrycie; D6 casual za łagodny | otwarte | | |
 | M4-09 | N | D5: podpowiedź mentora nie pasuje do ideału | otwarte | | |
-| M4-10 | N | D8: liczba plików nieznana, mylące zmyłki | otwarte | | |
+| M4-10 | N | D8: liczba plików nieznana, mylące zmyłki | zrobione | 7ce19f3 | Liczbę plików pokazuje licznik „WYBRANO X/3” z P4 (M4-04). Zmyłki zostają, bo to sedno zadania. |
 | M4-11 | N | Miniatura okna okupu w dev pokazuje ideał | otwarte | | |
 | M4-12 | N | D2: suwak startuje na wartości critical | otwarte | | |
 
