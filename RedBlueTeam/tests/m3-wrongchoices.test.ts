@@ -36,6 +36,26 @@ describe('M3: złe wybory wg D-06 (B2 / critical / suboptimal)', () => {
     expect(ids).toEqual(['reject']);
   });
 
+  it('D2: feedback zgodny z faktami z danych pracowników (staż, stanowisko)', () => {
+    const byId = Object.fromEntries(osintBrowserConfig.target.options.map((o) => [o.id, o]));
+    expect(byId.choose_logistics.feedback).toBe(
+      'Wiktoria pracuje w O&L od sześciu lat i zna procedury, więc nieznany pendrive najpewniej zaniesie do IT zamiast go podłączyć.'
+    );
+    expect(byId.choose_sales.feedback).toBe(
+      'Agnieszka kieruje zespołem i od 11 lat zna firmę; zgłosi podejrzaną rzecz zamiast ją sprawdzać na swoim komputerze.'
+    );
+    expect(byId.choose_ciso.feedback).toBe(
+      'Szef cyberbezpieczeństwa od razu rozpozna próbę ataku i zgłosi incydent, więc cała operacja zostaje spalona.'
+    );
+    expect(byId.choose_ceo.feedback).toBe(
+      'CEO jest pod stałą opieką działu bezpieczeństwa; każda podejrzana przesyłka do niego trafi do IT, a incydent zostanie zgłoszony i operacja spalona.'
+    );
+    // Staż z feedbacku musi zgadzać się z danymi pracowników na stronie firmy.
+    const emp = Object.fromEntries(osintBrowserConfig.site.employees.map((e) => [e.optionId, e.tenure]));
+    expect(emp.choose_logistics).toBe('W O&L OD: 6 LAT');
+    expect(emp.choose_sales).toBe('W O&L OD: 11 LAT');
+  });
+
   it('D3: pusty pendrive z keyloggerem zostaje critical', () => {
     const o = osintBrowserConfig.vector.options.find((x) => x.id === 'vector_empty_keylogger')!;
     expect(o.tier).toBe('critical');

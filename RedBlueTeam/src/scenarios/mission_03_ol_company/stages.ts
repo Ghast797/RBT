@@ -224,7 +224,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
         reportAnswer: 'SPECJALISTKA DS. LOGISTYKI',
         tier: 'suboptimal',
         feedback:
-          'Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.',
+          'Wiktoria pracuje w O&L od sześciu lat i zna procedury, więc nieznany pendrive najpewniej zaniesie do IT zamiast go podłączyć.',
         reject: {
           mentorLine:
             'WIKTORIA PRACUJE TU OD SZEŚCIU LAT I ZNA PROCEDURY. NIEZNANY PENDRIVE RACZEJ ZANIESIE DO IT. WYBIERZ KOGOŚ INNEGO.'
@@ -236,7 +236,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
         reportAnswer: 'SZEFOWA DZIAŁU SPRZEDAŻY',
         tier: 'suboptimal',
         feedback:
-          'Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.',
+          'Agnieszka kieruje zespołem i od 11 lat zna firmę; zgłosi podejrzaną rzecz zamiast ją sprawdzać na swoim komputerze.',
         reject: {
           mentorLine:
             'AGNIESZKA KIERUJE ZESPOŁEM I ZGŁOSI KAŻDĄ PODEJRZANĄ RZECZ. TO ZBYT OSTROŻNA OSOBA NA TAKI ATAK. SPRÓBUJ JESZCZE RAZ.'
@@ -248,7 +248,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
         reportAnswer: 'SZEF DZIAŁU CYBERBEZPIECZEŃSTWA',
         tier: 'critical',
         feedback:
-          'Zaatakowanie szefa bezpieczeństwa lub CEO tak jawnym wektorem to gwarancja natychmiastowego zgłoszenia incydentu i spalenia całej operacji.'
+          'Szef cyberbezpieczeństwa od razu rozpozna próbę ataku i zgłosi incydent, więc cała operacja zostaje spalona.'
       },
       {
         id: 'choose_ceo',
@@ -256,7 +256,7 @@ export const osintBrowserConfig: OsintBrowserConfig = {
         reportAnswer: 'CEO',
         tier: 'critical',
         feedback:
-          'Zaatakowanie szefa bezpieczeństwa lub CEO tak jawnym wektorem to gwarancja natychmiastowego zgłoszenia incydentu i spalenia całej operacji.'
+          'CEO jest pod stałą opieką działu bezpieczeństwa; każda podejrzana przesyłka do niego trafi do IT, a incydent zostanie zgłoszony i operacja spalona.'
       }
     ]
   },

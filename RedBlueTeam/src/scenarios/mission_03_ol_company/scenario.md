@@ -6,7 +6,7 @@
 - data fabularna: 19.05.2026
 - ocenianych decyzji: 6
 
-Źródło prawdy: `docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md` (VR, 6 decyzji D1–D6) oraz uwagi właściciela z testu; przebudowa wg `docs/rebuild-plan.md` (porcje A–H). Kolejność etapów (Kill Chain): uzbrojenie → rekonesans i cel → nośnik → dostarczenie dronem → sesja RAT. Wynik zaliczający: 80%. Podsumowanie: „ZHAKOWANO O&L”, „UKOŃCZONO ZADANIE 3”.
+Źródło prawdy: `docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md` (VR, 6 decyzji D1–D6) oraz uwagi właściciela z testu; przebudowa wg `docs/rebuild-plan.md` (porcje A–H). Kolejność etapów (Kill Chain): uzbrojenie → rekonesans i cel → nośnik → dostarczenie dronem → sesja RAT. Wynik zaliczający: 70% (`passingScore` w `data/mission3.json`). Podsumowanie: „ZHAKOWANO O&L”, „UKOŃCZONO ZADANIE 3”.
 
 ## Intro (dialog z BYTE_MASTER)
 - BM: WITAJ, HAKERZE! PRZED TOBĄ KOLEJNE ZADANIE
@@ -14,7 +14,7 @@
 - BM: CIERPLIWOŚCI. JESTEŚ NA DOBREJ DRODZE, PÓKI CO BARDZO NAM POMAGASZ W WALCE Z KONCERNAMI
 - GRACZ: OK, NIECH BĘDZIE. A WIĘC?
 - BM: O&L COMPANY TO JEDNA Z WIĘKSZYCH SPÓŁEK PALIWOWYCH. Z MOICH ŹRÓDEŁ WYNIKA, ŻE MAJĄ BRAKUJĄCĄ CZĘŚĆ DOKUMENTACJI NA TEMAT FREEVOLT, W TYM OPIS CAŁEJ INFRASTRUKTURY, WIĘC TO BARDZO CENNE DANE. ZDOBYCIE ICH BĘDZIE WYMAGAŁO OD CIEBIE KREATYWNOŚCI
-- GRACZ: CZY WIRUS, KTÓRY PRZEJMIE PULPIT PRACOWNIKA JEST WYSTARCZAJĄCO KREATYWNY?
+- GRACZ: CZY WIRUS NA KOMPUTERZE PRACOWNIKA WYSTARCZY?
 - BM: TO ZALEŻY JAK GO DOSTARCZYSZ
 - GRACZ: DAJ MI CHWILĘ
 - odblokuj: //BAZA_WIRUSÓW (zaraz po starcie pulpitu, bez kwestii w czacie)
@@ -26,9 +26,9 @@ Ekrany: wybór wirusa (D1) → matryca kompilacji: czarne pole z „?”, spod k
 Oceniane: D1 | Flavor (nieoceniane): matryca kompilacji
 
 Decyzja D1: "WYBIERZ ODPOWIEDNIEGO WIRUSA"
-- RAT: REMOTE ACCESS TROJAN — "POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY" | ideal | Daje bezpośredni, interaktywny wgląd w pulpit stacji roboczej pracownika i pozwala na swobodną eksplorację zasobów korporacyjnych bez wszczynania alarmu.
-- RANSOMWARE — "MOŻE ZASZYFROWAĆ KOMPUTER OFIARY ORAZ JEJ CAŁĄ SIEĆ" | suboptimal | Zablokowanie stacji ofiary natychmiast postawi na nogi dział IT i zablokuje możliwość cichego wykradzenia dokumentacji Freevolt.
-- KEYLOGGER — "POKAŻE WSZYSTKO CO OFIARA WPISUJE NA KLAWIATURZE" | critical | Samo przechwytywanie wciśnięć klawiszy nie gwarantuje dostępu do zgromadzonych na dyskach plików projektowych i schematów.
+- RAT: REMOTE ACCESS TROJAN — "PROGRAM POZWALAJĄCY ZDALNIE STEROWAĆ ZAINFEKOWANYM KOMPUTEREM, JAK GDYBY SIEDZIAŁO SIĘ PRZY NIM" | ideal | Daje bezpośredni, interaktywny wgląd w pulpit stacji roboczej pracownika i pozwala na swobodną eksplorację zasobów korporacyjnych bez wszczynania alarmu.
+- RANSOMWARE — "PROGRAM SZYFRUJĄCY DANE NA KOMPUTERZE I W SIECI, ŻEBY ZAŻĄDAĆ OKUPU ZA ICH ODBLOKOWANIE" | critical | Zaszyfrowanie danych na stacji ofiary od razu postawi na nogi dział IT, który wykryje włamanie, odetnie stację od sieci i zablokuje możliwość cichego wykradzenia dokumentacji Freevolt (ekran wykrycia).
+- KEYLOGGER — "PROGRAM REJESTRUJĄCY WSZYSTKIE KLAWISZE WCIŚNIĘTE NA ZAINFEKOWANYM KOMPUTERZE" | suboptimal | Samo przechwytywanie wciśnięć klawiszy nie gwarantuje dostępu do zgromadzonych na dyskach plików projektowych i schematów. Odrzucenie (B2), mentor: "KEYLOGGER ZAPISZE TYLKO WCIŚNIĘTE KLAWISZE, A MY POTRZEBUJEMY DOSTĘPU DO PLIKÓW. PRZEMYŚL TO JESZCZE RAZ." Gracz wybiera ponownie, decyzja nie jest zgłaszana.
 
 Opcje wyświetlają się w losowej kolejności (konwencja silnika). Po wyborze Ransomware gra toczy się dalej jak z RAT (werdykt w debriefie).
 
@@ -47,10 +47,10 @@ Pracownicy: JAN ŁUKASIEWICZ (CEO), SŁAWOMIR BIAŁEK (SZEF DZIAŁU CYBERBEZPIEC
 
 Decyzja D2: "KTÓRĄ OSOBĘ ZAMIERZASZ ZHAKOWAĆ?"
 - MATEUSZ KLIMOWICZ | ideal | Nowo zatrudniony pracownik na juniorskim stanowisku charakteryzuje się najmniejszym doświadczeniem, brakiem obycia z procedurami bezpieczeństwa i najwyższą podatnością na socjotechnikę.
-- WIKTORIA GAŁECKA | suboptimal | Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.
-- AGNIESZKA LEMAN | suboptimal | Doświadczone pracownice wyższego szczebla, które zachowują większą ostrożność wobec nietypowych nośników pamięci.
-- SŁAWOMIR BIAŁEK | critical | Zaatakowanie szefa bezpieczeństwa lub CEO tak jawnym wektorem to gwarancja natychmiastowego zgłoszenia incydentu i spalenia całej operacji.
-- JAN ŁUKASIEWICZ | critical | Zaatakowanie szefa bezpieczeństwa lub CEO tak jawnym wektorem to gwarancja natychmiastowego zgłoszenia incydentu i spalenia całej operacji.
+- WIKTORIA GAŁECKA | suboptimal | Wiktoria pracuje w O&L od sześciu lat i zna procedury, więc nieznany pendrive najpewniej zaniesie do IT zamiast go podłączyć. Odrzucenie (B2), mentor: "WIKTORIA PRACUJE TU OD SZEŚCIU LAT I ZNA PROCEDURY. NIEZNANY PENDRIVE RACZEJ ZANIESIE DO IT. WYBIERZ KOGOŚ INNEGO."
+- AGNIESZKA LEMAN | suboptimal | Agnieszka kieruje zespołem i od 11 lat zna firmę; zgłosi podejrzaną rzecz zamiast ją sprawdzać na swoim komputerze. Odrzucenie (B2), mentor: "AGNIESZKA KIERUJE ZESPOŁEM I ZGŁOSI KAŻDĄ PODEJRZANĄ RZECZ. TO ZBYT OSTROŻNA OSOBA NA TAKI ATAK. SPRÓBUJ JESZCZE RAZ."
+- SŁAWOMIR BIAŁEK | critical | Szef cyberbezpieczeństwa od razu rozpozna próbę ataku i zgłosi incydent, więc cała operacja zostaje spalona.
+- JAN ŁUKASIEWICZ | critical | CEO jest pod stałą opieką działu bezpieczeństwa; każda podejrzana przesyłka do niego trafi do IT, a incydent zostanie zgłoszony i operacja spalona.
 
 Karty celu mają tylko imię i nazwisko (stanowisko trafia do raportu jako odpowiedź). Nie ma „cofania” po złym wyborze.
 
@@ -61,6 +61,8 @@ Decyzja D3: "JAK GO OSZUKASZ?"
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "DZIĘKI ARCHIWUM ANTYWIRUS NIE ZNAJDZIE ZAGROŻENIA. DOBRZE. TERAZ PRZYGOTUJ PENDRIVE"
+- BM (gdy D3 = dokumenty HR): "DOKUMENTY O ZWOLNIENIACH GO ZANIEPOKOJĄ, ALE MOŻE ODDAĆ PENDRIVE DO KADR. TERAZ PRZYGOTUJ PENDRIVE"
+- BM (gdy D3 = dokumenty HR): "DOKUMENTY O ZWOLNIENIACH GO ZANIEPOKOJĄ, ALE MOŻE ODDAĆ PENDRIVE DO KADR. TERAZ PRZYGOTUJ PENDRIVE"
 - BM: "WYSYŁAM CI PRZYKŁADOWE PLIKI, KTÓRYCH MOŻESZ UŻYĆ"
 - GRACZ: "ODBIERAM PLIKI. PRZYGOTUJĘ NOŚNIK." [SPÓJNIK]
 - odblokuj: //DYSK E: PENDRIVE
@@ -71,20 +73,21 @@ Cel dydaktyczny: zrozumienie, jak przygotowuje się przynętę fizyczną (baitin
 Ekrany: „POBIERZ ZAŁĄCZNIKI” (trzy pliki: IMG_00034521.JPG X3, DOKUMENTY_HR.DOCX, WYPOWIEDZENIE_UMOWY_O_PRACE.PDF) → przeciągnięcie pliku pasującego do planu z D3 na pendrive'a (błędny plik wraca na listę z komunikatem, bez kary), potem przeciągnięcie //WIRUS: RAT na ten plik (powstaje archiwum, np. FOTKI_AFTERPARTY.ZIP) → „WYBIERZ NAZWĘ PENDRIVE'A:” (4 karty) → „WYBIERZ PODPIS NA KOPERCIE” z przyciskiem „WYSUŃ PAMIĘĆ USB” → „PENDRIVE GOTOWY. WYSUNIĘTO PAMIĘĆ USB.”
 Oceniane: D4 (poziom D4 = gorszy z dwóch kroków: nazwa dysku, podpis) | Flavor (nieoceniane): wybór pliku, pakowanie RAT do archiwum
 
-Nazwa dysku (krok w ramach D4; VR podaje tylko wybór idealny `IMPREZA`):
-- KEYLOGGER | critical | Nazwa „KEYLOGGER” to natychmiastowa kompromitacja nośnika. (odpowiedź w raporcie: „NAZWA DYSKU: KEYLOGGER”)
-- ZDJĘCIA B&O COMPANY | suboptimal | Błędna nazwa firmy („B&O” zamiast „O&L”) może zaalarmować użytkownika lub analityka.
-- IMPREZA | ideal | Naturalna, wiarygodna etykieta woluminu spójna z przygotowaną przynętą.
-- NOWY DYSK | suboptimal | Zbyt ogólna nazwa nie wzmacnia przynęty i może budzić obojętność.
+Nazwa dysku (krok w ramach D4; VR podaje tylko wybór idealny `IMPREZA`). Poziomy zależą od planu z D3 (`forPlans`/`byPlan`, M3-06):
+- plan zdjęć z imprezy (D3 ideal): KEYLOGGER | critical | „KEYLOGGER” zdradza nośnik (odpowiedź w raporcie: „NAZWA DYSKU: KEYLOGGER”, zgłaszane od razu); ZDJĘCIA B&O COMPANY | suboptimal | błędna nazwa firmy; IMPREZA | ideal; NOWY DYSK | suboptimal | zbyt ogólna nazwa.
+- plan HR (D3 suboptimal, dokumenty HR): KEYLOGGER | critical; DOKUMENTY HR | ideal; DOKUMENTY B&O COMPANY | suboptimal | błędna nazwa firmy; NOWY DYSK | suboptimal | zbyt ogólna nazwa.
 
-Decyzja D4: "WYBIERZ PODPIS NA KOPERCIE"
-- ZDJĘCIA Z AFTERPARTY O&L COMPANY! | ideal | Precyzyjnie nawiązuje do właściwej nazwy koncernu i nieformalnego charakteru imprezy, wzbudzając maksymalne zaufanie i motywację do natychmiastowego otwarcia.
-- PENDRIVE ZE ZDJĘCIAMI B&O COMPANY | suboptimal | Błędna nazwa firmy („B&O” zamiast „O&L”) wprowadza dysonans i może skłonić ofiarę do zignorowania nośnika jako cudzej własności.
-- ZGUBIONE DOKUMENTY | critical | Etykieta stoi w całkowitej sprzeczności ze spakowanymi zdjęciami i przygotowaną legendą socjotechniczną, prowokując oddanie koperty do ochrony.
-- WYPOWIEDZENIE UMOWY | critical | Etykieta stoi w całkowitej sprzeczności ze spakowanymi zdjęciami i przygotowaną legendą socjotechniczną, prowokując oddanie koperty do ochrony.
+Decyzja D4: "WYBIERZ PODPIS NA KOPERCIE" (poziom zależy od planu z D3, `byPlan`; poziom D4 = gorszy z nazwy dysku i podpisu)
+- plan zdjęć z imprezy: ZDJĘCIA Z AFTERPARTY O&L COMPANY! | ideal | Precyzyjnie nawiązuje do właściwej nazwy koncernu i nieformalnego charakteru imprezy, wzbudzając maksymalne zaufanie i motywację do natychmiastowego otwarcia.
+- plan zdjęć: PENDRIVE ZE ZDJĘCIAMI B&O COMPANY | suboptimal | Błędna nazwa firmy („B&O” zamiast „O&L”) wprowadza dysonans i może skłonić ofiarę do zignorowania nośnika jako cudzej własności.
+- plan zdjęć: ZGUBIONE DOKUMENTY | critical | Etykieta stoi w całkowitej sprzeczności ze spakowanymi zdjęciami i przygotowaną legendą socjotechniczną, prowokując oddanie koperty do ochrony.
+- plan zdjęć: WYPOWIEDZENIE UMOWY | critical | Etykieta stoi w całkowitej sprzeczności ze spakowanymi zdjęciami i przygotowaną legendą socjotechniczną, prowokując oddanie koperty do ochrony.
+
+Plan HR (D3 suboptimal): ZDJĘCIA Z AFTERPARTY O&L COMPANY! | critical (na pendrive'ie są dokumenty HR); PENDRIVE ZE ZDJĘCIAMI B&O COMPANY | critical; ZGUBIONE DOKUMENTY | suboptimal; WYPOWIEDZENIE UMOWY | ideal.
 
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI"
+- GRACZ (gdy D3 = dokumenty HR): "GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI"
 - GRACZ: "MATEUSZ POWINIEN SIĘ OSTRO ZESTRESOWAĆ. MAM NADZIEJĘ, ŻE TO DLA CIEBIE WYSTARCZAJĄCO KREATYWNE?"
 - BM: "JEST OK. WYSYŁAM CI ADRES OFIARY: UL. OŁTASZYŃSKA 92C/6, 53-034 WROCŁAW, POLSKA (PL)"
 - BM: "DRONA WYŚLIJ Z SAMEGO RANA, ŻEBY OFIARA ZNALAZŁA KOPERTĘ NA SAMOCHODZIE PRZED WYJAZDEM DO BIURA. WTEDY W PRACY NA PEWNO SPRAWDZI ZAWARTOŚĆ"
@@ -105,20 +108,22 @@ Rozmowa przy otwarciu (gra raz w czacie, przy pierwszym otwarciu aplikacji):
 - BM: "GOŚĆ JEŹDZI BIAŁYM SAMOCHODEM Z CZERWONYM DACHEM."
 
 Decyzja D5: "WSKAŻ DRONOWI ADRES DOMU OFIARY"
-- OŁAWSKA 51B (NADODRZE) | suboptimal | Skierowanie drona w zupełnie inną dzielnicę Wrocławia; ładunek nie trafi do rąk wytypowanej ofiary.
-- DRZYMAŁY 38D (PILCZYCE) | suboptimal | Skierowanie drona w zupełnie inną dzielnicę Wrocławia; ładunek nie trafi do rąk wytypowanej ofiary.
-- WYSTAWOWA 23A (ZALESIE) | critical | Wysłanie drona w rejon obiektów użyteczności publicznej (Hala Stulecia) grozi przechwyceniem nośnika przez osoby trzecie.
+- OŁAWSKA 51B (NADODRZE) | critical | Ekran "KOPERTA POD ZŁYM ADRESEM" z wyjaśnieniem, gdzie trafiła koperta (inna dzielnica, obcy ludzie); nośnik nigdy nie trafi do ofiary.
+- DRZYMAŁY 38D (PILCZYCE) | critical | Jak wyżej: ekran "KOPERTA POD ZŁYM ADRESEM".
+- WYSTAWOWA 23A (ZALESIE) | critical | Ekran "KOPERTA POD ZŁYM ADRESEM": dron w rejon obiektów użyteczności publicznej (Hala Stulecia), koperta trafia do osób trzecich.
 - OŁTASZYŃSKA 92C (PARTYNICE) | ideal | Prawidłowy adres domowy Mateusza Klimowicza przekazany wcześniej przez mentora w wywiadzie operacyjnym.
 
 Decyzja D6: "WYBIERZ MIEJSCE NA PARKINGU, GDZIE OFIARA NA PEWNO ZNAJDZIE KOPERTĘ Z PENDRIVE'M"
 Gracz wskazuje auto na scenie (nie z listy); poniżej etykiety aut. Odpowiedź w raporcie dla ideal: „BIAŁY SAMOCHÓD Z CZERWONYM DACHEM – SAMOCHÓD OFIARY”.
 - BIAŁY SAMOCHÓD Z CZERWONYM DACHEM | ideal | Koperta zostaje precyzyjnie umieszczona na samochodzie Mateusza, gwarantując jej odnalezienie przed wyjazdem do biura.
-- CIEMNY SUV / BIAŁY SEDAN Z BIAŁYM DACHEM / ZIELONY HATCHBACK / SREBRNY SEDAN / CZERWONY HATCHBACK Z BIAŁYM DACHEM / POMARAŃCZOWY VAN / CZARNE KOMBI (po jednej opcji na auto) | suboptimal | Koperta trafi do przypadkowego sąsiada, co drastycznie zmniejsza szansę na dostarczenie payloadu do biura O&L Company.
-- PUSTY ASFALT MIĘDZY MIEJSCAMI PARKINGOWYMI (kliknięcie w tło sceny) | critical | Zgubienie lub zniszczenie nośnika pod kołami innych pojazdów oraz całkowite fiasko operacji drop USB.
+- CIEMNY SUV / BIAŁY SEDAN Z BIAŁYM DACHEM / ZIELONY HATCHBACK / SREBRNY SEDAN / CZERWONY HATCHBACK Z BIAŁYM DACHEM / POMARAŃCZOWY VAN / CZARNE KOMBI (po jednej opcji na auto) | critical | Ekran "KOPERTA U PRZYPADKOWEGO SĄSIADA": koperta trafia do przypadkowego sąsiada, nośnik nie dotrze do biura O&L Company.
+- PUSTY ASFALT MIĘDZY MIEJSCAMI PARKINGOWYMI (kliknięcie w tło sceny) | suboptimal | Koperta leży na ziemi, a nie na aucie ofiary: Mateusz może ją podnieść, ale może też ją ominąć, więc powodzenie operacji jest niepewne.
 
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "OK. DAM CI ZNAĆ, KIEDY MATEUSZ PODŁĄCZY PENDRIVE I AKTYWUJE WIRUSA"
-- PRZESKOK CZASU: 06:02 → 08:12 ("DO GODZIN PRACY BIURA…")
+- PRZESKOK CZASU: 06:02 → 08:12 ("DO GODZIN PRACY BIURA…") przy idealnych D3, D4 i D6.
+- Gdy D3, D4 lub D6 suboptymalne: PRZESKOK CZASU 06:02 → 11:40 ("MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…"), potem BM: "CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ." przy idealnych D3, D4 i D6.
+- Gdy D3, D4 lub D6 suboptymalne: PRZESKOK CZASU 06:02 → 11:40 ("MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…"), potem BM: "CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ."
 - odblokuj: //WIRUS: RAT (C2) (po przeskoku z opóźnieniem 3 s; z przychodzącym połączeniem „MALWARE ZOSTAŁ AKTYWOWANY”, dźwięk alarmu)
 
 ## Etap 5: //WIRUS: RAT (C2)
@@ -141,7 +146,7 @@ D1:
 - Obrona: Sygnały: nieznany proces lub usługa startująca razem z systemem, nietypowy ruch wychodzący na obcy adres, pulpit, który „sam się rusza”. Co zrobić: ogranicz uprawnienia kont (zasada najmniejszych uprawnień), korzystaj z EDR i monitoringu ruchu wychodzącego, a przy podejrzeniu infekcji odłącz stację od sieci i zgłoś incydent do IT.
 
 D2:
-- Atak: Atakujący wybiera najsłabsze ogniwo, a nie najważniejszą osobę. Strona firmy pokazywała, że Mateusz pracuje w O&L od dwóch tygodni i obsługuje klientów, więc najpewniej nie zna jeszcze procedur i chce zrobić dobre wrażenie. CEO i szef cyberbezpieczeństwa zgłosiliby incydent od razu, a doświadczone pracownice wyższego szczebla są ostrożniejsze wobec nietypowych nośników.
+- Atak: Atakujący wybiera najsłabsze ogniwo, a nie najważniejszą osobę. Strona firmy pokazywała, że Mateusz pracuje w O&L od dwóch tygodni i obsługuje klientów, więc najpewniej nie zna jeszcze procedur i chce zrobić dobre wrażenie. CEO i szef cyberbezpieczeństwa zgłosiliby incydent od razu, a Wiktoria (6 lat w firmie) i Agnieszka (szefowa działu) znają procedury i są ostrożniejsze wobec nietypowych nośników.
 - Obrona: Sygnały: publicznie widoczny staż, stanowisko i zakres obowiązków każdej osoby na stronie firmy. Wszystkie informacje o Tobie w sieci mogą zostać użyte przeciwko Tobie. Co zrobić: szkolenie z cyberbezpieczeństwa już pierwszego dnia pracy (przed dostępem do systemów), jasna procedura zgłaszania podejrzanych rzeczy i kultura, w której nikt nie boi się zapytać IT. Warto też nie ujawniać na stronie firmy zbędnych szczegółów o stażu i obowiązkach osób.
 
 D3:
@@ -176,8 +181,12 @@ Zbiorcza lista odstępstw od dokumentu scenariusza (O1–O15 i rozstrzygnięcia 
 - [DO DECYZJI] Pasek certyfikatu „4/10” i stan portfela (5,50 → 9,52 BTC) z VR poza zakresem (P9); silnik zna tylko `rewardBtc`. Slajdy „CO POWINIENEŚ ZAPAMIĘTAĆ?” tylko jako lekcje atak/obrona i baza Moodle (P10).
 - [DO DECYZJI] Standard M2+: `AppHeader` z paskiem ZADANIE, ekrany bez podpowiedzi oceny (etykiety poziomów, natychmiastowy feedback, wskaźniki zgodności usunięte), opcje decyzji tasowane, kroki bez decyzji kończą się same po komunikacie, pamięć stanu aplikacji (`AppHost`). Grafiki mają zastępniki, dopóki pliki nie trafią do `assets/<grupa>/`.
 - [SPÓJNIK] „ODBIERAM PLIKI. PRZYGOTUJĘ NOŚNIK.” po kwestiach BM o archiwum i plikach (VR kończy kwestią BM). Spójnik „NAJPIERW STWORZĘ WIRUSA.” z dawnej implementacji usunięty: intro kończy się „DAJ MI CHWILĘ”.
+- [DO DECYZJI, M3-13] Kwestia gracza w intro zmieniona z „CZY WIRUS, KTÓRY PRZEJMIE PULPIT PRACOWNIKA JEST WYSTARCZAJĄCO KREATYWNY?” na „CZY WIRUS NA KOMPUTERZE PRACOWNIKA WYSTARCZY?”: VR zdradzała, że D1 to kwestia kreatywności (wirus), a nie wybór typu malware.
+- [DO DECYZJI, M3-12] Feedback D2 (Wiktoria, Agnieszka, Białek, Łukasiewicz) i lekcja w debriefie oparte na faktach z danych pracowników: Wiktoria 6 lat, Agnieszka 11 lat i kieruje zespołem. Dawne „doświadczone pracownice wyższego szczebla” usunięte.
+- [DO DECYZJI, NEW-04] D5: zły adres i D6: inne auto = critical z ekranem wykrycia (wcześniej część była suboptimal). Pusty asfalt = suboptimal. Wcześniejsze opisy w tym dokumencie były nieaktualne.
+- [DO DECYZJI, NEW-04] Wynik zaliczający 70% (`passingScore` w `data/mission3.json`); poprzednia wersja tego dokumentu podawała 80%.
 - [NIEPEWNE] Literówki VR przepisane dosłownie („NAM POBICIE TROCHĘ DRAMATURGIĘ”, „B&O COMPANY” jako celowy błąd firmy w opcjach suboptimal); poprawione tylko „ZOSTAWIE” → „ZOSTAWIĘ” (P6). Kod pocztowy adresu z VR: 53-034 (dawny kod: 53-234).
-- [DO ZAPROJEKTOWANIA] Poziomy nazw dysku w D4 (VR podaje tylko wybór idealny `IMPREZA`; pozostałe z dawnej implementacji, `KEYLOGGER` critical), odpowiedzi do raportu dla opcji poza ścieżką ideal (D2: stanowisko osoby; D3 suboptimal „PODRZUCĘ PENDRIVE Z DOKUMENTAMI HR O ZWOLNIENIACH”; D3 critical „PUSTY PENDRIVE Z PODPISEM KEYLOGGER”), staż „W O&L OD: …” i opisy pracowników, wpisy WYDARZENIA bez dat rocznych, lekcje atak/obrona D1–D6: propozycja do recenzji właściciela.
+- [ZROBIONE NEW-04: poziomy nazw dysku wg planu, odpowiedzi do raportu; lekcje D1–D6 nadal do recenzji] Poziomy nazw dysku w D4 (VR podaje tylko wybór idealny `IMPREZA`; pozostałe z dawnej implementacji, `KEYLOGGER` critical), odpowiedzi do raportu dla opcji poza ścieżką ideal (D2: stanowisko osoby; D3 suboptimal „PODRZUCĘ PENDRIVE Z DOKUMENTAMI HR O ZWOLNIENIACH”; D3 critical „PUSTY PENDRIVE Z PODPISEM KEYLOGGER”), staż „W O&L OD: …” i opisy pracowników, wpisy WYDARZENIA bez dat rocznych, lekcje atak/obrona D1–D6: propozycja do recenzji właściciela.
 - [DO DECYZJI] Raport D4: gdy ocenę wyznacza nazwa dysku (gorsza od podpisu), odpowiedź w raporcie to `NAZWA DYSKU: X / PODPIS: Y` (VR: sam podpis), żeby gracz widział, co obniżyło ocenę. Przy ocenie wyznaczonej przez podpis (także przy remisie) odpowiedź to sam podpis, jak w debriefie VR.
 - [DO DECYZJI] D1: opisy opcji z VR („POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY”, „MOŻE ZASZYFROWAĆ…”, „POKAŻE WSZYSTKO CO OFIARA WPISUJE…”) zastąpiono neutralnymi definicjami typu programu, jak w M2 (RAT: program do zdalnego sterowania zainfekowanym komputerem; ransomware: program szyfrujący dane w celu okupu; keylogger: program rejestrujący wciśnięte klawisze). Wersje z VR oceniały przydatność i wskazywały odpowiedź. Etykiety (nazwy typów) i poziomy bez zmian.
 - [DO DECYZJI] Zdrapka (dawniej „matryca kompilacji”): żargon „matryca kompilacji” usunięty z widocznych tekstów (ekran ładowania: „PRZYGOTOWANIE PROGRAMU DO SKŁADANIA…”; w danych zostaje nazwa wewnętrzna `matrix`). Podtytuł nagłówka pokazuje, po co jest ekran: „SKŁADASZ PROGRAM: RAT”. Grafika i cztery podpisy części zależą od wyboru z D1 (`matrix.variants`): po wyborze Ransomware (suboptimal, gra idzie dalej) ekran składa „RANSOMWARE” (szyfrowanie, klucz, rozprzestrzenianie, żądanie okupu), nie RAT. Pasek, podpisy i komunikat „WIRUS GOTOWY!” liczą się z jednego źródła (`matrixView`): po przekroczeniu progu 92% zdrapka jest domknięta (maska znika, pasek 100%, cztery podpisy zapalone naraz), a komunikat widać ok. 2 s.
@@ -188,5 +197,5 @@ Zbiorcza lista odstępstw od dokumentu scenariusza (O1–O15 i rozstrzygnięcia 
 - [DO DECYZJI] //WIRUS: RAT: przycisk „PODSUMOWANIE ZADANIA” zawsze woła `onComplete` (po ponownym otwarciu zaliczonego etapu silnik tylko zamyka okno, więc przycisk nie może zostać martwy). Pliki FREEVOLT obsługiwane z klawiatury (Tab, Enter lub spacja), jak w //DYSK E. Karta alertu aktywacji wypełnia szerokość okna, a przy dużych ekranach (od 1536 px) ma większy tekst.
 - [DO DECYZJI] Spójność z M2: nagłówki minigier mają podtytuły z configu (kontekst aplikacji, nie polecenie), a ekrany ładowania pokazują ten sam nagłówek aplikacji nad paskiem (bez zmian w silniku); czat BYTE_MASTER jest pierwszym kafelkiem pulpitu (jak w M2); tekst w minigrach nie jest mniejszy niż `text-xs` (podniesione etykiety w pasku „PRZECZYTANO”, pliki FREEVOLT, ikony pulpitu ofiary; test pilnuje progu).
 - [DO DECYZJI] D3 w czacie (VR) → wiersze w //TOR: w VR wektor to wybór w rozmowie z BYTE_MASTER; w webie to trzy wiersze (jedno zdanie każdy) na ostatnim ekranie //TOR, a pytanie mentora zastępuje etykieta strefy „JAK GO OSZUKASZ?”. Wybrany wektor trafia do wspólnego stanu (`customState.m3_plan` = id opcji), z którego //DYSK E dobiera plik pasujący do planu (wcześniej dopasowanie po tekście odpowiedzi z `playerChoices`).
-- [DO ZAPROJEKTOWANIA] Mostki z VR zakładają ścieżkę idealną: po wyborze suboptymalnym (np. D3 „dokumenty HR”, D4 inna nazwa dysku) mentor w mostkach nadal mówi o archiwum i zdjęciach, a kwestie gracza mówią o zdjęciach i podpisanej kopercie. To świadome (wierność VR; właściciel: „zakładamy, że gracz przechodzi dobrze”). Kandydat na przyszły mechanizm konsekwencji: mostki zależne od poziomu decyzji (silnik: warianty `conversation` wg `reportedDecisions`).
+- [DO ZAPROJEKTOWANIA, częściowo zrobione NEW-04] Mostki z VR zakładają ścieżkę idealną: po wyborze suboptymalnym (np. D3 „dokumenty HR”, D4 inna nazwa dysku) mentor w mostkach nadal mówi o archiwum i zdjęciach, a kwestie gracza mówią o zdjęciach i podpisanej kopercie. To świadome (wierność VR; właściciel: „zakładamy, że gracz przechodzi dobrze”). Kandydat na przyszły mechanizm konsekwencji: mostki zależne od poziomu decyzji (silnik: warianty `conversation` wg `reportedDecisions`).
 - [DO DECYZJI] Zmiany z tury poprawek po teście w przeglądarce: (1) plan z D3 we wspólnym stanie `m3_plan`; (2) raport D4 z nazwą dysku, gdy ona obniżyła ocenę; (3) neutralne opisy D1; (4) zdrapka z nazwą składanego programu i wariantami RAT/Ransomware; (5) //TOR: daty wydarzeń, krótszy hero, działająca strzałka; (6) //DYSK E: przypomnienie planu i blokada po critical; (7) //DRON: adres i opis auta razem na dole czatu; (8) //WIRUS: RAT: przycisk podsumowania po ponownym otwarciu, klawiatura, większa karta alertu; (9) podtytuły, nagłówek na ekranach ładowania, kolejność kafelków, min. `text-xs`; (10) jedno źródło pytania (usunięte pola `choiceLabel`: etykieta strefy to `question`, to samo w raporcie), grafiki drona z configu podłączone do `DroneMap`/`DroneCamera`, `answerOf` zastąpione wspólnym `reportAnswerOf`, teksty alternatywne grafik w configu (zdrapka, koperta, tapeta).
