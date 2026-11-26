@@ -104,7 +104,7 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 | M2-01 | W | Monitor botnetu zawsze taki sam | zrobione | aa84229 | Właściciel (P4): monitor liczy skutek ze słabszych wyborów (Quickgram −12 pkt %, ankieta przeciwpożarowa −10 pkt %, MARKETING@ → 1 alarm „FILTR POCZTY OZNACZYŁ NADAWCĘ JAKO PODEJRZANEGO”) + inna kwestia końcowa mentora przy dowolnym słabszym wyborze. Bez panelu Blue Teamu. |
 | M3-09 | S | Brak odroczonych konsekwencji; wynik spada od razu | zrobione | 6c962a6 | Właściciel (P4): tylko opóźnienie. Przy słabszym wyborze (plan HR, nazwa/podpis dysku, pusty asfalt) przeskok czasu do późniejszej godziny z podpisem „MATEUSZ ZWLEKAŁ…” i kwestia mentora; pliki kopiują się wszystkie. |
 | M4-02 | W | Brak odroczonych konsekwencji; `m4_mail` nieczytany | zrobione | 7ce19f3 | Właściciel (P4): przy słabszym wyborze w mailu (nazwa pliku, treść bez hasła, adres ALEX@PRIV.COM) później otwarte CV (przeskok do późniejszej godziny), dopisek na panelu ransomware co poszło nie tak, mentor „IT JUŻ COŚ PODEJRZEWA…”. |
-| M4-04 | S | D8 niepełny zestaw plików, a mostek „mamy wszystko” | zrobione | 7ce19f3 | Właściciel (P4): licznik „WYBRANO X/3” i zatwierdzenie dopiero przy 3 plikach (łączy się z M4-10). Bez osobnej kwestii mentora dla zestawu ze zmyłkami. |
+| M4-04 | S | D8 niepełny zestaw plików, a mostek „mamy wszystko” | zrobione | 7ce19f3, 5382b5f | Właściciel (P4): najpierw licznik „WYBRANO X/3” z blokadą (7ce19f3), potem zmiana zasady (5382b5f): dodatkowe pliki bez kary, bez limitu i licznika; idealnie = wśród pobranych są wszystkie 3 pliki FREEVOLT, część = suboptimal, żaden = critical. Świadomie: „zaznacz wszystko” daje ideał. |
 
 ### P5 — teksty i drobne
 
@@ -127,7 +127,7 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 | M4-07 | S | D3: format czasu niejednoznaczny | otwarte | | |
 | M4-08 | S | Critical opisuje porażkę, nie wykrycie; D6 casual za łagodny | otwarte | | |
 | M4-09 | N | D5: podpowiedź mentora nie pasuje do ideału | otwarte | | |
-| M4-10 | N | D8: liczba plików nieznana, mylące zmyłki | zrobione | 7ce19f3 | Liczbę plików pokazuje licznik „WYBRANO X/3” z P4 (M4-04). Zmyłki zostają, bo to sedno zadania. |
+| M4-10 | N | D8: liczba plików nieznana, mylące zmyłki | zrobione | 5382b5f | Nieaktualne po zmianie zasady D8 (dodatkowe pliki bez kary, bez limitu): liczba plików nie ma już znaczenia. |
 | M4-11 | N | Miniatura okna okupu w dev pokazuje ideał | otwarte | | |
 | M4-12 | N | D2: suwak startuje na wartości critical | otwarte | | |
 
@@ -203,3 +203,4 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 | NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | zrobione | d764f82 | |
 | NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | zrobione | d764f82 | Właściciel (P3): pokazać feedback odrzuconej opcji w raporcie pod „Najpierw: X”. |
 | NEW-08 | N | M1, ścieżka z PREZESEM BUCZKIEM: przy nieidealnym adresie w D4 raport pod „CO ZADZIAŁAŁOBY LEPIEJ” pokazuje idealny adres Kwiatkowskiego (`mission1.json` ma jedną odpowiedź idealną na decyzję). Przy okazji: powitanie „Cześć Anita,” i „Pozdrawiam,” brzmią tak samo od prezesa jak od kolegi. | P5 | otwarte | | Zgłoszone przez agenta M1 w P3. |
+| NEW-09 | N | M4: lekcja D8 w `mission4.json` mówi, że sukces to „precyzyjne skopiowanie wyłącznie trzech kluczowych plików”, a zbyt wiele plików „mogłoby zaalarmować systemy DLP”. Po zmianie zasady D8 (dodatkowe pliki bez kary) przeczy mechanice. Lekcje M4 pisze właściciel. Specyfikacje w `mission_04_energy_rock/docs/` też opisują limit 3. | P5 | czeka na właściciela | | |
