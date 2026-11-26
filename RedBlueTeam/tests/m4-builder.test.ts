@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { builderConfig as cfg } from '../src/scenarios/mission_04_energy_rock/stages';
+import { builderConfig as cfg, mission4Stages } from '../src/scenarios/mission_04_energy_rock/stages';
 import {
   evaluatePassword,
   buildPasswordReport,
@@ -52,9 +52,38 @@ describe('M4 kreator: komunikat', () => {
     const ideal = buildNoteReport(cfg.note, fillOf('title_encrypted', 'time_30h'));
     expect(ideal).toMatchObject({ tier: 'ideal', answer: 'OSTRZEŻENIE + LIMIT 30 H', num: 3 });
     expect(buildNoteReport(cfg.note, fillOf('title_casual', 'time_30h')).tier).toBe('suboptimal');
-    // 30 s to B2 (mentor odrzuca w kreatorze), więc poziom raportu to suboptimal, nie critical.
+    // 30 minut to B2 (mentor odrzuca w kreatorze), więc poziom raportu to suboptimal, nie critical.
     const worse = buildNoteReport(cfg.note, fillOf('title_casual', 'time_30s'));
     expect(worse.tier).toBe('suboptimal');
     expect(worse.feedback).toContain(cfg.note.tiles.find((t) => t.id === 'time_30s')!.feedback);
+  });
+});
+
+describe('M4 kreator: czas w komunikacie (M4-07)', () => {
+  const tileOf = (id: string) => cfg.note.tiles.find((t) => t.id === id)!;
+  it('kafelki czasu: 30 GODZIN (ideal) i 30 MINUT (suboptimal, nie sekundy)', () => {
+    expect(tileOf('time_30h').label).toBe('POZOSTAŁY CZAS: 30 GODZIN');
+    expect(tileOf('time_30h').tier).toBe('ideal');
+    expect(tileOf('time_30s').label).toBe('POZOSTAŁY CZAS: 30 MINUT');
+    expect(tileOf('time_30s').tier).toBe('suboptimal');
+    expect(tileOf('time_30s').reject?.mentorLine).toContain('30 MINUT');
+    expect(tileOf('time_30s').reject?.mentorLine).not.toContain('SEKUND');
+    expect(tileOf('time_30s').feedback).toContain('30 minut');
+  });
+  it('raport dla krótkiego czasu: odpowiedź „LIMIT 30 MIN”', () => {
+    const r = buildNoteReport(cfg.note, { icon: 'note_icon', title: 'title_encrypted', time: 'time_30s', amount: 'note_amount', address: 'note_address', contact: 'note_contact' });
+    expect(r).toMatchObject({ num: 3, tier: 'suboptimal', answer: 'OSTRZEŻENIE + LIMIT 30 MIN' });
+  });
+});
+
+describe('M4 most: podpowiedź mentora o temacie maila (M4-09)', () => {
+  it('odpowiedź mentora po pytaniu o wytyczne podaje dopisek CV oraz imię i nazwisko kandydata', () => {
+    const builder = mission4Stages.find((s) => s.id === 'ransomware_builder')!;
+    const beats = builder.completion!.conversation!;
+    const idx = beats.findIndex((b) => b.from === 'player' && 'label' in b && b.label === 'MAJĄ JAKIEŚ WYTYCZNE DOTYCZĄCE TEMATU MAILA Z CV?');
+    expect(idx).toBeGreaterThan(-1);
+    const next = beats[idx + 1] as { from: string; text: string };
+    expect(next.from).toBe('byte_master');
+    expect(next.text).toBe('TEMAT MAILA POWINIEN ZAWIERAĆ DOPISEK CV ORAZ IMIĘ I NAZWISKO KANDYDATA');
   });
 });

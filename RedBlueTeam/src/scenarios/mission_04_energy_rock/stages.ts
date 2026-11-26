@@ -153,7 +153,7 @@ const noteTiles: NoteTile[] = [
   {
     id: 'time_30h',
     slot: 'time',
-    label: 'POZOSTAŁY CZAS: 00:30:00:00',
+    label: 'POZOSTAŁY CZAS: 30 GODZIN',
     tier: 'ideal',
     reportPart: 'LIMIT 30 H',
     feedback: 'Realny limit czasu: 30 godzin na zebranie okupu.'
@@ -161,11 +161,11 @@ const noteTiles: NoteTile[] = [
   {
     id: 'time_30s',
     slot: 'time',
-    label: 'POZOSTAŁY CZAS: 00:00:30:00',
+    label: 'POZOSTAŁY CZAS: 30 MINUT',
     tier: 'suboptimal',
-    reportPart: 'LIMIT 30 S',
-    feedback: 'Czas 30 sekund uniemożliwia ofierze podjęcie negocjacji i zakup kryptowalut.',
-    reject: { mentorLine: '30 SEKUND TO NIE LIMIT, TYLKO ŻART. W TAKIM CZASIE NIKT NIE ZDĄŻY SIĘ Z NAMI SKONTAKTOWAĆ. WYBIERZ INACZEJ.' }
+    reportPart: 'LIMIT 30 MIN',
+    feedback: 'Czas 30 minut uniemożliwia ofierze podjęcie negocjacji i zakup kryptowalut.',
+    reject: { mentorLine: '30 MINUT TO NIE LIMIT, TYLKO ŻART. W TAKIM CZASIE NIKT NIE ZDĄŻY SIĘ Z NAMI SKONTAKTOWAĆ. WYBIERZ INACZEJ.' }
   }
 ];
 
@@ -674,7 +674,7 @@ export const mission4Stages: StageDefinition[] = [
           text: "ZNALAZŁEM INFORMACJE, ŻE PRIORYTET MAJĄ W TEJ CHWILI CV WYSYŁANE NA STANOWISKO 'ANALITYK RYNKÓW ENERGETYCZNYCH'. WŁĄCZ APLIKACJĘ MAILA"
         },
         { from: 'player', id: 'm4_reply_builder', label: 'MAJĄ JAKIEŚ WYTYCZNE DOTYCZĄCE TEMATU MAILA Z CV?' },
-        { from: 'byte_master', text: 'TEMAT MAILA POWINIEN ZAWIERAĆ ODPOWIEDNIO NAZWISKO ORAZ IMIĘ Z DOPISKIEM CV' }
+        { from: 'byte_master', text: 'TEMAT MAILA POWINIEN ZAWIERAĆ DOPISEK CV ORAZ IMIĘ I NAZWISKO KANDYDATA' }
       ],
       unlockIcons: ['mail_unlocked', 'mail'],
       badges: { mail: 1, chat: 1 },
