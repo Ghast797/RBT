@@ -100,7 +100,7 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-17 | S | WYNIK i BTC na pasku zdradzają słaby wybór od razu | czeka na właściciela | | D-01 |
+| ENG-17 | S | WYNIK i BTC na pasku zdradzają słaby wybór od razu | otwarte | | D-01: w M2+ ukryć WYNIK i BTC w trakcie gry, pokazać dopiero w raporcie. M1 (samouczek) bez zmian. |
 | M2-01 | W | Monitor botnetu zawsze taki sam | otwarte | | |
 | M3-09 | S | Brak odroczonych konsekwencji; wynik spada od razu | otwarte | | |
 | M4-02 | W | Brak odroczonych konsekwencji; `m4_mail` nieczytany | otwarte | | |
@@ -120,7 +120,7 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 | M2-08 | N | Teksty critical opisują nieskuteczność, nie wykrycie | otwarte | | Po ENG-15 można dać tytuł „OPERACJA NIEUDANA”. |
 | M2-09 | N | Kolejności poziomów w D2 i D3 nie da się wywnioskować | otwarte | | |
 | M2-11 | N | „CZARNA LISTA” vs „BIAŁA LISTA” | otwarte | | |
-| M2-12 | S | Spoiler „PODMIENIĘ JEDNĄ LITERĘ W DOMENIE” przed decyzją | czeka na właściciela | | D-02 |
+| M2-12 | S | Spoiler „PODMIENIĘ JEDNĄ LITERĘ W DOMENIE” przed decyzją | odrzucone | | D-02: zostawić 1:1 z VR. |
 | M3-12 | N | Feedback D2 niezgodny z faktami | otwarte | | |
 | M3-13 | N | Intro zdradza odpowiedź D1 | otwarte | | |
 | M4-06 | S | D2: zakazane znaki nieopisane | otwarte | | |
@@ -144,12 +144,14 @@ Agent wpisuje tu odpowiedź dopiero, gdy właściciel ją poda w czacie.
 
 | ID | Pytanie | Dotyczy | Odpowiedź |
 |---|---|---|---|
-| D-01 | Ukrywać WYNIK i BTC na pasku zadań w M2+? Bez tego odroczoną konsekwencję widać od razu jako spadek procentów. | ENG-17, P4 | |
-| D-02 | Spoiler w M2: zostawić tekst 1:1 z VR czy usunąć zapowiedź przed decyzją? | M2-12 | |
+| D-01 | Ukrywać WYNIK i BTC na pasku zadań w M2+? Bez tego odroczoną konsekwencję widać od razu jako spadek procentów. | ENG-17, P4 | Ukryć WYNIK i BTC w M2+; wynik dopiero w raporcie. M1 bez zmian. |
+| D-02 | Spoiler w M2: zostawić tekst 1:1 z VR czy usunąć zapowiedź przed decyzją? | M2-12 | Zostawić 1:1 z VR. |
 | D-03 | M2 D1 SZKOLENIE IT: zrobić critical czy usunąć D1 (dubluje D4)? | M2-03, M2-07 | Usunąć D1. |
 | D-04 | Wirus sprzeczny z planem (M2 D4 KEYLOGGER, M4 D1 RAT): critical (B1) czy mentor odrzuca i gracz wybiera ponownie (B2)? | M2-02, M4-01 | M2 KEYLOGGER: B2. M4 RAT: B2. |
 | D-05 | M3 D1 KEYLOGGER: suboptimal z odroczonym skutkiem czy critical z tytułem „OPERACJA NIEUDANA”? | M3-03 | B2. |
 | D-06 | Więcej opcji critical = więcej powtórek od zera. Dodać powtórkę od bieżącego etapu? | P2 | B2 wszędzie, gdzie nie ma wykrycia. Critical tylko dla wykrycia albo nieodwracalnej porażki operacji (np. koperta pod złym adresem). |
+| D-07 | Lekcja D9 w M4 przeczy nowemu poziomowi uległości: kto pisze poprawkę? | NEW-05 | Agent proponuje tekst, właściciel zatwierdza przed commitem. |
+| D-08 | Dodać bibliotekę do testów komponentów? | NEW-02 | Tak, przy P3: jsdom + Testing Library jako zależności dev. |
 
 ### Podział critical / B2 / suboptimal wg D-06 (zatwierdzony przez właściciela)
 
@@ -194,9 +196,9 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 | ID | Waga | Opis | Paczka | Status | Commit | Notatka |
 |---|---|---|---|---|---|---|
 | NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. |
-| NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | — | otwarte | | Decyzja: dodać zależność dev czy zostać przy testach logiki. |
+| NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | P3 | otwarte | | D-08: dodać jsdom + Testing Library (dev) przy P3. |
 | NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | otwarte | | Neutralizować na „PENDRIVE” albo zrobić warunkową (pamięć wyborów). |
 | NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | otwarte | | |
-| NEW-05 | N | M4: lekcja D9 w `mission4.json` mówi, że uległość „oznaczałaby natychmiastową porażkę”, a „JUŻ WAM NIE PRZESZKADZAM” jest teraz suboptimal z powrotem do rozmowy. Lekcje M4 pisze właściciel. | P5 | czeka na właściciela | | |
+| NEW-05 | N | M4: lekcja D9 w `mission4.json` mówi, że uległość „oznaczałaby natychmiastową porażkę”, a „JUŻ WAM NIE PRZESZKADZAM” jest teraz suboptimal z powrotem do rozmowy. Lekcje M4 pisze właściciel. | P5 | zrobione | | D-07: zdanie o uległości zmienione na „oddałoby inicjatywę… wracać do rozmowy z gorszej pozycji” (zaakceptowane przez właściciela). |
 | NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | otwarte | | |
 | NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | otwarte | | Rozważyć pokazanie w raporcie przy „Najpierw: X”. |
