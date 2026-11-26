@@ -250,7 +250,20 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
 export const botnetMonitorConfig: BotnetMonitorConfig = {
   targetCompany: 'CarbonFlow Inc.',
   targetPercentage: 82,
-  totalWorkstations: MAILING_LIST.length
+  totalWorkstations: MAILING_LIST.length,
+  // Konsekwencje słabszych wyborów (bez zmiany punktów): mniej stacji zainfekowanych albo alarm IDS.
+  consequences: [
+    // D1: szablon Quickgram — część pracowników nie kliknie w formularz.
+    { when: { decision: 1, optionId: 'quickgram' }, penetrationDelta: -12 },
+    // D2: temat ćwiczeń przeciwpożarowych — część pracowników odłoży wypełnienie na później.
+    { when: { decision: 2, optionId: 'fire_drill' }, penetrationDelta: -10 },
+    // D4: nadawca MARKETING@CARBON.COM — filtr poczty oznacza nadawcę, ładunek nadal niewykryty.
+    {
+      when: { decision: 4, optionId: 'marketing_carbon' },
+      alarms: 1,
+      alarmText: 'FILTR POCZTY OZNACZYŁ NADAWCĘ JAKO PODEJRZANEGO'
+    }
+  ]
 };
 
 /** Dane klocków M2, kluczowane identyfikatorem kafelka pulpitu. */
@@ -360,9 +373,29 @@ export const mission2Stages: StageDefinition[] = [
     decisions: [],
     completion: {
       conversation: [
+        // Ideał na D1, D2 i D4 (mostek pomija wariant poniżej).
         {
           from: 'byte_master',
-          text: 'NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ'
+          text: 'NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ',
+          when: {
+            allOf: [
+              { decision: 1, tier: 'ideal' },
+              { decision: 2, tier: 'ideal' },
+              { decision: 4, tier: 'ideal' }
+            ]
+          }
+        },
+        // Którakolwiek z D1, D2, D4 suboptymalna (mostek pomija wariant powyżej).
+        {
+          from: 'byte_master',
+          text: 'MOGŁO PÓJŚĆ LEPIEJ, ALE CARBONFLOW I TAK MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ',
+          when: {
+            anyOf: [
+              { decision: 1, tier: 'suboptimal' },
+              { decision: 2, tier: 'suboptimal' },
+              { decision: 4, tier: 'suboptimal' }
+            ]
+          }
         },
         {
           from: 'player',

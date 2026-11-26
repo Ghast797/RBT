@@ -1,4 +1,28 @@
+import type { DecisionChoice } from '../../../engine/types/mission';
+import { matchesChoices } from '../../../engine/core/beatCondition';
 import type { BotnetMonitorConfig } from './types';
+
+/** Stan monitora po uwzględnieniu wcześniejszych wyborów gracza (konsekwencje z konfiguracji). */
+export interface BotnetOutcome {
+  /** Efektywny stopień penetracji sieci (%): bazowy + suma `penetrationDelta`, w zakresie 0–100. */
+  targetPercentage: number;
+  alarms: number;
+  alarmTexts: string[];
+}
+
+/** Liczy konsekwencje z `config.consequences` względem zapisanych wyborów (`decisionChoices`). */
+export function resolveBotnetOutcome(
+  config: Pick<BotnetMonitorConfig, 'targetPercentage' | 'consequences'>,
+  choices: Record<number, DecisionChoice>
+): BotnetOutcome {
+  const matching = (config.consequences ?? []).filter((c) => matchesChoices(c.when, choices));
+  const delta = matching.reduce((sum, c) => sum + (c.penetrationDelta ?? 0), 0);
+  return {
+    targetPercentage: Math.min(100, Math.max(0, config.targetPercentage + delta)),
+    alarms: matching.reduce((sum, c) => sum + (c.alarms ?? 0), 0),
+    alarmTexts: matching.map((c) => c.alarmText).filter((t): t is string => Boolean(t))
+  };
+}
 
 /** Węzeł sieci ofiary na topologii monitora botnetu. */
 export interface BotnetNode {

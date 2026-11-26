@@ -1,4 +1,4 @@
-import type { ChoiceOption } from '../../../engine/types/mission';
+import type { BeatCondition, ChoiceOption } from '../../../engine/types/mission';
 
 export interface PhishingCampaignConfig {
   template: {
@@ -65,8 +65,23 @@ export interface PhishingDispatchConfig {
   signoffs: Record<string, string>;
 }
 
+/**
+ * Konsekwencja wcześniejszego wyboru widoczna na monitorze (bez zmiany punktów — punkty naliczył już wybór).
+ * `when` to zwykły warunek decyzji (jak `when` beatu); wszystkie pasujące konsekwencje się sumują.
+ */
+export interface BotnetConsequence {
+  when: BeatCondition;
+  /** Zmiana penetracji sieci w punktach procentowych (ujemna = mniej zainfekowanych stacji). */
+  penetrationDelta?: number;
+  /** Liczba alarmów IDS dopisanych przez ten wybór. */
+  alarms?: number;
+  /** Tekst pokazany pod licznikiem alarmów (np. „FILTR POCZTY OZNACZYŁ NADAWCĘ JAKO PODEJRZANEGO”). */
+  alarmText?: string;
+}
+
 export interface BotnetMonitorConfig {
   targetCompany: string;
   targetPercentage: number;
   totalWorkstations: number;
+  consequences: BotnetConsequence[];
 }
