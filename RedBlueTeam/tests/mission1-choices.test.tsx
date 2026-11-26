@@ -77,7 +77,8 @@ describe('M1: mapa byPayload', () => {
     for (const o of continuing) {
       const t = payloadTexts[o.id];
       expect(t, o.id).toBeDefined();
-      for (const v of Object.values(t)) expect(v.length).toBeGreaterThan(10);
+      for (const [k, v] of Object.entries(t)) if (k !== 'pageBadgeTone') expect(v.length, `${o.id}.${k}`).toBeGreaterThan(10);
+      expect(t.pageBadgeTone === 'violet', o.id).toBe(o.id.endsWith('_muffins'));
     }
     expect(victimMonitorConfig.byPayload).toBe(payloadTexts);
     expect(emailSenderConfig.byPayload).toBe(payloadTexts);

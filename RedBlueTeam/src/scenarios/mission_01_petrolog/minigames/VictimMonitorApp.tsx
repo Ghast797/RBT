@@ -178,7 +178,11 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
 
           {/* Browser Content */}
           <div className="p-6 rounded-lg bg-black/70 border border-gray-800 text-center space-y-4 my-auto">
-            <span className="text-[0.625rem] font-black uppercase px-2.5 py-0.5 rounded tracking-widest bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+            <span className={`text-[0.625rem] font-black uppercase px-2.5 py-0.5 rounded tracking-widest ${
+                payloadTexts?.pageBadgeTone === 'violet'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/40'
+                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+              }`}>
               {payloadTexts?.pageBadge}
             </span>
             <h3 className="text-base sm:text-lg font-bold text-white max-w-lg mx-auto">

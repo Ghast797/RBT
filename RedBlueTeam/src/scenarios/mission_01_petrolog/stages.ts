@@ -860,6 +860,7 @@ export const payloadTexts: Record<string, PayloadTexts> = {
   guide_muffins: {
     mailText: 'Mają super przepisy na pyszne domowe muffinki!',
     pageBadge: 'SERWIS KULINARNY // MUFINA.ORG.PL',
+    pageBadgeTone: 'violet',
     pageDescription:
       'Sprawdzone receptury na puszyste babeczki i domowe wypieki. Wskazówki krok po kroku od składników po idealną temperaturę pieczenia.',
     downloadButton: 'POBIERZ PRZEPIS (PDF)',
@@ -868,6 +869,7 @@ export const payloadTexts: Record<string, PayloadTexts> = {
   wallpapers_muffins: {
     mailText: 'Mają super tapety ze słodkimi muffinkami!',
     pageBadge: 'SERWIS KULINARNY // MUFINA.ORG.PL',
+    pageBadgeTone: 'violet',
     pageDescription:
       'Kolorowe zdjęcia babeczek w wysokiej rozdzielczości, idealne jako tło ekranu telefonu.',
     downloadButton: 'POBIERZ PAKIET TAPET (.ZIP)',

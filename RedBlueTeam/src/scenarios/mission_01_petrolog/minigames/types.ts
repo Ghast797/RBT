@@ -145,6 +145,8 @@ export interface PayloadTexts {
   mailText: string;
   /** Plakietka nad nagłówkiem strony ofiary. */
   pageBadge: string;
+  /** Kolor odznaki strony: portal biegowy zielony, serwis kulinarny fioletowy. */
+  pageBadgeTone?: 'emerald' | 'violet';
   /** Opis pod nagłówkiem (nagłówkiem jest nazwa pliku z D2). */
   pageDescription: string;
   /** Napis na przycisku pobierania. */
