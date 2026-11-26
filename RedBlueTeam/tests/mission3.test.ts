@@ -209,9 +209,11 @@ describe('Misja 3 — metadane, intro i raport (dokument VR)', () => {
     expect(d.map((x) => x.playerResponse)).toEqual([
       'JASNE, CHOCIAŻ MIŁO BY BYŁO WIEDZIEĆ NA CZYM STOJĘ I ILE JESZCZE ZADAŃ PRZEDE MNĄ, ZANIM PRZYJMIECIE MNIE DO DARKSUN',
       'OK, NIECH BĘDZIE. A WIĘC?',
-      'CZY WIRUS, KTÓRY PRZEJMIE PULPIT PRACOWNIKA JEST WYSTARCZAJĄCO KREATYWNY?',
+      'CZY WIRUS NA KOMPUTERZE PRACOWNIKA WYSTARCZY?',
       'DAJ MI CHWILĘ'
     ]);
+    // Intro nie zdradza D1 (ransomware/keylogger/RAT): pytanie gracza mówi tylko o wirusie na komputerze.
+    expect(JSON.stringify(d)).not.toContain('KREATYWNY?');
     const intro = def().intro as any;
     // Ostatnią kwestią gracza jest „DAJ MI CHWILĘ” (w intro), więc nie ma osobnego spójnika w czacie.
     expect(intro.firstChoice).toBeUndefined();

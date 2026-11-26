@@ -6,6 +6,15 @@
 
 Skróty: **BM** = Byte_Master, **czat** = czat BM na prawym monitorze (aplikacja nie przejmuje go przez `SideMonitor`).
 
+## Zmiany po audycie (stan kodu, NEW-04)
+
+Ta sekcja jest nadrzędna wobec sekcji 1–9 tam, gdzie się różnią. Sekcje 1–9 opisują stan porcji A–H i pytania z tamtego czasu; ich tabele poziomów (np. D1 ransomware, D5 złe adresy, D6 inne auta) i `passingScore: 80` są nieaktualne. Aktualne wartości: `stages.ts`, `minigames/usbLogic.ts`, `data/mission3.json`, `scenario.md`.
+
+- **M3-12, D2 (feedback zgodny z faktami):** Wiktoria (suboptimal, odrzucenie B2): „Wiktoria pracuje w O&L od sześciu lat i zna procedury, więc nieznany pendrive najpewniej zaniesie do IT zamiast go podłączyć.”; Agnieszka (suboptimal, odrzucenie B2): „Agnieszka kieruje zespołem i od 11 lat zna firmę; zgłosi podejrzaną rzecz zamiast ją sprawdzać na swoim komputerze.”; Sławomir Białek (critical): „Szef cyberbezpieczeństwa od razu rozpozna próbę ataku i zgłosi incydent, więc cała operacja zostaje spalona.”; Jan Łukasiewicz (critical): „CEO jest pod stałą opieką działu bezpieczeństwa; każda podejrzana przesyłka do niego trafi do IT, a incydent zostanie zgłoszony i operacja spalona.” Liczby sprawdzone w danych „W O&L OD” (`stages.ts`, `osintBrowserConfig.site.employees`): Wiktoria 6 lat, Agnieszka 11 lat, Agnieszka „Kieruje zespołem handlowym”. Lekcja D2 w `data/mission3.json` (`step6`) zaktualizowana tak samo: „Wiktoria (6 lat w firmie) i Agnieszka (szefowa działu) znają procedury i są ostrożniejsze wobec nietypowych nośników.”
+- **M3-13, intro:** kwestia gracza „CZY WIRUS NA KOMPUTERZE PRACOWNIKA WYSTARCZY?” (wcześniej „…JEST WYSTARCZAJĄCO KREATYWNY?”, co zdradzało D1).
+- **NEW-04, dokumentacja zsynchronizowana z kodem:** D1 ransomware = critical (wykrycie), keylogger = suboptimal z odrzuceniem B2 (mentor), RAT ideal; D2 Wiktoria/Agnieszka odrzucane przez mentora, Białek/Łukasiewicz critical; D4 nazwa dysku i poziomy podpisu zależą od planu z D3 (zdjęcia z imprezy vs dokumenty HR), a raport pokazuje `NAZWA DYSKU: X / PODPIS: Y`, gdy nazwa obniżyła ocenę; D5 zły adres = critical z ekranem „KOPERTA POD ZŁYM ADRESEM”; D6 inne auto = critical z ekranem „KOPERTA U PRZYPADKOWEGO SĄSIADA”, pusty asfalt = suboptimal; warianty czatu dla planu HR (mostek 2, kwestia gracza w mostku 3); późne podłączenie pendrive'a (06:02 → 11:40, „MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…”, BM „CZEKALIŚMY ZA DŁUGO…”), gdy D3, D4 lub D6 suboptimal; `passingScore` 70 (`data/mission3.json`), nie 80.
+- Źródło prawdy dla treści gracza: `scenario.md` (sekcja „Odchylenia od VR”) i kod. Dokument VR (`docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md`) nie był zmieniany; jego odstępstwa są wymienione w `scenario.md`.
+
 ## 0. Uwagi właściciela → decyzje projektowe
 
 | # | Uwaga | Decyzja w planie |

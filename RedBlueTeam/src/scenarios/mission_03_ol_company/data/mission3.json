@@ -47,7 +47,7 @@
         "id": "intro_3",
         "sender": "BYTE_MASTER",
         "text": "O&L COMPANY TO JEDNA Z WIĘKSZYCH SPÓŁEK PALIWOWYCH. Z MOICH ŹRÓDEŁ WYNIKA, ŻE MAJĄ BRAKUJĄCĄ CZĘŚĆ DOKUMENTACJI NA TEMAT FREEVOLT, W TYM OPIS CAŁEJ INFRASTRUKTURY, WIĘC TO BARDZO CENNE DANE. ZDOBYCIE ICH BĘDZIE WYMAGAŁO OD CIEBIE KREATYWNOŚCI",
-        "playerResponse": "CZY WIRUS, KTÓRY PRZEJMIE PULPIT PRACOWNIKA JEST WYSTARCZAJĄCO KREATYWNY?"
+        "playerResponse": "CZY WIRUS NA KOMPUTERZE PRACOWNIKA WYSTARCZY?"
       },
       {
         "id": "intro_4",
@@ -168,7 +168,7 @@
         "answer": "JUNIOR SPECJALISTA DS. WSPARCIA KLIENTA",
         "correct": true,
         "details": "Nowo zatrudniony pracownik na juniorskim stanowisku charakteryzuje się najmniejszym doświadczeniem, brakiem obycia z procedurami bezpieczeństwa i najwyższą podatnością na socjotechnikę.",
-        "attack": "Atakujący wybiera najsłabsze ogniwo, a nie najważniejszą osobę. Strona firmy pokazywała, że Mateusz pracuje w O&L od dwóch tygodni i obsługuje klientów, więc najpewniej nie zna jeszcze procedur i chce zrobić dobre wrażenie. CEO i szef cyberbezpieczeństwa zgłosiliby incydent od razu, a doświadczone pracownice wyższego szczebla są ostrożniejsze wobec nietypowych nośników.",
+        "attack": "Atakujący wybiera najsłabsze ogniwo, a nie najważniejszą osobę. Strona firmy pokazywała, że Mateusz pracuje w O&L od dwóch tygodni i obsługuje klientów, więc najpewniej nie zna jeszcze procedur i chce zrobić dobre wrażenie. CEO i szef cyberbezpieczeństwa zgłosiliby incydent od razu, a Wiktoria (6 lat w firmie) i Agnieszka (szefowa działu) znają procedury i są ostrożniejsze wobec nietypowych nośników.",
         "defense": "Sygnały: publicznie widoczny staż, stanowisko i zakres obowiązków każdej osoby na stronie firmy. Wszystkie informacje o Tobie w sieci mogą zostać użyte przeciwko Tobie. Co zrobić: szkolenie z cyberbezpieczeństwa już pierwszego dnia pracy (przed dostępem do systemów), jasna procedura zgłaszania podejrzanych rzeczy i kultura, w której nikt nie boi się zapytać IT. Warto też nie ujawniać na stronie firmy zbędnych szczegółów o stażu i obowiązkach osób."
       },
       {
