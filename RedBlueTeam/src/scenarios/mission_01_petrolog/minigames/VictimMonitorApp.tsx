@@ -12,7 +12,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { sounds } from '../../../engine/audio/soundEffects';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { useDecisionChoice } from '../../../engine/store/useMissionStore';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import type { BlockProps } from '../../../engine/types/mission';
 import type { VictimMonitorConfig } from './types';
@@ -28,28 +28,22 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
   const [step, setStep] = useState<MonitorStep>('email_inbox');
   const [infectionProgress, setInfectionProgress] = useState<number>(0);
 
-  const domainChoice = useMissionStore(
-    (s) => s.playerChoices.find((c) => c.num === 1)?.answer
-  );
-  const payloadChoice = useMissionStore(
-    (s) => s.playerChoices.find((c) => c.num === 2)?.answer
-  );
-  const senderChoice = useMissionStore(
-    (s) => s.playerChoices.find((c) => c.num === 3)?.answer
-  );
-  const senderEmailChoice = useMissionStore(
-    (s) => s.playerChoices.find((c) => c.num === 4)?.answer
-  );
+  // Wybory gracza z pamięci silnika (D1 domena, D2 plik, D3 nadawca, D4 adres); config to wartości awaryjne.
+  const domainChoice = useDecisionChoice(1);
+  const payloadChoice = useDecisionChoice(2);
+  const senderChoice = useDecisionChoice(3);
+  const senderEmailChoice = useDecisionChoice(4);
 
-  const senderName = senderChoice || config?.senderName || 'Jakub Kwiatkowski';
-  const senderEmail = senderEmailChoice || config?.senderEmail || 'k.kwiatkowski@petr0log.com';
-  const targetDomain = domainChoice || config?.targetDomain || 'dalekbieg.info';
-  const payloadTitle =
-    payloadChoice ||
-    config?.payloadFileName ||
-    'PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK';
+  const senderName = senderChoice?.answer || config?.senderName || 'Jakub Kwiatkowski';
+  const senderEmail = senderEmailChoice?.answer || config?.senderEmail || 'k.kwiatkowski@petr0log.com';
+  const targetDomain = domainChoice?.answer || config?.targetDomain || 'dalekbieg.info';
+  const payloadTitle = payloadChoice?.answer || config?.payloadFileName || '';
 
-  const isMuffin = targetDomain.toLowerCase().includes('muf');
+  // Teksty maila i strony wg pliku z D2 oraz reakcja wg nadawcy z D3 — z konfiguracji misji, bez sprawdzania nazw domen.
+  const payloadTexts =
+    config?.byPayload?.[payloadChoice?.optionId ?? config?.defaultPayloadId] ??
+    config?.byPayload?.[config?.defaultPayloadId];
+  const senderReaction = senderChoice?.optionId ? config?.bySender?.[senderChoice.optionId]?.reaction : undefined;
 
   const handleOpenLink = () => {
     sounds.playClick();
@@ -148,13 +142,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
               >
                 🔗 https://{targetDomain.toLowerCase()} (KLIKNIJ ABY OTWORZYĆ)
               </div>
-              <p>
-                {isMuffin
-                  ? (payloadTitle.toLowerCase().includes('tapety')
-                      ? 'Mają super tapety ze słodkimi muffinkami!'
-                      : 'Mają super przepisy na pyszne domowe muffinki!')
-                  : 'Mają super poradnik dla biegaczy długodystansowych!'}
-              </p>
+              <p>{payloadTexts?.mailText}</p>
               <p>Coś, czego szukałaś!</p>
               <p className="text-gray-400 pt-2 font-mono text-xs">{senderName}</p>
             </div>
@@ -162,7 +150,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
 
           <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
             <span className="text-xs text-gray-400">
-              Anita właśnie otrzymała maila i widzi rekomendację od zaufanego współpracownika.
+              {senderReaction}
             </span>
             <button
               onClick={handleOpenLink}
@@ -190,22 +178,14 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
 
           {/* Browser Content */}
           <div className="p-6 rounded-lg bg-black/70 border border-gray-800 text-center space-y-4 my-auto">
-            <span
-              className={`text-[0.625rem] font-black uppercase px-2.5 py-0.5 rounded tracking-widest ${
-                isMuffin
-                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/40'
-                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-              }`}
-            >
-              {isMuffin ? 'SERWIS KULINARNY // MUFINA.ORG.PL' : 'PORTAL BIEGOWY // DALEKOBIEŻNI'}
+            <span className="text-[0.625rem] font-black uppercase px-2.5 py-0.5 rounded tracking-widest bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+              {payloadTexts?.pageBadge}
             </span>
             <h3 className="text-base sm:text-lg font-bold text-white max-w-lg mx-auto">
               {payloadTitle}
             </h3>
             <p className="text-xs text-gray-300 max-w-md mx-auto leading-relaxed">
-              {isMuffin
-                ? 'Sprawdzone receptury na puszyste babeczki i domowe wypieki. Wskazówki krok po kroku od składników po idealną temperaturę pieczenia.'
-                : 'Zdobądź przewagę na trasie maratonu. 10 sprawdzonych technik regeneracji, planów interwałowych i doboru sprzętu biegowego.'}
+              {payloadTexts?.pageDescription}
             </p>
 
             <div className="pt-3">
@@ -215,11 +195,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
               >
                 <Download size={18} />
                 <span>
-                  {payloadTitle.toLowerCase().includes('tapety')
-                    ? 'POBIERZ PAKIET TAPET (.ZIP)'
-                    : isMuffin
-                    ? 'POBIERZ PRZEPIS (PDF)'
-                    : 'POBIERZ DARMOWY PORADNIK (PDF)'}
+                  {payloadTexts?.downloadButton}
                 </span>
               </button>
             </div>
@@ -227,7 +203,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
 
           <div className="pt-3 border-t border-gray-800 flex items-center justify-between">
             <span className="text-xs text-gray-400">
-              Anita zdecydowała się pobrać {isMuffin ? 'plik z przepisami' : 'poradnik biegowy'} na dysk służbowego komputera.
+              {payloadTexts?.footer}
             </span>
             <button
               onClick={handleVictimDownload}

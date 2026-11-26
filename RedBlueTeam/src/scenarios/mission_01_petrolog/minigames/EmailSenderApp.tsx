@@ -9,7 +9,7 @@ import { ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceZone, ChoiceTile } from '../../../engine/components/ChoiceZone';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
-import { useMissionStore } from '../../../engine/store/useMissionStore';
+import { useMissionStore, useDecisionChoice } from '../../../engine/store/useMissionStore';
 import { MentorRejectNotice, isRejected, useRejectedAttempts } from '../../../engine/components/MentorRejectNotice';
 import { submitDecision } from '../../../engine/core/report';
 import type { BlockProps, ChoiceOption } from '../../../engine/types/mission';
@@ -39,15 +39,23 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
     (s) => s.playerChoices.find((c) => c.num === 2)?.answer
   );
 
+  const payloadOptionId = useDecisionChoice(2)?.optionId;
+  const senderOptionId = useDecisionChoice(3)?.optionId;
+  const mailText = payloadOptionId ? config?.byPayload?.[payloadOptionId]?.mailText : undefined;
+
   const targetDomain = domainChoice || config?.defaultDomain || 'dalekbieg.info';
   const targetPayload = payloadChoice || config?.defaultPayload || 'Poradnik dla biegaczy długodystansowych';
 
+  const selectedSender = config.senderName?.options.find((o) => o.id === selectedSenderId);
+  // D4: adresy zależą od nadawcy faktycznie wybranego w D3 (pamięć wyborów silnika), a przed zgłoszeniem od zaznaczenia.
+  const emailSenderKey = senderOptionId ?? selectedSenderId ?? undefined;
+  const emailConfig =
+    (emailSenderKey ? config.senderEmailBySender?.[emailSenderKey] : undefined) ?? config.senderEmail;
+  const selectedEmail = emailConfig?.options.find((o) => o.id === selectedEmailId);
+
   // B2: odrzucone przez mentora opcje bieżącej decyzji (D3 nadawca, D4 adres).
   const rejectDecision = useMissionStore((s) => s.rejectDecision);
-  const rejected = useRejectedAttempts(screen === 'email' ? config.senderEmail?.decisionNum : config.senderName?.decisionNum);
-
-  const selectedSender = config.senderName?.options.find((o) => o.id === selectedSenderId);
-  const selectedEmail = config.senderEmail?.options.find((o) => o.id === selectedEmailId);
+  const rejected = useRejectedAttempts(screen === 'email' ? emailConfig?.decisionNum : config.senderName?.decisionNum);
 
 
   const header = (title: string, subtitle: string, task: string, step: string) => (
@@ -138,8 +146,8 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
   };
 
   const handleEmailConfirm = () => {
-    if (!selectedEmail || !config.senderEmail) return;
-    if (submitDecision({ decisionNum: config.senderEmail.decisionNum, question: config.senderEmail.question }, selectedEmail, { onDecision, rejectDecision }) === 'rejected') {
+    if (!selectedEmail || !emailConfig) return;
+    if (submitDecision({ decisionNum: emailConfig.decisionNum, question: emailConfig.question }, selectedEmail, { onDecision, rejectDecision }) === 'rejected') {
       setSelectedEmailId(null);
       return;
     }
@@ -211,8 +219,8 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
       : screen === 'email'
       ? sidePanel(
           '//POCZTA: WYBÓR',
-          config.senderEmail?.question || 'Wybierz adres e-mail nadawcy',
-          renderEmailButtons(config.senderEmail?.options || [], selectedEmailId, setSelectedEmailId),
+          emailConfig?.question || 'Wybierz adres e-mail nadawcy',
+          renderEmailButtons(emailConfig?.options || [], selectedEmailId, setSelectedEmailId),
           // D3 jest już zatwierdzone i jednorazowe: brak WRÓĆ do wyboru nadawcy.
           <div className="shrink-0">
             {confirmButton('ZATWIERDŹ ADRES EMAIL', !!selectedEmail, handleEmailConfirm)}
@@ -256,7 +264,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               senderName={selectedSender?.label || null}
               senderEmail={null}
               targetDomain={targetDomain}
-              payloadName={targetPayload}
+              mailText={mailText}
               step="sender"
             />
           </div>
@@ -278,7 +286,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
           {header(
             '//POCZTA',
             'WYBÓR ADRESU E-MAIL NADAWCY',
-            config.senderEmail?.question || 'Wybierz adres e-mail nadawcy',
+            emailConfig?.question || 'Wybierz adres e-mail nadawcy',
             'KROK 2/2 (D4)'
           )}
 
@@ -288,7 +296,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               senderName={selectedSender?.label || 'Jakub Kwiatkowski'}
               senderEmail={selectedEmail?.label || null}
               targetDomain={targetDomain}
-              payloadName={targetPayload}
+              mailText={mailText}
               step="email"
             />
           </div>
@@ -329,7 +337,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
                   https://{targetDomain.toLowerCase()}
                 </span>
                 <br />
-                Mają super {targetPayload.toLowerCase()}!
+                {mailText ?? ''}
                 <br />
                 Coś, czego szukałaś!
                 <br />

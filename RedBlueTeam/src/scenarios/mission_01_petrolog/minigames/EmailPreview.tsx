@@ -5,7 +5,8 @@ export interface EmailPreviewProps {
   senderName: string | null;
   senderEmail: string | null;
   targetDomain: string;
-  payloadName?: string;
+  /** Zdanie o przynęcie z konfiguracji (`byPayload[D2].mailText`); bez niego mail ma tylko zdanie zamykające. */
+  mailText?: string;
   step?: 'sender' | 'email' | 'summary';
 }
 
@@ -13,7 +14,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
   senderName,
   senderEmail,
   targetDomain,
-  payloadName,
+  mailText,
   step = 'email'
 }) => {
   return (
@@ -85,14 +86,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
         </div>
 
         <p>
-          {(() => {
-            if (!payloadName) {
-              return 'Mają tam świetny poradnik dla biegaczy długodystansowych! Coś, czego szukałaś!';
-            }
-            const lower = payloadName.toLowerCase();
-            const prefix = lower.startsWith('tapety') ? 'Mają tam świetne' : 'Mają tam świetny';
-            return `${prefix} ${lower}! Coś, czego szukałaś!`;
-          })()}
+          {mailText ? `${mailText} ` : ''}Coś, czego szukałaś!
         </p>
 
         <p className="pt-2 text-gray-400 font-mono">
