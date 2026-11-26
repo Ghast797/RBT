@@ -92,7 +92,11 @@ const beatLine = (b: ConversationBeat): string => {
   return `PRZESKOK: ${b.clockFrom}->${b.clock}`;
 };
 const stageOf = (id: string) => (def().stages ?? []).find((s) => s.id === id)!;
-const bridgeOf = (id: string) => (stageOf(id).completion.conversation ?? []).map(beatLine);
+/** Kwestie mostka dla planu D3 (domyślnie plan zdjęć): beaty z `when` innego planu odpadają. */
+const bridgeOf = (id: string, plan = 'vector_party_zip') =>
+  (stageOf(id).completion.conversation ?? [])
+    .filter((b) => !b.when || ([b.when.optionId ?? []].flat() as string[]).includes(plan))
+    .map(beatLine);
 
 /** Wszystkie opcje ocenianych decyzji (numer decyzji + pytanie + opcje) z danych klocków. */
 function collectDecisions(): Record<number, { question: string; options: any[] }> {
@@ -577,6 +581,57 @@ describe('Misja 3 — dane strony //TOR (OSINT)', () => {
   });
 });
 
+describe('Misja 3 — kwestie zależne od planu D3 (when)', () => {
+  const PARTY_BROWSER = 'DZIĘKI ARCHIWUM ANTYWIRUS NIE ZNAJDZIE ZAGROŻENIA. DOBRZE. TERAZ PRZYGOTUJ PENDRIVE';
+  const HR_BROWSER = 'DOKUMENTY O ZWOLNIENIACH GO ZANIEPOKOJĄ, ALE MOŻE ODDAĆ PENDRIVE DO KADR. TERAZ PRZYGOTUJ PENDRIVE';
+  const PARTY_PENDRIVE =
+    'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI';
+  const HR_PENDRIVE =
+    'GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI';
+  const PENDRIVE_COMMON = 'MATEUSZ POWINIEN SIĘ OSTRO ZESTRESOWAĆ. MAM NADZIEJĘ, ŻE TO DLA CIEBIE WYSTARCZAJĄCO KREATYWNE?';
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    __setBridgeDelayForTests(0);
+    useMissionStore.getState().loadMission(MISSION_ID);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    __setBridgeDelayForTests(2000);
+  });
+
+  /** Zgłasza D3 z wybranym planem (z `optionId`, jak robi to ekran), kończy etap i odtwarza mostek. */
+  const playBridge = (stageId: string, optionId: string): string[] => {
+    const tier = optionId === 'vector_party_zip' ? 'ideal' : 'suboptimal';
+    useMissionStore.getState().reportDecision({ num: 3, question: 'JAK GO OSZUKASZ?', answer: 'X', tier, feedback: '', optionId });
+    useMissionStore.setState({ chatMessages: [] });
+    useMissionStore.getState().completeStage(stageId);
+    driveBridge();
+    return useMissionStore.getState().chatMessages.map((m) => m.text);
+  };
+
+  it.each([
+    ['vector_party_zip', PARTY_BROWSER, HR_BROWSER],
+    ['vector_hr_docs', HR_BROWSER, PARTY_BROWSER]
+  ])('mostek 2 dla planu %s: pasuje tylko jego kwestia BM', (plan, expected, other) => {
+    const texts = playBridge('browser', plan);
+    expect(texts).toContain(expected);
+    expect(texts).not.toContain(other);
+    expect(texts).toContain('WYSYŁAM CI PRZYKŁADOWE PLIKI, KTÓRYCH MOŻESZ UŻYĆ');
+  });
+
+  it.each([
+    ['vector_party_zip', PARTY_PENDRIVE, HR_PENDRIVE],
+    ['vector_hr_docs', HR_PENDRIVE, PARTY_PENDRIVE]
+  ])('mostek 3 dla planu %s: pasuje tylko jego kwestia gracza, wspólne kwestie zostają', (plan, expected, other) => {
+    const texts = playBridge('pendrive_app', plan);
+    expect(texts).toContain(expected);
+    expect(texts).not.toContain(other);
+    expect(texts).toContain(PENDRIVE_COMMON);
+    expect(texts).toContain('JASNE, SŁYSZYMY SIĘ ZA KILKA GODZIN');
+  });
+});
+
 describe('Misja 3 — raport i helpery zgłaszania decyzji', () => {
   it('buildReport: odpowiedź = reportAnswer ?? label, poziom i feedback z opcji, z możliwością nadpisania', () => {
     const rat = virusLabConfig.virus.options.find((o) => o.id === 'rat')!;
@@ -762,6 +817,8 @@ describe('Misja 3 — przepływ przez silnik', () => {
       store.completeStage(id);
       driveBridge();
     }
+    // Plan D3 zgłoszony z optionId (jak na ekranie): od niego zależy kwestia „ZDJĘCIA PODRZUCĘ…”.
+    store.reportDecision({ num: 3, question: 'JAK GO OSZUKASZ?', answer: 'X', tier: 'ideal', feedback: '', optionId: 'vector_party_zip' });
     store.completeStage('pendrive_app');
     // Pętla ręczna: klikamy kwestie gracza do momentu przeskoku.
     let playerClicks = 0;

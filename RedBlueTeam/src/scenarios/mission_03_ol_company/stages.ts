@@ -730,7 +730,16 @@ export const mission3Stages: StageDefinition[] = [
     decisions: [2, 3],
     completion: {
       conversation: [
-        { from: 'byte_master', text: 'DZIĘKI ARCHIWUM ANTYWIRUS NIE ZNAJDZIE ZAGROŻENIA. DOBRZE. TERAZ PRZYGOTUJ PENDRIVE' },
+        {
+          from: 'byte_master',
+          text: 'DZIĘKI ARCHIWUM ANTYWIRUS NIE ZNAJDZIE ZAGROŻENIA. DOBRZE. TERAZ PRZYGOTUJ PENDRIVE',
+          when: { decision: 3, optionId: 'vector_party_zip' }
+        },
+        {
+          from: 'byte_master',
+          text: 'DOKUMENTY O ZWOLNIENIACH GO ZANIEPOKOJĄ, ALE MOŻE ODDAĆ PENDRIVE DO KADR. TERAZ PRZYGOTUJ PENDRIVE',
+          when: { decision: 3, optionId: 'vector_hr_docs' }
+        },
         { from: 'byte_master', text: 'WYSYŁAM CI PRZYKŁADOWE PLIKI, KTÓRYCH MOŻESZ UŻYĆ' },
         { from: 'player', id: 'm3_reply_vector', label: 'ODBIERAM PLIKI. PRZYGOTUJĘ NOŚNIK.' }
       ],
@@ -750,7 +759,15 @@ export const mission3Stages: StageDefinition[] = [
           from: 'player',
           id: 'm3_reply_pendrive_1',
           label:
-            'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI'
+            'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
+          when: { decision: 3, optionId: 'vector_party_zip' }
+        },
+        {
+          from: 'player',
+          id: 'm3_reply_pendrive_1_hr',
+          label:
+            'GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
+          when: { decision: 3, optionId: 'vector_hr_docs' }
         },
         {
           from: 'player',

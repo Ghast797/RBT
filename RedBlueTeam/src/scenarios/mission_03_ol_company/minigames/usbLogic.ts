@@ -62,8 +62,9 @@ export interface D4Outcome {
 
 /**
  * Agregacja D4: poziom = gorszy z kroków nazwy i podpisu. Odpowiedź w raporcie to podpis, a gdy ocenę
- * obniżyła nazwa dysku (gorsza od podpisu), raport pokazuje obie: `NAZWA DYSKU: X / PODPIS: Y`,
- * żeby gracz widział, co obniżyło ocenę.
+ * obniżyła nazwa dysku (gorsza od podpisu) albo gdy oba kroki mają ten sam, nieidealny poziom (remis),
+ * raport pokazuje obie: `NAZWA DYSKU: X / PODPIS: Y`, żeby gracz widział, co obniżyło ocenę.
+ * Przy remisie na poziomie idealnym pokazuje sam podpis.
  */
 export function aggregateD4(
   volume: ReportableOption,
@@ -71,8 +72,11 @@ export function aggregateD4(
   labels: D4ReportLabels
 ): D4Outcome {
   const volumeWorse = TIER_RANK[volume.tier] > TIER_RANK[signature.tier];
+  // Remis na poziomie nieidealnym (np. NOWY DYSK + B&O): oba kroki są winą, więc raport pokazuje oba.
+  const tiedNonIdeal = volume.tier === signature.tier && volume.tier !== 'ideal';
   const source = volumeWorse ? volume : signature;
-  const answer = volumeWorse
+  const showBoth = volumeWorse || tiedNonIdeal;
+  const answer = showBoth
     ? `${labels.volume}: ${volume.label} / ${labels.signature}: ${reportAnswerOf(signature)}`
     : reportAnswerOf(signature);
   return {
