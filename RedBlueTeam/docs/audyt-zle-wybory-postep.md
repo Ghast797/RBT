@@ -110,25 +110,25 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-13 | N | Podpowiedzi T1/T2 opisane w docs, w silniku ich nie ma | otwarte | | Właściciel (P5): zbudować w silniku dwustopniowe podpowiedzi po bezczynności (T1 subtelna, T2 wyraźna) zgodnie z docs; z ekranu M1 zniknie żargon „[WSKAZÓWKA EDUKACYJNA T2]”. |
-| M1-01 | W | D4: ideał to domena-sobowtór, a raport uczy o spoofingu i SPF/DKIM | otwarte | | |
-| M1-05 | W | Każdy suboptimal kończy się „DOSKONAŁA ROBOTA” | otwarte | | |
-| M1-07 | S | Wirus tylko przeciąganiem HTML5 — na dotyku nie przejdzie | otwarte | | |
-| M1-08 | N | Treść maila w trzech wersjach | otwarte | | |
-| M1-09 | N | Stanowisko Anity niespójne | otwarte | | |
+| ENG-13 | N | Podpowiedzi T1/T2 opisane w docs, w silniku ich nie ma | zrobione | 042ee2a, 941a1b1 | Właściciel (P5): zbudować w silniku dwustopniowe podpowiedzi po bezczynności (T1 subtelna, T2 wyraźna) zgodnie z docs; z ekranu M1 zniknie żargon „[WSKAZÓWKA EDUKACYJNA T2]”. |
+| M1-01 | W | D4: ideał to domena-sobowtór, a raport uczy o spoofingu i SPF/DKIM | zrobione | 941a1b1 | Lekcja i loader o domenie-sobowtórze PETR0LOG.COM zamiast spoofingu i SPF/DKIM; scenario.md zsynchronizowany. |
+| M1-05 | W | Każdy suboptimal kończy się „DOSKONAŁA ROBOTA” | zrobione | 941a1b1 | „DOSKONAŁA ROBOTA!” tylko przy samych ideałach; inaczej „UDAŁO SIĘ, ALE NIE IDEALNIE…”. |
+| M1-07 | S | Wirus tylko przeciąganiem HTML5 — na dotyku nie przejdzie | zrobione | 941a1b1 | Wstrzyknięcie wirusa przez usePointerDrag (klik/tap lub przeciągnięcie). Na prawdziwym urządzeniu dotykowym niesprawdzone. |
+| M1-08 | N | Treść maila w trzech wersjach | zrobione | 941a1b1 | Wspólny komponent MailBody w podglądzie, podsumowaniu i skrzynce Anity. |
+| M1-09 | N | Stanowisko Anity niespójne | zrobione | 941a1b1 | Wszędzie „Specjalista ds. Księgowości”. |
 | M2-06 | S | Każdy wybór brzmi jak sukces | odrzucone | | Po P2–P4 dźwięk jest jednakowy dla każdej opcji, więc nic nie zdradza. Właściciel (P5): zostawić fanfarę. |
 | M2-08 | N | Teksty critical opisują nieskuteczność, nie wykrycie | zrobione | | Nieaktualne po P2: złe wybory odrzuca mentor (B2), jedyny critical (ransomware) ma tekst o wykryciu. |
-| M2-09 | N | Kolejności poziomów w D2 i D3 nie da się wywnioskować | otwarte | | Właściciel (P5): dodać wskazówkę mentora przed wyborem szablonu: „W FIRMOWEJ SKRZYNCE NAJLEPIEJ SPRAWDZI SIĘ COŚ, CO WYGLĄDA NA SŁUŻBOWE”. |
-| M2-11 | N | „CZARNA LISTA” vs „BIAŁA LISTA” | otwarte | | |
+| M2-09 | N | Kolejności poziomów w D2 i D3 nie da się wywnioskować | zrobione | 290f13e | Wskazówka dopisana do ostatniej wypowiedzi mentora w intro (osobny dymek wymagałby sztucznej odpowiedzi gracza). |
+| M2-11 | N | „CZARNA LISTA” vs „BIAŁA LISTA” | zrobione | 290f13e | „BIAŁĄ LISTĘ NADAWCÓW”; odstępstwo od VR opisane w scenario.md. |
 | M2-12 | S | Spoiler „PODMIENIĘ JEDNĄ LITERĘ W DOMENIE” przed decyzją | odrzucone | | D-02: zostawić 1:1 z VR. |
-| M3-12 | N | Feedback D2 niezgodny z faktami | otwarte | | |
-| M3-13 | N | Intro zdradza odpowiedź D1 | otwarte | | |
+| M3-12 | N | Feedback D2 niezgodny z faktami | zrobione | ea8777b | Feedback D2 i lekcja zgodne z danymi pracowników (6 i 11 lat). |
+| M3-13 | N | Intro zdradza odpowiedź D1 | zrobione | ea8777b | Intro: „CZY WIRUS NA KOMPUTERZE PRACOWNIKA WYSTARCZY?”. |
 | M4-06 | S | D2: zakazane znaki nieopisane | odrzucone | | Właściciel (P5): zostawić pułapkę; zakaz znaków gracz poznaje po odrzuceniu przez mentora (od P2 to B2, nie wykrycie). |
-| M4-07 | S | D3: format czasu niejednoznaczny | otwarte | | Właściciel (P5): czas słownie, „30 GODZIN” (ideał) i „30 MINUT” (zamiast „30 sekund”); poprawić kwestię mentora i odpowiedź w raporcie. Lekcja D3 w mission4.json mówi o 30 sekundach – pisze właściciel. |
+| M4-07 | S | D3: format czasu niejednoznaczny | zrobione | 3d81954 | „30 GODZIN” / „30 MINUT”, kwestia mentora i odpowiedź w raporcie poprawione. Lekcja D3 w mission4.json dalej mówi o 30 sekundach – NEW-10. |
 | M4-08 | S | Critical opisuje porażkę, nie wykrycie; D6 casual za łagodny | zrobione | | Nieaktualne po P2/P4: złe opcje D5/D6 odrzuca mentor, a luźny mail ma odroczony skutek w panelu C2. |
-| M4-09 | N | D5: podpowiedź mentora nie pasuje do ideału | otwarte | | Właściciel (P5): poprawić kwestię mentora na „TEMAT MAILA POWINIEN ZAWIERAĆ DOPISEK CV ORAZ IMIĘ I NAZWISKO KANDYDATA” (odstępstwo od VR). |
+| M4-09 | N | D5: podpowiedź mentora nie pasuje do ideału | zrobione | 3d81954 | Kwestia mentora: „…DOPISEK CV ORAZ IMIĘ I NAZWISKO KANDYDATA”; odstępstwo O14 w rebuild-plan.md. |
 | M4-10 | N | D8: liczba plików nieznana, mylące zmyłki | zrobione | 5382b5f | Nieaktualne po zmianie zasady D8 (dodatkowe pliki bez kary, bez limitu): liczba plików nie ma już znaczenia. |
-| M4-11 | N | Miniatura okna okupu w dev pokazuje ideał | otwarte | | |
+| M4-11 | N | Miniatura okna okupu w dev pokazuje ideał | zrobione | 3d81954 | Bez zbudowanego komunikatu (dev) miniatura okna okupu się nie pokazuje. |
 | M4-12 | N | D2: suwak startuje na wartości critical | odrzucone | | Właściciel (P5): zostawić start suwaka na 8 jako świadomą pułapkę (od P2 odrzucenie mentora, nie wykrycie). |
 
 ### P6 — SCORM w Moodle
@@ -198,9 +198,10 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 | NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. |
 | NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | P3 | zrobione | 53bc335, d764f82 | D-08: dodać jsdom + Testing Library (dev) przy P3. |
 | NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | zrobione | 91c9224 | Właściciel (P3): wariant dla planu HR: „GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY…”. |
-| NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | otwarte | | |
+| NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | zrobione | ea8777b | scenario.md M3 zgodny z kodem; rebuild-plan.md ma sekcję „Zmiany po audycie” (sekcje 1–9 historyczne). |
 | NEW-05 | N | M4: lekcja D9 w `mission4.json` mówi, że uległość „oznaczałaby natychmiastową porażkę”, a „JUŻ WAM NIE PRZESZKADZAM” jest teraz suboptimal z powrotem do rozmowy. Lekcje M4 pisze właściciel. | P5 | zrobione | | D-07: zdanie o uległości zmienione na „oddałoby inicjatywę… wracać do rozmowy z gorszej pozycji” (zaakceptowane przez właściciela). |
 | NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | zrobione | d764f82 | |
 | NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | zrobione | d764f82 | Właściciel (P3): pokazać feedback odrzuconej opcji w raporcie pod „Najpierw: X”. |
-| NEW-08 | N | M1, ścieżka z PREZESEM BUCZKIEM: przy nieidealnym adresie w D4 raport pod „CO ZADZIAŁAŁOBY LEPIEJ” pokazuje idealny adres Kwiatkowskiego (`mission1.json` ma jedną odpowiedź idealną na decyzję). Przy okazji: powitanie „Cześć Anita,” i „Pozdrawiam,” brzmią tak samo od prezesa jak od kolegi. | P5 | otwarte | | Właściciel (P5): neutralna odpowiedź w raporcie M1 D4, np. „ADRES W DOMENIE-SOBOWTÓRZE PETR0LOG.COM (ZERO ZAMIAST „O”), PASUJĄCY DO WYBRANEGO NADAWCY”. Powitanie zostaje. |
+| NEW-08 | N | M1, ścieżka z PREZESEM BUCZKIEM: przy nieidealnym adresie w D4 raport pod „CO ZADZIAŁAŁOBY LEPIEJ” pokazuje idealny adres Kwiatkowskiego (`mission1.json` ma jedną odpowiedź idealną na decyzję). Przy okazji: powitanie „Cześć Anita,” i „Pozdrawiam,” brzmią tak samo od prezesa jak od kolegi. | P5 | zrobione | 941a1b1 | Właściciel (P5): neutralna odpowiedź w raporcie M1 D4, np. „ADRES W DOMENIE-SOBOWTÓRZE PETR0LOG.COM (ZERO ZAMIAST „O”), PASUJĄCY DO WYBRANEGO NADAWCY”. Powitanie zostaje. |
 | NEW-09 | N | M4: lekcja D8 w `mission4.json` mówi, że sukces to „precyzyjne skopiowanie wyłącznie trzech kluczowych plików”, a zbyt wiele plików „mogłoby zaalarmować systemy DLP”. Po zmianie zasady D8 (dodatkowe pliki bez kary) przeczy mechanice. Lekcje M4 pisze właściciel. Specyfikacje w `mission_04_energy_rock/docs/` też opisują limit 3. | P5 | czeka na właściciela | | |
+| NEW-10 | N | M4: lekcja D3 w `mission4.json` (atak) mówi „Zbyt krótki czas, jak 30 sekund…”, a po P5 krótsza opcja to „30 MINUT”. Lekcje M4 pisze właściciel. | P5 | czeka na właściciela | | |
