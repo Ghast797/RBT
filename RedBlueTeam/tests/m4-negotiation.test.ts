@@ -42,11 +42,8 @@ describe('mapReportAnswer', () => {
 
 describe('resolvePreview', () => {
   const p = victimChatConfig.preview;
-  it('brak m4_note -> fallback', () => {
-    const r = resolvePreview(p, undefined);
-    expect(r.title).toBe(p.titles[p.fallback.titleId]);
-    expect(r.time).toBe(p.times[p.fallback.timeId]);
-    expect(r.color).toBe(p.colors[p.fallback.colorId]);
+  it('brak m4_note (okno nie zbudowane) -> null, miniatura się nie renderuje', () => {
+    expect(resolvePreview(p, undefined)).toBeNull();
   });
   it('wybór gracza trafia do miniatury', () => {
     const titleId = Object.keys(p.titles)[1] ?? Object.keys(p.titles)[0];
