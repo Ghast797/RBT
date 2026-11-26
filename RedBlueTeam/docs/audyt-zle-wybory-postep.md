@@ -100,11 +100,11 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
-| ENG-17 | S | WYNIK i BTC na pasku zdradzają słaby wybór od razu | otwarte | | D-01: w M2+ ukryć WYNIK i BTC w trakcie gry, pokazać dopiero w raporcie. M1 (samouczek) bez zmian. |
-| M2-01 | W | Monitor botnetu zawsze taki sam | otwarte | | |
-| M3-09 | S | Brak odroczonych konsekwencji; wynik spada od razu | otwarte | | |
-| M4-02 | W | Brak odroczonych konsekwencji; `m4_mail` nieczytany | otwarte | | |
-| M4-04 | S | D8 niepełny zestaw plików, a mostek „mamy wszystko” | otwarte | | |
+| ENG-17 | S | WYNIK i BTC na pasku zdradzają słaby wybór od razu | otwarte | D-01: w M2+ ukryć WYNIK i BTC w trakcie gry, pokazać dopiero w raporcie. M1 (samouczek) bez zmian. Zasada P4: skutki odroczone są tylko fabularne, punkty bez zmian (odjęte przy decyzji). |
+| M2-01 | W | Monitor botnetu zawsze taki sam | otwarte | Właściciel (P4): monitor liczy skutek ze słabszych wyborów (Quickgram −12 pkt %, ankieta przeciwpożarowa −10 pkt %, MARKETING@ → 1 alarm „FILTR POCZTY OZNACZYŁ NADAWCĘ JAKO PODEJRZANEGO”) + inna kwestia końcowa mentora przy dowolnym słabszym wyborze. Bez panelu Blue Teamu. |
+| M3-09 | S | Brak odroczonych konsekwencji; wynik spada od razu | otwarte | Właściciel (P4): tylko opóźnienie. Przy słabszym wyborze (plan HR, nazwa/podpis dysku, pusty asfalt) przeskok czasu do późniejszej godziny z podpisem „MATEUSZ ZWLEKAŁ…” i kwestia mentora; pliki kopiują się wszystkie. |
+| M4-02 | W | Brak odroczonych konsekwencji; `m4_mail` nieczytany | otwarte | Właściciel (P4): przy słabszym wyborze w mailu (nazwa pliku, treść bez hasła, adres ALEX@PRIV.COM) później otwarte CV (przeskok do późniejszej godziny), dopisek na panelu ransomware co poszło nie tak, mentor „IT JUŻ COŚ PODEJRZEWA…”. |
+| M4-04 | S | D8 niepełny zestaw plików, a mostek „mamy wszystko” | otwarte | Właściciel (P4): licznik „WYBRANO X/3” i zatwierdzenie dopiero przy 3 plikach (łączy się z M4-10). Bez osobnej kwestii mentora dla zestawu ze zmyłkami. |
 
 ### P5 — teksty i drobne
 
