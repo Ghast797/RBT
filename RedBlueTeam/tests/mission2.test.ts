@@ -208,6 +208,21 @@ describe('Mission 2: CarbonFlow Scenario & SCORM Engine', () => {
       cfg.sender.options.forEach((o) => expect(cfg.signoffs[o.id]).toBeTruthy());
     });
 
+    it('termin 16:00 jest tylko w temacie obowiązkowym (ideal), nie w ankiecie o ćwiczeniach przeciwpożarowych', () => {
+      const cfg = phishingDispatchConfig;
+      const ideal = phishingCampaignConfig.topic.options.find((o) => o.tier === 'ideal')!;
+      const fire = phishingCampaignConfig.topic.options.find((o) => o.id === 'fire_drill')!;
+      const idealTopic = cfg.topics.find((t) => t.label === ideal.label)!;
+      const fireTopic = cfg.topics.find((t) => t.label === fire.label)!;
+      expect(idealTopic.deadline).toContain('16:00');
+      expect(fireTopic.body).not.toContain('16:00');
+      expect(fireTopic.deadline).toBeUndefined();
+      expect(fireTopic.body.toLowerCase()).not.toContain('pilne');
+      cfg.topics
+        .filter((t) => t !== idealTopic)
+        .forEach((t) => expect(t.deadline).toBeUndefined());
+    });
+
     it('intro jest 1:1 z VR (węzły, kwestie gracza, mostek po wysyłce: kwestia gracza i przeskok czasu)', () => {
       const intro = def.intro;
       expect(intro.dialogue.length).toBe(8);

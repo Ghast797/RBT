@@ -220,11 +220,12 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
     {
       label: 'OBOWIĄZKOWA ANKIETA DOTYCZĄCA SPOTKANIA INTEGRACYJNEGO',
       body: 'Przypominamy o konieczności wypełnienia corocznej, obowiązkowej ankiety dotyczącej organizacji firmowego wyjazdu integracyjnego CarbonFlow Inc.',
-      slug: 'carbonflow-integracja-2026'
+      slug: 'carbonflow-integracja-2026',
+      deadline: 'Czas na wypełnienie formularza upływa dzisiaj o godzinie 16:00.'
     },
     {
       label: 'ANKIETA DOTYCZĄCA ĆWICZEŃ PRZECIWPOŻAROWYCH',
-      body: 'Prosimy wszystkich pracowników o pilne wypełnienie ankiety weryfikującej znajomość procedur ewakuacyjnych i przeciwpożarowych w CarbonFlow Inc.',
+      body: 'Prosimy wszystkich pracowników o wypełnienie ankiety weryfikującej znajomość procedur ewakuacyjnych i przeciwpożarowych w CarbonFlow Inc.',
       slug: 'carbonflow-cwiczenia-pozarnicze-2026'
     },
     {
