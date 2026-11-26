@@ -85,16 +85,16 @@ Paczki idą po kolei; w obrębie paczki kolejność dowolna. P3 jest warunkiem d
 | ID | Waga | Krótko | Status | Commit | Notatka |
 |---|---|---|---|---|---|
 | ENG-04 | W | Silnik nie pamięta wybranej opcji | otwarte | | Szkic API w polu `f` ENG-04. Do tego `option.reject` (B2). |
-| ENG-16 | S | Lekcja w raporcie zawsze opisuje opcję idealną | otwarte | | |
-| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | otwarte | | Właściciel: przenieść do P3 (przy przebudowie raportu decyzji). |
-| M1-03 | W | D3 Prezes Buczek, a D4 proponuje adresy Kwiatkowskiego | otwarte | | |
+| ENG-16 | S | Lekcja w raporcie zawsze opisuje opcję idealną | otwarte | | Właściciel (P3): przy nieidealnym wyborze nagłówek „CO ZADZIAŁAŁOBY LEPIEJ” i pokazana opcja idealna; lekcje bez zmian, bez lekcji per opcja. |
+| ENG-09 | S | DialogueTree aggregate: odpowiedź z ostatniej tury, poziom z najgorszej | otwarte | | Właściciel (P3): usunąć nieużywany tryb aggregate z DialogueTree. |
+| M1-03 | W | D3 Prezes Buczek, a D4 proponuje adresy Kwiatkowskiego | otwarte | | Właściciel (P3): adresy D4 zależne od nadawcy z D3 (np. p.buczek@…), monitor ofiary zależny od nadawcy. |
 | M1-04 | W | Monitor ofiary zawsze mówi o „poradniku biegowym” | otwarte | | |
 | M2-05 | S | D3 ankieta przeciwpożarowa: treść maila przeczy feedbackowi | otwarte | | |
 | M2-07 | S | Po D1 mentor zawsze każe „STWÓRZ WIRUSA 0-DAY” | zrobione | 6d91d81 | Zniknęło z usunięciem D1: typ wirusa wybiera się dopiero w D3, więc kwestia mentora nie przeczy wyborowi. |
-| M3-07 | S | Mostki po etapach mówią o ścieżce idealnej | otwarte | | |
+| M3-07 | S | Mostki po etapach mówią o ścieżce idealnej | otwarte | | Właściciel (P3): warianty wg planu z D3. Plan zdjęć bez zmian; plan HR: mentor „DOKUMENTY O ZWOLNIENIACH GO ZANIEPOKOJĄ, ALE MOŻE ODDAĆ PENDRIVE DO KADR. TERAZ PRZYGOTUJ PENDRIVE”. Razem z NEW-03. |
 | M3-08 | S | Raport: lekcja zawsze opisuje opcję idealną | otwarte | | Razem z ENG-16. |
 | M3-11 | N | Raport D4 przy remisie gubi nazwę dysku | otwarte | | |
-| M4-05 | S | Słaby klucz w D2, a w D9 „ideał” to „nie odszyfrują plików” | otwarte | | |
+| M4-05 | S | Słaby klucz w D2, a w D9 „ideał” to „nie odszyfrują plików” | odrzucone | | Właściciel: zostaje. Lekcja ma utrwalić, że ransomware nie da się odszyfrować nawet z pomocą służb; drobna niespójność z D2 jest akceptowalna. |
 
 ### P4 — konsekwencje odroczone
 
@@ -197,8 +197,8 @@ Kara za odrzuconą próbę (B2): **pół udziału decyzji**, niezależnie od poz
 |---|---|---|---|---|---|---|
 | NEW-01 | N | Po `Terminate` (`submitScormAndExit`) prawdziwy LMS na ponowne `Initialize` zwraca błąd 104; powtórka misji w tej samej karcie po wysłaniu wyniku może nie zapisać nowego wyniku. Sprawdzić, czy UI w ogóle pozwala grać dalej po wysłaniu. | P6 | otwarte | | Zgłoszone przez agenta przy ENG-01. |
 | NEW-02 | N | Repo nie ma biblioteki do testów komponentów (jsdom / Testing Library), więc zmiany w `BootSequence`, `DialogueTree`, `EmailSenderApp` są testowane tylko logiką store'u i ręcznie w przeglądarce. | P3 | otwarte | | D-08: dodać jsdom + Testing Library (dev) przy P3. |
-| NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | otwarte | | Neutralizować na „PENDRIVE” albo zrobić warunkową (pamięć wyborów). |
+| NEW-03 | S | M3: kwestia gracza po D4 „GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA…” zakłada plan zdjęć; przy planie HR (M3-06) przeczy zawartości pendrive'a. Tekst z VR. | P3 | otwarte | | Właściciel (P3): wariant dla planu HR: „GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY…”. |
 | NEW-04 | N | M3 `scenario.md` i `docs/rebuild-plan.md` nie opisują zmian z P2 (D1 ransomware/keylogger, D4 per plan, D5, D6 asfalt, zdrapka bez ransomware). | P5 | otwarte | | |
 | NEW-05 | N | M4: lekcja D9 w `mission4.json` mówi, że uległość „oznaczałaby natychmiastową porażkę”, a „JUŻ WAM NIE PRZESZKADZAM” jest teraz suboptimal z powrotem do rozmowy. Lekcje M4 pisze właściciel. | P5 | zrobione | | D-07: zdanie o uległości zmienione na „oddałoby inicjatywę… wracać do rozmowy z gorszej pozycji” (zaakceptowane przez właściciela). |
 | NEW-06 | N | M4: raport D9 nie pokazuje, że gracz skapitulował i wrócił do rozmowy (widać tylko wybór suboptimal). | P3 | otwarte | | |
-| NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | otwarte | | Rozważyć pokazanie w raporcie przy „Najpierw: X”. |
+| NEW-07 | N | Feedback opcji odrzuconej przez mentora (B2) nie jest nigdzie wyświetlany — gracz widzi tylko `mentorLine`. | P3 | otwarte | | Właściciel (P3): pokazać feedback odrzuconej opcji w raporcie pod „Najpierw: X”. |
