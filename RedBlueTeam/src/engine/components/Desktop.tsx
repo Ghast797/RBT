@@ -58,6 +58,7 @@ export const Desktop: React.FC = () => {
     isDetectedModalOpen,
     detectionReason,
     isRetryModalOpen,
+    isScormTerminated,
     openRetryModal,
     closeRetryModal,
     retryFromScratch,
@@ -399,6 +400,7 @@ export const Desktop: React.FC = () => {
             {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
           </button>
 
+          {!isScormTerminated && (
           <button
             onClick={openRetryModal}
             className="p-1 rounded hover:bg-[#ff3366]/20 text-gray-400 hover:text-[#ff3366] transition-colors"
@@ -406,11 +408,12 @@ export const Desktop: React.FC = () => {
           >
             <RotateCcw size={14} />
           </button>
+          )}
         </div>
       </div>
 
       {/* FULL-SCREEN DETECTION ALARM MODAL */}
-      {isDetectedModalOpen && (
+      {isDetectedModalOpen && !isScormTerminated && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-[#120407] border-2 border-[#ff3366] rounded-2xl max-w-xl w-full p-6 sm:p-8 text-center space-y-5 shadow-[0_0_60px_rgba(255,51,102,0.6)] relative">
             <div className="w-20 h-20 rounded-full bg-[#ff3366]/15 border-2 border-[#ff3366] flex items-center justify-center mx-auto text-[#ff3366] shadow-[0_0_30px_#ff3366] animate-bounce">
@@ -457,7 +460,7 @@ export const Desktop: React.FC = () => {
       )}
 
       {/* VR-STYLE RETRY MODAL (POWTÓRKA) */}
-      {isRetryModalOpen && (
+      {isRetryModalOpen && !isScormTerminated && (
         <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-200">
           <div className="bg-[#07131b] border-2 border-[#00ff66] rounded-2xl max-w-lg w-full p-6 sm:p-7 text-center space-y-5 shadow-[0_0_40px_rgba(0,255,102,0.35)] relative">
             <button

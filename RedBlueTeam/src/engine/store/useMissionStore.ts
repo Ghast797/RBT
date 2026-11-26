@@ -5,7 +5,7 @@ import { beatMatches } from '../core/beatCondition';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
 import { createMissionCompletionStatement, MockLRS } from '../scorm/xapi';
-import { scorm2004, type ScormInteraction } from '../scorm/scorm2004';
+import { scorm2004 } from '../scorm/scorm2004';
 
 /** Identyfikator kafelka pulpitu (`desktopApps[].id`) albo aplikacji silnika, np. `debrief_app`. */
 export type WindowId = string;
@@ -159,6 +159,12 @@ export interface MissionState {
   isScormSubmitted: boolean;
   scormSubmitMessage: string | null;
   isExitModalOpen: boolean;
+  /**
+   * Wynik wysłany, sesja SCORM zakończona (Terminate) w prawdziwym LMS: kolejne Initialize
+   * zwróciłoby błąd 104, więc powtórka w tej karcie jest zablokowana. NIE czyści tego
+   * `resetGame` ani powtórki — tylko odświeżenie karty (nowe uruchomienie z Moodle).
+   */
+  isScormTerminated: boolean;
 
   // Boot Actions
   acceptIncomingCall: () => void;
@@ -377,6 +383,7 @@ function scaledUnlockDelay(ms: number) {
 
 export const useMissionStore = create<MissionState>((set, get) => ({
   ...getInitialMissionState(initialMission),
+  isScormTerminated: false,
 
   loadMission: (missionOrId) => {
     let targetMission: MissionDefinition | undefined;
@@ -391,6 +398,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
       return;
     }
 
+    if (get().isScormTerminated) return;
     cancelBridgeTimers();
     set({ ...getInitialMissionState(targetMission), timeJump: null });
   },
@@ -413,6 +421,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   },
 
   openRetryModal: () => {
+    if (get().isScormTerminated) return;
     sounds.playClick();
     set({ isRetryModalOpen: true });
   },
@@ -423,6 +432,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   },
 
   retryFromScratch: () => {
+    if (get().isScormTerminated) return;
     sounds.playClick();
     cancelBridgeTimers();
     const currentMission = get().activeMission;
@@ -437,6 +447,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   },
 
   retryFromChoices: () => {
+    if (get().isScormTerminated) return;
     sounds.playSuccess();
     cancelBridgeTimers();
     const currentMission = get().activeMission;
@@ -924,6 +935,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
   },
 
   resetGame: () => {
+    if (get().isScormTerminated) return;
     sounds.playClick();
     const currentMission = get().activeMission;
     cancelBridgeTimers();
@@ -933,31 +945,17 @@ export const useMissionStore = create<MissionState>((set, get) => ({
 
   // ----------------- SCORM 2004 ACTIONS -----------------
   saveMissionResult: () => {
-    const { score, playerChoices, criticalErrorsCount, btcReward, activeMission } = get();
+    if (get().isScormTerminated) {
+      return { success: false, message: 'Sesja SCORM została już zakończona.' };
+    }
+    const { score, activeMission } = get();
     const sessionSeconds = scorm2004.getElapsedTimeSeconds();
-
-    const interactions: ScormInteraction[] = playerChoices.map((pc) => ({
-      id: `step_${pc.num}_choice`,
-      type: 'choice',
-      description: pc.question,
-      learnerResponse: pc.answer,
-      result: pc.isCorrect ? 'correct' : 'incorrect'
-    }));
-
-    const suspendData = JSON.stringify({
-      score,
-      criticalErrors: criticalErrorsCount,
-      btcReward,
-      completedAt: new Date().toISOString()
-    });
 
     const result = scorm2004.saveResult({
       missionId: activeMission.mission.id,
       scoreRaw: score,
       passingScore: activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE,
-      sessionSeconds,
-      interactions,
-      suspendData
+      sessionSeconds
     });
 
     set({
@@ -973,7 +971,11 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     // Zapis jeszcze raz: misja bez ocenianych decyzji nie ma autozapisu, a wynik
     // mógł się zmienić po powtórce zadania.
     const result = get().saveMissionResult();
-    if (result.success) scorm2004.terminate();
+    if (result.success) {
+      const terminated = scorm2004.terminate();
+      // Bez LMS (tryb Mock) nic nie jest tracone, więc powtórki zostają dostępne (dev/podgląd).
+      if (terminated && !scorm2004.isUsingMock()) set({ isScormTerminated: true });
+    }
     set({ isExitModalOpen: true });
     return result;
   },

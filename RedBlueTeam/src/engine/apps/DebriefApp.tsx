@@ -22,6 +22,9 @@ import { useMissionStore } from '../store/useMissionStore';
 import { resolveDecisionCount, scormStatus, roundScore, displayScore, DEFAULT_PASSING_SCORE } from '../core/scoring';
 import { scorm2004 } from '../scorm/scorm2004';
 
+export const SCORM_SENT_MESSAGE =
+  'WYNIK ZOSTAŁ WYSŁANY DO MOODLE. ABY ZAGRAĆ PONOWNIE, ZAMKNIJ TO OKNO I URUCHOM AKTYWNOŚĆ W MOODLE JESZCZE RAZ.';
+
 export const DebriefApp: React.FC = () => {
   const {
     activeMission,
@@ -35,6 +38,7 @@ export const DebriefApp: React.FC = () => {
     playerChoices,
     isScormSubmitted,
     isExitModalOpen,
+    isScormTerminated,
     submitScormAndExit,
     closeExitModal,
     openExitModal,
@@ -227,7 +231,7 @@ export const DebriefApp: React.FC = () => {
             <span className="mr-1.5 font-black uppercase text-xs text-gray-400">Twoja decyzja:</span>
             <span className="font-sans">{selected.details}</span>
           </div>
-          {!selected.isCorrect && (
+          {!selected.isCorrect && !isScormTerminated && (
             <button
               onClick={openRetryModal}
               className="self-start sm:self-auto px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500 text-yellow-300 rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1 shrink-0 shadow-sm"
@@ -466,6 +470,14 @@ export const DebriefApp: React.FC = () => {
 
       {/* Dolna nawigacja */}
       <div className="pt-1.5 border-t border-[#00ff66]/20 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        {isScormTerminated ? (
+          <div
+            data-testid="scorm-sent-notice"
+            className="px-3 py-1.5 border border-[#00f0ff]/50 bg-[#00f0ff]/10 text-[#00f0ff] rounded text-xs font-bold uppercase tracking-wide leading-snug"
+          >
+            {SCORM_SENT_MESSAGE}
+          </div>
+        ) : (
         <button
           onClick={openRetryModal}
           className="px-3.5 py-1.5 bg-[#ff3366]/20 hover:bg-[#ff3366]/30 border border-[#ff3366] text-[#ff3366] rounded font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
@@ -473,6 +485,7 @@ export const DebriefApp: React.FC = () => {
           <RotateCcw size={14} />
           <span>POWTÓRZ ZADANIE</span>
         </button>
+        )}
 
         <div className="hidden lg:flex flex-1 min-w-0 items-center gap-2 px-2 text-xs text-gray-300">
           <BookOpen size={14} className="text-[#00ff66] shrink-0" />
@@ -526,10 +539,6 @@ export const DebriefApp: React.FC = () => {
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">OCENA PUNKTOWA:</span>
                 <span className="text-[#00ff66] font-black">{displayScore(score)} / {activeMission.mission.maxScore ?? 100} PKT</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">ZAPISANE INTERAKCJE:</span>
-                <span className="text-gray-200 font-bold">{choices.length} DECYZJI CMI</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">STATUS SESJI:</span>

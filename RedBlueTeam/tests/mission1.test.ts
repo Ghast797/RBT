@@ -170,7 +170,7 @@ describe('Mission 1: PetroLog Scenario & SCORM Engine', () => {
       expect(useMissionStore.getState().isScormSubmitted).toBe(true);
       expect(api.GetValue('cmi.completion_status')).toBe('completed');
       expect(api.GetValue('cmi.score.raw')).toBe('100');
-      expect(api.GetValue('cmi.interactions.3.learner_response')).toBe('K.KWIATKOWSKI@PETROLOG.COM');
+      expect(api.GetValue('cmi.interactions.0.id')).toBe('');
       expect(api.isTerminated).toBe(false);
 
       store.completeStage('app_email_sender');

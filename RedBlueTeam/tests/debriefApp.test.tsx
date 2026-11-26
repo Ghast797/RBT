@@ -65,3 +65,30 @@ describe('DebriefApp (komponent)', () => {
     expect(screen.getByText(/→ CHWILA, NIE TAK SZYBKO…/)).toBeTruthy();
   });
 });
+
+describe('DebriefApp: blokada powtórki po wysłaniu wyniku (NEW-01)', () => {
+  beforeEach(() => {
+    useMissionStore.setState({ isScormTerminated: false });
+    useMissionStore.getState().loadMission(def);
+  });
+  afterEach(() => {
+    cleanup();
+    useMissionStore.setState({ isScormTerminated: false });
+  });
+
+  it('po Terminate zamiast „POWTÓRZ ZADANIE” jest komunikat o zamknięciu okna', () => {
+    useMissionStore.setState({ playerChoices: [choice({})], expandedChoiceIndex: 0, isScormTerminated: true });
+    render(<DebriefApp />);
+    expect(screen.getByTestId('scorm-sent-notice').textContent).toBe(
+      'WYNIK ZOSTAŁ WYSŁANY DO MOODLE. ABY ZAGRAĆ PONOWNIE, ZAMKNIJ TO OKNO I URUCHOM AKTYWNOŚĆ W MOODLE JESZCZE RAZ.'
+    );
+    expect(screen.queryByText('POWTÓRZ ZADANIE')).toBeNull();
+  });
+
+  it('bez wysłanego wyniku przycisk „POWTÓRZ ZADANIE” jest dostępny', () => {
+    useMissionStore.setState({ playerChoices: [choice({})], expandedChoiceIndex: 0 });
+    render(<DebriefApp />);
+    expect(screen.queryByTestId('scorm-sent-notice')).toBeNull();
+    expect(screen.getAllByText('POWTÓRZ ZADANIE').length).toBeGreaterThan(0);
+  });
+});
