@@ -86,15 +86,15 @@ Decyzja D4: "WYBIERZ PODPIS NA KOPERCIE" (poziom zależy od planu z D3, `byPlan`
 Plan HR (D3 suboptimal): ZDJĘCIA Z AFTERPARTY O&L COMPANY! | critical (na pendrive'ie są dokumenty HR); PENDRIVE ZE ZDJĘCIAMI B&O COMPANY | critical; ZGUBIONE DOKUMENTY | suboptimal; WYPOWIEDZENIE UMOWY | ideal.
 
 Mostek (rozmowa do kolejnego etapu):
-- GRACZ: "GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI"
-- GRACZ (gdy D3 = dokumenty HR): "GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI"
+- GRACZ: "GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM PODBIJE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI"
+- GRACZ (gdy D3 = dokumenty HR): "GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM PODBIJE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI"
 - GRACZ: "MATEUSZ POWINIEN SIĘ OSTRO ZESTRESOWAĆ. MAM NADZIEJĘ, ŻE TO DLA CIEBIE WYSTARCZAJĄCO KREATYWNE?"
 - BM: "JEST OK. WYSYŁAM CI ADRES OFIARY: UL. OŁTASZYŃSKA 92C/6, 53-034 WROCŁAW, POLSKA (PL)"
 - BM: "DRONA WYŚLIJ Z SAMEGO RANA, ŻEBY OFIARA ZNALAZŁA KOPERTĘ NA SAMOCHODZIE PRZED WYJAZDEM DO BIURA. WTEDY W PRACY NA PEWNO SPRAWDZI ZAWARTOŚĆ"
 - GRACZ: "JASNE, SŁYSZYMY SIĘ ZA KILKA GODZIN"
 - PRZESKOK CZASU: 22:15 → 06:02 ("DO PORANKA…")
 - BM: "JUŻ CZAS. DRON GOTOWY DO WYLOTU?"
-- GRACZ: "JUŻ SPRAWDZAM DRONA W APLIKACJI. MUSZĘ JESZCZE PODPIĄĆ DO NIEGO PENDRIVE'A"
+- GRACZ: "JUŻ SPRAWDZAM DRONA W APLIKACJI. MUSZĘ JESZCZE PODWIESIĆ DO NIEGO KOPERTĘ Z PENDRIVE'EM"
 - odblokuj: //DRON: CONDOR MIT63 (po przeskoku z opóźnieniem 3 s)
 
 ## Etap 4: //DRON: CONDOR MIT63
@@ -122,8 +122,10 @@ Gracz wskazuje auto na scenie (nie z listy); poniżej etykiety aut. Odpowiedź w
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "OK. DAM CI ZNAĆ, KIEDY MATEUSZ PODŁĄCZY PENDRIVE I AKTYWUJE WIRUSA"
 - PRZESKOK CZASU: 06:02 → 08:12 ("DO GODZIN PRACY BIURA…") przy idealnych D3, D4 i D6.
-- Gdy D3, D4 lub D6 suboptymalne: PRZESKOK CZASU 06:02 → 11:40 ("MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…"), potem BM: "CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ." przy idealnych D3, D4 i D6.
-- Gdy D3, D4 lub D6 suboptymalne: PRZESKOK CZASU 06:02 → 11:40 ("MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…"), potem BM: "CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ."
+- Gdy D3, D4 lub D6 suboptymalne: PRZESKOK CZASU 06:02 → 11:40 ("MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…"), potem BM z jedną kwestią na przyczynę (grają się wszystkie pasujące):
+  - D3 = dokumenty HR: "MATEUSZ ODWLEKAŁ PODŁĄCZENIE – PEWNIE ZASTANAWIAŁ SIĘ, CZY NIE ODDAĆ PENDRIVE'A DO KADR."
+  - D4 suboptymalne: "OPIS NA KOPERCIE GO NIE PRZEKONAŁ, DŁUGO SIĘ WAHAŁ."
+  - D6 = pusty asfalt: "KOPERTA LEŻAŁA NA ASFALCIE, MATEUSZ ZNALAZŁ JĄ DOPIERO PO GODZINACH."
 - odblokuj: //WIRUS: RAT (C2) (po przeskoku z opóźnieniem 3 s; z przychodzącym połączeniem „MALWARE ZOSTAŁ AKTYWOWANY”, dźwięk alarmu)
 
 ## Etap 5: //WIRUS: RAT (C2)
@@ -135,7 +137,7 @@ Oceniane: Flavor (bez oceny; brak decyzji)
 Mostek (rozmowa końcowa):
 - GRACZ: "MAM DOSTĘP DO KOMPUTERA MATEUSZA. ROZUMIEM, ŻE OPRÓCZ PRZYJĘCIA DO GRUPY MOGĘ LICZYĆ TEŻ NA KILKA BITCOINÓW W RAMACH UZNANIA?"
 - BM: "WIDZĘ, ŻE SPODOBAŁY CI SIĘ ZAROBKI W DARKSUN. OBY TYLKO PIENIĄDZE NIE PRZYSŁONIŁY CI GŁÓWNEJ IDEI"
-- BM: "JESTEŚMY W KONTAKCIE!"
+- BM: "JESTEŚMY W KONTAKCIE!" (na ścieżce z przeskokiem 11:40: "MIMO OPÓŹNIENIA SIĘ UDAŁO. JESTEŚMY W KONTAKCIE!"; gra się dokładnie jeden wariant)
 - odblokuj: //RAPORT POOPERACYJNY
 
 ## Debrief
@@ -187,6 +189,7 @@ Zbiorcza lista odstępstw od dokumentu scenariusza (O1–O15 i rozstrzygnięcia 
 - [DO DECYZJI, NEW-04] Wynik zaliczający 70% (`passingScore` w `data/mission3.json`); poprzednia wersja tego dokumentu podawała 80%.
 - [NIEPEWNE] Literówki VR przepisane dosłownie („NAM POBICIE TROCHĘ DRAMATURGIĘ”, „B&O COMPANY” jako celowy błąd firmy w opcjach suboptimal); poprawione tylko „ZOSTAWIE” → „ZOSTAWIĘ” (P6). Kod pocztowy adresu z VR: 53-034 (dawny kod: 53-234).
 - [ZROBIONE NEW-04: poziomy nazw dysku wg planu, odpowiedzi do raportu; lekcje D1–D6 nadal do recenzji] Poziomy nazw dysku w D4 (VR podaje tylko wybór idealny `IMPREZA`; pozostałe z dawnej implementacji, `KEYLOGGER` critical), odpowiedzi do raportu dla opcji poza ścieżką ideal (D2: stanowisko osoby; D3 suboptimal „PODRZUCĘ PENDRIVE Z DOKUMENTAMI HR O ZWOLNIENIACH”; D3 critical „PUSTY PENDRIVE Z PODPISEM KEYLOGGER”), staż „W O&L OD: …” i opisy pracowników, wpisy WYDARZENIA bez dat rocznych, lekcje atak/obrona D1–D6: propozycja do recenzji właściciela.
+- Raport D4, sekcja „CO ZADZIAŁAŁOBY LEPIEJ” zależy od D3: plan zdjęć → „NAZWA DYSKU: IMPREZA / PODPIS: ZDJĘCIA Z AFTERPARTY O&L COMPANY!”, plan HR → „NAZWA DYSKU: DOKUMENTY HR / PODPIS: WYPOWIEDZENIE UMOWY” (`answerVariants`).
 - [DO DECYZJI] Raport D4: gdy ocenę wyznacza nazwa dysku (gorsza od podpisu), odpowiedź w raporcie to `NAZWA DYSKU: X / PODPIS: Y` (VR: sam podpis), żeby gracz widział, co obniżyło ocenę. Przy ocenie wyznaczonej przez podpis (także przy remisie) odpowiedź to sam podpis, jak w debriefie VR.
 - [DO DECYZJI] D1: opisy opcji z VR („POZWOLI PRZEJĄĆ KONTROLĘ NAD PULPITEM OFIARY”, „MOŻE ZASZYFROWAĆ…”, „POKAŻE WSZYSTKO CO OFIARA WPISUJE…”) zastąpiono neutralnymi definicjami typu programu, jak w M2 (RAT: program do zdalnego sterowania zainfekowanym komputerem; ransomware: program szyfrujący dane w celu okupu; keylogger: program rejestrujący wciśnięte klawisze). Wersje z VR oceniały przydatność i wskazywały odpowiedź. Etykiety (nazwy typów) i poziomy bez zmian.
 - [DO DECYZJI] Zdrapka (dawniej „matryca kompilacji”): żargon „matryca kompilacji” usunięty z widocznych tekstów (ekran ładowania: „PRZYGOTOWANIE PROGRAMU DO SKŁADANIA…”; w danych zostaje nazwa wewnętrzna `matrix`). Podtytuł nagłówka pokazuje, po co jest ekran: „SKŁADASZ PROGRAM: RAT”. Grafika i cztery podpisy części zależą od wyboru z D1 (`matrix.variants`): po wyborze Ransomware (suboptimal, gra idzie dalej) ekran składa „RANSOMWARE” (szyfrowanie, klucz, rozprzestrzenianie, żądanie okupu), nie RAT. Pasek, podpisy i komunikat „WIRUS GOTOWY!” liczą się z jednego źródła (`matrixView`): po przekroczeniu progu 92% zdrapka jest domknięta (maska znika, pasek 100%, cztery podpisy zapalone naraz), a komunikat widać ok. 2 s.

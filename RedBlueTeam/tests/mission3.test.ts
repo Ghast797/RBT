@@ -56,7 +56,7 @@ const EXPECTED_ANSWERS: Record<number, string> = {
   1: 'RAT',
   2: 'JUNIOR SPECJALISTA DS. WSPARCIA KLIENTA',
   3: 'NAWIĄŻĘ DO IMPREZY DZIAŁU SPRZEDAŻY',
-  4: 'ZDJĘCIA Z AFTERPARTY O&L COMPANY!',
+  4: 'NAZWA DYSKU: IMPREZA / PODPIS: ZDJĘCIA Z AFTERPARTY O&L COMPANY!',
   5: 'OŁTASZYŃSKA 92C',
   6: 'BIAŁY SAMOCHÓD Z CZERWONYM DACHEM – SAMOCHÓD OFIARY'
 };
@@ -178,7 +178,9 @@ describe('Misja 3 — metadane, intro i raport (dokument VR)', () => {
       expect(decisions[k].question, `pytanie D${k} na ekranie`).toBe(choice.question);
       expect(choice.answer).toBe(EXPECTED_ANSWERS[k]);
       const ideal = decisions[k].options.find((o) => o.tier === 'ideal');
-      expect(reportAnswerOf(ideal), `D${k}: odpowiedź opcji ideal`).toBe(choice.answer);
+      // D4: raport podaje parę „NAZWA DYSKU: … / PODPIS: …”, a podpis idealnej opcji jest jej częścią.
+      if (k === 4) expect(choice.answer, 'D4: odpowiedź zawiera podpis opcji ideal').toContain(reportAnswerOf(ideal)!);
+      else expect(reportAnswerOf(ideal), `D${k}: odpowiedź opcji ideal`).toBe(choice.answer);
       expect(choice.correct).toBe(true);
       expect((choice.attack ?? '').length, `attack D${k}`).toBeGreaterThan(40);
       expect((choice.defense ?? '').length, `defense D${k}`).toBeGreaterThan(40);
@@ -597,9 +599,9 @@ describe('Misja 3 — kwestie zależne od planu D3 (when)', () => {
   const PARTY_BROWSER = 'DZIĘKI ARCHIWUM ANTYWIRUS NIE ZNAJDZIE ZAGROŻENIA. DOBRZE. TERAZ PRZYGOTUJ PENDRIVE';
   const HR_BROWSER = 'DOKUMENTY O ZWOLNIENIACH GO ZANIEPOKOJĄ, ALE MOŻE ODDAĆ PENDRIVE DO KADR. TERAZ PRZYGOTUJ PENDRIVE';
   const PARTY_PENDRIVE =
-    'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI';
+    'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM PODBIJE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI';
   const HR_PENDRIVE =
-    'GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI';
+    'GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM PODBIJE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI';
   const PENDRIVE_COMMON = 'MATEUSZ POWINIEN SIĘ OSTRO ZESTRESOWAĆ. MAM NADZIEJĘ, ŻE TO DLA CIEBIE WYSTARCZAJĄCO KREATYWNE?';
 
   beforeEach(() => {
@@ -682,14 +684,14 @@ describe('Misja 3 — mostki (1:1 z dokumentem), przeskoki z zegarem, openingCon
 
   it('mostek 3 (pendrive -> dron): dwie kwestie gracza z rzędu, adres 53-034, nocny przeskok 22:15 -> 06:02', () => {
     expect(bridgeOf('pendrive_app')).toEqual([
-      'GRACZ: GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
+      'GRACZ: GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM PODBIJE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
       'GRACZ: MATEUSZ POWINIEN SIĘ OSTRO ZESTRESOWAĆ. MAM NADZIEJĘ, ŻE TO DLA CIEBIE WYSTARCZAJĄCO KREATYWNE?',
       'BM: JEST OK. WYSYŁAM CI ADRES OFIARY: UL. OŁTASZYŃSKA 92C/6, 53-034 WROCŁAW, POLSKA (PL)',
       'BM: DRONA WYŚLIJ Z SAMEGO RANA, ŻEBY OFIARA ZNALAZŁA KOPERTĘ NA SAMOCHODZIE PRZED WYJAZDEM DO BIURA. WTEDY W PRACY NA PEWNO SPRAWDZI ZAWARTOŚĆ',
       'GRACZ: JASNE, SŁYSZYMY SIĘ ZA KILKA GODZIN',
       'PRZESKOK: 22:15->06:02',
       'BM: JUŻ CZAS. DRON GOTOWY DO WYLOTU?',
-      "GRACZ: JUŻ SPRAWDZAM DRONA W APLIKACJI. MUSZĘ JESZCZE PODPIĄĆ DO NIEGO PENDRIVE'A"
+      "GRACZ: JUŻ SPRAWDZAM DRONA W APLIKACJI. MUSZĘ JESZCZE PODWIESIĆ DO NIEGO KOPERTĘ Z PENDRIVE'EM"
     ]);
     const beats = stageOf('pendrive_app').completion.conversation!;
     expect(beats[0].from).toBe('player');
@@ -929,9 +931,15 @@ describe('Misja 3 — przeskok 08:12 albo 11:40 zależnie od D3, D4, D6 (when)',
   });
 
   const PLAYER_DROP = 'GRACZ: OK. DAM CI ZNAĆ, KIEDY MATEUSZ PODŁĄCZY PENDRIVE I AKTYWUJE WIRUSA';
-  const MENTOR_LATE = 'CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ.';
+  const CAUSE_HR = "MATEUSZ ODWLEKAŁ PODŁĄCZENIE – PEWNIE ZASTANAWIAŁ SIĘ, CZY NIE ODDAĆ PENDRIVE'A DO KADR.";
+  const CAUSE_D4 = 'OPIS NA KOPERCIE GO NIE PRZEKONAŁ, DŁUGO SIĘ WAHAŁ.';
+  const CAUSE_D6 = 'KOPERTA LEŻAŁA NA ASFALCIE, MATEUSZ ZNALAZŁ JĄ DOPIERO PO GODZINACH.';
+  const OLD_LATE = 'CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ.';
+  const CAUSES = [CAUSE_HR, CAUSE_D4, CAUSE_D6];
+  const CLOSING = 'BM: JESTEŚMY W KONTAKCIE!';
+  const CLOSING_LATE = 'BM: MIMO OPÓŹNIENIA SIĘ UDAŁO. JESTEŚMY W KONTAKCIE!';
   const ON_TIME = [PLAYER_DROP, 'PRZESKOK: 06:02->08:12'];
-  const LATE = [PLAYER_DROP, 'PRZESKOK: 06:02->11:40', `BM: ${MENTOR_LATE}`];
+  const LATE_JUMP = [PLAYER_DROP, 'PRZESKOK: 06:02->11:40'];
 
   it('same ideały D3, D4, D6: przeskok 06:02 -> 08:12 i brak kwestii mentora', () => {
     expect(bridgeOf('drone_app')).toEqual(ON_TIME);
@@ -942,8 +950,34 @@ describe('Misja 3 — przeskok 08:12 albo 11:40 zależnie od D3, D4, D6 (when)',
     ['D4 suboptymalny (env_bo)', 'vector_party_zip', { 4: { answer: 'X', tier: 'suboptimal' } }],
     ['D6 pusty asfalt', 'vector_party_zip', { 6: { optionId: 'asphalt', answer: 'X', tier: 'suboptimal' } }]
   ];
-  it.each(weaker)('%s z osobna: przeskok 06:02 -> 11:40 i kwestia mentora', (_label, plan, overrides) => {
-    expect(bridgeOf('drone_app', plan, overrides)).toEqual(LATE);
+  const causeOf: string[] = [CAUSE_HR, CAUSE_D4, CAUSE_D6];
+  it.each(weaker.map((w, i) => [...w, causeOf[i]] as [string, string, Record<number, DecisionChoice>, string]))(
+    '%s z osobna: przeskok 06:02 -> 11:40 i dokładnie jedna kwestia przyczyny',
+    (_label, plan, overrides, cause) => {
+      expect(bridgeOf('drone_app', plan, overrides)).toEqual([...LATE_JUMP, `BM: ${cause}`]);
+    }
+  );
+
+  it('kilka przyczyn naraz: grają się wszystkie pasujące; bez starej kwestii „CZEKALIŚMY ZA DŁUGO”', () => {
+    const all = bridgeOf('drone_app', 'vector_hr_docs', {
+      4: { answer: 'X', tier: 'suboptimal' },
+      6: { optionId: 'asphalt', answer: 'X', tier: 'suboptimal' }
+    });
+    expect(all).toEqual([...LATE_JUMP, ...CAUSES.map((c) => `BM: ${c}`)]);
+    expect(JSON.stringify(def().stages)).not.toContain(OLD_LATE);
+  });
+
+  it('D6 suboptymalne, ale nie pusty asfalt: przeskok bez kwestii o asfalcie', () => {
+    const out = bridgeOf('drone_app', 'vector_party_zip', { 6: { optionId: 'inne', answer: 'X', tier: 'suboptimal' } });
+    expect(out).toEqual(LATE_JUMP);
+  });
+
+  it('kwestia zamykająca: wariant „MIMO OPÓŹNIENIA” tylko na ścieżce z 11:40, dokładnie jeden wariant', () => {
+    expect(bridgeOf('rat_session').filter((l) => l.startsWith('BM: JESTEŚMY') || l.includes('MIMO'))).toEqual([CLOSING]);
+    expect(bridgeOf('rat_session', 'vector_party_zip', { 4: { answer: 'X', tier: 'suboptimal' } }).filter(
+      (l) => l.startsWith('BM: JESTEŚMY') || l.includes('MIMO')
+    )).toEqual([CLOSING_LATE]);
+    expect(bridgeOf('rat_session', 'vector_hr_docs')).toContain(CLOSING_LATE);
   });
 
   /** Gra całą misję: decyzje wg `tiers` (domyślnie ideał), mostki odtwarzane do końca; zwraca przeskoki. */
@@ -954,7 +988,16 @@ describe('Misja 3 — przeskok 08:12 albo 11:40 zależnie od D3, D4, D6 (when)',
     driveBridge(jumps);
     for (const stage of def().stages ?? []) {
       (stage.decisions ?? []).forEach((num) =>
-        store.reportDecision({ num, question: `D${num}`, answer: 'X', tier: tiers[num] ?? 'ideal', feedback: '' })
+        store.reportDecision({
+          num,
+          question: `D${num}`,
+          answer: 'X',
+          tier: tiers[num] ?? 'ideal',
+          feedback: '',
+          // Id opcji słabszej decyzji (D3 plan HR, D6 pusty asfalt) — od niego zależy kwestia przyczyny.
+          ...(tiers[num] === 'suboptimal' && num === 3 ? { optionId: 'vector_hr_docs' } : {}),
+          ...(tiers[num] === 'suboptimal' && num === 6 ? { optionId: 'asphalt' } : {})
+        })
       );
       store.completeStage(stage.id);
       driveBridge(jumps);
@@ -969,14 +1012,14 @@ describe('Misja 3 — przeskok 08:12 albo 11:40 zależnie od D3, D4, D6 (when)',
       { clockFrom: '06:02', clock: '08:12', label: 'DO GODZIN PRACY BIURA…' }
     ]);
     expect(useMissionStore.getState().systemTime).toBe('08:12');
-    expect(useMissionStore.getState().chatMessages.map((m) => m.text)).not.toContain(MENTOR_LATE);
+    expect(useMissionStore.getState().chatMessages.map((m) => m.text)).not.toContain(OLD_LATE);
   });
 
   it.each([
-    ['D3', { 3: 'suboptimal' as ChoiceOutcome }],
-    ['D4', { 4: 'suboptimal' as ChoiceOutcome }],
-    ['D6', { 6: 'suboptimal' as ChoiceOutcome }]
-  ])('słabszy %s (reszta ideał): dokładnie jeden poranny przeskok 11:40, zegar 11:40, mentor, RAT odblokowany', (_n, tiers) => {
+    ['D3', { 3: 'suboptimal' as ChoiceOutcome }, 0],
+    ['D4', { 4: 'suboptimal' as ChoiceOutcome }, 1],
+    ['D6', { 6: 'suboptimal' as ChoiceOutcome }, 2]
+  ])('słabszy %s (reszta ideał): dokładnie jeden poranny przeskok 11:40, zegar 11:40, mentor, RAT odblokowany', (_n, tiers, _cause) => {
     const jumps = playAll(tiers);
     expect(jumps).toEqual([
       { clockFrom: '22:15', clock: '06:02', label: 'DO PORANKA…' },
@@ -984,7 +1027,9 @@ describe('Misja 3 — przeskok 08:12 albo 11:40 zależnie od D3, D4, D6 (when)',
     ]);
     const st = useMissionStore.getState();
     expect(st.systemTime).toBe('11:40');
-    expect(st.chatMessages.map((m) => m.text)).toContain(MENTOR_LATE);
+    const texts = st.chatMessages.map((m) => m.text);
+    expect(texts).toContain(CAUSES[_cause]);
+    expect(texts).not.toContain(OLD_LATE);
     expect(st.unlockedIcons).toContain('debrief_app');
     // Konsekwencja fabularna nie zmienia punktacji: słabszy wybór kosztuje jak dotąd (połowa udziału).
     expect(st.score).toBeCloseTo(100 - 100 / 6 / 2, 1);
