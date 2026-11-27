@@ -77,7 +77,7 @@ Oceniane: D1, D2  |  Flavor (nieoceniane): przeciągnięcie ładunku malware
 
 Decyzja D1: "OSZUKAĆ OFIARĘ – WYBIERZ ADRES STRONY, KTÓRY MOŻE JĄ ZAINTERESOWAĆ"
 - DALEKBIEG.INFO | ideal | Bezpośrednie odwołanie do pasji do biegów długodystansowych i poszukiwania porad przez ofiarę.
-- MUFINA.ORG.PL | suboptimal | Nawiązuje do pieczenia ciast, ale nie łączy się z aktywnymi zapytaniami z sieci zawodowej; domena org.pl nie budzi zaufania jako serwis kulinarny.
+- MUFINA.ORG.PL | suboptimal | Nawiązuje do pieczenia ciast, ale Anita publicznie szukała porad do biegania, więc przynęta kulinarna nie trafia w jej aktualną potrzebę.
 - MEDIKARZ.IQ | suboptimal (odrzucone przez mentora: „MEDYCYNA? ANITA NIE SZUKA LEKARZA, TYLKO PORAD DO SWOJEJ PASJI…”, gracz wybiera ponownie) | Tematyka medyczna nie ma związku z zainteresowaniami ofiary – Anita nie szuka porad lekarskich, więc taki portal nie przyciągnie jej uwagi.
 
 Decyzja D2: "OSZUKAĆ OFIARĘ – WYBIERZ PLIK, KTÓRY OFIARA BĘDZIE MOGŁA POBRAĆ ZE STRONY. NIECH BĘDZIE ZACHĘCAJĄCY."
