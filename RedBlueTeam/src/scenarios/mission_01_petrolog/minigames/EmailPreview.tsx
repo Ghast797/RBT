@@ -8,6 +8,8 @@ export interface EmailPreviewProps {
   targetDomain: string;
   /** Zdanie o przynęcie z konfiguracji (`byPayload[D2].mailText`); bez niego mail ma tylko zdanie zamykające. */
   mailText?: string;
+  /** Zdanie zamykające z konfiguracji przynęty (`byPayload[D2].closing`). */
+  closing?: string;
   step?: 'sender' | 'email' | 'summary';
 }
 
@@ -16,6 +18,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
   senderEmail,
   targetDomain,
   mailText,
+  closing,
   step = 'email'
 }) => {
   return (
@@ -71,6 +74,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
         className="p-4 bg-[#05090f] text-gray-200 space-y-3 font-sans text-xs leading-relaxed"
         signatureClassName="pt-2 text-gray-400 font-mono"
         mailText={mailText}
+        closing={closing}
         senderName={senderName ?? undefined}
         link={
         <div className="p-3 rounded-lg bg-black/60 border border-sky-500/40 flex items-center justify-between font-mono my-2">

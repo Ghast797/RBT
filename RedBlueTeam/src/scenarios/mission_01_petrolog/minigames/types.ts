@@ -153,6 +153,8 @@ export interface PayloadTexts {
   downloadButton: string;
   /** Stopka kroku „strona”: co Anita pobiera. */
   footer: string;
+  /** Zdanie zamykające maila, zależne od przynęty (np. „Coś, czego szukałaś!”). */
+  closing?: string;
 }
 
 export interface EmailSenderConfig {

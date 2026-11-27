@@ -55,7 +55,8 @@ describe('M1-05: finał zależny od jakości wyborów', () => {
 describe('M1-01/NEW-08: raport D4', () => {
   const d4 = (mission1Data as any).step6.choices.find((c: any) => c.num === 4);
   it('odpowiedź, szczegóły, atak i obrona mówią o domenie-sobowtórze', () => {
-    expect(d4.answer).toBe('ADRES W DOMENIE-SOBOWTÓRZE PETR0LOG.COM (ZERO ZAMIAST „O”), PASUJĄCY DO WYBRANEGO NADAWCY');
+    expect(d4.answer).toBe('K.KWIATKOWSKI@PETR0LOG.COM');
+    expect(d4.answerVariants).toEqual([{ when: { decision: 3, optionId: 'prezes_buczek' }, answer: 'P.BUCZEK@PETR0LOG.COM' }]);
     expect(d4.attack).toMatch(/typosquatting/);
     expect(JSON.stringify(d4)).not.toMatch(/SPF|DKIM|DMARC|[Ss]poofing/);
   });
@@ -75,6 +76,7 @@ describe('M1-09: stanowisko Anity', () => {
 describe('M1-08: jedna treść maila', () => {
   afterEach(cleanup);
   const mailText = payloadTexts.wallpapers_running.mailText;
+  const closing = payloadTexts.wallpapers_running.closing!;
   const expectMail = (root: HTMLElement) => {
     const body = root.querySelector('[data-testid="mail-body"]')!;
     expect(body).toBeTruthy();
@@ -82,7 +84,8 @@ describe('M1-08: jedna treść maila', () => {
     expect(t).toContain('Cześć Anita,');
     expect(t).toContain('Koniecznie musisz zobaczyć tę stronę:');
     expect(t).toContain(mailText);
-    expect(t).toContain('Coś, czego szukałaś!');
+    expect(t).toContain(closing);
+    expect(t).not.toContain('Coś, czego szukałaś!');
     expect(t).toContain('Pozdrawiam,');
     expect(t).toContain('PREZES BUCZEK');
   };
@@ -90,13 +93,13 @@ describe('M1-08: jedna treść maila', () => {
   beforeEach(() => st().loadMission(getMission('mission-1-petrolog')!));
 
   it('MailBody samodzielnie', () => {
-    const { container } = render(<MailBody mailText={mailText} senderName="PREZES BUCZEK" link={<a>x</a>} />);
+    const { container } = render(<MailBody mailText={mailText} closing={closing} senderName="PREZES BUCZEK" link={<a>x</a>} />);
     expectMail(container);
   });
 
   it('podgląd na żywo', () => {
     const { container } = render(
-      <EmailPreview senderName="PREZES BUCZEK" senderEmail="P.BUCZEK@PETR0LOG.COM" targetDomain="dalekbieg.info" mailText={mailText} />
+      <EmailPreview senderName="PREZES BUCZEK" senderEmail="P.BUCZEK@PETR0LOG.COM" targetDomain="dalekbieg.info" mailText={mailText} closing={closing} />
     );
     expectMail(container);
   });

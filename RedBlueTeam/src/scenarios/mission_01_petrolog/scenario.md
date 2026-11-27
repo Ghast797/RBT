@@ -78,7 +78,7 @@ Oceniane: D1, D2  |  Flavor (nieoceniane): przeciągnięcie ładunku malware
 Decyzja D1: "OSZUKAĆ OFIARĘ – WYBIERZ ADRES STRONY, KTÓRY MOŻE JĄ ZAINTERESOWAĆ"
 - DALEKBIEG.INFO | ideal | Bezpośrednie odwołanie do pasji do biegów długodystansowych i poszukiwania porad przez ofiarę.
 - MUFINA.ORG.PL | suboptimal | Nawiązuje do pieczenia ciast, ale nie łączy się z aktywnymi zapytaniami z sieci zawodowej; domena org.pl nie budzi zaufania jako serwis kulinarny.
-- MEDIKARZ.IQ | critical | Tematyka medyczna jest całkowicie oderwana od zainteresowań ofiary i wzbudzi natychmiastową nieufność.
+- MEDIKARZ.IQ | suboptimal (odrzucone przez mentora: „MEDYCYNA? ANITA NIE SZUKA LEKARZA, TYLKO PORAD DO SWOJEJ PASJI…”, gracz wybiera ponownie) | Tematyka medyczna nie ma związku z zainteresowaniami ofiary – Anita nie szuka porad lekarskich, więc taki portal nie przyciągnie jej uwagi.
 
 Decyzja D2: "OSZUKAĆ OFIARĘ – WYBIERZ PLIK, KTÓRY OFIARA BĘDZIE MOGŁA POBRAĆ ZE STRONY. NIECH BĘDZIE ZACHĘCAJĄCY."
 (Drzewo decyzyjne – zestaw opcji dopasowany do domeny wybranej w D1)
@@ -86,12 +86,12 @@ Decyzja D2: "OSZUKAĆ OFIARĘ – WYBIERZ PLIK, KTÓRY OFIARA BĘDZIE MOGŁA POB
 Wariant dla DALEKBIEG.INFO (portal biegowy):
 - PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK | ideal | Precyzyjna odpowiedź na publiczne zapytanie Anity z portalu Joinin.
 - TAPETY DLA BIEGACZY NA TELEFON | suboptimal | Mało angażujący zasób, który nie odpowiada potrzebie zdobycia merytorycznej wiedzy.
-- KOD ŹRÓDŁOWY STRONY | critical | Całkowity błąd profilowania – księgowa nigdy nie zainteresuje się pobieraniem surowego kodu.
+- KOD ŹRÓDŁOWY STRONY | suboptimal (odrzucone przez mentora: „KOD ŹRÓDŁOWY? ANITA NIE BĘDZIE PRZEGLĄDAĆ SZABLONU STRONY…”, gracz wybiera ponownie) | Kod źródłowy nie odpowiada na żadną potrzebę ofiary – księgowa szuka porad, a nie plików do przeglądania.
 
 Wariant dla MUFINA.ORG.PL (serwis kulinarny z muffinkami):
 - PORADNIK KULINARNY - 10 SPRAWDZONYCH PRZEPISÓW NA DOMOWE MUFFINKI | ideal | Trafny dobór pliku dla serwisu kulinarnego – merytoryczny e-book z przepisami nawiązuje do pasji pieczenia ciast i wzbudza zaufanie.
 - TAPETY ZE SŁODKIMI MUFFINKAMI NA TELEFON | suboptimal | Mało angażujący zasób – zdjęcia babeczek są ładne, ale nie dają żadnej praktycznej wartości kulinarnej ani przepisów.
-- KOD ŹRÓDŁOWY BLOGA KULINARNEGO | critical | Całkowity błąd profilowania – miłośniczka domowych wypieków nigdy nie zainteresuje się pobieraniem surowego kodu strony.
+- KOD ŹRÓDŁOWY BLOGA KULINARNEGO | suboptimal (odrzucone przez mentora: „KOD ŹRÓDŁOWY BLOGA? OFIARA NIE POBIERA SZABLONÓW, TYLKO COŚ DO UŻYCIA…”, gracz wybiera ponownie) | Kod źródłowy bloga nie daje ofierze nic, czego szuka – miłośniczka wypieków chce przepisów, a nie szablonu strony.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "STRONA-PUŁAPKA JEST GOTOWA I ZAWIRUSOWANA. TERAZ MUSISZ PRZYGOTOWAĆ MAILA DO ANITY I WYBRAĆ TOŻSAMOŚĆ NADAWCY."
@@ -106,13 +106,21 @@ Oceniane: D3, D4
 
 Decyzja D3: "WYBIERZ, KTO BĘDZIE NADAWCĄ WIADOMOŚCI. ANITA ZOBACZY TO IMIĘ W POLU „OD:”, WIĘC PODSZYJ SIĘ POD NAJBARDZIEJ WIARYGODNĄ OSOBĘ."
 - JAKUB KWIATKOWSKI | ideal | Zaufany współpracownik z tego samego pokoju oraz partner z wieczornych biegów.
-- PREZES BUCZEK | suboptimal | Wiadomość o tematyce sportowej od zarządu firmy wyda się ofierze wysoce podejrzana.
-- TWÓJ SYNEK | critical | Małe dzieci nie wysyłają maili ze skrzynki korporacyjnej PetroLog.
+- PREZES BUCZEK | suboptimal | Wiadomość o takiej tematyce od zarządu firmy wyda się ofierze wysoce podejrzana.
+- TWÓJ SYNEK | suboptimal (odrzucone przez mentora: „DZIECKO NIE PISZE DO KSIĘGOWEJ MAILI Z WEWNĘTRZNEJ DOMENY…”, gracz wybiera ponownie) | Wiadomość od dziecka nie pasuje do służbowej korespondencji PetroLog, więc ofiara nie uzna jej za wiarygodną.
 
 Decyzja D4: "WYSŁAĆ MAILA – WYBIERZ ADRES EMAIL, Z KTÓREGO WYŚLESZ WIADOMOŚĆ."
 - K.KWIATKOWSKI@PETR0LOG.COM | ideal | Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”): adres wygląda jak służbowy adres pracownika i usypia czujność ofiary.
 - K.KWIATKOWSKI@HACK.COM | suboptimal | Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.
+- K.KWIATKOWSKI@HACK.COM | suboptimal | Obca domena zewnętrzna, łatwa do wykrycia przy uważnej weryfikacji nagłówków.
 - DARKSUN.JAKUB@GMAIL.COM | suboptimal (odrzucone przez mentora, bez karty „wykryty”) | Jawna nazwa grupy hakerskiej i publiczny provider (Gmail) skutkujący blokadą antyspamową.
+
+Adresy dla PREZES BUCZEK (D3 = suboptimal, te same poziomy):
+- P.BUCZEK@PETR0LOG.COM | ideal | Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”) – adres wygląda jak służbowy adres prezesa.
+- P.BUCZEK@HACK.COM | suboptimal | Obca domena zewnętrzna – prezes nie pisze z zewnętrznego serwera.
+- DARKSUN.BUCZEK@GMAIL.COM | suboptimal (odrzucone przez mentora: „PREZES PISZE Z FIRMOWEJ POCZTY, A NIE Z GMAILA POD NAZWĄ GRUPY HAKERSKIEJ…”, bez karty „wykryty”) | Jawna nazwa grupy hakerskiej i publiczny Gmail nie pasują do korespondencji prezesa.
+
+Podpowiedź w raporcie (D4): dla JAKUB KWIATKOWSKI „K.KWIATKOWSKI@PETR0LOG.COM”, dla PREZES BUCZEK „P.BUCZEK@PETR0LOG.COM”.
 
 Mostek (rozmowa do kolejnego etapu):
 - BM: "MAIL ZOSTAŁ WYSŁANY DO ANITY KLIMEK. PRZEŁĄCZ SIĘ NA MONITOR OFIARY I SPRAWDŹ, CZY POŁKNIE PRZYNĘTĘ."
@@ -126,7 +134,8 @@ Ekrany: poczta Anity → przeglądarka dalekbieg.info → infekcja i mapa sieci 
 Flavor (nieoceniane): egzekucja ataku i przejęcie dokumentacji Freevolt
 
 Mostek (rozmowa do kolejnego etapu):
-- BM: "DOSKONAŁA ROBOTA! OFIARA POBRAŁA PLIK, A MY MAMY DOSTĘP DO WEWNĘTRZNEJ SIECI PETROLOG. DANE O ŁAŃCUCHU DOSTAW FREEVOLT SĄ NASZE. ZASŁUŻYŁEŚ NA SWOJĄ DOLĘ W BITCOINACH."
+- BM (wszystkie decyzje ideal): "DOSKONAŁA ROBOTA! OFIARA POBRAŁA PLIK, A MY MAMY DOSTĘP DO WEWNĘTRZNEJ SIECI PETROLOG. DANE O ŁAŃCUCHU DOSTAW FREEVOLT SĄ NASZE. ZASŁUŻYŁEŚ NA SWOJĄ DOLĘ W BITCOINACH."
+- BM (dowolna decyzja poniżej ideału): "UDAŁO SIĘ, ALE NIE IDEALNIE. OFIARA POBRAŁA PLIK, A MY MAMY DOSTĘP DO SIECI PETROLOG. DANE O ŁAŃCUCHU DOSTAW FREEVOLT SĄ NASZE. W RAPORCIE SPRAWDŹ, CO MOGŁO PÓJŚĆ LEPIEJ."
 - GRACZ: "DZIĘKI. CZAS NA ANALIZĘ WYNIKÓW I RAPORT POOPERACYJNY."
 - odblokuj: //PODSUMOWANIE
 

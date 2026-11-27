@@ -195,7 +195,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
 
   const injectionPanel = sidePanel(
     '//KREATOR_STRONY: WIRUS',
-    'Przeciągnij moduł malware na lewy ekran i upuść go na przycisk pobierania na stronie.',
+    'Przeciągnij lub kliknij moduł malware na lewy ekran i upuść go na przycisk pobierania na stronie.',
     <div className="space-y-3">
       <span className="text-[0.625rem] text-gray-400 font-bold tracking-widest uppercase block">
         DOSTĘPNY MODUŁ MALWARE:
@@ -216,7 +216,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
         <div>
           <h4 className="text-xs font-bold text-white">//PRZEKIEROWANIE</h4>
           <p className="text-[0.625rem] text-emerald-300">
-            {isPayloadInjected ? 'ZAINSTALOWANO WIRUSA ✓' : 'PRZECIĄGNIJ NA PRZYCISK STRONY ←'}
+            {isPayloadInjected ? 'ZAINSTALOWANO WIRUSA ✓' : 'PRZECIĄGNIJ NA PRZYCISK STRONY (LUB KLIKNIJ) ←'}
           </p>
         </div>
       </div>
@@ -397,7 +397,7 @@ export const PhishingBuilderApp: React.FC<BlockProps<PhishingBuilderConfig>> = (
             <div className="flex items-center space-x-2.5 text-pink-400">
               <Sparkles size={20} />
               <h3 className="text-sm font-bold tracking-wider">
-                DOSKONALE! STRONA-PUŁAPKA ZOSTAŁA SKONFIGUROWANA I ZAINFEKOWANA
+                STRONA-PUŁAPKA ZOSTAŁA SKONFIGUROWANA I ZAINFEKOWANA
               </h3>
             </div>
 
