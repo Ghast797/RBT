@@ -235,7 +235,7 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
     <>
       {wrap(
         <div className="flex-1 min-h-0 flex flex-col gap-3">
-          <div className="rounded-xl border bg-[#08101a] overflow-hidden" style={{ borderColor: `${ACCENT}55` }}>
+          <div className="shrink-0 rounded-xl border bg-[#08101a] overflow-hidden" style={{ borderColor: `${ACCENT}55` }}>
             <Row label="DO:">{config.recipient}</Row>
             <Row label={config.positionLabel}>{config.position}</Row>
             {!isSubject && <Row label={config.subject.fieldLabel}>{subject?.label}</Row>}
@@ -253,7 +253,8 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
             </div>
           </div>
           <MentorRejectNotice attempts={rejected} />
-          <div className="flex-1 min-h-0 flex flex-col gap-2.5 justify-center">
+          <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+           <div className="flex flex-col gap-2.5 my-auto">
             {tiles.map((t) => {
               const used = t.id === fieldValue?.id;
               const blocked = isRejected(rejected, t.id);
@@ -266,7 +267,7 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
                     if (e.key === 'Enter') pick(t.id);
                   }}
                   {...drag.getDragProps(t.id)}
-                  className={`p-3 rounded-lg border-2 bg-[#0b1724] text-sm font-bold text-white leading-snug transition-all ${
+                  className={`shrink-0 p-3 rounded-lg border-2 bg-[#0b1724] text-sm font-bold text-white leading-snug transition-all ${
                     blocked ? 'opacity-40 line-through cursor-not-allowed' : 'cursor-grab hover:-translate-y-0.5'
                   } ${drag.draggedId === t.id ? 'opacity-40' : used ? 'opacity-50' : ''}`}
                   style={{ ...drag.getDragProps(t.id).style, borderColor: blocked ? '#ff3366' : used ? ACCENT : `${ACCENT}55` }}
@@ -275,13 +276,16 @@ export const PhishingMailApp: React.FC<BlockProps<MailConfig>> = ({ config, onDe
                 </div>
               );
             })}
+           </div>
           </div>
-          <ConfirmButton
-            accent={ACCENT}
-            label={config.confirmLabel}
-            enabled={canConfirmStep(screen, subjectId, bodyId) && !locked}
-            onClick={confirm}
-          />
+          <div className="shrink-0">
+            <ConfirmButton
+              accent={ACCENT}
+              label={config.confirmLabel}
+              enabled={canConfirmStep(screen, subjectId, bodyId) && !locked}
+              onClick={confirm}
+            />
+          </div>
         </div>
       )}
       <DragGhost dragging={drag.dragging}>{draggedTile?.label}</DragGhost>

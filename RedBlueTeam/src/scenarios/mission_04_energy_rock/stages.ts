@@ -220,7 +220,7 @@ export const builderConfig: BuilderConfig = {
       2: 'HASŁO MA MINIMALNĄ DŁUGOŚĆ',
       3: 'HASŁO ŚREDNIEJ SIŁY',
       4: 'SILNE HASŁO',
-      5: 'UŻYTO MAKSYMALNEJ ILOŚCI ZNAKÓW ORAZ ZNAKÓW SPECJALNYCH, JEDNOCZEŚNIE UNIKAJĄC TYCH NIEDOZWOLONYCH. STWORZONO NAPRAWDĘ BARDZO SILNE HASŁO'
+      5: 'UŻYTO MAKSYMALNEJ LICZBY ZNAKÓW ORAZ ZNAKÓW SPECJALNYCH, JEDNOCZEŚNIE UNIKAJĄC TYCH NIEDOZWOLONYCH. STWORZONO NAPRAWDĘ BARDZO SILNE HASŁO'
     },
     answers: {
       ideal: '5 (DŁUGOŚĆ 24, ZESTAWY ZNAKÓW: 4)',
@@ -249,7 +249,7 @@ export const builderConfig: BuilderConfig = {
   note: {
     decisionNum: 3,
     question: 'KOMPONENTY WIADOMOŚCI',
-    task: 'KROK 1: PRZECIĄGNIJ INFORMACJE I KOMPONENTY NA GŁÓWNYM EKRANIE',
+    task: 'PRZECIĄGNIJ INFORMACJE I KOMPONENTY NA GŁÓWNYM EKRANIE',
     confirmLabel: 'ZATWIERDŹ KOMUNIKAT',
     slots: [
       { id: 'icon', label: '[IKONA]' },
@@ -266,7 +266,7 @@ export const builderConfig: BuilderConfig = {
   color: {
     decisionNum: 4,
     question: 'WYBIERZ KOLOR OKNA / ELEMENTÓW',
-    task: 'KROK 2: WYBIERZ KOLOR OKNA I ELEMENTÓW',
+    task: 'WYBIERZ KOLOR OKNA I ELEMENTÓW',
     confirmLabel: 'ZATWIERDŹ KOLOR',
     options: colorOptions
   },
@@ -709,7 +709,7 @@ export const mission4Stages: StageDefinition[] = [
         { from: 'byte_master', text: 'KTO WIE?' },
         // Wysłanie późnym popołudniem, otwarcie CV rano (plan P7). Słabszy wybór w D5–D7: otwarcie dopiero po południu.
         { from: 'time_jump', clockFrom: '16:40', clock: '09:10', label: 'DO GODZIN PRACY REKRUTERA…', when: MAIL_IDEAL },
-        { from: 'time_jump', clockFrom: '16:40', clock: '12:25', label: 'DO GODZIN PRACY REKRUTERA…', when: MAIL_WEAKER }
+        { from: 'time_jump', clockFrom: '16:40', clock: '12:25', label: 'REKRUTER OTWIERA CV Z OPÓŹNIENIEM…', when: MAIL_WEAKER }
       ],
       unlockIcons: ['victim_workstation_unlocked', 'victim_workstation'],
       badges: { victim_workstation: 1, chat: 1 },

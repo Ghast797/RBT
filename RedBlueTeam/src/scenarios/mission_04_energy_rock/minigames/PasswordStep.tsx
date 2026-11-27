@@ -60,7 +60,7 @@ export const PasswordStep: React.FC<{
           if (e.key === 'Enter') move(id, !selected.includes(id));
         }}
         {...props}
-        className={`px-3 py-2 rounded-lg border-2 bg-[#0b1724] text-xs font-bold text-white cursor-grab transition-all hover:-translate-y-0.5 ${
+        className={`shrink-0 px-3 py-2 rounded-lg border-2 bg-[#0b1724] text-xs font-bold text-white cursor-grab transition-all hover:-translate-y-0.5 ${
           drag.draggedId === id ? 'opacity-40' : ''
         }`}
         style={{ ...props.style, borderColor: `${accent}88` }}
@@ -78,8 +78,8 @@ export const PasswordStep: React.FC<{
     <>
       <div className="flex-1 min-h-0 flex flex-col gap-3">
         {notice}
-        <div className="text-sm font-black tracking-widest text-white">{config.heading}</div>
-        <div className="flex items-center gap-4 rounded-xl border bg-[#08101a] px-4 py-2.5" style={{ borderColor: `${accent}55` }}>
+        <div className="shrink-0 text-sm font-black tracking-widest text-white">{config.heading}</div>
+        <div className="shrink-0 flex items-center gap-4 rounded-xl border bg-[#08101a] px-4 py-2.5" style={{ borderColor: `${accent}55` }}>
           <span className="text-xs font-black tracking-widest shrink-0" style={{ color: accent }}>
             {config.lengthLabel}
           </span>
@@ -100,14 +100,14 @@ export const PasswordStep: React.FC<{
         <div className="flex-1 min-h-0 grid grid-cols-2 gap-4">
           <div
             ref={drag.zoneRef(TRAY)}
-            className="min-h-0 rounded-xl border bg-[#08101a] p-3 flex flex-col gap-2"
+            className="min-h-0 overflow-y-auto rounded-xl border bg-[#08101a] p-3 flex flex-col gap-2"
             style={{ borderColor: drag.isOver(TRAY) ? accent : `${accent}44` }}
           >
             {tray.map((t) => tileEl(t.id))}
           </div>
           <div
             ref={drag.zoneRef(FRAME)}
-            className="min-h-0 rounded-xl border-2 border-dashed p-3 flex flex-col gap-2 transition-colors"
+            className="min-h-0 overflow-y-auto rounded-xl border-2 border-dashed p-3 flex flex-col gap-2 transition-colors"
             style={{
               borderColor: drag.isOver(FRAME) || drag.isDropTarget(FRAME) ? accent : `${accent}66`,
               backgroundColor: drag.isOver(FRAME) ? `${accent}22` : `${accent}0a`
@@ -119,7 +119,7 @@ export const PasswordStep: React.FC<{
             {inFrame.map((t) => tileEl(t.id))}
           </div>
         </div>
-        <div className="rounded-xl border bg-black/50 px-4 py-2.5 flex items-center gap-3" style={{ borderColor: `${accent}55` }}>
+        <div className="shrink-0 rounded-xl border bg-black/50 px-4 py-2.5 flex items-center gap-3" style={{ borderColor: `${accent}55` }}>
           <span className="text-xs font-black tracking-widest shrink-0" style={{ color: accent }}>
             {config.previewLabel}
           </span>
