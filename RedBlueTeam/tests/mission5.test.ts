@@ -272,12 +272,14 @@ describe('Misja 5 — struktura etapów, decyzje D1–D10 i mostki', () => {
     ]);
   });
 
-  it('mostki etapów 1–5 są puste i nie ustawiają badge chat: 1; etap 6 ma 6 beatów (3 warianty) i badge chat: 1', () => {
+  it('mostki etapów 1–5 mają po jednym spójniku gracza [SPÓJNIK] i badge chat: 1; etap 6 ma 6 beatów (3 warianty) i badge chat: 1', () => {
     stages()
       .slice(0, 5)
       .forEach((s) => {
-        expect(s.completion.conversation, `mostek ${s.id}`).toEqual([]);
-        expect(s.completion.badges, `badges ${s.id}`).not.toHaveProperty('chat');
+        const conv = s.completion.conversation ?? [];
+        expect(conv, `mostek ${s.id}`).toHaveLength(1);
+        expect(conv[0], `spójnik ${s.id}`).toMatchObject({ from: 'player' });
+        expect(s.completion.badges, `badges ${s.id}`).toHaveProperty('chat', 1);
       });
     const last = stages()[5];
     expect(last.completion.conversation?.length).toBe(6);

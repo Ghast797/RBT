@@ -614,9 +614,10 @@ export const mission5Stages: StageDefinition[] = [
     appId: 'intel_pdf',
     decisions: [],
     completion: {
-      conversation: [],
+      // [SPÓJNIK] VR milczy na tej granicy (QA R1-04, decyzja właściciela 27.11.2026).
+      conversation: [{ from: 'player', id: 'm5_reply_after_intel', label: 'MAM WSZYSTKO, CZEGO POTRZEBUJĘ DO ROZMOWY. NAJPIERW UKRYJĘ SWOJE IP.' }],
       unlockIcons: ['vpn_unlocked'],
-      badges: { vpn_app: 1 },
+      badges: { vpn_app: 1, chat: 1 },
       highlightTile: 'vpn_app',
       sound: 'notification'
     }
@@ -626,9 +627,10 @@ export const mission5Stages: StageDefinition[] = [
     appId: 'vpn_app',
     decisions: [],
     completion: {
-      conversation: [],
+      // [SPÓJNIK] VR milczy na tej granicy (QA R1-04, decyzja właściciela 27.11.2026).
+      conversation: [{ from: 'player', id: 'm5_reply_after_vpn', label: 'IP ZAMASKOWANE. CZAS NA DOMENĘ DLA PODSTAWIONEJ STRONY.' }],
       unlockIcons: ['domain_prep_unlocked'],
-      badges: { domain_prep: 1 },
+      badges: { domain_prep: 1, chat: 1 },
       highlightTile: 'domain_prep',
       sound: 'notification'
     }
@@ -638,9 +640,10 @@ export const mission5Stages: StageDefinition[] = [
     appId: 'domain_prep',
     decisions: [1],
     completion: {
-      conversation: [],
+      // [SPÓJNIK] VR milczy na tej granicy (QA R1-04, decyzja właściciela 27.11.2026).
+      conversation: [{ from: 'player', id: 'm5_reply_after_domain', label: 'DOMENA WYKUPIONA. TERAZ SKOPIUJĘ WYGLĄD ICH STRONY LOGOWANIA.' }],
       unlockIcons: ['page_cloner_unlocked'],
-      badges: { page_cloner: 1 },
+      badges: { page_cloner: 1, chat: 1 },
       highlightTile: 'page_cloner',
       sound: 'notification'
     }
@@ -650,9 +653,10 @@ export const mission5Stages: StageDefinition[] = [
     appId: 'page_cloner',
     decisions: [],
     completion: {
-      conversation: [],
+      // [SPÓJNIK] VR milczy na tej granicy (QA R1-04, decyzja właściciela 27.11.2026).
+      conversation: [{ from: 'player', id: 'm5_reply_after_cloner', label: 'STRONA GOTOWA. ZOSTAŁ NUMER, Z KTÓREGO ZADZWONIĘ.' }],
       unlockIcons: ['number_prep_unlocked'],
-      badges: { number_prep: 1 },
+      badges: { number_prep: 1, chat: 1 },
       highlightTile: 'number_prep',
       sound: 'notification'
     }
@@ -662,9 +666,10 @@ export const mission5Stages: StageDefinition[] = [
     appId: 'number_prep',
     decisions: [2],
     completion: {
-      conversation: [],
+      // [SPÓJNIK] VR milczy na tej granicy (QA R1-04, decyzja właściciela 27.11.2026).
+      conversation: [{ from: 'player', id: 'm5_reply_after_number', label: 'NUMER USTAWIONY. MOGĘ DZWONIĆ DO FILIPA.' }],
       unlockIcons: ['vishing_call_unlocked'],
-      badges: { vishing_call: 1 },
+      badges: { vishing_call: 1, chat: 1 },
       highlightTile: 'vishing_call',
       sound: 'notification'
     }

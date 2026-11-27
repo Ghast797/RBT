@@ -42,7 +42,7 @@ Materiały na ekranie:
 4. `WYKUP PODOBNĄ DOMENĘ. ADRES POCZTY FIRMOWEJ TO: HTTPS://MAIL.BCORP.BIZ`
 
 Mostek (rozmowa do kolejnego etapu):
-- brak rozmowy (przycisk `POTWIERDZAM PRZECZYTANIE` odblokowuje kolejny kafelek)
+- GRACZ: „MAM WSZYSTKO, CZEGO POTRZEBUJĘ DO ROZMOWY. NAJPIERW UKRYJĘ SWOJE IP.” [SPÓJNIK]
 - odblokuj: //VPN
 
 ---
@@ -54,7 +54,7 @@ Ekrany: konfiguracja adresu IP (`DOPASUJ SWOJE IP, ABY UNIKNĄĆ WYKRYCIA`, poż
 Oceniane: brak | Flavor (nieoceniane): dopasowanie 4 oktetów IP
 
 Mostek (rozmowa do kolejnego etapu):
-- brak rozmowy
+- GRACZ: „IP ZAMASKOWANE. CZAS NA DOMENĘ DLA PODSTAWIONEJ STRONY.” [SPÓJNIK]
 - odblokuj: //PRZYGOTOWANIE_DOMENY
 
 ---
@@ -73,7 +73,7 @@ Decyzja D1: "WYBIERZ DOMENĘ, KTÓRĄ WYKUPISZ DLA PODSTAWIONEJ STRONY SYSTEMU A
 Skutek odroczony (gdy D1 = BCORP.PL): w Etapie 4 pasek adresu fałszywej strony pokazuje `//MAIL.BCORP.PL/LOGIN` (zamiast `//MAIL.ARCHIWUMBCORP.BIZ/LOGIN`); w Etapie 6 wysłany Filipowi link to `//MAIL.BCORP.PL/LOGIN`, a Filip reaguje: „BCORP.PL? MYŚLAŁEM, ŻE MAMY .BIZ... NO DOBRA, JAK MAM SIĘ ZALOGOWAĆ?”.
 
 Mostek (rozmowa do kolejnego etapu):
-- brak rozmowy
+- GRACZ: „DOMENA WYKUPIONA. TERAZ SKOPIUJĘ WYGLĄD ICH STRONY LOGOWANIA.” [SPÓJNIK]
 - odblokuj: //PRZYGOTOWANIE_STRONY
 
 ---
@@ -85,7 +85,7 @@ Ekrany: pusty podgląd fałszywej strony (`//MAIL.ARCHIWUMBCORP.BIZ/LOGIN`, lub 
 Oceniane: brak | Flavor (nieoceniane): klonowanie 4 elementów UI i aktywacja przechwytywania
 
 Mostek (rozmowa do kolejnego etapu):
-- brak rozmowy
+- GRACZ: „STRONA GOTOWA. ZOSTAŁ NUMER, Z KTÓREGO ZADZWONIĘ.” [SPÓJNIK]
 - odblokuj: //PRZYGOTOWANIE_NUMERU
 
 ---
@@ -102,7 +102,7 @@ Decyzja D2: "WYBIERZ NUMER TELEFONU, POD KTÓRY SIĘ PODSZYJESZ:"
 - 867 452 026 | critical | Numer spoza firmowej puli (`867` zamiast `891`) od razu budzi podejrzenia dyrektora — Filip nie ufa połączeniu i zgłasza próbę podszycia się pod IT.
 
 Mostek (rozmowa do kolejnego etapu):
-- brak rozmowy
+- GRACZ: „NUMER USTAWIONY. MOGĘ DZWONIĆ DO FILIPA.” [SPÓJNIK]
 - odblokuj: //ROZMOWA
 
 ---
@@ -243,47 +243,47 @@ Wariant 3 (wynik < 70%):
 
 ## Debrief
 
-Lekcje przy decyzjach (rozwijane w raporcie pooperacyjnym; oparte na ścieżce idealnej oraz wskazówkach obronnych z VR):
+Lekcje przy decyzjach (rozwijane w raporcie pooperacyjnym; oparte na ścieżce idealnej oraz wskazówkach obronnych z VR; obrony w układzie „Sygnały / Co zrobić” jak w M1–M4 — QA R1-03, akceptacja właściciela 27.11.2026):
 
 D1:
-- Atak: Combosquatting — rejestracja domeny `archiwumbcorp.biz` łączy nazwę firmy, identyczną końcówkę `.biz` i wiarygodne słowo „archiwum”. Na pierwszy rzut oka adres wygląda jak oficjalna podstrona banku.
-- Obrona: Zawsze sprawdzaj pełny adres w pasku przeglądarki przed wpisaniem hasła — nawet jedno dodatkowe słowo przed nazwą firmy oznacza zupełnie inną domenę. W razie wątpliwości wejdź na pocztę z własnej zakładki i zgłoś podejrzany link do IT.
+- Atak: Domena z doklejonym słowem (combosquatting): archiwumbcorp.biz łączy nazwę firmy, tę samą końcówkę .biz i słowo „archiwum”. Na pierwszy rzut oka wygląda jak firmowy adres banku.
+- Obrona: Sygnały: nazwa firmy sklejona z innym słowem (archiwumbcorp zamiast bcorp) albo inna końcówka (.pl zamiast .biz). Co zrobić: czytaj adres od końca, bo liczy się nazwa tuż przed końcówką. W mail.bcorp.biz to „bcorp”, a w mail.archiwumbcorp.biz to „archiwumbcorp”, czyli zupełnie inny właściciel. Kłódka w pasku tego nie rozstrzyga, bo fałszywe strony też ją mają. Podejrzany adres zgłoś do IT.
 
 D2:
-- Atak: Caller ID spoofing pozwala wyświetlić na telefonie ofiary dowolny numer, w tym firmowy numer działu IT (`891 002 162`). Ofiara rozpoznaje znajomy prefiks i odruchowo obniża czujność.
-- Obrona: Numer wyświetlany na ekranie telefonu nie jest dowodem tożsamości rozmówcy. Jeśli ktoś prosi o logowanie lub poufne dane, rozłącz się i oddzwoń na oficjalny numer działu IT albo zweryfikuj prośbę innym kanałem.
+- Atak: Podszywanie się pod numer (spoofing) pozwala wyświetlić na telefonie ofiary numer, który wygląda na firmowy. Tu jest to numer działu IT (891 002 162). Ofiara rozpoznaje znajomy prefiks i odruchowo obniża czujność.
+- Obrona: Sygnały: telefon z „firmowego” numeru, a rozmówca prosi o logowanie albo dane. Co zrobić: pamiętaj, że numer na ekranie da się podrobić. Rozłącz się i oddzwoń na numer z firmowej książki adresowej lub intranetu, a nie na ten, który się wyświetlił, ani na ten, który poda rozmówca.
 
 D3:
 - Atak: Uprzejmy, formalny ton i poprawne imię rozmówcy budują od pierwszych sekund wrażenie zwykłego, służbowego połączenia wewnątrz firmy.
-- Obrona: Profesjonalny ton i znajomość Twojego imienia czy stanowiska nie potwierdzają tożsamości — takie dane łatwo znaleźć w sieci. Zawsze weryfikuj prośbę, nie sam sposób mówienia rozmówcy.
+- Obrona: Sygnały: dzwoni „IT”, choć niczego nie zgłaszałeś, i od razu zwraca się do Ciebie po imieniu. Co zrobić: uprzejmość i znajomość Twojego imienia niczego nie dowodzą, bo takie dane są w sieci. Zapytaj o numer zgłoszenia i powiedz, że oddzwonisz przez helpdesk. Prawdziwy pracownik IT się na to zgodzi.
 
 D4:
-- Atak: Podszycie się pod prawdziwego, niedawno zatrudnionego pracownika (Michała Mitnika z OSINT) tłumaczy, dlaczego ofiara nie rozpoznaje głosu ani nazwiska rozmówcy.
-- Obrona: Oszust może wykorzystać nazwisko prawdziwego pracownika z LinkedIn lub strony firmy. Jeśli nie znasz rozmówcy, sprawdź go w firmowej książce adresowej i oddzwoń bezpośrednio lub potwierdź prośbę przez firmowy komunikator.
+- Atak: Podszycie się pod prawdziwego, niedawno zatrudnionego pracownika (Michała Mitnika z białego wywiadu) tłumaczy, dlaczego ofiara nie rozpoznaje głosu ani nazwiska rozmówcy.
+- Obrona: Sygnały: dzwoni ktoś, kogo nie znasz, choć przedstawia się nazwiskiem pracownika firmy; coś w nazwisku Ci nie pasuje. Co zrobić: nazwisko w książce adresowej nie potwierdza, kto naprawdę dzwoni, bo oszust podszywa się właśnie pod prawdziwą osobę. Rozłącz się i oddzwoń na numer tej osoby z książki albo napisz do niej przez firmowy komunikator. Gdy coś nie pasuje, nie mów „no dobra”, tylko przerwij i sprawdź.
 
 D5:
 - Atak: Powołanie się na dział IT spójny z numerem telefonu i pretekstem „testów systemu” nadaje prośbie pozory rutynowej procedury technicznej.
-- Obrona: Dział IT nie przeprowadza znienacka telefonicznych testów wymagających wpisywania firmowego hasła na nieznanej stronie. Nietypowe prace techniczne są wcześniej zapowiadane oficjalnymi kanałami firmy.
+- Obrona: Sygnały: „IT” dzwoni bez zapowiedzi i prosi o logowanie na nowej stronie. Co zrobić: IT nigdy nie prosi o hasło ani kod, a prace techniczne zapowiada wcześniej oficjalnymi kanałami. Odmów, rozłącz się i zgłoś próbę przez helpdesk. Zgłoś ją także wtedy, gdy nic nie podałeś, bo oszust zadzwoni do kolejnej osoby.
 
 D6:
-- Atak: Presja czasu („pilne, musimy skończyć dzisiaj”) ma odciąć ofiarę od spokojnej analizy i skłonić do szybkiego kliknięcia linku przed spotkaniem.
-- Obrona: Sztuczny pośpiech to jeden z najczęstszych sygnałów vishingu. Gdy rozmówca naciska na natychmiastowe działanie, zwolnij, odmów i zweryfikuj sprawę na spokojnie.
+- Atak: Presja czasu („pilne, musimy skończyć dzisiaj”) ma odciąć ofiarę od spokojnej analizy. Atakujący celowo dzwoni, gdy ofiara się spieszy, tu tuż przed spotkaniem.
+- Obrona: Sygnały: rozmówca naciska („pilne”, „do końca dnia”), a Ty właśnie się spieszysz. Co zrobić: pośpiech to jeden z najczęstszych sygnałów oszustwa telefonicznego (vishingu). Powiedz „oddzwonię po spotkaniu przez helpdesk” i sprawdź sprawę na spokojnie.
 
 D7:
-- Atak: Atakujący wykorzystuje dane z białego wywiadu (urlop przełożonego) i powołuje się na inny realny autorytet (szefową IT Sandrę), żeby zablokować próbę weryfikacji i wymusić posłuszeństwo.
-- Obrona: Ograniczaj publiczne informacje o strukturze zespołu i urlopach w mediach społecznościowych. Gdy ktoś powołuje się na przełożonego lub innego menedżera, skontaktuj się bezpośrednio z tą osobą albo jej zastępcą.
+- Atak: Atakujący wie z białego wywiadu, że przełożony jest na urlopie, więc nie da się go zapytać. Dorzuca „możesz zapytać Sandry”: propozycja sprawdzenia brzmi uczciwie, a on liczy, że nikt tego nie zrobi.
+- Obrona: Sygnały: rozmówca powołuje się na kogoś, kogo nie da się teraz zapytać, albo sam proponuje „zapytaj X”. Co zrobić: zrób to. Zadzwoń do tej osoby na numer z książki adresowej, zanim cokolwiek wpiszesz. Nie publikuj w sieci informacji o urlopach i strukturze zespołu.
 
 D8:
-- Atak: Społeczny dowód słuszności („zostałeś mi tylko ty”) i odwołanie do „bezpieczeństwa firmy” wywołują poczucie winy i chęć szybkiego „odhaczenia” sprawy.
-- Obrona: Prawdziwe bezpieczeństwo firmy nigdy nie wymaga łamania procedur ani omijania weryfikacji. Nie podejmuj ryzykownych działań tylko dlatego, że rozmówca twierdzi, iż „wszyscy już to zrobili”.
+- Atak: Gra na poczuciu obowiązku („zostałeś mi tylko ty”, „to ważne dla bezpieczeństwa firmy”) wywołuje poczucie winy i chęć szybkiego „odhaczenia” sprawy.
+- Obrona: Sygnały: rozmówca przekonuje, że tylko Ty zostałeś, albo zasłania się bezpieczeństwem firmy. Co zrobić: odpowiedz „sprawdzę to i oddzwonię”. Prawdziwy pracownik IT to zaakceptuje, a dalszy nacisk to sygnał ataku.
 
 D9:
-- Atak: Przesłanie linku w trakcie rozmowy i nazwanie go „nową stroną archiwizacji” kieruje ofiarę prosto na sklonowany panel logowania bez czasu na sprawdzenie adresu.
-- Obrona: Nie klikaj linków logowania przesłanych ad hoc podczas nieoczekiwanego telefonu. Zwracaj uwagę na najmniejsze szczegóły adresu i wyglądu strony — jeśli coś budzi niepokój, przerwij i zgłoś to działowi bezpieczeństwa.
+- Atak: Link wysłany w trakcie rozmowy i nazwany „nową stroną archiwizacji” prowadzi ofiarę prosto na skopiowany panel logowania, bez czasu na sprawdzenie adresu.
+- Obrona: Sygnały: link do logowania dostajesz w trakcie nieoczekiwanego telefonu, a rozmówca prosi, żebyś zalogował się na „nową stronę”. Co zrobić: nie oceniaj strony po wyglądzie, bo kopię robi się w kilka minut i wygląda identycznie. Nie loguj się z linku od rozmówcy. Wejdź na pocztę z własnej zakładki albo wpisz adres sam, a link zgłoś do IT.
 
 D10:
-- Atak: Przekonanie ofiary do wpisania firmowego hasła (a chwilę później kodu SMS 2FA) na podstawionej stronie pozwala przeprowadzić atak Adversary-in-the-Middle (AiTM) i przejąć sesję mimo włączonego 2FA.
-- Obrona: Nigdy nie podawaj firmowego hasła ani jednorazowych kodów 2FA na niezweryfikowanej stronie ani na prośbę osoby z telefonu. Używaj silnego MFA (np. kluczy sprzętowych FIDO2/WebAuthn), które wiążą logowanie z prawdziwą domeną i chronią przed phishingiem AiTM.
+- Atak: Atak „pośrednika” (Adversary-in-the-Middle): fałszywa strona na bieżąco przekazuje wpisane hasło i kod SMS do prawdziwej poczty, więc atakujący loguje się mimo logowania dwuetapowego (2FA).
+- Obrona: Sygnały: kod SMS przychodzi zaraz po logowaniu z linku od rozmówcy; ktoś prosi, żebyś wpisał lub podał kod; po zalogowaniu skrzynka jest pusta. Co zrobić: kod wpisuj tylko na stronie, którą sam otworzyłeś, i nigdy nikomu go nie podawaj, bo IT go nie potrzebuje. Jeśli już wpisałeś hasło lub kod na podejrzanej stronie, od razu zmień hasło (z własnej zakładki) i zgłoś to do IT. Logowanie dwuetapowe dalej warto mieć, bo mocno chroni konto, choć kod SMS da się wyłudzić.
 
 ---
 
@@ -302,4 +302,5 @@ D10:
 - `[ZMIANA WZGLĘDEM VR]` **D9 i D10** (QA R1-06, decyzja właściciela 27.11.2026): pytanie nad opcjami i w raporcie jest neutralne (`POWIEDZ FILIPOWI, CO MA ZROBIĆ:`, `WYJAŚNIJ FILIPOWI, JAK MA SIĘ ZALOGOWAĆ:`), bo kwestia Filipa przed tymi decyzjami zmienia się z wariantem (reakcje po D8 i po D1). Kwestia Filipa zostaje w dymku rozmowy.
 - `[ZMIANA WZGLĘDEM VR]` **Kolejność opcji**: w scenariuszu opcja idealna jest pierwsza; w grze opcje są tasowane (`ChoiceCards`, `VishingApp`), więc kolejność z VR nie ma znaczenia.
 - `[ZMIANA WZGLĘDEM VR]` **Faza 2 etapu 6**: w VR po pierwszym `ZALOGUJ` jest komunikat „OTRZYMANO DANE I UŻYTO ICH DO ZALOGOWANIA SIĘ W ORYGINALNYM SYSTEMIE MAILOWYM” i `WEJDŹ DO SYSTEMU`, a pole kodu SMS jest na fałszywej stronie. W grze oryginalny panel żąda kodu (`PODAJ KOD SMS:`), kod jest przenoszony z fałszywej strony tak jak login i hasło, a `WEJDŹ DO SYSTEMU` pojawia się po drugim `ZALOGUJ`. Raporty pobiera gracz przyciskami `POBIERZ`, które aktywują się po zakończeniu rozmowy (`ROZŁĄCZONO`).
+- `[ZMIANA WZGLĘDEM VR]` **Mostki etapów 1–5**: VR milczy na tych granicach; dodane krótkie kwestie gracza oznaczone `[SPÓJNIK]` (QA R1-04, decyzja właściciela 27.11.2026).
 - `[ZMIANA WZGLĘDEM VR]` **Mostek końcowy**: dodane 3 warianty końcowej rozmowy z BYTE_MASTEREM (100% bez odrzuceń / ≥ 70% / < 70%), zgodnie ze standardem misji 2+.
