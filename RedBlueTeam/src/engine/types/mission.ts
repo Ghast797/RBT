@@ -91,6 +91,8 @@ export interface NegotiationTurn {
   opponent: string;
   player: string;
   psychology: string;
+  /** Tura pokazywana w przebiegu negocjacji tylko, gdy warunek pasuje (np. wariant po uległości gracza). Bez `when` zawsze. */
+  when?: BeatCondition;
 }
 
 /** Próba decyzji odrzucona przez mentora (B2): kara naliczona, decyzja nadal otwarta. */
@@ -122,13 +124,26 @@ export interface DecisionCondition {
   decision: number;
   optionId?: string | string[];
   tier?: ChoiceOutcome | ChoiceOutcome[];
+  /** `true` = decyzja miała ≥1 próbę odrzuconą przez mentora (B2), `false` = żadnej. Pominięte = bez znaczenia. */
+  rejected?: boolean;
 }
+
+/**
+ * Warunek wyniku: `belowPassing: true` pasuje, gdy wynik wyświetlany graczowi jest poniżej progu zaliczenia
+ * (`passingScore` misji; to samo porównanie co `scormStatus`), `false` — gdy jest na progu lub powyżej.
+ */
+export interface ScoreCondition {
+  belowPassing: boolean;
+}
+
+/** Pojedynczy warunek liścia: decyzja albo wynik. */
+export type LeafCondition = DecisionCondition | ScoreCondition;
 
 /**
  * Warunek `when` beatu rozmowy: pojedynczy warunek decyzji albo złożony
  * `{ allOf: [...] }` (wszystkie pasują) / `{ anyOf: [...] }` (którykolwiek pasuje).
  */
-export type BeatCondition = DecisionCondition | { allOf: DecisionCondition[] } | { anyOf: DecisionCondition[] };
+export type BeatCondition = LeafCondition | { allOf: LeafCondition[] } | { anyOf: LeafCondition[] };
 
 export interface PlayerChoiceRecord {
   num: number;
@@ -169,6 +184,11 @@ export interface DebriefChoiceItem {
   attack?: string;
   /** Lekcja (blue team): po czym ofiara mogła rozpoznać atak i co powinna zrobić. */
   defense?: string;
+  /**
+   * Wariant odpowiedzi „CO ZADZIAŁAŁOBY LEPIEJ” zależny od wcześniejszego wyboru gracza: raport bierze pierwszy
+   * wariant, którego `when` pasuje, a gdy żaden — statyczne `answer`.
+   */
+  answerVariants?: { when: BeatCondition; answer: string }[];
 }
 
 export interface EducationalSlide {

@@ -1,7 +1,7 @@
 // Czysta logika D8 (eksfiltracja): poziom z liczby celów (t) i pozostałych plików (f), odpowiedź do raportu.
 // Reguły: docs/rebuild-plan.md, sekcja 3.5 (P5). Interfejs nie ocenia wyboru, ocenia tylko ta funkcja.
 
-import { matchesChoices } from '../../../engine/core/beatCondition';
+import { matchesChoices, type BeatContext } from '../../../engine/core/beatCondition';
 import type { ChoiceOutcome, DecisionChoice, DecisionReport } from '../../../engine/types/mission';
 import type { C2Config, ExfilFile } from './types';
 
@@ -81,8 +81,9 @@ export const canConfirmExfil = (selected: readonly string[]): boolean => selecte
 /** Ekran startowy C2: status i dopiski o słabszych wyborach D5–D7 (z pamięci wyborów); ideał = status bez dopisków. */
 export function c2StartInfo(
   start: C2Config['start'],
-  choices: Record<number, DecisionChoice>
+  choices: Record<number, DecisionChoice>,
+  extra: Omit<BeatContext, 'choices'> = {}
 ): { status: string; notes: string[] } {
-  const notes = (start.delayNotes ?? []).filter((n) => matchesChoices(n.when, choices)).map((n) => n.text);
+  const notes = (start.delayNotes ?? []).filter((n) => matchesChoices(n.when, { choices, ...extra })).map((n) => n.text);
   return { status: notes.length > 0 && start.statusDelayed ? start.statusDelayed : start.status, notes };
 }

@@ -19,7 +19,18 @@ import {
   LogOut
 } from 'lucide-react';
 import { useMissionStore } from '../store/useMissionStore';
-import { resolveDecisionCount, scormStatus, roundScore, displayScore, DEFAULT_PASSING_SCORE } from '../core/scoring';
+import {
+  resolveDecisionCount,
+  scormStatus,
+  roundScore,
+  displayScore,
+  countedTier,
+  decisionShare,
+  penaltyForTier,
+  DEFAULT_PASSING_SCORE
+} from '../core/scoring';
+import { beatMatches, beatContextFrom } from '../core/beatCondition';
+import type { NegotiationTurn } from '../types/mission';
 import { scorm2004 } from '../scorm/scorm2004';
 
 export const SCORM_SENT_MESSAGE =
@@ -36,6 +47,8 @@ export const DebriefApp: React.FC = () => {
     expandedChoiceIndex,
     toggleChoiceDetails,
     playerChoices,
+    decisionChoices,
+    rejectedAttempts,
     isScormSubmitted,
     isExitModalOpen,
     isScormTerminated,
@@ -46,6 +59,7 @@ export const DebriefApp: React.FC = () => {
   } = useMissionStore();
   const isMockScorm = scorm2004.isUsingMock();
   const passingScore = activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE;
+  const beatCtx = beatContextFrom({ decisionChoices, rejectedAttempts, score, activeMission });
   const isPassed = scormStatus(roundScore(score), passingScore) === 'passed';
 
   const [hasExited, setHasExited] = useState<boolean>(false);
@@ -98,10 +112,32 @@ export const DebriefApp: React.FC = () => {
   const lessonFor = (num: number) => activeMission.step6?.choices?.find((sc) => sc.num === num);
 
   const outcomeOf = (c: (typeof choices)[number]) => c.outcome || (c.isCorrect ? 'ideal' : 'critical');
+  const hasRejected = (c: (typeof choices)[number]) => (c.rejectedAttempts || []).length > 0;
+  // Poziom do wyświetlania i liczników: ideał po odrzuconej próbie to „dobry” (tak liczy go silnik, `countedTier`).
+  const shownOutcome = (c: (typeof choices)[number]) => countedTier(outcomeOf(c), hasRejected(c));
+
+  // Ile punktów kosztowała każda odrzucona próba decyzji: pół udziału, z limitem udziału decyzji (po karze za poziom końcowy).
+  const maxScore = activeMission.mission?.maxScore ?? 100;
+  const formatPoints = (n: number) => String(Math.round(n * 10) / 10).replace('.', ',');
+  const attemptPenalties = (c: (typeof choices)[number]): number[] => {
+    const share = decisionShare(maxScore, totalDecisions);
+    let remaining = Math.max(0, share - penaltyForTier(outcomeOf(c), maxScore, totalDecisions));
+    return (c.rejectedAttempts || []).map(() => {
+      const d = Math.min(penaltyForTier('suboptimal', maxScore, totalDecisions), remaining);
+      remaining -= d;
+      return d;
+    });
+  };
+  const anyRejected = choices.some(hasRejected);
+
+  const visibleTurns = (turns: NegotiationTurn[] | undefined) =>
+    turns?.filter((t) => beatMatches(t.when, beatCtx));
+  const answerFor = (lesson: ReturnType<typeof lessonFor>) =>
+    lesson?.answerVariants?.find((v) => beatMatches(v.when, beatCtx))?.answer ?? lesson?.answer;
 
   // Wybrana decyzja: ta, którą gracz kliknął (stan w store), a domyślnie pierwsza z błędem
   // (najwięcej do nauczenia się), inaczej pierwsza.
-  const firstNonIdeal = choices.findIndex((c) => outcomeOf(c) !== 'ideal');
+  const firstNonIdeal = choices.findIndex((c) => shownOutcome(c) !== 'ideal');
   const defaultIdx = firstNonIdeal >= 0 ? firstNonIdeal : 0;
   const selectedIdx =
     expandedChoiceIndex !== null && expandedChoiceIndex < choices.length ? expandedChoiceIndex : defaultIdx;
@@ -144,6 +180,13 @@ export const DebriefApp: React.FC = () => {
             short: 'BŁĄD'
           };
 
+  const toneOf = (c: (typeof choices)[number]) => {
+    const t = tone(shownOutcome(c));
+    return outcomeOf(c) === 'ideal' && hasRejected(c)
+      ? { ...t, label: '[IDEALNY PO POPRAWCE]', short: 'IDEALNY PO POPRAWCE' }
+      : t;
+  };
+
   const outcomeIcon = (outcome: string, size = 14) =>
     outcome === 'ideal' ? (
       <CheckCircle size={size} />
@@ -172,11 +215,13 @@ export const DebriefApp: React.FC = () => {
       );
     }
     const outcome = outcomeOf(selected);
-    const t = tone(outcome);
+    const shown = shownOutcome(selected);
+    const t = toneOf(selected);
     const isIdeal = outcome === 'ideal';
+    const penalties = attemptPenalties(selected);
     const lesson = lessonFor(selected.num);
     const hasLesson = !!(lesson?.attack || lesson?.defense);
-    const transcript = selected.negotiationTranscript || lesson?.negotiationTranscript;
+    const transcript = visibleTurns(selected.negotiationTranscript || lesson?.negotiationTranscript);
 
     return (
       <div className={`flex-1 min-h-0 px-2.5 py-2 rounded-lg border flex flex-col gap-1 overflow-y-auto ${t.bg} ${t.border}`}>
@@ -185,7 +230,7 @@ export const DebriefApp: React.FC = () => {
             {hasLesson ? 'WYBÓR' : 'SZCZEGÓŁY: WYBÓR'} {selected.num}
           </span>
           <span className={`px-2 py-0.5 rounded text-xs font-bold border flex items-center gap-1.5 ${t.badge}`}>
-            {outcomeIcon(outcome, 12)}
+            {outcomeIcon(shown, 12)}
             <span>{t.label}</span>
             {selected.btcPenalty && (
               <span className="text-amber-300 font-black">
@@ -210,6 +255,7 @@ export const DebriefApp: React.FC = () => {
         {(selected.rejectedAttempts || []).map((r, i) => (
           <div key={i} data-rejected-attempt="true" className="text-[0.6875rem] text-[#ff3366] leading-snug pl-3">
             Najpierw: {r.answer} — odrzucone przez BYTE_MASTERA
+            {penalties[i] > 0 && <span data-rejected-penalty="true"> (−{formatPoints(penalties[i])} PKT)</span>}
             {r.feedback && (
               <div data-rejected-feedback="true" className="text-[0.625rem] text-[#ff3366]/70 leading-snug pt-0.5">
                 {r.feedback}
@@ -220,9 +266,9 @@ export const DebriefApp: React.FC = () => {
 
         <div
           className={`px-2 py-1.5 rounded border text-xs leading-snug flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
-            outcome === 'ideal'
+            shown === 'ideal'
               ? 'bg-[#050a0f] border-slate-800 text-gray-300'
-              : outcome === 'suboptimal'
+              : shown === 'suboptimal'
                 ? 'bg-[#1b1708] border-[#facc15]/30 text-amber-100'
                 : 'bg-[#1b080f] border-[#ff3366]/30 text-red-100'
           }`}
@@ -245,10 +291,10 @@ export const DebriefApp: React.FC = () => {
         {!isIdeal && hasLesson && (
           <div data-better-header="true" className="text-xs leading-snug">
             <span className="font-black uppercase text-xs text-[#60a5fa]">CO ZADZIAŁAŁOBY LEPIEJ</span>
-            {lesson?.answer && (
+            {answerFor(lesson) && (
               <span className="font-sans text-gray-100">
                 {': '}
-                {lesson.answer}
+                {answerFor(lesson)}
               </span>
             )}
           </div>
@@ -259,7 +305,7 @@ export const DebriefApp: React.FC = () => {
             <Crosshair size={14} className="text-[#ff3366] shrink-0 mt-0.5" />
             <div>
               <span className="mr-1.5 font-black uppercase text-xs text-[#ff3366]">
-                {isIdeal ? 'Atak — dlaczego to zadziałało:' : 'Atak:'}
+                {isIdeal ? 'Atak — dlaczego to zadziałało:' : 'Atak (wariant idealny):'}
               </span>
               <span className="font-sans">{lesson.attack}</span>
             </div>
@@ -271,7 +317,7 @@ export const DebriefApp: React.FC = () => {
             <ShieldCheck size={14} className="text-[#3b82f6] shrink-0 mt-0.5" />
             <div>
               <span className="mr-1.5 font-black uppercase text-xs text-[#60a5fa]">
-                {isIdeal ? 'Obrona — jak to rozpoznać i co zrobić:' : 'Obrona:'}
+                {isIdeal ? 'Obrona — jak to rozpoznać i co zrobić:' : 'Obrona (przy wariancie idealnym):'}
               </span>
               <span className="font-sans">{lesson.defense}</span>
             </div>
@@ -300,7 +346,7 @@ export const DebriefApp: React.FC = () => {
   const renderTranscript = () => {
     const c = choices.find((x) => x.num === transcriptNum);
     if (!c) return null;
-    const transcript = c.negotiationTranscript || lessonFor(c.num)?.negotiationTranscript;
+    const transcript = visibleTurns(c.negotiationTranscript || lessonFor(c.num)?.negotiationTranscript);
     if (!transcript || transcript.length === 0) return null;
     return (
       <div className="absolute inset-0 z-10 p-3 rounded-xl border border-cyan-500/40 bg-[#06131c] flex flex-col gap-2 min-h-0">
@@ -385,6 +431,12 @@ export const DebriefApp: React.FC = () => {
         </div>
       </div>
 
+      {anyRejected && (
+        <div data-rejection-note="true" className="text-xs text-gray-400 px-1 shrink-0">
+          Odrzucona próba kosztuje połowę punktów za decyzję.
+        </div>
+      )}
+
       {/* Pasek wyniku, zapis w Moodle i BTC */}
       <div className="px-3 py-1 bg-[#081219] border border-[#00ff66]/30 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-2 text-xs shrink-0">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
@@ -434,8 +486,8 @@ export const DebriefApp: React.FC = () => {
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] gap-2 max-md:overflow-y-auto">
           <div className="min-h-0 flex flex-col gap-1">
             {choices.map((c, idx) => {
-              const outcome = outcomeOf(c);
-              const t = tone(outcome);
+              const outcome = shownOutcome(c);
+              const t = toneOf(c);
               const isSel = idx === selectedIdx;
               return (
                 <button

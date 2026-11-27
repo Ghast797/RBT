@@ -70,21 +70,21 @@ describe('ENG-04: decisionChoices w store', () => {
 describe('ENG-04: beatMatches', () => {
   const choices = { 1: { optionId: 'a', answer: 'A', tier: 'suboptimal' as const } };
 
-  it('bez warunku zawsze pasuje', () => expect(beatMatches(undefined, {})).toBe(true));
-  it('brak decyzji = brak dopasowania', () => expect(beatMatches({ decision: 2 }, choices)).toBe(false));
-  it('sama decyzja pasuje, gdy zgłoszona', () => expect(beatMatches({ decision: 1 }, choices)).toBe(true));
+  it('bez warunku zawsze pasuje', () => expect(beatMatches(undefined, { choices: {} })).toBe(true));
+  it('brak decyzji = brak dopasowania', () => expect(beatMatches({ decision: 2 }, { choices: choices })).toBe(false));
+  it('sama decyzja pasuje, gdy zgłoszona', () => expect(beatMatches({ decision: 1 }, { choices: choices })).toBe(true));
   it('optionId: pojedyncze i lista', () => {
-    expect(beatMatches({ decision: 1, optionId: 'a' }, choices)).toBe(true);
-    expect(beatMatches({ decision: 1, optionId: ['b', 'a'] }, choices)).toBe(true);
-    expect(beatMatches({ decision: 1, optionId: 'b' }, choices)).toBe(false);
+    expect(beatMatches({ decision: 1, optionId: 'a' }, { choices: choices })).toBe(true);
+    expect(beatMatches({ decision: 1, optionId: ['b', 'a'] }, { choices: choices })).toBe(true);
+    expect(beatMatches({ decision: 1, optionId: 'b' }, { choices: choices })).toBe(false);
   });
   it('tier: pojedynczy i lista, razem z optionId', () => {
-    expect(beatMatches({ decision: 1, tier: 'suboptimal' }, choices)).toBe(true);
-    expect(beatMatches({ decision: 1, tier: ['ideal', 'critical'] }, choices)).toBe(false);
-    expect(beatMatches({ decision: 1, optionId: 'a', tier: 'ideal' }, choices)).toBe(false);
+    expect(beatMatches({ decision: 1, tier: 'suboptimal' }, { choices: choices })).toBe(true);
+    expect(beatMatches({ decision: 1, tier: ['ideal', 'critical'] }, { choices: choices })).toBe(false);
+    expect(beatMatches({ decision: 1, optionId: 'a', tier: 'ideal' }, { choices: choices })).toBe(false);
   });
   it('optionId wymaga znanego id wyboru', () => {
-    expect(beatMatches({ decision: 2, optionId: 'a' }, { 2: { answer: 'x', tier: 'ideal' } })).toBe(false);
+    expect(beatMatches({ decision: 2, optionId: 'a' }, { choices: { 2: { answer: 'x', tier: 'ideal' } } })).toBe(false);
   });
 });
 
@@ -179,14 +179,14 @@ describe('NEW-06: appendFollowUp', () => {
 describe('P4: warunki złożone', () => {
   const c = { 1: { optionId: 'a', answer: 'x', tier: 'ideal' as const }, 2: { answer: 'y', tier: 'suboptimal' as const } };
   it('allOf: wszystkie muszą pasować', () => {
-    expect(beatMatches({ allOf: [{ decision: 1, tier: 'ideal' }, { decision: 2 }] }, c)).toBe(true);
-    expect(beatMatches({ allOf: [{ decision: 1, tier: 'ideal' }, { decision: 2, tier: 'ideal' }] }, c)).toBe(false);
-    expect(beatMatches({ allOf: [{ decision: 1 }, { decision: 3 }] }, c)).toBe(false);
+    expect(beatMatches({ allOf: [{ decision: 1, tier: 'ideal' }, { decision: 2 }] }, { choices: c })).toBe(true);
+    expect(beatMatches({ allOf: [{ decision: 1, tier: 'ideal' }, { decision: 2, tier: 'ideal' }] }, { choices: c })).toBe(false);
+    expect(beatMatches({ allOf: [{ decision: 1 }, { decision: 3 }] }, { choices: c })).toBe(false);
   });
   it('anyOf: wystarczy jeden', () => {
-    expect(beatMatches({ anyOf: [{ decision: 1, tier: 'critical' }, { decision: 2, tier: 'suboptimal' }] }, c)).toBe(true);
-    expect(beatMatches({ anyOf: [{ decision: 1, tier: 'critical' }, { decision: 3 }] }, c)).toBe(false);
-    expect(beatMatches({ anyOf: [] }, c)).toBe(false);
+    expect(beatMatches({ anyOf: [{ decision: 1, tier: 'critical' }, { decision: 2, tier: 'suboptimal' }] }, { choices: c })).toBe(true);
+    expect(beatMatches({ anyOf: [{ decision: 1, tier: 'critical' }, { decision: 3 }] }, { choices: c })).toBe(false);
+    expect(beatMatches({ anyOf: [] }, { choices: c })).toBe(false);
   });
-  it('matchesChoices to ta sama funkcja', () => expect(matchesChoices({ decision: 1 }, c)).toBe(true));
+  it('matchesChoices to ta sama funkcja', () => expect(matchesChoices({ decision: 1 }, { choices: c })).toBe(true));
 });

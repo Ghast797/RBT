@@ -25,7 +25,13 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
 
   // Wybory gracza z poprzednich etapów zmieniają stopień penetracji i alarmy (konsekwencje z konfiguracji).
   const choices = useMissionStore((s) => s.decisionChoices);
-  const outcome = useMemo(() => resolveBotnetOutcome(config, choices), [config, choices]);
+  const rejected = useMissionStore((s) => s.rejectedAttempts);
+  const score = useMissionStore((s) => s.score);
+  const passingScore = useMissionStore((s) => s.activeMission.mission.passingScore);
+  const outcome = useMemo(
+    () => resolveBotnetOutcome(config, choices, { rejected, score, passingScore }),
+    [config, choices, rejected, score, passingScore]
+  );
   const { targetPercentage } = outcome;
   const { totalWorkstations } = config;
   const { infectedCount, secureCount, nodes } = useMemo(

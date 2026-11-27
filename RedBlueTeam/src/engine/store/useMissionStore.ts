@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { MissionDefinition, PlayerChoiceRecord, DecisionReport, DecisionRejection, RejectedAttempt, ConversationBeat, ChoiceOutcome, DecisionChoice } from '../types/mission';
 import { scoreFromDecisions, countedTier, btcForScore, resolveDecisionCount, DEFAULT_PASSING_SCORE, roundScore } from '../core/scoring';
-import { beatMatches } from '../core/beatCondition';
+import { beatMatches, beatContextFrom } from '../core/beatCondition';
 import { resolveInitialMission, getMission } from '../registry/missionRegistry';
 import { sounds } from '../audio/soundEffects';
 import { createMissionCompletionStatement, MockLRS } from '../scorm/xapi';
@@ -736,7 +736,7 @@ export const useMissionStore = create<MissionState>((set, get) => ({
     const beat = pb.beats[i];
 
     // Beat z niespełnionym warunkiem `when` (wybór gracza w decyzji) jest pomijany bez śladu w czacie.
-    if (!beatMatches(beat.when, get().decisionChoices)) {
+    if (!beatMatches(beat.when, beatContextFrom(get()))) {
       set((s) => ({ pendingBridge: s.pendingBridge ? { ...s.pendingBridge, index: i + 1 } : null }));
       get().advanceBridge();
       return;

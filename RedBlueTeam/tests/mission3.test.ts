@@ -105,7 +105,7 @@ const bridgeOf = (id: string, plan = 'vector_party_zip', overrides: Record<numbe
     6: { answer: 'X', tier: 'ideal' },
     ...overrides
   };
-  return (stageOf(id).completion.conversation ?? []).filter((b) => beatMatches(b.when, choices)).map(beatLine);
+  return (stageOf(id).completion.conversation ?? []).filter((b) => beatMatches(b.when, { choices })).map(beatLine);
 };
 
 /** Wszystkie opcje ocenianych decyzji (numer decyzji + pytanie + opcje) z danych klocków. */
