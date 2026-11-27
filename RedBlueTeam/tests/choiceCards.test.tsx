@@ -67,6 +67,51 @@ describe('ChoiceCards: pole info i obsługa wyborów', () => {
     expect(onComplete).toHaveBeenCalledOnce();
   });
 
+  it('etykieta strefy wyboru: choiceLabel > question > domyślne WYBIERZ JEDNO', () => {
+    const onDecision = vi.fn();
+    const { rerender } = render(
+      <ChoiceCards config={{ ...baseConfig, task: 'WYBIERZ DOMENĘ.' }} onDecision={onDecision} onComplete={() => {}} />
+    );
+    // Pytanie decyzji jest widoczne na ekranie i to samo trafia do raportu.
+    expect(screen.getByText(`▼ ${baseConfig.question}`)).toBeTruthy();
+    fireEvent.click(screen.getByText('ARCHIWUMBCORP.BIZ'));
+    fireEvent.click(screen.getByText('ZATWIERDŹ WYBÓR'));
+    expect(onDecision).toHaveBeenCalledWith(expect.objectContaining({ question: baseConfig.question }));
+
+    rerender(
+      <ChoiceCards config={{ ...baseConfig, choiceLabel: 'TWÓJ WYBÓR' }} onDecision={() => {}} onComplete={() => {}} />
+    );
+    expect(screen.getByText('▼ TWÓJ WYBÓR')).toBeTruthy();
+
+    rerender(
+      <ChoiceCards config={{ ...baseConfig, question: '' }} onDecision={() => {}} onComplete={() => {}} />
+    );
+    expect(screen.getByText('▼ WYBIERZ JEDNO')).toBeTruthy();
+  });
+
+  it('kwestia mentora po odrzuceniu zawija się (bez ucinania), etykieta ma co najmniej text-xs', () => {
+    const longLine =
+      'W TEJ DOMENIE NIE MA NAWET NAZWY BANKU BCORP, A PRACOWNIK OD RAZU TO ZAUWAŻY. WYBIERZ INACZEJ, ZANIM KTOŚ SIĘ ZORIENTUJE.';
+    const config: ChoiceCardsConfig = {
+      ...baseConfig,
+      options: baseConfig.options.map((o) => (o.reject ? { ...o, reject: { mentorLine: longLine } } : o))
+    };
+    const { container } = render(<ChoiceCards config={config} onDecision={() => {}} onComplete={() => {}} />);
+    fireEvent.click(screen.getByText('BACKUP-BANK.COM'));
+    fireEvent.click(screen.getByText('ZATWIERDŹ WYBÓR'));
+
+    const notice = container.querySelector('[data-mentor-reject="true"]') as HTMLElement;
+    expect(notice).toBeTruthy();
+    expect(notice.className).toContain('items-start');
+    const line = screen.getByText(longLine);
+    expect(line.className).not.toContain('truncate');
+    expect(line.className).not.toMatch(/line-clamp/);
+    expect(line.className).toContain('break-words');
+    const tag = screen.getByText('BYTE_MASTER: ODRZUCONE');
+    expect(tag.className).toContain('text-xs');
+    expect(tag.className).not.toContain('text-[0.625rem]');
+  });
+
   it('renderuje statyczną kartę info między AppHeader a ChoiceZone (przypadek domeny z adresem URL)', () => {
     const configWithUrl: ChoiceCardsConfig = {
       ...baseConfig,
@@ -91,9 +136,11 @@ describe('ChoiceCards: pole info i obsługa wyborów', () => {
     expect(infoCard!.className).not.toContain('cursor-pointer');
     expect(infoCard!.querySelectorAll('button').length).toBe(0);
 
-    // Kolejność w DOM: AppHeader (ZADANIE) -> karta info -> ChoiceZone (▼ WYBIERZ JEDNO).
+    // Kolejność w DOM: AppHeader (ZADANIE) -> karta info -> ChoiceZone (▼ pytanie decyzji).
+    // Jedno źródło pytania: etykieta strefy to `question`, to samo, co trafia do raportu.
     const taskNode = screen.getByText('ZADANIE');
-    const choiceLabelNode = screen.getByText('▼ WYBIERZ JEDNO');
+    const choiceLabelNode = screen.getByText(`▼ ${baseConfig.question}`);
+    expect(screen.queryByText('▼ WYBIERZ JEDNO')).toBeNull();
     expect(
       Boolean(taskNode.compareDocumentPosition(infoCard!) & Node.DOCUMENT_POSITION_FOLLOWING)
     ).toBe(true);

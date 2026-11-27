@@ -173,5 +173,10 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    // package-scorm.js trzyma kopie zipów w .scorm_tmp_zips/ i buduje do dist/ — watcher na Windows
+    // łapał EBUSY na zablokowanych plikach i wywalał dev serwer.
+    watch: {
+      ignored: ['**/.scorm_tmp_zips/**', '**/dist/**'],
+    },
   },
 });

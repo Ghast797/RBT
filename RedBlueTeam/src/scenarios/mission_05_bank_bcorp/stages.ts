@@ -134,7 +134,7 @@ export const numberPrepConfig: ChoiceCardsConfig = {
   title: '//PRZYGOTOWANIE_NUMERU',
   subtitle: 'CALLER ID SPOOFING — NUMER WYJŚCIOWY',
   question: 'WYBIERZ NUMER TELEFONU, POD KTÓRY SIĘ PODSZYJESZ:',
-  task: 'KORZYSTAJĄC ZE SPOOFINGU PODSZYJESZ SIĘ POD FIRMOWY NUMER TELEFONU. WYBIERZ NUMER ZGODNY Z SZABLONEM.',
+  task: 'KORZYSTAJĄC ZE SPOOFINGU PODSZYJESZ SIĘ POD FIRMOWY NUMER TELEFONU.',
   info: {
     title: 'SZABLON NUMERACJI WEWNĘTRZNEJ',
     text: 'NUMERY TELEFONÓW W FIRMIE TWORZONE SĄ WEDŁUG SZABLONU: 891 [NR DZIAŁU] [NR PRACOWNIKA]',
@@ -188,6 +188,8 @@ export const vishingCallConfig: VishingCallConfig = {
   subtitle: 'VISHING I PRZECHWYTYWANIE DANYCH AITM NA ŻYWO',
   taskPhase1: 'PROWADŹ ROZMOWĘ Z FILIPEM WÓJCIKIEM I NAKŁOŃ GO DO ZALOGOWANIA SIĘ NA PODSTAWIONĄ STRONĘ.',
   taskPhase2: 'PRZENIEŚ PRZECHWYCONE DANE LOGOWANIA ORAZ KOD 2FA DO ORYGINALNEGO PANELU I POBIERZ RAPORTY.',
+  taskExfiltrateCall: 'ZAKOŃCZ ROZMOWĘ Z FILIPEM NA PRAWYM MONITORZE.',
+  taskExfiltrateDownload: 'POBIERZ OBA RAPORTY FINANSOWE ZE SKRZYNKI POCZTOWEJ.',
   readyScreen: {
     title: '//ROZMOWA',
     message: 'MOGĘ JUŻ ZADZWONIĆ DO PRACOWNIKA. MUSZĘ UWAŻAĆ, ABY NIE POWIEDZIEĆ CZEGOŚ PODEJRZANEGO',
@@ -445,7 +447,8 @@ export const vishingCallConfig: VishingCallConfig = {
     {
       id: 'turn_d9',
       decisionNum: 9,
-      question: 'OK, JEŚLI TAK TO WYGLĄDA, CO MAM ROBIĆ?',
+      question: 'POWIEDZ FILIPOWI, CO MA ZROBIĆ:',
+      prompt: 'POWIEDZ FILIPOWI, CO MA ZROBIĆ:',
       options: [
         {
           id: 'd9_ideal',
@@ -487,7 +490,8 @@ export const vishingCallConfig: VishingCallConfig = {
     {
       id: 'turn_d10',
       decisionNum: 10,
-      question: 'OK, MAM. JAK MAM SIĘ ZALOGOWAĆ?',
+      question: 'WYJAŚNIJ FILIPOWI, JAK MA SIĘ ZALOGOWAĆ:',
+      prompt: 'WYJAŚNIJ FILIPOWI, JAK MA SIĘ ZALOGOWAĆ:',
       options: [
         {
           id: 'd10_ideal',
@@ -689,12 +693,12 @@ export const mission5Stages: StageDefinition[] = [
           from: 'player',
           id: 'm5_reply_end_passing',
           label:
-            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU, CHOĆ PO DRODZE BYŁO KILKA NERWOWYCH MOMENTÓW.',
+            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.',
           when: END_BRIDGE_PASSING_WITH_FLAWS
         },
         {
           from: 'byte_master',
-          text: 'WAŻNE, ŻE RAPORTY SĄ U NAS, ALE KILKA RAZY O MAŁY WŁOS NIE SPALIŁEŚ ROZMOWY. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW Z WYWIADU.',
+          text: 'WAŻNE, ŻE RAPORTY SĄ U NAS, ALE NIE OBYŁO SIĘ BEZ WPADEK. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW.',
           when: END_BRIDGE_PASSING_WITH_FLAWS
         },
         // Wariant 3 (wynik < 70%)

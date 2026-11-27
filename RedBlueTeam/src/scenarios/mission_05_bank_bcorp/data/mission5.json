@@ -251,7 +251,7 @@
       },
       {
         "num": 9,
-        "question": "OK, JEŚLI TAK TO WYGLĄDA, CO MAM ROBIĆ?",
+        "question": "POWIEDZ FILIPOWI, CO MA ZROBIĆ:",
         "answer": "ZALOGUJ SIĘ NA NASZĄ NOWĄ STRONĘ ARCHIWIZACJI POCZTY",
         "correct": true,
         "details": "Jasne, służbowe polecenie spójne z całym pretekstem testów systemu archiwizacji.",
@@ -260,7 +260,7 @@
       },
       {
         "num": 10,
-        "question": "OK, MAM. JAK MAM SIĘ ZALOGOWAĆ?",
+        "question": "WYJAŚNIJ FILIPOWI, JAK MA SIĘ ZALOGOWAĆ:",
         "answer": "SPRAWDZAMY CZY NOWY SYSTEM JEST SPÓJNY Z POPRZEDNIM. UŻYJ DANYCH ZE SWOJEJ POCZTY FIRMOWEJ",
         "correct": true,
         "details": "Wiarygodne, techniczne uzasadnienie („test spójności”) skłania ofiarę do wpisania prawdziwych danych logowania na fałszywej stronie.",

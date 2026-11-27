@@ -415,10 +415,10 @@ describe('Misja 5 — przepływ przez silnik i 3 warianty mostka końcowego', ()
     expect(fin.score).toBe(95);
     const texts = fin.chatMessages.map((m) => m.text);
     expect(texts).toContain(
-      'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU, CHOĆ PO DRODZE BYŁO KILKA NERWOWYCH MOMENTÓW.'
+      'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.'
     );
     expect(texts).toContain(
-      'WAŻNE, ŻE RAPORTY SĄ U NAS, ALE KILKA RAZY O MAŁY WŁOS NIE SPALIŁEŚ ROZMOWY. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW Z WYWIADU.'
+      'WAŻNE, ŻE RAPORTY SĄ U NAS, ALE NIE OBYŁO SIĘ BEZ WPADEK. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW.'
     );
     expect(texts).not.toContain(
       'CZYSTA ROBOTA. ZERO WPADEK, ZERO WĄTPLIWOŚCI. Z TAKIMI RAPORTAMI W KOŃCU ZOBACZYMY, KTO FINANSUJE TĘ RAFINERIĘ. BĘDĄ Z CIEBIE LUDZIE.'
@@ -439,7 +439,7 @@ describe('Misja 5 — przepływ przez silnik i 3 warianty mostka końcowego', ()
     expect(useMissionStore.getState().chatAvailableChoices.map((c) => c.id)).toEqual(['m5_reply_end_passing']);
     driveBridge();
     expect(useMissionStore.getState().chatMessages.map((m) => m.text)).toContain(
-      'WAŻNE, ŻE RAPORTY SĄ U NAS, ALE KILKA RAZY O MAŁY WŁOS NIE SPALIŁEŚ ROZMOWY. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW Z WYWIADU.'
+      'WAŻNE, ŻE RAPORTY SĄ U NAS, ALE NIE OBYŁO SIĘ BEZ WPADEK. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW.'
     );
   });
 

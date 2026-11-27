@@ -117,13 +117,20 @@ describe('Misja 5 Etap 4 — PageClonerApp (//PRZYGOTOWANIE_STRONY)', () => {
     // Krok 1: ZAPROJEKTUJ
     fireEvent.click(screen.getByText('ZAPROJEKTUJ'));
     act(() => {
-      vi.advanceTimersByTime(1600);
+      vi.advanceTimersByTime(2100);
     });
 
     // Szkielet 4 pustych slotów widoczny, przycisk trybu przechwytywania nieaktywny
     const captureBtn = screen.getByRole('button', { name: /USTAW TRYB PRZECHWYTYWANIA DANYCH/i }) as HTMLButtonElement;
     expect(captureBtn.disabled).toBe(true);
     expect(screen.getByTestId('fake-slot-logo').textContent).toContain('MIEJSCE NA NAGŁÓWEK Z LOGO');
+
+    // QA-S4-11: elementy oryginalnej strony (role="button") mają nazwę dostępną z configu
+    for (const el of clonerConfig.elements) {
+      expect(screen.getByRole('button', { name: `Skopiuj: ${el.slotLabel}` })).toBe(
+        screen.getByTestId(`orig-element-${el.id}`)
+      );
+    }
 
     // Klik-klik: zaznaczenie i odznaczenie elementu
     tapElement('orig-element-logo');

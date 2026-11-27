@@ -85,8 +85,9 @@ Kod NIE przechowuje salda portfela. Silnik zna tylko `rewardBtc` bieżącej misj
 | M2 | brak w dokumencie (z sumy M1: 2,52) | 2,96 | brak w dokumencie (z sumy: 5,48) | `M2/docs/Scenariusz Misja 2 - CarbonFlow (Specyfikacja 2D).md:15` (tylko nagroda i certyfikat) |
 | M3 | 5,50 | 4,02 | 9,52 | `M3/docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md:11,293` |
 | M4 | 9,52 | 3,79 | 13,31 | `M4/docs/Scenariusz Misja 4 - Energy Rock (Specyfikacja 2D).md:11,333` |
+| M5 | brak w dokumencie VR | 3,14 | brak w dokumencie VR | `M5/docs/scenariusz_misji_05_bank_bcorp.md` (karta 2,96 vs podsumowanie 3,14; przyjęto 3,14, decyzja 27.11.2026) |
 
-Suma nagród z kodu: M1+M2 = 5,48; +M3 = 9,50; +M4 = 13,29. Zob. sprzeczność S3.
+Suma nagród z kodu: M1+M2 = 5,48; +M3 = 9,50; +M4 = 13,29; +M5 = 16,43. Zob. sprzeczność S3.
 
 ### 3b. Licznik certyfikatu / postępu
 
@@ -96,6 +97,7 @@ Suma nagród z kodu: M1+M2 = 5,48; +M3 = 9,50; +M4 = 13,29. Zob. sprzeczność S
 | M2 | „certyfikat ukończenia: 4/9” | `M2/docs/Scenariusz Misja 2 - CarbonFlow (Specyfikacja 2D).md:15` |
 | M3 | „postęp certyfikatu: 4/10” | `M3/docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md:11,294` |
 | M4 | „certyfikat ukończenia: 5/9” | `M4/docs/Scenariusz Misja 4 - Energy Rock (Specyfikacja 2D).md:11,334` |
+| M5 | „6/10” — pominięty decyzją właściciela 27.11.2026 (`M5/docs/status.md`) | `M5/docs/scenariusz_misji_05_bank_bcorp.md` |
 
 W kodzie: brak (nie ma żadnego pola ani UI). Zob. sprzeczność S4.
 
@@ -309,6 +311,7 @@ Poniżej tylko to, gdzie dwa miejsca w kodzie lub kod i dokument podają różne
 - M2: „4/9” (`M2/docs/Scenariusz Misja 2 - CarbonFlow (Specyfikacja 2D).md:15`).
 - M3: „4/10” (`M3/docs/Scenariusz Misja 3 - O&L Company (Specyfikacja 2D).md:11,294`).
 - M4: „5/9” (`M4/docs/Scenariusz Misja 4 - Energy Rock (Specyfikacja 2D).md:11,334`).
+- M5: „6/10” w VR; pominięty w grze decyzją właściciela (27.11.2026).
 - M1: brak licznika. Niespójne zarówno mianowniki (9 vs 10), jak i licznik (M2 4, M3 4, M4 5: M2 i M3 mają ten sam).
 - W kodzie: brak. Doc M4 mówi też o „9 kafelkach bazowych” (`M4/docs/...:329`).
 

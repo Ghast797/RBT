@@ -43,13 +43,15 @@ export const MentorRejectNotice: React.FC<{ attempts: RejectedAttempt[]; selecte
       role="alert"
       data-mentor-reject="true"
       title={last.mentorLine}
-      className="mb-2 flex items-center gap-2 rounded-lg border border-[#ff3366]/60 bg-[#1f060b] px-3 py-1.5 text-xs text-red-100 min-w-0"
+      className="mb-2 flex items-start gap-2 rounded-lg border border-[#ff3366]/60 bg-[#1f060b] px-3 py-1.5 text-xs text-red-100 min-w-0"
     >
-      <MessageSquareWarning size={14} className="shrink-0 text-[#ff3366]" />
-      <span className="shrink-0 text-[0.625rem] font-black uppercase tracking-widest text-[#ff3366]">
+      <MessageSquareWarning size={14} className="shrink-0 mt-px text-[#ff3366]" />
+      <span className="shrink-0 text-xs font-black uppercase tracking-widest leading-snug text-[#ff3366]">
         BYTE_MASTER: ODRZUCONE
       </span>
-      <span className="font-sans truncate min-w-0">{last.mentorLine}</span>
+      <span className="font-sans leading-snug whitespace-normal break-words [overflow-wrap:anywhere] min-w-0 flex-1">
+        {last.mentorLine}
+      </span>
     </div>
   );
 };

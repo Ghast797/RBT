@@ -549,6 +549,10 @@ describe('Misja 5 Etap 6 — VishingApp (//ROZMOWA)', () => {
     const loginBtn = screen.getByRole('button', { name: /^ZALOGUJ$/i }) as HTMLButtonElement;
     expect(loginBtn.disabled).toBe(true);
 
+    // QA-S4-11: przechwycone wartości (role="button") mają nazwę dostępną
+    expect(screen.getByRole('button', { name: 'Przenieś: LOGIN' })).toBe(screen.getByTestId('fake-token-login'));
+    expect(screen.getByRole('button', { name: 'Przenieś: HASŁO' })).toBe(screen.getByTestId('fake-token-password'));
+
     // Błędny slot (login na pole hasła) -> playError() bez kary
     tapToken('fake-token-login');
     fireEvent.click(screen.getByTestId('orig-slot-password'));
@@ -564,7 +568,13 @@ describe('Misja 5 Etap 6 — VishingApp (//ROZMOWA)', () => {
 
     expect(loginBtn.disabled).toBe(false);
     fireEvent.click(loginBtn);
-    advance(3000);
+
+    // QA-S4-07: weryfikacja logowania to ModuleLoader z paskiem i licznikiem (ok. 1,5–2,5 s)
+    expect(screen.getByTestId('login-loader').textContent).toContain('WERYFIKACJA DANYCH LOGOWANIA');
+    advance(800);
+    expect(screen.getByTestId('login-loader').textContent).toMatch(/\d+%/);
+    advance(2700);
+    expect(screen.queryByTestId('login-loader')).toBeNull();
 
     // Ekran 2FA + rozmowa na prawym monitorze (3 kroki)
     expect(screen.getByText('PODAJ KOD SMS:')).toBeTruthy();
@@ -587,6 +597,7 @@ describe('Misja 5 Etap 6 — VishingApp (//ROZMOWA)', () => {
     const login2faBtn = screen.getByRole('button', { name: /^ZALOGUJ$/i }) as HTMLButtonElement;
     expect(login2faBtn.disabled).toBe(true);
 
+    expect(screen.getByRole('button', { name: 'Przenieś: KOD SMS' })).toBe(screen.getByTestId('fake-token-sms'));
     tapToken('fake-token-sms');
     fireEvent.click(screen.getByTestId('orig-slot-sms'));
     expect(screen.getByTestId('orig-slot-sms').textContent).toContain('48212');
@@ -595,17 +606,40 @@ describe('Misja 5 Etap 6 — VishingApp (//ROZMOWA)', () => {
     fireEvent.click(login2faBtn);
     const enterBtn = screen.getByRole('button', { name: /WEJDŹ DO SYSTEMU/i });
     fireEvent.click(enterBtn);
-    advance(3000);
+
+    // QA-S4-07: otwieranie skrzynki to ModuleLoader z paskiem i licznikiem
+    expect(screen.getByTestId('mailbox-loader').textContent).toContain('OTWIERANIE SKRZYNKI POCZTOWEJ');
+    expect(screen.getByTestId('mailbox-loader').textContent).toMatch(/\d+%/);
+    advance(3500);
+    expect(screen.queryByTestId('mailbox-loader')).toBeNull();
 
     // Skrzynka pocztowa + końcowa wymiana rozmowy
     expect(screen.getByText('RAPORT FINANSOWY 2021')).toBeTruthy();
     expect(screen.getByText('RAPORT FINANSOWY 2022')).toBeTruthy();
     expect(screen.getByText('CZY TO WSZYSTKO?')).toBeTruthy();
 
+    // QA-S4-03: przed ROZŁĄCZONO przyciski POBIERZ są widoczne, ale nieaktywne; ZADANIE mówi tylko o rozmowie
+    const dl2021 = screen.getByTestId('download-btn-r2021') as HTMLButtonElement;
+    const dl2022 = screen.getByTestId('download-btn-r2022') as HTMLButtonElement;
+    expect(dl2021.disabled).toBe(true);
+    expect(dl2022.disabled).toBe(true);
+    expect(screen.getByTestId('download-locked-hint')).toBeTruthy();
+    expect(screen.getByText('ZAKOŃCZ ROZMOWĘ Z FILIPEM NA PRAWYM MONITORZE.')).toBeTruthy();
+    fireEvent.click(dl2021);
+    advance(2000);
+    expect(screen.getByTestId('download-btn-r2021')).toBeTruthy();
+    expect(screen.queryByText('POBIERANIE…')).toBeNull();
+
     fireEvent.click(screen.getByTestId('phase2-reply-btn'));
     advance(2000);
     expect(screen.getByText('DOBRA, NA RAZIE')).toBeTruthy();
     expect(screen.getByTestId('call-status').textContent).toContain('ROZŁĄCZONO');
+
+    // Po ROZŁĄCZONO: POBIERZ aktywne, podpowiedź znika, ZADANIE = pobranie raportów
+    expect((screen.getByTestId('download-btn-r2021') as HTMLButtonElement).disabled).toBe(false);
+    expect((screen.getByTestId('download-btn-r2022') as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.queryByTestId('download-locked-hint')).toBeNull();
+    expect(screen.getByText('POBIERZ OBA RAPORTY FINANSOWE ZE SKRZYNKI POCZTOWEJ.')).toBeTruthy();
 
     // Pobieranie obu raportów
     fireEvent.click(screen.getByTestId('download-btn-r2021'));

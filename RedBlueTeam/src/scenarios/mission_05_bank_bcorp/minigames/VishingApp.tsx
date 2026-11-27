@@ -23,6 +23,7 @@ import {
 import { AppHeader } from '../../../engine/components/AppHeader';
 import { ChoiceRows, ChoiceZone } from '../../../engine/components/ChoiceZone';
 import { ConfirmButton } from '../../../engine/components/ConfirmButton';
+import { LOADER_MS, ModuleLoader } from '../../../engine/components/ModuleLoader';
 import { SideMonitor } from '../../../engine/components/SideMonitor';
 import { SidePanel } from '../../../engine/components/SidePanel';
 import { DragGhost, usePointerDrag } from '../../../engine/components/usePointerDrag';
@@ -39,8 +40,11 @@ const DEFAULT_ACCENT = '#00ff66';
 const REPLY_DELAY_MS = 1300;
 const AUTO_PLAYER_DELAY_MS = 500;
 const PHASE2_TRANSITION_MS = 1200;
-const LOGIN_LOADER_MS = 1100;
-const ENTER_MAILBOX_MS = 1000;
+// Loadery Fazy 2 (pasek + licznik, standard 1,5–2,5 s): weryfikacja logowania i otwarcie skrzynki.
+const LOGIN_LOADER_MS = LOADER_MS;
+const ENTER_MAILBOX_MS = LOADER_MS;
+const DEFAULT_TASK_EXFILTRATE_CALL = 'ZAKOŃCZ ROZMOWĘ Z FILIPEM NA PRAWYM MONITORZE.';
+const DEFAULT_TASK_EXFILTRATE_DOWNLOAD = 'POBIERZ OBA RAPORTY FINANSOWE ZE SKRZYNKI POCZTOWEJ.';
 const DOWNLOAD_MS = 1500;
 const COMPLETION_DELAY_MS = 1200;
 
@@ -356,11 +360,12 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
     setSelectedToken(null);
     setSlotWarning(null);
     setPhase2Step('logging_in_1');
-    timerBag.later(() => {
-      sounds.playSuccess();
-      setPhase2Step('phase2_dialogue');
-      playPhase2CalleeStep(0);
-    }, LOGIN_LOADER_MS);
+  };
+
+  // Koniec loadera weryfikacji (ModuleLoader sam gra dźwięk sukcesu).
+  const handleLoginLoaded = () => {
+    setPhase2Step('phase2_dialogue');
+    playPhase2CalleeStep(0);
   };
 
   // --- Faza 2: ZALOGUJ po przeniesieniu kodu 2FA ---
@@ -408,20 +413,21 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
     if (phase2Step !== 'ready_to_enter') return;
     sounds.playClick();
     setPhase2Step('entering_mailbox');
-    timerBag.later(() => {
-      sounds.playSuccess();
-      setPhase2Step('exfiltrate');
-      if (config.phase2.closingDialogue.length === 0) {
-        setCallDisconnected(true);
-      } else {
-        runClosingFrom(0);
-      }
-    }, ENTER_MAILBOX_MS);
   };
 
-  // --- Faza 2: pobieranie raportów ---
+  // Koniec loadera skrzynki: najpierw rozmowa zamykająca (scenario.md, pkt 5), potem pobieranie (pkt 6).
+  const handleMailboxLoaded = () => {
+    setPhase2Step('exfiltrate');
+    if (config.phase2.closingDialogue.length === 0) {
+      setCallDisconnected(true);
+    } else {
+      runClosingFrom(0);
+    }
+  };
+
+  // --- Faza 2: pobieranie raportów (dopiero po ROZŁĄCZONO) ---
   const handleDownloadReport = (reportId: string) => {
-    if (phase2Step !== 'exfiltrate') return;
+    if (phase2Step !== 'exfiltrate' || !callDisconnected) return;
     const current = downloads[reportId];
     if (!current || current.status !== 'idle') return;
     sounds.playClick();
@@ -582,9 +588,9 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
       return 'PRZENIEŚ KOD SMS NA ORYGINALNĄ STRONĘ I WEJDŹ DO SYSTEMU.';
     }
     if (showCompletionBanner) return config.phase2.completionMessage;
-    if (!callDisconnected && allReportsDownloaded) return 'ZAKOŃCZ ROZMOWĘ NA PRAWYM MONITORZE, ABY ROZŁĄCZYĆ POŁĄCZENIE.';
-    if (callDisconnected && !allReportsDownloaded) return 'POBIERZ OBA RAPORTY FINANSOWE ZE SKRZYNKI POCZTOWEJ.';
-    return 'ZAKOŃCZ ROZMOWĘ NA PRAWYM MONITORZE I POBIERZ OBA RAPORTY FINANSOWE.';
+    // Krok 'exfiltrate': jedna rzecz naraz — najpierw rozmowa, po ROZŁĄCZONO pobieranie.
+    if (!callDisconnected) return config.taskExfiltrateCall ?? DEFAULT_TASK_EXFILTRATE_CALL;
+    return config.taskExfiltrateDownload ?? DEFAULT_TASK_EXFILTRATE_DOWNLOAD;
   })();
 
   const headerStep = phase === 'phase2' ? 'FAZA 2/2' : 'FAZA 1/2';
@@ -610,6 +616,7 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
       <div
         data-testid={`fake-token-${id}`}
         role={draggable ? 'button' : undefined}
+        aria-label={draggable ? `Przenieś: ${label}` : undefined}
         tabIndex={draggable ? 0 : undefined}
         onKeyDown={
           draggable
@@ -842,11 +849,20 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
                           <button
                             type="button"
                             data-testid={`download-btn-${report.id}`}
+                            disabled={!callDisconnected}
                             onClick={() => handleDownloadReport(report.id)}
-                            className="px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest text-[#05090f] flex items-center justify-center gap-2 cursor-pointer shrink-0 transition-transform active:scale-95"
-                            style={{ backgroundColor: accent, boxShadow: `0 0 12px ${accent}55` }}
+                            className={`px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shrink-0 transition-transform ${
+                              callDisconnected
+                                ? 'text-[#05090f] cursor-pointer active:scale-95'
+                                : 'bg-gray-800 text-gray-500 border border-gray-700 cursor-not-allowed'
+                            }`}
+                            style={
+                              callDisconnected
+                                ? { backgroundColor: accent, boxShadow: `0 0 12px ${accent}55` }
+                                : undefined
+                            }
                           >
-                            <Download size={14} />
+                            {callDisconnected ? <Download size={14} /> : <Lock size={14} />}
                             <span>POBIERZ</span>
                           </button>
                         )}
@@ -877,9 +893,12 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
                   })}
                 </div>
 
-                {allReportsDownloaded && !callDisconnected && (
-                  <div className="px-3.5 py-2.5 rounded-lg border border-amber-400/60 bg-amber-950/30 text-amber-200 text-xs font-bold text-center">
-                    POBRANO PLIKI — ZAKOŃCZ ROZMOWĘ Z FILIPEM NA PRAWYM MONITORZE.
+                {!callDisconnected && (
+                  <div
+                    data-testid="download-locked-hint"
+                    className="px-3.5 py-2.5 rounded-lg border border-amber-400/60 bg-amber-950/30 text-amber-200 text-xs font-bold text-center"
+                  >
+                    POBIERANIE ODBLOKUJE SIĘ PO ZAKOŃCZENIU ROZMOWY Z FILIPEM NA PRAWYM MONITORZE.
                   </div>
                 )}
 
@@ -1014,10 +1033,13 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
                     )}
 
                     {phase2Step === 'logging_in_1' && (
-                      <div className="rounded-lg border border-sky-500/40 bg-[#060c14] p-4 text-center space-y-2">
-                        <div className="text-xs font-black tracking-widest text-sky-300 animate-pulse">
-                          WERYFIKACJA DANYCH LOGOWANIA…
-                        </div>
+                      <div data-testid="login-loader" className="rounded-lg border border-sky-500/40 overflow-hidden h-40">
+                        <ModuleLoader
+                          accent="#38bdf8"
+                          label="WERYFIKACJA DANYCH LOGOWANIA…"
+                          durationMs={LOGIN_LOADER_MS}
+                          onDone={handleLoginLoaded}
+                        />
                       </div>
                     )}
 
@@ -1059,10 +1081,13 @@ export const VishingApp: React.FC<BlockProps<VishingCallConfig>> = ({ config, on
                     )}
 
                     {phase2Step === 'entering_mailbox' && (
-                      <div className="rounded-lg border border-[#00ff66]/50 bg-[#060c14] p-4 text-center space-y-2">
-                        <div className="text-xs font-black tracking-widest text-[#00ff66] animate-pulse">
-                          OTWIERANIE SKRZYNKI POCZTOWEJ…
-                        </div>
+                      <div data-testid="mailbox-loader" className="rounded-lg border border-[#00ff66]/50 overflow-hidden h-40">
+                        <ModuleLoader
+                          accent={accent}
+                          label="OTWIERANIE SKRZYNKI POCZTOWEJ…"
+                          durationMs={ENTER_MAILBOX_MS}
+                          onDone={handleMailboxLoaded}
+                        />
                       </div>
                     )}
                   </div>

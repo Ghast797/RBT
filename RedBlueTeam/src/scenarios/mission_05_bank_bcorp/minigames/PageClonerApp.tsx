@@ -17,7 +17,7 @@ import type { PageClonerConfig, PageClonerElement, PageClonerElementId } from '.
 import { ImageSlot } from './ui';
 
 const ACCENT = '#00ff66';
-const SKELETON_LOADER_MS = 1200;
+const SKELETON_LOADER_MS = 1700;
 const CAPTURE_LOADER_MS = 1500;
 const SUCCESS_MS = 1200;
 
@@ -370,6 +370,7 @@ export const PageClonerApp: React.FC<BlockProps<PageClonerConfig>> = ({ config, 
                   key={el.id}
                   data-testid={`orig-element-${el.id}`}
                   role={isInteractive ? 'button' : undefined}
+                  aria-label={isInteractive ? `Skopiuj: ${el.slotLabel}` : undefined}
                   tabIndex={isInteractive ? 0 : undefined}
                   onKeyDown={
                     isInteractive

@@ -160,6 +160,13 @@ export interface VishingCallConfig {
   subtitle?: string;
   taskPhase1: string;
   taskPhase2: string;
+  /**
+   * ZADANIE w skrzynce pocztowej, zanim rozmowa zamykająca dojdzie do ROZŁĄCZONO
+   * (POBIERZ jest wtedy nieaktywne). Brak = tekst domyślny w VishingApp.
+   */
+  taskExfiltrateCall?: string;
+  /** ZADANIE w skrzynce pocztowej po ROZŁĄCZONO (pobranie raportów). Brak = tekst domyślny w VishingApp. */
+  taskExfiltrateDownload?: string;
   readyScreen: {
     title?: string;
     message: string;
