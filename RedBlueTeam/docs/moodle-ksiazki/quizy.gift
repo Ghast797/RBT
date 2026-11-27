@@ -120,3 +120,40 @@ $CATEGORY: $course$/top/Misja 4 – Energy Rock
 ~Wysyła hasła do znajomych na prośbę#Nie o to chodzi.
 ~Wyłącza potrzebę aktualizacji systemu#Aktualizacje nadal są konieczne.
 }
+
+$CATEGORY: $course$/top/Misja 5 – Bank Bcorp
+
+::M5-1 Numer na ekranie::Dzwoni telefon, na ekranie widać numer działu IT. Rozmówca prosi, żebyś od razu zalogował się na nową stronę. Co robisz?{
+=Rozłączam się i oddzwaniam na numer działu IT z firmowej książki adresowej#Numer wyświetlany na telefonie można podrobić.
+~Loguję się, bo numer na ekranie należy do działu IT#Oszust może podszyć się pod numer i wyświetlać się jako twój kontakt.
+~Proszę rozmówcę o numer, pod który mam oddzwonić#Oszust poda numer, pod którym sam odbierze.
+~Loguję się, a po rozmowie zmieniam hasło#Hasło i kod mogą zostać przechwycone od razu, w trakcie logowania.
+}
+
+::M5-2 Powołanie na przełożonego::Rozmówca mówi, że twój przełożony jest na urlopie, ale sprawę zatwierdził ktoś z kierownictwa. Co robisz?{
+=Kontaktuję się z tą osobą lub jej zastępcą, zanim cokolwiek zrobię#Haker celowo powołuje się na osobę z autorytetem, której trudno od razu zapytać.
+~Wykonuję prośbę, bo zatwierdził ją ktoś z kierownictwa#Powołanie się na autorytet to typowy sposób na uśpienie czujności.
+~Czekam, aż przełożony wróci z urlopu, i nikomu nic nie mówię#Lepiej od razu sprawdzić sprawę u zastępcy i zgłosić podejrzaną prośbę.
+~Proszę rozmówcę, żeby przełączył mnie do tej osoby#Oszust może przełączyć cię do wspólnika.
+}
+
+::M5-3 Fałszywa strona logowania::Strona logowania wygląda dokładnie jak firmowa poczta. Co najczęściej zdradza, że jest fałszywa?{
+=Adres strony w pasku przeglądarki#Wygląd łatwo skopiować, adresu prawdziwej strony już nie.
+~Logo i kolory firmy#Wygląd strony logowania łatwo skopiować.
+~Stopka z nazwą firmy i rokiem#Stopkę też da się skopiować.
+~Szybkość ładowania strony#Nie mówi nic o tym, czyja to strona.
+}
+
+::M5-4 Czym jest 2FA::Czym jest 2FA (uwierzytelnianie dwuskładnikowe)?{
+=Dodatkowym sposobem potwierdzenia logowania, np. kodem SMS, aplikacją albo kluczem sprzętowym#2FA i MFA radykalnie podnoszą ochronę kont przed przejęciem.
+~Drugim, zapasowym hasłem do tego samego konta#Drugie hasło to wciąż ten sam rodzaj zabezpieczenia.
+~Programem antywirusowym w telefonie#To inne narzędzie.
+~Możliwością logowania z dwóch komputerów naraz#Nie o to chodzi.
+}
+
+::M5-5 Kod SMS::W trakcie rozmowy przychodzi SMS z kodem logowania, a rozmówca prosi, żebyś mu go podał albo wpisał na stronie z jego linku. Co robisz?{
+=Odmawiam, bo kodu jednorazowego nie podaję nikomu i wpisuję go tylko na stronie, którą sam otworzyłem#Z kodem oszust może zalogować się na twoje konto mimo 2FA.
+~Podaję kod, bo jest jednorazowy i zaraz wygaśnie#Jednorazowy kod wystarczy, żeby oszust zalogował się teraz.
+~Wpisuję kod na stronie z linku, ale nie czytam go na głos#Fałszywa strona przekaże kod oszustowi.
+~Wyłączam 2FA, żeby więcej nie dostawać kodów#2FA nadal mocno chroni konto, nie wyłączaj go.
+}

@@ -22,6 +22,7 @@ Kolejna lekcja zostaje otwarta (studenci mogą iść w dowolnej kolejności), ch
 | CarbonFlow (M2) | **brak – do wgrania** (`dist/scorm-mission-2-carbonflow.zip`) | jest, 5 rozdz. | jest, 4 pyt. | Książka: obejrzeć; Quiz: po Książce, ≥ 6/10 |
 | O&L Company (M3) | **brak – do wgrania** (`dist/scorm-mission-3-ol-company.zip`) | jest, 5 rozdz. | jest, 4 pyt. | jw. |
 | Energy Rock (M4) | **brak – do wgrania** (`dist/scorm-mission-4-energy-rock.zip`) | jest, 5 rozdz. | jest, 4 pyt. | jw. |
+| Bank Bcorp (M5) | **brak – do wgrania** (`dist/scorm-mission-5-bank-bcorp.zip`, po dostarczeniu logo i portretu) | przygotowana, 6 rozdz. (`ksiazka-misja-5.zip`) | przygotowany, 5 pyt. (`quizy.gift`, kategoria „Misja 5 – Bank Bcorp”) | jw. |
 
 Pytania: `quizy.gift` (zaimportowane do banku kursu, kategorie „Misja 1–4"). Po wgraniu SCORM M2–M4
 trzeba dodać ograniczenie „Książka dostępna po ukończeniu SCORM" (jak w Petro Log).

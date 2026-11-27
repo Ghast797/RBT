@@ -8,7 +8,7 @@ Plik stanu procesu (skill `rbt-proces-misji`). Każdy krok aktualizuje go na ko�
 - [x] 2. Dopracowanie → `scenario.md` zatwierdzony przez właściciela (data: 27.11.2026)
 - [x] 3. Implementacja → kod, testy, paczka SCORM (commit: `7dba80d`)
 - [x] 4. QA → `docs/qa.md` bez otwartych W i S (rund: 2, zamknięte 27.11.2026)
-- [ ] 5. Książka i quiz → `docs/moodle-ksiazki/misja_5/`, `quizy.gift`
+- [x] 5. Książka i quiz → `docs/moodle-ksiazki/misja_5/` (6 rozdz., `ksiazka-misja-5.zip`), `quizy.gift` (5 pyt., kategoria „Misja 5 – Bank Bcorp”); teksty zatwierdzone przez właściciela 27.11.2026
 - [ ] 6. Wdrożenie w Moodle i test w firmie (data: …)
 
 ## Czeka na właściciela
@@ -65,4 +65,10 @@ Plik stanu procesu (skill `rbt-proces-misji`). Każdy krok aktualizuje go na ko�
 - Zmiany: pytania D1/D2/D9/D10 na ekranie, kolejność końca etapu 6 (pobieranie po rozmowie), loadery z paskiem, baner odrzucenia bez ucinania (silnik), 10 lekcji „Sygnały / Co zrobić”, 5 spójników między etapami, poprawione feedbacki i zdania mostka końcowego, drobne teksty (lata raportów 2024/2025, SANDRĘ, BANK BCORP, DYREKTOR), kafelek //ROZMOWA w kolorze `#ef4444`, watcher Vite odporny na pakowanie SCORM.
 - `vitest` 622/622, `tsc` 0, `package-scorm --all` 0 (5 paczek, przy działającym dev). Przeglądarka 1366×768: cała rozmowa ze słabszym D8, faza 2, raport, spójnik, M4 (regresja banera).
 - Przed wgraniem do Moodle: dostarczyć `bcorp_logo.*` i `filip_wojcik.*` (tabela „Do dostarczenia”), przebudować paczkę.
-- Następny krok: `rbt-moodle-ksiazka-quiz`.
+- Następny krok: `rbt-moodle-ksiazka-quiz` (zrobiony).
+
+## Weryfikacja Kroku 5
+
+- Książka: 4 slajdy VR („CO POWINIENEŚ ZAPAMIĘTAĆ?”) przeniesione 1:1 z trzema zmianami dla spójności z lekcjami gry: slajd 3 bez „i wyglądzie strony” (lekcja D9), dopisane zdania w rozdz. 1 (oddzwoń na numer z książki adresowej, D2), 3 (własna zakładka, D9) i 4 (kodu nie podawaj nikomu, D10). Plus podsumowanie i „Chcesz uniknąć hakowania?”. 6 rozdziałów (skill zaleca 4–5; VR ma 4 slajdy). Zatwierdzone przez właściciela.
+- Quiz: M5-1…M5-5, każde pytanie pokryte rozdziałem 1–4, poprawne odpowiedzi zgodne z lekcjami D2, D7, D9, D10 z raportu gry; znaki specjalne GIFT sprawdzone skryptem.
+- Następny krok: `rbt-wdrozenie-moodle` (najpierw logo banku i portret Filipa, potem paczka SCORM).
