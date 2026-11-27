@@ -35,7 +35,7 @@ describe('M4 D8: eksfiltracja', () => {
   it('1–2 cele = suboptimal z listą nazw i feedbackiem częściowym', () => {
     const one = buildExfilReport(exfil, ids(TARGETS[0]));
     expect(one.tier).toBe('suboptimal');
-    expect(one.answer).toBe('FVOLT_TECH.DOCX');
+    expect(one.answer).toBe('1 Z 3 PLIKÓW FREEVOLT (FVOLT_TECH.DOCX)');
     expect(one.feedback).toBe(exfil.feedback.suboptimal);
     expect(buildExfilReport(exfil, ids(TARGETS[0], 'MAREK.JPG')).tier).toBe('suboptimal');
     expect(buildExfilReport(exfil, ids(TARGETS[0], TARGETS[1], 'SEKRET.TXT')).tier).toBe('suboptimal');

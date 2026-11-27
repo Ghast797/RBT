@@ -119,7 +119,7 @@ describe('Misja 4 — metadane i raport', () => {
 
   it('negocjacje w raporcie: transkrypt 3 tur przy pozycji 10, podpis rozmówcy SZEF IT', () => {
     const d10 = def().step6.choices.find((c) => c.num === 10)!;
-    expect(d10.negotiationTranscript?.length).toBe(3);
+    expect(d10.negotiationTranscript?.length).toBe(5);
     d10.negotiationTranscript!.forEach((t) => expect(t.opponentLabel).toBe('SZEF IT'));
   });
 
@@ -236,11 +236,10 @@ describe('Misja 4 — struktura etapów', () => {
     expect(bridgeKinds('victim_workstation')).toEqual([
       'player',
       'byte_master',
-      'byte_master',
       'time_jump 09:10->11:35',
       'time_jump 12:25->14:50'
     ]);
-    expect(bridgeKinds('negotiation')).toEqual(['player', 'byte_master', 'player', 'byte_master']);
+    expect(bridgeKinds('negotiation')).toEqual(['player', 'byte_master', 'byte_master', 'player', 'byte_master']);
     const call = (id: string) => stages().find((s) => s.id === id)!.completion.incomingCall;
     expect(call('vpn_app')).toEqual({ appId: 'victim_workstation', label: 'MALWARE ZOSTAŁ AKTYWOWANY' });
     expect(call('victim_workstation')).toEqual({ appId: 'negotiation', label: 'OFIARA WYŚWIETLIŁA WIADOMOŚĆ – PROŚBA O KONTAKT' });
@@ -323,7 +322,7 @@ describe('Misja 4 — przepływ przez silnik', () => {
     expect(fin.unlockedIcons).toContain('mission_completed');
     expect(fin.score).toBe(100);
     expect(fin.playerChoices.filter((c) => c.outcome === 'ideal').length).toBe(10);
-    expect(fin.playerChoices.find((c) => c.num === 10)?.negotiationTranscript?.length).toBe(3);
+    expect(fin.playerChoices.find((c) => c.num === 10)?.negotiationTranscript?.length).toBe(5);
 
     const submit = store.submitScormAndExit();
     expect(submit.success).toBe(true);

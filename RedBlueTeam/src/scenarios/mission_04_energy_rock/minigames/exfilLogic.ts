@@ -48,6 +48,14 @@ export function listNames(files: readonly ExfilFile[], selected: readonly string
   return names.length > MAX_LISTED_NAMES ? `${head}, …` : head;
 }
 
+/** „2 Z 3 PLIKÓW FREEVOLT (A, B) + 1 INNY”: lista nazw celów zawsze widoczna, nadmiar tylko liczbą. */
+function suboptimalAnswer(files: readonly ExfilFile[], selected: readonly string[], counts: ExfilCounts, required: number): string {
+  const chosen = new Set(selected);
+  const targets = files.filter((x) => chosen.has(x.id) && x.role === 'target').map((x) => x.name);
+  const base = `${counts.t} Z ${required} PLIKÓW FREEVOLT (${targets.join(', ')})`;
+  return counts.f > 0 ? `${base} ${extrasPhrase(counts.f)}` : base;
+}
+
 export function buildExfilReport(exfil: C2Config['exfil'], selected: readonly string[]): DecisionReport {
   const counts = countSelection(exfil.files, selected);
   const tier = exfilTier(counts, exfil.requiredTargets);
@@ -56,7 +64,9 @@ export function buildExfilReport(exfil: C2Config['exfil'], selected: readonly st
       ? counts.f > 0
         ? `${exfil.answers.ideal} ${extrasPhrase(counts.f)}`
         : exfil.answers.ideal
-      : listNames(exfil.files, selected);
+      : tier === 'suboptimal'
+        ? suboptimalAnswer(exfil.files, selected, counts, exfil.requiredTargets)
+        : listNames(exfil.files, selected);
   return {
     num: exfil.decisionNum,
     question: exfil.question,

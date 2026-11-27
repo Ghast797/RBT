@@ -48,6 +48,8 @@ function run(tiers: Tiers) {
   stage('ransomware_builder', [2, 3, 4]);
   stage('mail', [5, 6]);
   stage('vpn_app', [7]);
+  useMissionStore.getState().openApp('victim_workstation');
+  driveBridge(jumps);
   stage('victim_workstation', [8]);
   const lines = useMissionStore.getState().chatMessages.map((m) => m.text);
   return { jumps, lines };
@@ -98,7 +100,7 @@ describe('M4-02: ekran startowy C2', () => {
   });
 
   it.each([
-    [5, 'NAZWA PLIKU WZBUDZIŁA WĄTPLIWOŚCI REKRUTERA – OTWORZYŁ GO Z OPÓŹNIENIEM'],
+    [5, 'TEMAT MAILA WZBUDZIŁ WĄTPLIWOŚCI REKRUTERA – OTWORZYŁ GO Z OPÓŹNIENIEM'],
     [6, 'SKANER POCZTY ZATRZYMAŁ ZAŁĄCZNIK BEZ HASŁA – REKRUTER ZWOLNIŁ GO RĘCZNIE DOPIERO PO POŁUDNIU'],
     [7, 'REKRUTER ZGŁOSIŁ DO IT NIETYPOWY ADRES NADAWCY']
   ])('słabszy D%i: status z opóźnieniem i jedna linia', (n, text) => {
