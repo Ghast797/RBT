@@ -87,3 +87,21 @@ describe('M4 most: podpowiedź mentora o temacie maila (M4-09)', () => {
     expect(next.text).toBe('TEMAT MAILA POWINIEN ZAWIERAĆ DOPISEK CV ORAZ IMIĘ I NAZWISKO KANDYDATA');
   });
 });
+
+describe('M4: teksty kroków i przeskok czasu (przegląd spójności)', () => {
+  it('zadania kreatora nie mają prefiksu KROK N: (numer jest w nagłówku)', () => {
+    expect(cfg.note.task).not.toMatch(/^KROK \d/);
+    expect(cfg.color.task).not.toMatch(/^KROK \d/);
+    expect(cfg.password.task).not.toMatch(/^KROK \d/);
+  });
+
+  it('komunikat 5/5 mówi o liczbie znaków', () => {
+    expect(cfg.password.strengthMessages[5]).toContain('MAKSYMALNEJ LICZBY ZNAKÓW');
+  });
+
+  it('słabsza ścieżka ma własny podpis przeskoku czasu', () => {
+    const json = JSON.stringify(mission4Stages);
+    expect(json).toContain('REKRUTER OTWIERA CV Z OPÓŹNIENIEM…');
+    expect(json.match(/DO GODZIN PRACY REKRUTERA…/g)).toHaveLength(1);
+  });
+});
