@@ -17,7 +17,7 @@ export const ChoiceZone: React.FC<{
     style={{ borderColor: `${accent}73`, backgroundColor: `${accent}0a` }}
   >
     <span
-      className="absolute -top-3 left-4 px-3 py-0.5 rounded-full text-[0.6875rem] font-black tracking-widest whitespace-nowrap"
+      className="absolute -top-3 left-4 px-3 py-0.5 rounded-2xl text-[0.6875rem] font-black tracking-widest leading-tight whitespace-normal break-words max-w-[calc(100%-2rem)]"
       style={{ backgroundColor: accent, color: '#05090f', boxShadow: `0 0 12px ${accent}80` }}
     >
       {`▼ ${label}`}
@@ -25,6 +25,9 @@ export const ChoiceZone: React.FC<{
     {children}
   </div>
 );
+
+/** Dodaje miejsca łamania (zero-width space) po @, _ i ., żeby adresy i nazwy plików nie łamały się w środku słowa. */
+export const softBreaks = (s: string): string => s.replace(/([@_.])(?=\S)/g, '$1' + String.fromCharCode(0x200b));
 
 export type ChoiceTileState = 'idle' | 'selected' | 'correct' | 'wrong' | 'dimmed';
 
@@ -169,10 +172,10 @@ export const ChoiceCardGrid: React.FC<
             >
               <h3
                 className={`${big ? 'text-lg font-black tracking-wider' : 'text-base font-bold'} text-white leading-snug ${
-                  mono ? 'font-mono break-all' : ''
+                  mono ? 'font-mono break-words' : ''
                 }`}
               >
-                {opt.label}
+                {mono ? softBreaks(opt.label) : opt.label}
               </h3>
               {opt.desc && <p className={`${big ? 'text-base' : 'text-sm'} text-gray-200 leading-snug`}>{opt.desc}</p>}
               {opt.tags && opt.tags.length > 0 && (
@@ -224,8 +227,8 @@ export const ChoiceRows: React.FC<ChoiceLayoutProps> = ({
           className="px-3 py-2.5 items-center"
         >
           <div className="min-w-0">
-            <span className={`block text-xs font-bold text-white leading-snug ${mono ? 'font-mono break-all' : ''}`}>
-              {opt.label}
+            <span className={`block text-xs font-bold text-white leading-snug ${mono ? 'font-mono break-words' : ''}`}>
+              {mono ? softBreaks(opt.label) : opt.label}
             </span>
             {opt.desc && <span className="block text-xs text-gray-300 leading-snug pt-0.5">{opt.desc}</span>}
           </div>

@@ -10,6 +10,15 @@ import type { DialogueTreeConfig } from '../src/engine/types/mission';
 
 afterEach(cleanup);
 
+describe('ChoiceZone: łamanie adresów', () => {
+  it('softBreaks wstawia niewidoczne miejsca łamania po @, _ i .', async () => {
+    const { softBreaks } = await import('../src/engine/components/ChoiceZone');
+    const z = String.fromCharCode(0x200b);
+    expect(softBreaks('A@B.BIZ')).toBe(`A@${z}B.${z}BIZ`);
+    expect(softBreaks('plik_a.exe').split(z).join('')).toBe('plik_a.exe');
+  });
+});
+
 describe('modal wyjścia z raportu po polsku', () => {
   beforeEach(() => useMissionStore.getState().loadMission(mission2Definition));
 
