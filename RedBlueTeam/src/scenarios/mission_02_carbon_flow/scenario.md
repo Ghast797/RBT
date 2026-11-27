@@ -105,9 +105,11 @@ Cel dydaktyczny: zobaczenie skutku ataku: rozprzestrzenianie się robaka po stac
 Ekrany: alert „MALWARE ZOSTAŁ AKTYWOWANY” z komunikatem „ROBAK – MALWARE ZOSTAŁ AKTYWOWANY. KOMPUTERY ZOMBIE SĄ TWORZONE” i przyciskiem „PODGLĄD” (VR S06, pkt 1–2) → telemetria (licznik infekcji do 82%) → topologia sieci. Liczby (82%, 12 stacji, 10 zainfekowanych / 2 zabezpieczone) i węzły wylicza kod z `botnetMonitorConfig` (`targetPercentage`, `totalWorkstations`)
 Oceniane: Flavor (bez oceny punktów; wskaźniki zależą od wcześniejszych wyborów: słabszy szablon D1 i temat D2 obniżają penetrację, MARKETING@CARBON.COM dodaje alarm IDS). Pod każdym obniżeniem pokazuje się wyjaśnienie (`note`): Quickgram – „CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA: SZABLON SPOŁECZNOŚCIOWY W SŁUŻBOWEJ SKRZYNCE BUDZIŁ PODEJRZENIA”; ćwiczenia – „CZĘŚĆ PRACOWNIKÓW ODŁOŻYŁA WYPEŁNIENIE ANKIETY NA PÓŹNIEJ”.
 
-Mostek (rozmowa końcowa, obecnie dwa warianty w kodzie):
-- BM (ideał na D1, D2, D4): "NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ"
-- BM (którakolwiek z D1, D2, D4 suboptymalna): "MOGŁO PÓJŚĆ LEPIEJ, ALE CARBONFLOW I TAK MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ"
+Mostek (rozmowa końcowa, dokładnie jedna kwestia BM wg wyniku):
+- BM (a: wszystkie D1–D4 ideałem, bez odrzuceń, w tym D3): "NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ"
+- BM (b: nie (a) i wynik na progu lub wyżej; któraś z D1, D2, D4 suboptymalna albo któraś decyzja miała odrzucenie): "MOGŁO PÓJŚĆ LEPIEJ, ALE CARBONFLOW I TAK MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ"
+- BM (c: wynik poniżej progu zaliczenia, np. trzy suboptymalne wybory): "SPALIŁEŚ ZA DUŻO RUCHÓW. CARBONFLOW JESZCZE COŚ NAM DA, ALE NASTĘPNYM RAZEM MYŚL, ZANIM KLIKNIESZ. PRZEJRZYJ RAPORT."
+- Warunki w `stages.ts` (`when`): (a) `allOf` czterech `{ decision, tier: 'ideal', rejected: false }`; (b) `allOf[ anyOf[ suboptimal D1/D2/D4, rejected: true D1–D4 ], { belowPassing: false } ]`; (c) `{ belowPassing: true }`.
 - GRACZ: "DO USŁUG"
 - odblokuj: //PODSUMOWANIE
 

@@ -381,29 +381,45 @@ export const mission2Stages: StageDefinition[] = [
     decisions: [],
     completion: {
       conversation: [
-        // Ideał na D1, D2 i D4 (mostek pomija wariant poniżej).
+        // (a) Wszystkie D1–D4 ideałem i bez odrzuceń (D3 też), wynik nie jest poniżej progu.
         {
           from: 'byte_master',
           text: 'NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ',
           when: {
             allOf: [
-              { decision: 1, tier: 'ideal' },
-              { decision: 2, tier: 'ideal' },
-              { decision: 4, tier: 'ideal' }
+              { decision: 1, tier: 'ideal', rejected: false },
+              { decision: 2, tier: 'ideal', rejected: false },
+              { decision: 3, tier: 'ideal', rejected: false },
+              { decision: 4, tier: 'ideal', rejected: false }
             ]
           }
         },
-        // Którakolwiek z D1, D2, D4 suboptymalna (mostek pomija wariant powyżej).
+        // (b) Nie (a) i wynik nie jest poniżej progu: któraś decyzja suboptymalna albo odrzucona, ale zaliczone.
         {
           from: 'byte_master',
           text: 'MOGŁO PÓJŚĆ LEPIEJ, ALE CARBONFLOW I TAK MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ',
           when: {
-            anyOf: [
-              { decision: 1, tier: 'suboptimal' },
-              { decision: 2, tier: 'suboptimal' },
-              { decision: 4, tier: 'suboptimal' }
+            allOf: [
+              {
+                anyOf: [
+                  { decision: 1, tier: 'suboptimal' },
+                  { decision: 2, tier: 'suboptimal' },
+                  { decision: 4, tier: 'suboptimal' },
+                  { decision: 1, rejected: true },
+                  { decision: 2, rejected: true },
+                  { decision: 3, rejected: true },
+                  { decision: 4, rejected: true }
+                ]
+              },
+              { belowPassing: false }
             ]
           }
+        },
+        // (c) Wynik poniżej progu zaliczenia (niezależnie od tego, które wybory to spowodowały).
+        {
+          from: 'byte_master',
+          text: 'SPALIŁEŚ ZA DUŻO RUCHÓW. CARBONFLOW JESZCZE COŚ NAM DA, ALE NASTĘPNYM RAZEM MYŚL, ZANIM KLIKNIESZ. PRZEJRZYJ RAPORT.',
+          when: { belowPassing: true }
         },
         {
           from: 'player',

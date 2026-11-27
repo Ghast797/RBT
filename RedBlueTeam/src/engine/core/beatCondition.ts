@@ -61,12 +61,13 @@ function leafMatches(when: LeafCondition, ctx: BeatContext): boolean {
 /**
  * Czy warunek `when` jest spełniony. Brak warunku = pasuje zawsze; decyzja jeszcze niezgłoszona = nie pasuje.
  * `optionId` wymaga znanego `id` wybranej opcji; `rejected` porównuje z odrzuconymi próbami decyzji;
- * `{ belowPassing }` porównuje wynik z progiem. `{ allOf }` = wszystkie, `{ anyOf }` = którykolwiek (też z warunkami wyniku).
+ * `{ belowPassing }` porównuje wynik z progiem. `{ allOf }` = wszystkie, `{ anyOf }` = którykolwiek.
+ * Elementy grup mogą być dowolnymi warunkami, w tym kolejnymi grupami (zagnieżdżanie rekurencyjne).
  */
 export function beatMatches(when: BeatCondition | undefined, ctx: BeatContext): boolean {
   if (!when) return true;
-  if ('allOf' in when) return when.allOf.every((c) => leafMatches(c, ctx));
-  if ('anyOf' in when) return when.anyOf.some((c) => leafMatches(c, ctx));
+  if ('allOf' in when) return when.allOf.every((c) => beatMatches(c, ctx));
+  if ('anyOf' in when) return when.anyOf.some((c) => beatMatches(c, ctx));
   return leafMatches(when, ctx);
 }
 
