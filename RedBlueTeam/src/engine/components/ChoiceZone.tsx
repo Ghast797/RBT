@@ -150,7 +150,7 @@ export const ChoiceCardGrid: React.FC<
   const big = size === 'lg';
   return (
     <ChoiceZone accent={accent} label={label} className={className}>
-      <MentorRejectNotice attempts={rejected} />
+      <MentorRejectNotice attempts={rejected} selectedId={selectedId} />
       <div className={`grid ${cols} gap-3`}>
         {options.map((opt) => (
           <ChoiceTile
@@ -211,7 +211,7 @@ export const ChoiceRows: React.FC<ChoiceLayoutProps> = ({
   const rejected = useRejectedAmong(decisionNum, options);
   return (
   <ChoiceZone accent={accent} label={label}>
-    <MentorRejectNotice attempts={rejected} />
+    <MentorRejectNotice attempts={rejected} selectedId={selectedId} />
     <div className="flex flex-col gap-2.5">
       {options.map((opt) => (
         <ChoiceTile

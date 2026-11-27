@@ -85,7 +85,7 @@ export const ChoiceCards: React.FC<BlockProps<ChoiceCardsConfig>> = ({
       />
 
       <ChoiceZone accent={accent} label={config.choiceLabel || 'WYBIERZ JEDNO'}>
-        <MentorRejectNotice attempts={rejected} />
+        <MentorRejectNotice attempts={rejected} selectedId={selectedId} />
         <div className={`grid grid-cols-1 ${columns} gap-3`}>
           {options.map((option) => (
             <ChoiceTile

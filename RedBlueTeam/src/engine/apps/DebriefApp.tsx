@@ -438,8 +438,8 @@ export const DebriefApp: React.FC = () => {
       )}
 
       {/* Pasek wyniku, zapis w Moodle i BTC */}
-      <div className="px-3 py-1 bg-[#081219] border border-[#00ff66]/30 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-2 text-xs shrink-0">
-        <div className="flex items-center space-x-3 w-full sm:w-auto">
+      <div className="px-3 py-1 bg-[#081219] border border-[#00ff66]/30 rounded-lg flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs shrink-0">
+        <div className="flex items-center space-x-3 min-w-0">
           <span className="font-bold text-[#00ff66] text-sm">{displayScore(score)}%</span>
           <div className="w-40 h-2.5 bg-[#050a0f] border border-[#00ff66]/40 rounded-full overflow-hidden">
             <div
@@ -464,7 +464,7 @@ export const DebriefApp: React.FC = () => {
           </span>
         </div>
 
-        <div className="flex items-center space-x-2 text-amber-300 font-black text-sm whitespace-nowrap">
+        <div className="flex items-center space-x-2 text-amber-300 font-black text-sm whitespace-nowrap shrink-0">
           <span>OTRZYMANE BITCOINY:</span>
           <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/50">
             +{btcReward.toFixed(2)} ₿
@@ -475,10 +475,10 @@ export const DebriefApp: React.FC = () => {
       {/* Decyzje gracza: lista po lewej, lekcja atak / obrona wybranej decyzji po prawej (bez przewijania) */}
       <div className="relative flex-1 min-h-0 flex flex-col gap-1.5">
         <div className="flex flex-wrap items-baseline justify-between gap-2 shrink-0">
-          <div className="text-xs font-bold text-[#00ff66] uppercase tracking-wider">
+          <div className="text-xs font-bold text-[#00ff66] uppercase tracking-wider min-w-0">
             TWOJE WYBORY ({choices.length}/{totalDecisions}):
           </div>
-          <div className="text-xs text-gray-400 uppercase">
+          <div className="text-xs text-gray-400 uppercase min-w-0 break-words">
             Wybierz decyzję: jak zadziałał atak i jak się przed nim bronić
           </div>
         </div>
@@ -573,7 +573,7 @@ export const DebriefApp: React.FC = () => {
 
             <div>
               <div className="text-xs text-[#00f0ff] font-bold uppercase tracking-widest">
-                SCORM 2004 (4th EDITION) // MOODLE LMS
+                SCORM 2004 (4. WYDANIE) // MOODLE LMS
               </div>
               <h2 className="text-base font-black text-white tracking-wide mt-1">
                 WYNIK ZOSTAŁ PRZESŁANY DO DZIENNIKA OCEN
@@ -585,7 +585,7 @@ export const DebriefApp: React.FC = () => {
                 <span className="text-gray-400">STATUS ZALICZENIA:</span>
                 <span className={`font-black px-2 py-0.5 rounded text-xs ${isPassed ? 'bg-[#00ff66]/20 text-[#00ff66] border border-[#00ff66]/50' : 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/50'
                   }`}>
-                  {isPassed ? 'ZALICZONO (PASSED)' : 'NIEZALICZONO (FAILED)'}
+                  {isPassed ? 'ZALICZONO' : 'NIEZALICZONO'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -594,7 +594,15 @@ export const DebriefApp: React.FC = () => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">STATUS SESJI:</span>
-                <span className="text-blue-300 font-bold">TERMINATED & COMMITTED</span>
+                <span className="text-blue-300 font-bold" data-testid="exit-session-status">
+                  {!isScormSubmitted ? 'ZAPIS NIEUDANY' : 'SESJA ZAKOŃCZONA, WYNIK ZAPISANY'}
+                </span>
+              </div>
+              <div
+                data-testid="exit-best-score-note"
+                className="pt-2 border-t border-gray-800 text-[0.6875rem] font-bold uppercase text-gray-300"
+              >
+                W MOODLE ZOSTAJE TWÓJ NAJLEPSZY WYNIK.
               </div>
             </div>
 
