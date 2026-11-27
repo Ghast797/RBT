@@ -183,7 +183,13 @@
       {
         "num": 4,
         "question": "WYBIERZ PODPIS NA KOPERCIE",
-        "answer": "ZDJĘCIA Z AFTERPARTY O&L COMPANY!",
+        "answer": "NAZWA DYSKU: IMPREZA / PODPIS: ZDJĘCIA Z AFTERPARTY O&L COMPANY!",
+        "answerVariants": [
+          {
+            "when": { "decision": 3, "optionId": "vector_hr_docs" },
+            "answer": "NAZWA DYSKU: DOKUMENTY HR / PODPIS: WYPOWIEDZENIE UMOWY"
+          }
+        ],
         "correct": true,
         "details": "Precyzyjnie nawiązuje do właściwej nazwy koncernu i nieformalnego charakteru imprezy, wzbudzając maksymalne zaufanie i motywację do natychmiastowego otwarcia.",
         "attack": "Nazwa dysku i podpis na kopercie budują legendę nośnika i muszą pasować do tego, co ofiara znajdzie po otwarciu. Przy zdjęciach z imprezy pasuje nazwa „IMPREZA” i podpis „ZDJĘCIA Z AFTERPARTY O&L COMPANY!” z poprawną nazwą firmy, a przy dokumentach HR o zwolnieniach nazwa „DOKUMENTY HR” i podpis „WYPOWIEDZENIE UMOWY”. Błędna nazwa firmy (B&O zamiast O&L) wprowadza dysonans, a podpis niezgodny z zawartością (np. wypowiedzenie umowy na pendrive'ie ze zdjęciami albo zdjęcia na pendrive'ie z dokumentami HR) skłoniłby ofiarę do oddania koperty ochronie. Nazwa „KEYLOGGER” zdradziłaby nośnik od razu, bo ofiara albo dział IT natychmiast by go zgłosili.",

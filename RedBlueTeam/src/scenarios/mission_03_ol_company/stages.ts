@@ -777,14 +777,14 @@ export const mission3Stages: StageDefinition[] = [
           from: 'player',
           id: 'm3_reply_pendrive_1',
           label:
-            'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
+            'GOTOWE. ZDJĘCIA PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM PODBIJE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
           when: { decision: 3, optionId: 'vector_party_zip' }
         },
         {
           from: 'player',
           id: 'm3_reply_pendrive_1_hr',
           label:
-            'GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM POBICIE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
+            'GOTOWE. PENDRIVE Z DOKUMENTAMI HR PODRZUCĘ PRZY POMOCY DRONA I ZOSTAWIĘ PODPISANĄ KOPERTĘ NA SAMOCHODZIE OFIARY. ZMINIMALIZUJE TO RYZYKO WPADKI, A NAM PODBIJE TROCHĘ DRAMATURGIĘ CAŁEJ SYTUACJI',
           when: { decision: 3, optionId: 'vector_hr_docs' }
         },
         {
@@ -804,7 +804,7 @@ export const mission3Stages: StageDefinition[] = [
         {
           from: 'player',
           id: 'm3_reply_drone_ready',
-          label: "JUŻ SPRAWDZAM DRONA W APLIKACJI. MUSZĘ JESZCZE PODPIĄĆ DO NIEGO PENDRIVE'A"
+          label: "JUŻ SPRAWDZAM DRONA W APLIKACJI. MUSZĘ JESZCZE PODWIESIĆ DO NIEGO KOPERTĘ Z PENDRIVE'EM"
         }
       ],
       unlockIcons: ['drone_unlocked', 'drone_app'],
@@ -842,7 +842,22 @@ export const mission3Stages: StageDefinition[] = [
           label: "MATEUSZ ZWLEKAŁ Z PODŁĄCZENIEM PENDRIVE'A…",
           when: LATE_PENDRIVE_CHOICES
         },
-        { from: 'byte_master', text: 'CZEKALIŚMY ZA DŁUGO. NASTĘPNYM RAZEM PRZYGOTUJ SIĘ LEPIEJ.', when: LATE_PENDRIVE_CHOICES }
+        // Jedna kwestia mentora na przyczynę (D3 plan HR, D4 suboptymalny, D6 pusty asfalt); przy kilku przyczynach grają się wszystkie pasujące.
+        {
+          from: 'byte_master',
+          text: "MATEUSZ ODWLEKAŁ PODŁĄCZENIE – PEWNIE ZASTANAWIAŁ SIĘ, CZY NIE ODDAĆ PENDRIVE'A DO KADR.",
+          when: { decision: 3, optionId: 'vector_hr_docs' }
+        },
+        {
+          from: 'byte_master',
+          text: 'OPIS NA KOPERCIE GO NIE PRZEKONAŁ, DŁUGO SIĘ WAHAŁ.',
+          when: { decision: 4, tier: 'suboptimal' }
+        },
+        {
+          from: 'byte_master',
+          text: 'KOPERTA LEŻAŁA NA ASFALCIE, MATEUSZ ZNALAZŁ JĄ DOPIERO PO GODZINACH.',
+          when: { decision: 6, optionId: 'asphalt' }
+        }
       ],
       unlockIcons: ['rat_session_unlocked', 'rat_session'],
       badges: { rat_session: 1, chat: 1 },
@@ -867,7 +882,9 @@ export const mission3Stages: StageDefinition[] = [
           from: 'byte_master',
           text: 'WIDZĘ, ŻE SPODOBAŁY CI SIĘ ZAROBKI W DARKSUN. OBY TYLKO PIENIĄDZE NIE PRZYSŁONIŁY CI GŁÓWNEJ IDEI'
         },
-        { from: 'byte_master', text: 'JESTEŚMY W KONTAKCIE!' }
+        // Dokładnie jeden wariant: po opóźnieniu (przeskok 11:40) mentor zaczyna od „MIMO OPÓŹNIENIA SIĘ UDAŁO.”
+        { from: 'byte_master', text: 'JESTEŚMY W KONTAKCIE!', when: ON_TIME_CHOICES },
+        { from: 'byte_master', text: 'MIMO OPÓŹNIENIA SIĘ UDAŁO. JESTEŚMY W KONTAKCIE!', when: LATE_PENDRIVE_CHOICES }
       ],
       unlockIcons: ['mission_completed', 'debrief_app'],
       badges: { debrief_app: 1, chat: 1 },
