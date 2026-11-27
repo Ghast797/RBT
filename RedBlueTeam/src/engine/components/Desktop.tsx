@@ -20,6 +20,7 @@ import { SideMonitorProvider, SideMonitorSlot, useSideMonitorActive } from './Si
 import { sounds } from '../audio/soundEffects';
 import { TimeJump } from './TimeJump';
 import { isDevMode } from '../core/devMode';
+import { scormStatus, roundScore, displayScore, DEFAULT_PASSING_SCORE } from '../core/scoring';
 import { useIdleHint } from '../hooks/useIdleHint';
 
 /**
@@ -65,7 +66,9 @@ export const Desktop: React.FC = () => {
     retryFromChoices,
     timeJump,
     timeJumpCount,
-    endTimeJump
+    endTimeJump,
+    score,
+    btcReward
   } = useMissionStore();
 
   const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
@@ -392,6 +395,26 @@ export const Desktop: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Wynik i BTC na żywo: tylko gdy misja nie ustawia `hideLiveScore` (M1); na wąskich ekranach ukryte. */}
+          {!activeMission.mission.hideLiveScore && (
+            <div data-live-score="true" className="hidden sm:flex items-center space-x-2 text-[0.6875rem]">
+              <span className="flex items-center space-x-1 px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30">
+                <span className="text-[#00ff66]/60">WYNIK:</span>
+                <span
+                  className={`font-bold ${
+                    scormStatus(roundScore(score), activeMission.mission.passingScore ?? DEFAULT_PASSING_SCORE) === 'passed'
+                      ? 'text-[#00ff66]'
+                      : 'text-[#ff3366]'
+                  }`}
+                >
+                  {displayScore(score)}%
+                </span>
+              </span>
+              <span className="px-2 py-0.5 rounded bg-[#091119] border border-[#00ff66]/30 text-[#ffaa00]">
+                {btcReward.toFixed(2)} BTC
+              </span>
+            </div>
+          )}
           <button
             onClick={toggleMute}
             className="p-1 rounded hover:bg-[#00ff66]/20 text-[#00ff66] transition-colors"

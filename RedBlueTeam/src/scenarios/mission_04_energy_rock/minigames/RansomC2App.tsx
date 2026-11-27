@@ -35,6 +35,9 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
   const files = useShuffled(exfil.files);
   const decidedRef = useRef(false);
   const choices = useMissionStore((s) => s.decisionChoices);
+  const rejected = useMissionStore((s) => s.rejectedAttempts);
+  const score = useMissionStore((s) => s.score);
+  const passingScore = useMissionStore((s) => s.activeMission.mission.passingScore);
 
   const targets = encrypt.nodes.filter((n) => n.kind !== 'vector');
   const allEncrypted = targets.length > 0 && targets.every((n) => encrypted.has(n.id));
@@ -100,7 +103,7 @@ export const RansomC2App: React.FC<BlockProps<C2Config>> = ({ config, onDecision
       [start.hostLabel, start.host],
       [start.ipLabel, start.ip]
     ];
-    const { status, notes } = c2StartInfo(start, choices);
+    const { status, notes } = c2StartInfo(start, choices, { rejected, score, passingScore });
     return shell(
       <div className="flex-1 min-h-0 flex items-center justify-center">
         <div

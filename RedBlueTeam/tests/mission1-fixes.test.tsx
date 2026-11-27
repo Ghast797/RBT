@@ -30,7 +30,7 @@ const finalBeats = () => {
   return (stage.completion!.conversation as any[]).filter((b) => b.from === 'byte_master');
 };
 const playing = () =>
-  finalBeats().filter((b) => beatMatches(b.when, st().decisionChoices)).map((b) => b.text as string);
+  finalBeats().filter((b) => beatMatches(b.when, { choices: st().decisionChoices })).map((b) => b.text as string);
 
 describe('M1-05: finał zależny od jakości wyborów', () => {
   beforeEach(() => st().loadMission(getMission('mission-1-petrolog')!));

@@ -1,5 +1,5 @@
 import type { DecisionChoice } from '../../../engine/types/mission';
-import { matchesChoices } from '../../../engine/core/beatCondition';
+import { matchesChoices, type BeatContext } from '../../../engine/core/beatCondition';
 import type { BotnetMonitorConfig } from './types';
 
 /** Stan monitora po uwzględnieniu wcześniejszych wyborów gracza (konsekwencje z konfiguracji). */
@@ -13,9 +13,10 @@ export interface BotnetOutcome {
 /** Liczy konsekwencje z `config.consequences` względem zapisanych wyborów (`decisionChoices`). */
 export function resolveBotnetOutcome(
   config: Pick<BotnetMonitorConfig, 'targetPercentage' | 'consequences'>,
-  choices: Record<number, DecisionChoice>
+  choices: Record<number, DecisionChoice>,
+  extra: Omit<BeatContext, 'choices'> = {}
 ): BotnetOutcome {
-  const matching = (config.consequences ?? []).filter((c) => matchesChoices(c.when, choices));
+  const matching = (config.consequences ?? []).filter((c) => matchesChoices(c.when, { choices, ...extra }));
   const delta = matching.reduce((sum, c) => sum + (c.penetrationDelta ?? 0), 0);
   return {
     targetPercentage: Math.min(100, Math.max(0, config.targetPercentage + delta)),
