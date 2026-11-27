@@ -140,10 +140,11 @@ export interface ScoreCondition {
 export type LeafCondition = DecisionCondition | ScoreCondition;
 
 /**
- * Warunek `when` beatu rozmowy: pojedynczy warunek decyzji albo złożony
+ * Warunek `when` beatu rozmowy: pojedynczy warunek (liść) albo złożony
  * `{ allOf: [...] }` (wszystkie pasują) / `{ anyOf: [...] }` (którykolwiek pasuje).
+ * Elementy grup to dowolne warunki, także kolejne grupy (zagnieżdżanie bez limitu).
  */
-export type BeatCondition = LeafCondition | { allOf: LeafCondition[] } | { anyOf: LeafCondition[] };
+export type BeatCondition = LeafCondition | { allOf: BeatCondition[] } | { anyOf: BeatCondition[] };
 
 export interface PlayerChoiceRecord {
   num: number;

@@ -80,6 +80,7 @@ const report = (num: number, optionId: string, tier: DecisionChoice['tier']): De
 
 const CLOSING_IDEAL = 'NIEŹLE CI POSZŁO';
 const CLOSING_WEAKER = 'MOGŁO PÓJŚĆ LEPIEJ';
+const CLOSING_BELOW = 'SPALIŁEŚ ZA DUŻO RUCHÓW';
 
 describe('M2 zamknięcie rozmowy przy monitorze: dokładnie jedna kwestia', () => {
   beforeEach(() => {
@@ -95,7 +96,7 @@ describe('M2 zamknięcie rozmowy przy monitorze: dokładnie jedna kwestia', () =
   const closingTexts = () =>
     st()
       .chatMessages.map((m) => `${m.sender}:${m.text}`)
-      .filter((t) => t.includes(CLOSING_IDEAL) || t.includes(CLOSING_WEAKER));
+      .filter((t) => t.includes(CLOSING_IDEAL) || t.includes(CLOSING_WEAKER) || t.includes(CLOSING_BELOW));
 
   const runClosing = (reports: DecisionReport[]) => {
     reports.forEach((r) => st().reportDecision(r));
@@ -139,6 +140,98 @@ describe('M2 zamknięcie rozmowy przy monitorze: dokładnie jedna kwestia', () =
   });
 });
 
+describe('M2 zamknięcie: trzy warianty, dokładnie jedna kwestia (a/b/c)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    __setBridgeDelayForTests(100);
+    st().loadMission(mission2Definition as MissionDefinition);
+  });
+  afterEach(() => {
+    __setBridgeDelayForTests(2000);
+    vi.useRealTimers();
+  });
+
+  const closingTexts = () =>
+    st()
+      .chatMessages.map((m) => `${m.sender}:${m.text}`)
+      .filter((t) => t.includes(CLOSING_IDEAL) || t.includes(CLOSING_WEAKER) || t.includes(CLOSING_BELOW));
+
+  const runClosing = (reports: DecisionReport[]) => {
+    reports.forEach((r) => st().reportDecision(r));
+    useMissionStore.setState({ chatMessages: [] });
+    st().completeStage('botnet_monitor');
+    vi.runAllTimers();
+    return closingTexts();
+  };
+
+  it('(a) wszystkie ideały, bez odrzuceń: dokładnie wariant idealny', () => {
+    const texts = runClosing([
+      report(1, 'poodle_forms', 'ideal'),
+      report(2, 'mandatory_integration', 'ideal'),
+      report(3, 'worm', 'ideal'),
+      report(4, 'typosquatting_kadry', 'ideal')
+    ]);
+    expect(texts).toHaveLength(1);
+    expect(texts[0]).toContain(CLOSING_IDEAL);
+  });
+
+  it('(b) ideał z jednym odrzuceniem (KEYLOGGER na D3, potem robak): wariant słabszy', () => {
+    useMissionStore.setState({
+      rejectedAttempts: { 3: [{ optionId: 'keylogger', answer: 'KEYLOGGER', feedback: 'fb' }] }
+    });
+    const texts = runClosing([
+      report(1, 'poodle_forms', 'ideal'),
+      report(2, 'mandatory_integration', 'ideal'),
+      report(3, 'worm', 'ideal'),
+      report(4, 'typosquatting_kadry', 'ideal')
+    ]);
+    expect(texts).toHaveLength(1);
+    expect(texts[0]).toContain(CLOSING_WEAKER);
+  });
+
+  it('(b) jeden suboptymalny wybór (quickgram): wariant słabszy', () => {
+    const texts = runClosing([
+      report(1, 'quickgram', 'suboptimal'),
+      report(2, 'mandatory_integration', 'ideal'),
+      report(3, 'worm', 'ideal'),
+      report(4, 'typosquatting_kadry', 'ideal')
+    ]);
+    expect(texts).toHaveLength(1);
+    expect(texts[0]).toContain(CLOSING_WEAKER);
+  });
+
+  it('(c) trzy suboptymalne wybory, poniżej progu: wariant „SPALIŁEŚ ZA DUŻO RUCHÓW”', () => {
+    const texts = runClosing([
+      report(1, 'quickgram', 'suboptimal'),
+      report(2, 'fire_drill', 'suboptimal'),
+      report(3, 'worm', 'ideal'),
+      report(4, 'marketing_carbon', 'suboptimal')
+    ]);
+    expect(texts).toHaveLength(1);
+    expect(texts[0]).toContain(CLOSING_BELOW);
+  });
+});
+
+describe('M2 monitor botnetu: wyjaśnienie spadku penetracji', () => {
+  it('quickgram: notka o szablonie społecznościowym', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[1].choices).notes).toEqual([
+      'CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA: SZABLON SPOŁECZNOŚCIOWY W SŁUŻBOWEJ SKRZYNCE BUDZIŁ PODEJRZENIA'
+    ]);
+  });
+  it('fire drill: notka o odłożonej ankiecie', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[2].choices).notes).toEqual([
+      'CZĘŚĆ PRACOWNIKÓW ODŁOŻYŁA WYPEŁNIENIE ANKIETY NA PÓŹNIEJ'
+    ]);
+  });
+  it('ideał i sam alarm IDS: bez notek', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, IDEAL).notes).toEqual([]);
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[4].choices).notes).toEqual([]);
+  });
+  it('quickgram i fire drill: obie notki', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[3].choices).notes).toHaveLength(2);
+  });
+});
+
 describe('M2 monitor botnetu: wyświetlanie', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -164,4 +257,16 @@ describe('M2 monitor botnetu: wyświetlanie', () => {
       expect(screen.getByText('ŁADUNEK 0-DAY NIEWYKRYTY')).toBeTruthy();
     });
   }
+
+  it('quickgram: notka widoczna pod wartością penetracji', () => {
+    useMissionStore.setState({ decisionChoices: SCENARIOS[1].choices });
+    render(<BotnetMonitorApp config={botnetMonitorConfig} onComplete={() => {}} onDecision={() => {}} />);
+    fireEvent.click(screen.getByText('PODGLĄD'));
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(
+      screen.getByText('CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA: SZABLON SPOŁECZNOŚCIOWY W SŁUŻBOWEJ SKRZYNCE BUDZIŁ PODEJRZENIA')
+    ).toBeTruthy();
+  });
 });

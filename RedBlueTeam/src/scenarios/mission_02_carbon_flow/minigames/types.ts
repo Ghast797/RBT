@@ -77,6 +77,8 @@ export interface BotnetConsequence {
   alarms?: number;
   /** Tekst pokazany pod licznikiem alarmów (np. „FILTR POCZTY OZNACZYŁ NADAWCĘ JAKO PODEJRZANEGO”). */
   alarmText?: string;
+  /** Wyjaśnienie spadku penetracji pod licznikiem (np. „CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA…”); pokazywane tylko, gdy konsekwencja pasuje. */
+  note?: string;
 }
 
 export interface BotnetMonitorConfig {

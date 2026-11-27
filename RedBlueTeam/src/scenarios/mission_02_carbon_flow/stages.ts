@@ -205,9 +205,9 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
         id: 'catering_oilflow',
         label: 'KATERING@OILFLOW.COM',
         tier: 'suboptimal',
-        feedback: 'Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.',
+        feedback: 'Zupełnie obca domena zewnętrznej firmy kateringowej zostanie zablokowana lub zignorowana.',
         reject: {
-          mentorLine: 'OBCA FIRMA CATERINGOWA W POLU NADAWCY? FILTR TO ZABLOKUJE ALBO PRACOWNICY ZIGNORUJĄ. WYBIERZ INACZEJ.'
+          mentorLine: 'OBCA FIRMA KATERINGOWA W POLU NADAWCY? FILTR TO ZABLOKUJE ALBO PRACOWNICY ZIGNORUJĄ. WYBIERZ INACZEJ.'
         }
       }
     ]
@@ -242,7 +242,7 @@ export const phishingDispatchConfig: PhishingDispatchConfig = {
   signoffs: {
     typosquatting_kadry: 'Dział Kadr i Płac CarbonFlow Inc.',
     marketing_carbon: 'Dział Marketingu CarbonFlow Inc.',
-    catering_oilflow: 'Obsługa Gastronomiczna OilFlow Catering'
+    catering_oilflow: 'Obsługa Gastronomiczna OilFlow Katering'
   }
 };
 
@@ -254,9 +254,17 @@ export const botnetMonitorConfig: BotnetMonitorConfig = {
   // Konsekwencje słabszych wyborów (bez zmiany punktów): mniej stacji zainfekowanych albo alarm IDS.
   consequences: [
     // D1: szablon Quickgram — część pracowników nie kliknie w formularz.
-    { when: { decision: 1, optionId: 'quickgram' }, penetrationDelta: -12 },
+    {
+      when: { decision: 1, optionId: 'quickgram' },
+      penetrationDelta: -12,
+      note: 'CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA: SZABLON SPOŁECZNOŚCIOWY W SŁUŻBOWEJ SKRZYNCE BUDZIŁ PODEJRZENIA'
+    },
     // D2: temat ćwiczeń przeciwpożarowych — część pracowników odłoży wypełnienie na później.
-    { when: { decision: 2, optionId: 'fire_drill' }, penetrationDelta: -10 },
+    {
+      when: { decision: 2, optionId: 'fire_drill' },
+      penetrationDelta: -10,
+      note: 'CZĘŚĆ PRACOWNIKÓW ODŁOŻYŁA WYPEŁNIENIE ANKIETY NA PÓŹNIEJ'
+    },
     // D4: nadawca MARKETING@CARBON.COM — filtr poczty oznacza nadawcę, ładunek nadal niewykryty.
     {
       when: { decision: 4, optionId: 'marketing_carbon' },
@@ -373,29 +381,45 @@ export const mission2Stages: StageDefinition[] = [
     decisions: [],
     completion: {
       conversation: [
-        // Ideał na D1, D2 i D4 (mostek pomija wariant poniżej).
+        // (a) Wszystkie D1–D4 ideałem i bez odrzuceń (D3 też), wynik nie jest poniżej progu.
         {
           from: 'byte_master',
           text: 'NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ',
           when: {
             allOf: [
-              { decision: 1, tier: 'ideal' },
-              { decision: 2, tier: 'ideal' },
-              { decision: 4, tier: 'ideal' }
+              { decision: 1, tier: 'ideal', rejected: false },
+              { decision: 2, tier: 'ideal', rejected: false },
+              { decision: 3, tier: 'ideal', rejected: false },
+              { decision: 4, tier: 'ideal', rejected: false }
             ]
           }
         },
-        // Którakolwiek z D1, D2, D4 suboptymalna (mostek pomija wariant powyżej).
+        // (b) Nie (a) i wynik nie jest poniżej progu: któraś decyzja suboptymalna albo odrzucona, ale zaliczone.
         {
           from: 'byte_master',
           text: 'MOGŁO PÓJŚĆ LEPIEJ, ALE CARBONFLOW I TAK MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ',
           when: {
-            anyOf: [
-              { decision: 1, tier: 'suboptimal' },
-              { decision: 2, tier: 'suboptimal' },
-              { decision: 4, tier: 'suboptimal' }
+            allOf: [
+              {
+                anyOf: [
+                  { decision: 1, tier: 'suboptimal' },
+                  { decision: 2, tier: 'suboptimal' },
+                  { decision: 4, tier: 'suboptimal' },
+                  { decision: 1, rejected: true },
+                  { decision: 2, rejected: true },
+                  { decision: 3, rejected: true },
+                  { decision: 4, rejected: true }
+                ]
+              },
+              { belowPassing: false }
             ]
           }
+        },
+        // (c) Wynik poniżej progu zaliczenia (niezależnie od tego, które wybory to spowodowały).
+        {
+          from: 'byte_master',
+          text: 'SPALIŁEŚ ZA DUŻO RUCHÓW. CARBONFLOW JESZCZE COŚ NAM DA, ALE NASTĘPNYM RAZEM MYŚL, ZANIM KLIKNIESZ. PRZEJRZYJ RAPORT.',
+          when: { belowPassing: true }
         },
         {
           from: 'player',

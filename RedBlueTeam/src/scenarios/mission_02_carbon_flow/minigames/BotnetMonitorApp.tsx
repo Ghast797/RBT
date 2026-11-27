@@ -117,6 +117,9 @@ export const BotnetMonitorApp: React.FC<BlockProps<BotnetMonitorConfig>> = ({
                   style={{ width: `${percentage}%` }}
                 />
               </div>
+              {outcome.notes.map((note) => (
+                <span key={note} className="block text-xs text-gray-400">{note}</span>
+              ))}
             </div>
 
             <div className="p-3.5 rounded-xl border border-gray-800 bg-[#08101a] space-y-1">

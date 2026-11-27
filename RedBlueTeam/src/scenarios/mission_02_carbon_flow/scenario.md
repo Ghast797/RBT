@@ -91,8 +91,8 @@ Oceniane: D4 | Flavor (nieoceniane): podgląd i wysyłka
 Decyzja D4: "WYBIERZ ADRES, Z KTÓREGO WYŚLESZ MAILA:"
 - KADRY@CARDONFLOW.COM | ideal | Typosquatting (podmiana 'b' na 'd' w nazwie domeny) połączony z wiarygodnym działem kadr.
 - MARKETING@CARBON.COM | suboptimal | Adres zadziała, ale marketing rzadko pisze w sprawach kadrowych, więc wiadomość wzbudzi więcej podejrzeń niż od kadr.
-- KATERING@OILFLOW.COM | suboptimal, odrzucany przez mentora (B2) | Zupełnie obca domena zewnętrznej firmy cateringowej zostanie zablokowana lub zignorowana.
-  - mentor: OBCA FIRMA CATERINGOWA W POLU NADAWCY? FILTR TO ZABLOKUJE ALBO PRACOWNICY ZIGNORUJĄ. WYBIERZ INACZEJ.
+- KATERING@OILFLOW.COM | suboptimal, odrzucany przez mentora (B2) | Zupełnie obca domena zewnętrznej firmy kateringowej zostanie zablokowana lub zignorowana.
+  - mentor: OBCA FIRMA KATERINGOWA W POLU NADAWCY? FILTR TO ZABLOKUJE ALBO PRACOWNICY ZIGNORUJĄ. WYBIERZ INACZEJ.
 
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: "GOTOWE. TERAZ MUSIMY POCZEKAĆ, AŻ RYBKA CHWYCI HACZYK"
@@ -103,10 +103,13 @@ Mostek (rozmowa do kolejnego etapu):
 Klocek: NOWA MINIGRA (`BotnetMonitorApp`, wizualizacja)
 Cel dydaktyczny: zobaczenie skutku ataku: rozprzestrzenianie się robaka po stacjach i powstanie botnetu.
 Ekrany: alert „MALWARE ZOSTAŁ AKTYWOWANY” z komunikatem „ROBAK – MALWARE ZOSTAŁ AKTYWOWANY. KOMPUTERY ZOMBIE SĄ TWORZONE” i przyciskiem „PODGLĄD” (VR S06, pkt 1–2) → telemetria (licznik infekcji do 82%) → topologia sieci. Liczby (82%, 12 stacji, 10 zainfekowanych / 2 zabezpieczone) i węzły wylicza kod z `botnetMonitorConfig` (`targetPercentage`, `totalWorkstations`)
-Oceniane: Flavor (bez oceny; wskaźniki niezależne od wyborów gracza, mechanizm konsekwencji planowany później)
+Oceniane: Flavor (bez oceny punktów; wskaźniki zależą od wcześniejszych wyborów: słabszy szablon D1 i temat D2 obniżają penetrację, MARKETING@CARBON.COM dodaje alarm IDS). Pod każdym obniżeniem pokazuje się wyjaśnienie (`note`): Quickgram – „CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA: SZABLON SPOŁECZNOŚCIOWY W SŁUŻBOWEJ SKRZYNCE BUDZIŁ PODEJRZENIA”; ćwiczenia – „CZĘŚĆ PRACOWNIKÓW ODŁOŻYŁA WYPEŁNIENIE ANKIETY NA PÓŹNIEJ”.
 
-Mostek (rozmowa końcowa):
-- BM: "NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ"
+Mostek (rozmowa końcowa, dokładnie jedna kwestia BM wg wyniku):
+- BM (a: wszystkie D1–D4 ideałem, bez odrzuceń, w tym D3): "NIEŹLE CI POSZŁO. JESTEŚ CORAZ BLIŻEJ PRZYJĘCIA DO DARKSUN. CARBONFLOW MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ"
+- BM (b: nie (a) i wynik na progu lub wyżej; któraś z D1, D2, D4 suboptymalna albo któraś decyzja miała odrzucenie): "MOGŁO PÓJŚĆ LEPIEJ, ALE CARBONFLOW I TAK MA CO ODKRĘCAĆ, A MY MOŻEMY SPOKOJNIE DZIAŁAĆ DALEJ. ODEZWĘ SIĘ WKRÓTCE. BĄDŹ GOTOWY NA MOC WRAŻEŃ"
+- BM (c: wynik poniżej progu zaliczenia, np. trzy suboptymalne wybory): "SPALIŁEŚ ZA DUŻO RUCHÓW. CARBONFLOW JESZCZE COŚ NAM DA, ALE NASTĘPNYM RAZEM MYŚL, ZANIM KLIKNIESZ. PRZEJRZYJ RAPORT."
+- Warunki w `stages.ts` (`when`): (a) `allOf` czterech `{ decision, tier: 'ideal', rejected: false }`; (b) `allOf[ anyOf[ suboptimal D1/D2/D4, rejected: true D1–D4 ], { belowPassing: false } ]`; (c) `{ belowPassing: true }`.
 - GRACZ: "DO USŁUG"
 - odblokuj: //PODSUMOWANIE
 
@@ -149,6 +152,6 @@ D4:
 - [DO DECYZJI] Mostek S05 -> S06: VR nie opisuje upływu czasu, tylko kwestię gracza o czekaniu („…AŻ RYBKA CHWYCI HACZYK”). Czekanie pokazano przeskokiem czasu (`time_jump`, wirująca tarcza z cyfrową godziną 09:40 → 14:25, jak w M3) po tej kwestii; kafelek //MONITOR_BOTNETU odblokowuje się i podświetla 3 s po jego końcu. Sam przeskok to dodatek kodu.
 - [DO DECYZJI] S05: wysyłka i potwierdzenie mają wizualizację (pasek postępu, licznik dostarczonych, skrzynki, słupki) — dodatek kodu; liczby z `recipientsCount`/`targetDomain`.
 - [DO DECYZJI] S05: ekran potwierdzenia po „WYŚLIJ” (podsumowanie wysyłki, „POWRÓT DO PULPITU”) to dodatek kodu; VR kończy się na kliknięciu „WYŚLIJ”.
-- [DO DECYZJI] S04, D4: VR podaje opcje jako „NAZWA – opis”. W webie to karty w siatce: duża nazwa na środku i neutralna definicja pod spodem (pole `desc`: robak – samoreplikujący się program rozprzestrzeniający się po sieci; keylogger – program rejestrujący naciśnięcia klawiszy; ransomware – program szyfrujący dane w celu okupu). Opisy z VR („tworzy komputery zombie”, „pokaże wszystko…”) zastąpiono neutralnymi, bo wskazywały odpowiedź; etykieta w raporcie to sama nazwa typu.
+- [DO DECYZJI] S04, D3 (wybór wirusa, nie D4): VR podaje opcje jako „NAZWA – opis”. W webie to karty w siatce: duża nazwa na środku i neutralna definicja pod spodem (pole `desc`: robak – samoreplikujący się program rozprzestrzeniający się po sieci; keylogger – program rejestrujący naciśnięcia klawiszy; ransomware – program szyfrujący dane w celu okupu). Opisy z VR („tworzy komputery zombie”, „pokaże wszystko…”) zastąpiono neutralnymi, bo wskazywały odpowiedź; etykieta w raporcie to sama nazwa typu.
 - [ZMIANA WZGLĘDEM VR] Mentor mówi „BIAŁA LISTA NADAWCÓW” (nie „CZARNA LISTA ANTYSPAMOWA” jak w nagraniu VR, mostek po //PHISHING). Filtr w //TUNEL_VPN działa na białej liście adresów, więc gracz wybiera adres z tej listy; zapis VR byłby sprzeczny z zadaniem. Decyzja właściciela M2-11.
 - [ZMIANA WZGLĘDEM VR] Intro: w ostatniej kwestii BM dopisano podpowiedź „W FIRMOWEJ SKRZYNCE NAJLEPIEJ SPRAWDZI SIĘ COŚ, CO WYGLĄDA NA SŁUŻBOWE”, żeby gracz miał powód wybrać ankietę zamiast Quickgrama w D1 (decyzja właściciela M2-09). Dopisana do tej samej kwestii, bo BootSequence wymaga odpowiedzi gracza po każdej kwestii poza ostatnią, więc osobna kwestia BM przed „DO ROBOTY” wymagałaby sztucznej odpowiedzi.
