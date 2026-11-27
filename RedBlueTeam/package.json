@@ -10,6 +10,7 @@
     "build:scorm:m2": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=2",
     "build:scorm:m3": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=3",
     "build:scorm:m4": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=4",
+    "build:scorm:m5": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --mission=5",
     "build:scorm:all": "node node_modules/typescript/bin/tsc && node scripts/package-scorm.js --all",
     "test": "node node_modules/vitest/vitest.mjs run",
     "preview": "node node_modules/vite/bin/vite.js preview"

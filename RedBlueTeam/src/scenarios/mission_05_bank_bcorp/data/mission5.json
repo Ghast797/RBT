@@ -1,0 +1,272 @@
+{
+  "mission": {
+    "id": "mission-5-bank-bcorp",
+    "title": "MISJA 5 – BANK BCORP",
+    "subTitle": "Vishing, podstawiona strona logowania i atak AiTM (przechwycenie 2FA)",
+    "systemOs": "//HACKERS.OS",
+    "date": "19.05.2026",
+    "accentColor": "#00ff66",
+    "idleHints": { "t1Ms": 30000, "t2Ms": 90000 },
+    "rewardBtc": 3.14,
+    "maxScore": 100,
+    "hideLiveScore": true,
+    "passingScore": 70,
+    "decisionCount": 10,
+    "targetCompany": "Bank Bcorp",
+    "description": "Scenariusz szkoleniowy SCORM symulujący rekonesans OSINT, spoofing numeru, klonowanie strony logowania, vishing oraz atak Adversary-in-the-Middle (AiTM) na Bank Bcorp w celu podniesienia świadomości zagrożeń i procedur obronnych."
+  },
+  "intro": {
+    "callerName": "BYTE_MASTER",
+    "callStatus": "POŁĄCZENIE PRZYCHODZĄCE",
+    "dialogue": [
+      {
+        "id": "node_1",
+        "sender": "BYTE_MASTER",
+        "text": "MAM DLA CIEBIE KOLEJNE ZADANIE",
+        "playerResponse": "O CZYM MOWA TYM RAZEM?"
+      },
+      {
+        "id": "node_2",
+        "sender": "BYTE_MASTER",
+        "text": "BĘDZIE AMBITNIE, SPODOBA CI SIĘ, A PRZY OKAZJI UTRZEMY NOSA KILKU PALIWOWYM MAGNATOM",
+        "playerResponse": "CO MASZ NA MYŚLI?"
+      },
+      {
+        "id": "node_3",
+        "sender": "BYTE_MASTER",
+        "text": "DOSZŁY MNIE SŁUCHY, ŻE WŁAŚNIE STARTUJE OGROMNA INWESTYCJA - BUDOWA RAFINERII W POBLIŻU DOLINY BARYCZY. TO BARDZO WAŻNY EKOLOGICZNIE TEREN\nMUSIMY ZDOBYĆ INFORMACJE, SKĄD MAJĄ NA TO PIENIĄDZE",
+        "playerResponse": "WIESZ, GDZIE MOGĘ JE ZNALEŹĆ?"
+      },
+      {
+        "id": "node_4",
+        "sender": "BYTE_MASTER",
+        "text": "WSZYSTKIE RAPORTY FINANSOWE ZNAJDUJĄ SIĘ W BANKU BCORP. DOWIEDZIAŁEM SIĘ, ŻE JEDEN Z MENEDŻERÓW WYSYŁAŁ JE OSTATNIO MAILEM, WIĘC MOGĄ BYĆ NA SERWERACH POCZTOWYCH FIRMY",
+        "playerResponse": "OK, PRZYGOTUJĘ FAŁSZYWĄ WITRYNĘ NA PODOBNEJ DOMENIE I UTWORZĘ STRONĘ LOGOWANIA. PROBLEM POLEGA NA TYM, ŻE NIE JESTEM W STANIE PRZEWIDZIEĆ CZY I KIEDY NASZA OFIARA SIĘ ZALOGUJE. POTRZEBUJESZ TYCH DANYCH NA JUŻ?"
+      },
+      {
+        "id": "node_5",
+        "sender": "BYTE_MASTER",
+        "text": "TAK, DOŚĆ MOCNO GONI NAS CZAS. ZADZWOŃ DO NIEGO, PODSZYJ SIĘ POD PRACOWNIKA DZIAŁU IT I SPRÓBUJ GO NAKŁONIĆ DO ZALOGOWANIA SIĘ NA NASZ SERWER",
+        "playerResponse": "JAK TO SOBIE WYOBRAŻASZ?"
+      },
+      {
+        "id": "node_6",
+        "sender": "BYTE_MASTER",
+        "text": "ZA MOMENT UDOSTĘPNIĘ CI INFORMACJE, KTÓRE UDAŁO NAM SIĘ UZYSKAĆ Z BIAŁEGO WYWIADU. ZDZIWISZ SIĘ, JAKIE DANE MOŻNA ZDOBYĆ W SIECI. I TO CAŁKIEM LEGALNIE",
+        "playerResponse": "OK, MA TO SENS. W TAKIM RAZIE POPROSZĘ MENEDŻERA BANKU O ZALOGOWANIE SIĘ DO SYSTEMU ARCHIWIZACJI POCZTY, KTÓRY OBECNIE TESTUJĘ. W TEN SPOSÓB PRZEJMIEMY JEGO LOGIN I HASŁO, I DOSTANIEMY SIĘ DO FIRMOWEJ SKRZYNKI. DALEJ POWINNO JUŻ PÓJŚĆ GŁADKO"
+      },
+      {
+        "id": "node_7",
+        "sender": "BYTE_MASTER",
+        "text": "SPRAWDŹMY TO"
+      }
+    ],
+    "biosLines": [
+      "HACKERSBIOS 2.0 RELEASE 6.1",
+      "COPYRIGHT 1985-2022 HACKERS COLLECTIVE TECHNOLOGIES",
+      "ALL RIGHTS RESERVED",
+      "BIOS VERSION 2.0 R 6.1",
+      "GATEWAY AS54",
+      "SYSTEM ID # 00528156",
+      "BUILD TIME: 03/09/2022 19:26:54",
+      "CPU - UNKNOWN",
+      "1061 KB SYSTEM RAM PASSED",
+      "512M EXTENDED RAM PASSED",
+      "512K CACHE SRAM PASSED",
+      "SYSTEM BIOS SHADOWED",
+      "VIDEO BIOS SHADOWED",
+      "SEGMENT ADDRESS: E447",
+      "",
+      "WELCOME... HACKER"
+    ],
+    "firstUnlock": {
+      "unlockIcons": [
+        "intel_pdf_unlocked"
+      ],
+      "badges": {
+        "intel_pdf": 1
+      },
+      "highlightTile": "intel_pdf"
+    },
+    "startBadges": {
+      "chat": 1
+    }
+  },
+  "desktopApps": [
+    {
+      "id": "chat_shortcut",
+      "label": "//CHAT: BYTE_MASTER",
+      "color": "#00ff66",
+      "icon": "MessageSquareCode",
+      "componentId": "chat",
+      "isChatFocus": true
+    },
+    {
+      "id": "intel_pdf",
+      "label": "//FILIP_WOJCIK_BIALY_WYWIAD.PDF",
+      "color": "#38bdf8",
+      "icon": "FileText",
+      "componentId": "bc_intel_pdf",
+      "unlockedOnly": true,
+      "requiredUnlockId": "intel_pdf_unlocked"
+    },
+    {
+      "id": "vpn_app",
+      "label": "//VPN",
+      "color": "#22d3ee",
+      "icon": "Wifi",
+      "componentId": "vpn_router",
+      "unlockedOnly": true,
+      "requiredUnlockId": "vpn_unlocked"
+    },
+    {
+      "id": "domain_prep",
+      "label": "//PRZYGOTOWANIE_DOMENY",
+      "color": "#a855f7",
+      "icon": "Globe",
+      "componentId": "choice_cards",
+      "unlockedOnly": true,
+      "requiredUnlockId": "domain_prep_unlocked"
+    },
+    {
+      "id": "page_cloner",
+      "label": "//PRZYGOTOWANIE_STRONY",
+      "color": "#ec4899",
+      "icon": "Monitor",
+      "componentId": "bc_page_cloner",
+      "unlockedOnly": true,
+      "requiredUnlockId": "page_cloner_unlocked"
+    },
+    {
+      "id": "number_prep",
+      "label": "//PRZYGOTOWANIE_NUMERU",
+      "color": "#f59e0b",
+      "icon": "Radio",
+      "componentId": "choice_cards",
+      "unlockedOnly": true,
+      "requiredUnlockId": "number_prep_unlocked"
+    },
+    {
+      "id": "vishing_call",
+      "label": "//ROZMOWA",
+      "color": "#00ff66",
+      "icon": "Phone",
+      "componentId": "bc_vishing_call",
+      "unlockedOnly": true,
+      "requiredUnlockId": "vishing_call_unlocked"
+    },
+    {
+      "id": "debrief_app",
+      "label": "//RAPORT POOPERACYJNY",
+      "color": "#facc15",
+      "icon": "Award",
+      "componentId": "debrief_app",
+      "unlockedOnly": true,
+      "requiredUnlockId": "mission_completed"
+    }
+  ],
+  "step6": {
+    "summary": {
+      "title": "ZHAKOWANO BANK BCORP",
+      "subtitle": "UKOŃCZONO ZADANIE 5",
+      "company": "Bank Bcorp",
+      "scorePercent": 100,
+      "perfectChoices": 10,
+      "goodChoices": 0,
+      "criticalErrors": 0,
+      "btcReward": 3.14
+    },
+    "choices": [
+      {
+        "num": 1,
+        "question": "WYBIERZ DOMENĘ, KTÓRĄ WYKUPISZ DLA PODSTAWIONEJ STRONY SYSTEMU ARCHIWIZACJI:",
+        "answer": "ARCHIWUMBCORP.BIZ",
+        "correct": true,
+        "details": "Domena zawiera nazwę firmy, końcówkę .biz identyczną z oryginalną pocztą oraz słowo „archiwum” pasujące do pretekstu testów.",
+        "attack": "Combosquatting — rejestracja domeny archiwumbcorp.biz łączy nazwę firmy, identyczną końcówkę .biz i wiarygodne słowo „archiwum”. Na pierwszy rzut oka adres wygląda jak oficjalna podstrona banku.",
+        "defense": "Zawsze sprawdzaj pełny adres w pasku przeglądarki przed wpisaniem hasła — nawet jedno dodatkowe słowo przed nazwą firmy oznacza zupełnie inną domenę. W razie wątpliwości wejdź na pocztę z własnej zakładki i zgłoś podejrzany link do IT."
+      },
+      {
+        "num": 2,
+        "question": "WYBIERZ NUMER TELEFONU, POD KTÓRY SIĘ PODSZYJESZ:",
+        "answer": "891 002 162",
+        "correct": true,
+        "details": "Numer zgadza się z firmowym szablonem (891) i prefiksem działu IT (002), uwiarygadniając połączenie od pracownika IT.",
+        "attack": "Caller ID spoofing pozwala wyświetlić na telefonie ofiary dowolny numer, w tym firmowy numer działu IT (891 002 162). Ofiara rozpoznaje znajomy prefiks i odruchowo obniża czujność.",
+        "defense": "Numer wyświetlany na ekranie telefonu nie jest dowodem tożsamości rozmówcy. Jeśli ktoś prosi o logowanie lub poufne dane, rozłącz się i oddzwoń na oficjalny numer działu IT albo zweryfikuj prośbę innym kanałem."
+      },
+      {
+        "num": 3,
+        "question": "DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?",
+        "answer": "DZIEŃ DOBRY PANIE FILIPIE.",
+        "correct": true,
+        "details": "Uprzejme, formalne powitanie z użyciem właściwego imienia buduje profesjonalne pierwsze wrażenie.",
+        "attack": "Uprzejmy, formalny ton i poprawne imię rozmówcy budują od pierwszych sekund wrażenie zwykłego, służbowego połączenia wewnątrz firmy.",
+        "defense": "Profesjonalny ton i znajomość Twojego imienia czy stanowiska nie potwierdzają tożsamości — takie dane łatwo znaleźć w sieci. Zawsze weryfikuj prośbę, nie sam sposób mówienia rozmówcy."
+      },
+      {
+        "num": 4,
+        "question": "PRZEDSTAW SIĘ ROZMÓWCY:",
+        "answer": "TU MICHAŁ, MICHAŁ MITNIK",
+        "correct": true,
+        "details": "Poprawne imię i nazwisko nowego pracownika IT zgadzają się z białym wywiadem i wytrzymują ewentualną weryfikację.",
+        "attack": "Podszycie się pod prawdziwego, niedawno zatrudnionego pracownika (Michała Mitnika z OSINT) tłumaczy, dlaczego ofiara nie rozpoznaje głosu ani nazwiska rozmówcy.",
+        "defense": "Oszust może wykorzystać nazwisko prawdziwego pracownika z LinkedIn lub strony firmy. Jeśli nie znasz rozmówcy, sprawdź go w firmowej książce adresowej i oddzwoń bezpośrednio lub potwierdź prośbę przez firmowy komunikator."
+      },
+      {
+        "num": 5,
+        "question": "O CO CHODZI?",
+        "answer": "PRACUJĘ W DZIALE IT",
+        "correct": true,
+        "details": "Dział IT zgadza się z wybranym numerem telefonu (002), białym wywiadem i pretekstem testów systemu archiwizacji poczty.",
+        "attack": "Powołanie się na dział IT spójny z numerem telefonu i pretekstem „testów systemu” nadaje prośbie pozory rutynowej procedury technicznej.",
+        "defense": "Dział IT nie przeprowadza znienacka telefonicznych testów wymagających wpisywania firmowego hasła na nieznanej stronie. Nietypowe prace techniczne są wcześniej zapowiadane oficjalnymi kanałami firmy."
+      },
+      {
+        "num": 6,
+        "question": "ZA CHWILĘ MAM SPOTKANIE. MOŻE PÓŹNIEJ?",
+        "answer": "PRZEPRASZAM, ALE TO PILNE. MUSIMY SKOŃCZYĆ TO DZISIAJ MAKSYMALNIE DO KOŃCA DNIA",
+        "correct": true,
+        "details": "Uprzejma presja czasu („pilne, do końca dnia”) skłania ofiarę do szybkiego działania bez dokładnego sprawdzania szczegółów.",
+        "attack": "Presja czasu („pilne, musimy skończyć dzisiaj”) ma odciąć ofiarę od spokojnej analizy i skłonić do szybkiego kliknięcia linku przed spotkaniem.",
+        "defense": "Sztuczny pośpiech to jeden z najczęstszych sygnałów vishingu. Gdy rozmówca naciska na natychmiastowe działanie, zwolnij, odmów i zweryfikuj sprawę na spokojnie."
+      },
+      {
+        "num": 7,
+        "question": "MÓJ PRZEŁOŻONY NIE WSPOMINAŁ NIC O ŻADNYM NOWYM SYSTEMIE ANI TESTACH...",
+        "answer": "Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRY, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE",
+        "correct": true,
+        "details": "Połączenie faktu o urlopie Dawida z powołaniem się na autorytet Sandry (szefowej IT) skutecznie rozbraja wątpliwości ofiary.",
+        "attack": "Atakujący wykorzystuje dane z białego wywiadu (urlop przełożonego) i powołuje się na inny realny autorytet (szefową IT Sandrę), żeby zablokować próbę weryfikacji i wymusić posłuszeństwo.",
+        "defense": "Ograniczaj publiczne informacje o strukturze zespołu i urlopach w mediach społecznościowych. Gdy ktoś powołuje się na przełożonego lub innego menedżera, skontaktuj się bezpośrednio z tą osobą albo jej zastępcą."
+      },
+      {
+        "num": 8,
+        "question": "DOMKNIJ PERSWAZJĘ:",
+        "answer": "SZCZERZE MÓWIĄC, ZOSTAŁEŚ MI TYLKO TY DO PRZETESTOWANIA. TO NAPRAWDĘ WAŻNE DLA BEZPIECZEŃSTWA FIRMY",
+        "correct": true,
+        "details": "Połączenie społecznego dowodu słuszności („wszyscy już przeszli test”) z troską o bezpieczeństwo firmy skutecznie przełamuje opór ofiary.",
+        "attack": "Społeczny dowód słuszności („zostałeś mi tylko ty”) i odwołanie do „bezpieczeństwa firmy” wywołują poczucie winy i chęć szybkiego „odhaczenia” sprawy.",
+        "defense": "Prawdziwe bezpieczeństwo firmy nigdy nie wymaga łamania procedur ani omijania weryfikacji. Nie podejmuj ryzykownych działań tylko dlatego, że rozmówca twierdzi, iż „wszyscy już to zrobili”."
+      },
+      {
+        "num": 9,
+        "question": "OK, JEŚLI TAK TO WYGLĄDA, CO MAM ROBIĆ?",
+        "answer": "ZALOGUJ SIĘ NA NASZĄ NOWĄ STRONĘ ARCHIWIZACJI POCZTY",
+        "correct": true,
+        "details": "Jasne, służbowe polecenie spójne z całym pretekstem testów systemu archiwizacji.",
+        "attack": "Przesłanie linku w trakcie rozmowy i nazwanie go „nową stroną archiwizacji” kieruje ofiarę prosto na sklonowany panel logowania bez czasu na sprawdzenie adresu.",
+        "defense": "Nie klikaj linków logowania przesłanych ad hoc podczas nieoczekiwanego telefonu. Zwracaj uwagę na najmniejsze szczegóły adresu i wyglądu strony — jeśli coś budzi niepokój, przerwij i zgłoś to działowi bezpieczeństwa."
+      },
+      {
+        "num": 10,
+        "question": "OK, MAM. JAK MAM SIĘ ZALOGOWAĆ?",
+        "answer": "SPRAWDZAMY CZY NOWY SYSTEM JEST SPÓJNY Z POPRZEDNIM. UŻYJ DANYCH ZE SWOJEJ POCZTY FIRMOWEJ",
+        "correct": true,
+        "details": "Wiarygodne, techniczne uzasadnienie („test spójności”) skłania ofiarę do wpisania prawdziwych danych logowania na fałszywej stronie.",
+        "attack": "Przekonanie ofiary do wpisania firmowego hasła (a chwilę później kodu SMS 2FA) na podstawionej stronie pozwala przeprowadzić atak Adversary-in-the-Middle (AiTM) i przejąć sesję mimo włączonego 2FA.",
+        "defense": "Nigdy nie podawaj firmowego hasła ani jednorazowych kodów 2FA na niezweryfikowanej stronie ani na prośbę osoby z telefonu. Używaj silnego MFA (np. kluczy sprzętowych FIDO2/WebAuthn), które wiążą logowanie z prawdziwą domeną i chronią przed phishingiem AiTM."
+      }
+    ]
+  }
+}

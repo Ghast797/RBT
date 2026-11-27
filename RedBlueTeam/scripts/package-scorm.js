@@ -33,6 +33,12 @@ const MISSION_CATALOG = [
     id: 'mission-4-energy-rock',
     title: 'MISJA 4 – ENERGY ROCK',
     dataFile: path.resolve(rootDir, 'src', 'scenarios', 'mission_04_energy_rock', 'data', 'mission4.json')
+  },
+  {
+    num: '5',
+    id: 'mission-5-bank-bcorp',
+    title: 'MISJA 5 – BANK BCORP',
+    dataFile: path.resolve(rootDir, 'src', 'scenarios', 'mission_05_bank_bcorp', 'data', 'mission5.json')
   }
 ];
 
