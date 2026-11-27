@@ -59,6 +59,8 @@ export type LucideIconName =
   | 'Lock'
   | 'Cpu'
   | 'FileArchive'
+  | 'FileText'
+  | 'Phone'
   | 'Send'
   | 'Wifi'
   | 'Server'
@@ -290,6 +292,16 @@ export interface ChoiceOption {
   reject?: { mentorLine: string };
 }
 
+/** Statyczna karta informacyjna wyświetlana nad strefą wyboru w `ChoiceCards` (kontekst, nie klikalna opcja). */
+export interface ChoiceCardsInfo {
+  /** Nagłówek karty informacyjnej (np. „ORYGINALNY ADRES POCZTY” lub „SZABLON NUMERACJI WEWNĘTRZNEJ”). */
+  title?: string;
+  /** Tekst wyjaśniający lub kluczowa wartość kontekstu. */
+  text?: string;
+  /** Dodatkowe pozycje kontekstu (np. lista działów i prefiksów). */
+  items?: Array<{ label: string; value?: string }>;
+}
+
 /** Wybór 1 z N kart. */
 export interface ChoiceCardsConfig {
   /** Numer decyzji w misji. */
@@ -306,6 +318,8 @@ export interface ChoiceCardsConfig {
   step?: string;
   /** Etykieta ramki wyboru (domyślnie "WYBIERZ JEDNO"). */
   choiceLabel?: string;
+  /** Opcjonalna statyczna karta informacyjna między nagłówkiem a strefą wyboru. */
+  info?: ChoiceCardsInfo;
   /** Opcje; klocek wyświetla je w losowej kolejności. */
   options: ChoiceOption[];
 }

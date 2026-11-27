@@ -13,6 +13,8 @@ import {
   Lock,
   Cpu,
   FileArchive,
+  FileText,
+  Phone,
   Send,
   Wifi,
   Server,
@@ -201,6 +203,10 @@ export function renderAppIcon(iconName: string, size = 26): React.ReactNode {
       return <Cpu size={size} />;
     case 'FileArchive':
       return <FileArchive size={size} />;
+    case 'FileText':
+      return <FileText size={size} />;
+    case 'Phone':
+      return <Phone size={size} />;
     case 'Send':
       return <Send size={size} />;
     case 'Wifi':
