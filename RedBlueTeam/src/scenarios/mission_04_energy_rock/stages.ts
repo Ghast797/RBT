@@ -444,7 +444,7 @@ export const c2Config: C2Config = {
     delayNotes: [
       {
         when: { decision: 5, tier: WEAKER_TIERS },
-        text: 'NAZWA PLIKU WZBUDZIŁA WĄTPLIWOŚCI REKRUTERA – OTWORZYŁ GO Z OPÓŹNIENIEM'
+        text: 'TEMAT MAILA WZBUDZIŁ WĄTPLIWOŚCI REKRUTERA – OTWORZYŁ GO Z OPÓŹNIENIEM'
       },
       {
         when: { decision: 6, tier: WEAKER_TIERS },
@@ -722,11 +722,12 @@ export const mission4Stages: StageDefinition[] = [
     id: 'victim_workstation',
     appId: 'victim_workstation',
     decisions: [8],
+    // Ostrzeżenie pada zaraz po otwarciu panelu CV, przed kliknięciem „SZYFRUJ ZASOBY FIRMY” (tylko słabszy mail D5–D7).
+    openingConversation: [{ from: 'byte_master', text: 'IT JUŻ COŚ PODEJRZEWA. DZIAŁAJ SZYBKO.', when: MAIL_WEAKER }],
     completion: {
       conversation: [
         { from: 'player', id: 'm4_reply_workstation', label: 'AKTYWOWALI RANSOMWARE I STRACILI DOSTĘP DO PLIKÓW. TERAZ CZEKAMY AŻ SIĘ ZE MNĄ SKONTAKTUJĄ' },
         { from: 'byte_master', text: 'PAMIĘTAJ TYLKO, ŻE POTRZEBUJEMY I PLIKÓW, I OKUPU' },
-        { from: 'byte_master', text: 'IT JUŻ COŚ PODEJRZEWA. DZIAŁAJ SZYBKO.', when: MAIL_WEAKER },
         { from: 'time_jump', clockFrom: '09:10', clock: '11:35', label: 'DO REAKCJI SZEFA IT…', when: MAIL_IDEAL },
         { from: 'time_jump', clockFrom: '12:25', clock: '14:50', label: 'DO REAKCJI SZEFA IT…', when: MAIL_WEAKER }
       ],
@@ -745,7 +746,12 @@ export const mission4Stages: StageDefinition[] = [
       // Meldunek u mentora: cztery osobne beaty.
       conversation: [
         { from: 'player', id: 'm4_reply_neg_1', label: 'SKOŃCZYŁEM ROZMOWĘ Z SZEFEM IT. CZAS NA PODSUMOWANIE' },
-        { from: 'byte_master', text: 'TERAZ POWINNIŚMY MIEĆ JUŻ WSZYSTKO' },
+        { from: 'byte_master', text: 'TERAZ POWINNIŚMY MIEĆ JUŻ WSZYSTKO', when: { decision: 8, tier: 'ideal' } },
+        {
+          from: 'byte_master',
+          text: 'MAMY OKUP, ALE DOKUMENTACJA FREEVOLT JEST NIEPEŁNA. RESZTĘ TRZEBA BĘDZIE ZDOBYĆ INACZEJ.',
+          when: { decision: 8, tier: 'suboptimal' }
+        },
         { from: 'player', id: 'm4_reply_neg_2', label: 'CZY TO ZNACZY, ŻE W KOŃCU PRZYJMIECIE MNIE DO DARKSUN?' },
         {
           from: 'byte_master',

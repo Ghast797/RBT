@@ -262,7 +262,26 @@
             "opponentLabel": "SZEF IT",
             "opponent": "Szef IT grozi policją: „ROZWIĄZUJEMY PROBLEM RANSOMWARE I ODPOWIEDNIE SŁUŻBY ZOSTAŁY JUŻ POWIADOMIONE”",
             "player": "Twarde stanowisko techniczne: „ODPOWIEDNIE SŁUŻBY NIE ODSZYFRUJĄ WASZYCH PLIKÓW. ZASTANÓW SIĘ DOBRZE, CO CHCESZ ZROBIĆ”",
+            "when": { "decision": 9, "optionId": "firm_stance" },
             "psychology": "Konfrontacja z technologiczną bezradnością organów ścigania wobec silnej kryptografii natychmiast rozbija złudzenie pomocy z zewnątrz i paraliżuje decyzyjność ofiary."
+          },
+          {
+            "turn": 1,
+            "title": "Tura 1 (Reakcja na szantaż)",
+            "opponentLabel": "SZEF IT",
+            "opponent": "Szef IT grozi policją, a po twojej odpowiedzi zrywa rozmowę: „NIE BĘDĘ SIĘ Z TOBĄ PRZERZUCAŁ GROŹBAMI. JEŚLI NIE ZACZNIESZ ROZMAWIAĆ PO LUDZKU, ZRYWAM ROZMOWY I ZOSTAWIAM SPRAWĘ SŁUŻBOM”",
+            "player": "Emocjonalna riposta „NIE BOJĘ SIĘ POLICJI”, a następnie powrót do rozmowy: „SPOKOJNIE, NIE ZRYWAJ. WRÓĆMY DO SPRAWY”",
+            "when": { "decision": 9, "optionId": "aggression" },
+            "psychology": "Pusta brawura bez argumentu technicznego nie łamie wiary ofiary w pomoc służb, a jedynie ją irytuje. To napastnik musi wtedy prosić o dalszą rozmowę, więc traci inicjatywę i część presji."
+          },
+          {
+            "turn": 1,
+            "title": "Tura 1 (Reakcja na szantaż)",
+            "opponentLabel": "SZEF IT",
+            "opponent": "Szef IT czuje ulgę: „NO WRESZCIE ROZSĄDEK. W TAKIM RAZIE KOŃCZYMY TĘ ROZMOWĘ, A MY ZAJMIEMY SIĘ ODZYSKIWANIEM DANYCH”",
+            "player": "Wycofanie „OKEJ, JUŻ WAM NIE PRZESZKADZAM.”, a po chwili powrót: „CHWILA, NIE TAK SZYBKO. SAMI SIĘ NIE ODZYSKACIE, TYLKO JA MAM KLUCZ. WRÓĆMY DO ROZMOWY”",
+            "when": { "decision": 9, "optionId": "surrender" },
+            "psychology": "Ustąpienie pod wpływem blefu o powiadomieniu służb oddaje inicjatywę ofierze i pokazuje, że napastnik łatwo się płoszy. Powrót do stołu z gorszej pozycji osłabia presję okupu, a szef IT wie już, że można stawiać warunki."
           },
           {
             "turn": 2,
