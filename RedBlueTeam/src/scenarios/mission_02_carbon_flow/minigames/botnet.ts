@@ -8,6 +8,8 @@ export interface BotnetOutcome {
   targetPercentage: number;
   alarms: number;
   alarmTexts: string[];
+  /** Wyjaśnienia spadku penetracji (pole `note` pasujących konsekwencji). */
+  notes: string[];
 }
 
 /** Liczy konsekwencje z `config.consequences` względem zapisanych wyborów (`decisionChoices`). */
@@ -21,7 +23,8 @@ export function resolveBotnetOutcome(
   return {
     targetPercentage: Math.min(100, Math.max(0, config.targetPercentage + delta)),
     alarms: matching.reduce((sum, c) => sum + (c.alarms ?? 0), 0),
-    alarmTexts: matching.map((c) => c.alarmText).filter((t): t is string => Boolean(t))
+    alarmTexts: matching.map((c) => c.alarmText).filter((t): t is string => Boolean(t)),
+    notes: matching.map((c) => c.note).filter((t): t is string => Boolean(t))
   };
 }
 

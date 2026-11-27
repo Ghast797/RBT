@@ -139,6 +139,26 @@ describe('M2 zamknięcie rozmowy przy monitorze: dokładnie jedna kwestia', () =
   });
 });
 
+describe('M2 monitor botnetu: wyjaśnienie spadku penetracji', () => {
+  it('quickgram: notka o szablonie społecznościowym', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[1].choices).notes).toEqual([
+      'CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA: SZABLON SPOŁECZNOŚCIOWY W SŁUŻBOWEJ SKRZYNCE BUDZIŁ PODEJRZENIA'
+    ]);
+  });
+  it('fire drill: notka o odłożonej ankiecie', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[2].choices).notes).toEqual([
+      'CZĘŚĆ PRACOWNIKÓW ODŁOŻYŁA WYPEŁNIENIE ANKIETY NA PÓŹNIEJ'
+    ]);
+  });
+  it('ideał i sam alarm IDS: bez notek', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, IDEAL).notes).toEqual([]);
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[4].choices).notes).toEqual([]);
+  });
+  it('quickgram i fire drill: obie notki', () => {
+    expect(resolveBotnetOutcome(botnetMonitorConfig, SCENARIOS[3].choices).notes).toHaveLength(2);
+  });
+});
+
 describe('M2 monitor botnetu: wyświetlanie', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -164,4 +184,16 @@ describe('M2 monitor botnetu: wyświetlanie', () => {
       expect(screen.getByText('ŁADUNEK 0-DAY NIEWYKRYTY')).toBeTruthy();
     });
   }
+
+  it('quickgram: notka widoczna pod wartością penetracji', () => {
+    useMissionStore.setState({ decisionChoices: SCENARIOS[1].choices });
+    render(<BotnetMonitorApp config={botnetMonitorConfig} onComplete={() => {}} onDecision={() => {}} />);
+    fireEvent.click(screen.getByText('PODGLĄD'));
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(
+      screen.getByText('CZĘŚĆ PRACOWNIKÓW NIE KLIKNĘŁA: SZABLON SPOŁECZNOŚCIOWY W SŁUŻBOWEJ SKRZYNCE BUDZIŁ PODEJRZENIA')
+    ).toBeTruthy();
+  });
 });
