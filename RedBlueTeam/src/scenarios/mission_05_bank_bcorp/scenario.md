@@ -122,7 +122,7 @@ Oceniane: D3–D10 | Flavor (nieoceniane): przechwytywanie i przenoszenie danych
 Decyzja D3: "DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?"
 - DZIEŃ DOBRY PANIE FILIPIE. | ideal | Uprzejme, formalne powitanie z użyciem właściwego imienia buduje profesjonalne pierwsze wrażenie.
 - DZIEŃ DOBRY PANIE DAWIDZIE. | suboptimal | Pomylenie imienia rozmówcy z imieniem jego przełożonego od razu zdradza brak przygotowania i obniża wiarygodność.
-- CZEŚĆ FILIP! | suboptimal | Zbyt poufałe powitanie dyrektora przez nowego pracownika IT brzmi nienaturalnie i budzi czujność ofiary.
+- CZEŚĆ FILIP! | suboptimal | Poufałe „cześć” od nieznajomego, który jeszcze się nie przedstawił, brzmi nienaturalnie i budzi czujność dyrektora.
 - HEJ STARY! | critical | Tak nieprofesjonalny zwrot do dyrektora banku natychmiast spalił przykrywkę — Filip rozłączył się i zgłosił podejrzany telefon do działu bezpieczeństwa.
 
 Reakcja Filipa po D3:
@@ -164,7 +164,7 @@ Decyzja D7: "MÓJ PRZEŁOŻONY NIE WSPOMINAŁ NIC O ŻADNYM NOWYM SYSTEMIE ANI T
 - Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRY, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE | ideal | Połączenie faktu o urlopie Dawida z powołaniem się na autorytet Sandry (szefowej IT) skutecznie rozbraja wątpliwości ofiary.
 - PAN DAWID WSPOMNIAŁ, ŻE TAK PROSTEJ CZYNNOŚCI NIE MUSI ZATWIERDZAĆ | suboptimal | Powołanie się na przełożonego przebywającego na urlopie utrudnia weryfikację, ale słabiej uwiarygadnia prośbę niż wskazanie obecnej w firmie szefowej IT (Sandry).
 - TWÓJ PRZEŁOŻONY MA PRZECIEŻ WOLNE, DLATEGO NIC NIE WIESZ | suboptimal | Informacja o urlopie przełożonego jest trafna, ale lekceważący ton i brak powołania się na osobę decyzyjną (Sandrę) obniżają zaufanie rozmówcy.
-- DAREK WSPOMNIAŁ, ŻE TAK PROSTEJ CZYNNOŚCI NIE MUSI ZATWIERDZAĆ | suboptimal | Błędne imię, zbyt poufały zwrot wobec dyrektora oraz powołanie się na rozmowę podczas jego urlopu mocno podważają wiarygodność.
+- DAREK WSPOMNIAŁ, ŻE TAK PROSTEJ CZYNNOŚCI NIE MUSI ZATWIERDZAĆ | suboptimal | Błędne imię przełożonego i powołanie się na rozmowę z nim w czasie urlopu mocno podważają wiarygodność.
 
 Reakcja Filipa po D7:
 - (gdy D7 = ideal): brak wtrącenia (przejście od razu do D8)
@@ -173,7 +173,7 @@ Reakcja Filipa po D7:
 - FILIP (gdy D7 = DAREK WSPOMNIAŁ...): „DAREK? CHYBA DAWID — I ON JEST NA URLOPIE. NIE BRZMI TO PRZEKONUJĄCO...”
 
 Decyzja D8: "DOMKNIJ PERSWAZJĘ:"
-- SZCZERZE MÓWIĄC, ZOSTAŁEŚ MI TYLKO TY DO PRZETESTOWANIA. TO NAPRAWDĘ WAŻNE DLA BEZPIECZEŃSTWA FIRMY | ideal | Połączenie społecznego dowodu słuszności („wszyscy już przeszli test”) z troską o bezpieczeństwo firmy skutecznie przełamuje opór ofiary.
+- SZCZERZE MÓWIĄC, ZOSTAŁEŚ MI TYLKO TY DO PRZETESTOWANIA. TO NAPRAWDĘ WAŻNE DLA BEZPIECZEŃSTWA FIRMY | ideal | Połączenie społecznego dowodu słuszności („zostałeś mi tylko ty”) z troską o bezpieczeństwo firmy skutecznie przełamuje opór ofiary.
 - TO NIE ZAJMIE DŁUGO, WIĘC NIE MUSISZ SIĘ ZASTANAWIAĆ | suboptimal | Otwarte zniechęcanie rozmówcy do zastanowienia się brzmi natrętnie i może wzbudzić podejrzenia u ostrożniejszej ofiary.
 - ZRESZTĄ CZEMU MIAŁBYŚ MI NIE POMÓC? BĄDŹ CZŁOWIEKIEM... | suboptimal | Emocjonalny, nieprofesjonalny ton zamiast argumentu o bezpieczeństwie firmy obniża wiarygodność pracownika IT.
 
@@ -226,7 +226,7 @@ Reakcja Filipa po D10 (przejście do fazy 2):
 ### Mostek końcowy (rozmowa z BYTE_MASTER po zakończeniu Etapu 6)
 
 Wariant 1 (wszystko idealnie, 100%, bez odrzuceń):
-- GRACZ: „MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE PODAŁ HASŁO I KOD SMS.”
+- GRACZ: „MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.”
 - BM: „CZYSTA ROBOTA. ZERO WPADEK, ZERO WĄTPLIWOŚCI. Z TAKIMI RAPORTAMI W KOŃCU ZOBACZYMY, KTO FINANSUJE TĘ RAFINERIĘ. BĘDĄ Z CIEBIE LUDZIE.”
 
 Wariant 2 (słabiej, ale wynik ≥ 70%):
@@ -234,7 +234,7 @@ Wariant 2 (słabiej, ale wynik ≥ 70%):
 - BM: „WAŻNE, ŻE RAPORTY SĄ U NAS, ALE NIE OBYŁO SIĘ BEZ WPADEK. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW.”
 
 Wariant 3 (wynik < 70%):
-- GRACZ: „RAPORTY POBRANE, ALE FILIP BYŁ MOCNO PODEJRZLIWY PRZEZ WIĘKSZOŚĆ ROZMOWY.”
+- GRACZ: „RAPORTY POBRANE, ALE PO DRODZE BYŁO SPORO WPADEK.”
 - BM: „TYM RAZEM SIĘ UDAŁO TYLKO DLATEGO, ŻE FILIP MIAŁ SPOTKANIE. ZA DUŻO BŁĘDÓW JAK NA JEDNĄ ROZMOWĘ — PRZEJRZYJ RAPORT I POPRAW TO.”
 
 - odblokuj: //RAPORT POOPERACYJNY

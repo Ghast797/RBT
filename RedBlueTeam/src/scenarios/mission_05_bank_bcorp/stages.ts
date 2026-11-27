@@ -225,7 +225,7 @@ export const vishingCallConfig: VishingCallConfig = {
           label: 'CZEŚĆ FILIP!',
           tier: 'suboptimal',
           feedback:
-            'Zbyt poufałe powitanie dyrektora przez nowego pracownika IT brzmi nienaturalnie i budzi czujność ofiary.',
+            'Poufałe „cześć” od nieznajomego, który jeszcze się nie przedstawił, brzmi nienaturalnie i budzi czujność dyrektora.',
           reaction: 'SŁUCHAM? CHYBA SIĘ NIE ZNAMY. Z KIM ROZMAWIAM?'
         },
         {
@@ -407,7 +407,7 @@ export const vishingCallConfig: VishingCallConfig = {
           label: 'DAREK WSPOMNIAŁ, ŻE TAK PROSTEJ CZYNNOŚCI NIE MUSI ZATWIERDZAĆ',
           tier: 'suboptimal',
           feedback:
-            'Błędne imię, zbyt poufały zwrot wobec dyrektora oraz powołanie się na rozmowę podczas jego urlopu mocno podważają wiarygodność.',
+            'Błędne imię przełożonego i powołanie się na rozmowę z nim w czasie urlopu mocno podważają wiarygodność.',
           reaction: 'DAREK? CHYBA DAWID — I ON JEST NA URLOPIE. NIE BRZMI TO PRZEKONUJĄCO...'
         }
       ]
@@ -423,7 +423,7 @@ export const vishingCallConfig: VishingCallConfig = {
           label: 'SZCZERZE MÓWIĄC, ZOSTAŁEŚ MI TYLKO TY DO PRZETESTOWANIA. TO NAPRAWDĘ WAŻNE DLA BEZPIECZEŃSTWA FIRMY',
           tier: 'ideal',
           feedback:
-            'Połączenie społecznego dowodu słuszności („wszyscy już przeszli test”) z troską o bezpieczeństwo firmy skutecznie przełamuje opór ofiary.',
+            'Połączenie społecznego dowodu słuszności („zostałeś mi tylko ty”) z troską o bezpieczeństwo firmy skutecznie przełamuje opór ofiary.',
           reaction: 'OK, JEŚLI TAK TO WYGLĄDA, CO MAM ROBIĆ?'
         },
         {
@@ -685,7 +685,7 @@ export const mission5Stages: StageDefinition[] = [
           from: 'player',
           id: 'm5_reply_end_perfect',
           label:
-            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE PODAŁ HASŁO I KOD SMS.',
+            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.',
           when: END_BRIDGE_PERFECT
         },
         {
@@ -710,7 +710,7 @@ export const mission5Stages: StageDefinition[] = [
         {
           from: 'player',
           id: 'm5_reply_end_below',
-          label: 'RAPORTY POBRANE, ALE FILIP BYŁ MOCNO PODEJRZLIWY PRZEZ WIĘKSZOŚĆ ROZMOWY.',
+          label: 'RAPORTY POBRANE, ALE PO DRODZE BYŁO SPORO WPADEK.',
           when: END_BRIDGE_BELOW_PASSING
         },
         {

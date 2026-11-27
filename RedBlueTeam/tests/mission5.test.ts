@@ -361,7 +361,7 @@ describe('Misja 5 — przepływ przez silnik i 3 warianty mostka końcowego', ()
       {
         id: 'm5_reply_end_perfect',
         label:
-          'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE PODAŁ HASŁO I KOD SMS.',
+          'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.',
         bridgeBeat: true
       }
     ]);
@@ -460,7 +460,7 @@ describe('Misja 5 — przepływ przez silnik i 3 warianty mostka końcowego', ()
 
     const fin = useMissionStore.getState();
     const texts = fin.chatMessages.map((m) => m.text);
-    expect(texts).toContain('RAPORTY POBRANE, ALE FILIP BYŁ MOCNO PODEJRZLIWY PRZEZ WIĘKSZOŚĆ ROZMOWY.');
+    expect(texts).toContain('RAPORTY POBRANE, ALE PO DRODZE BYŁO SPORO WPADEK.');
     expect(texts).toContain(
       'TYM RAZEM SIĘ UDAŁO TYLKO DLATEGO, ŻE FILIP MIAŁ SPOTKANIE. ZA DUŻO BŁĘDÓW JAK NA JEDNĄ ROZMOWĘ — PRZEJRZYJ RAPORT I POPRAW TO.'
     );

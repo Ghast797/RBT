@@ -245,7 +245,7 @@
         "question": "DOMKNIJ PERSWAZJĘ:",
         "answer": "SZCZERZE MÓWIĄC, ZOSTAŁEŚ MI TYLKO TY DO PRZETESTOWANIA. TO NAPRAWDĘ WAŻNE DLA BEZPIECZEŃSTWA FIRMY",
         "correct": true,
-        "details": "Połączenie społecznego dowodu słuszności („wszyscy już przeszli test”) z troską o bezpieczeństwo firmy skutecznie przełamuje opór ofiary.",
+        "details": "Połączenie społecznego dowodu słuszności („zostałeś mi tylko ty”) z troską o bezpieczeństwo firmy skutecznie przełamuje opór ofiary.",
         "attack": "Gra na poczuciu obowiązku („zostałeś mi tylko ty”, „to ważne dla bezpieczeństwa firmy”) wywołuje poczucie winy i chęć szybkiego „odhaczenia” sprawy.",
         "defense": "Sygnały: rozmówca przekonuje, że tylko Ty zostałeś, albo zasłania się bezpieczeństwem firmy. Co zrobić: odpowiedz „sprawdzę to i oddzwonię”. Prawdziwy pracownik IT to zaakceptuje, a dalszy nacisk to sygnał ataku."
       },
