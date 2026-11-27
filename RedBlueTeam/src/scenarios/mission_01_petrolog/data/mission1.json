@@ -211,6 +211,12 @@
         "num": 2,
         "question": "Wybór pliku do pobrania",
         "answer": "PORADNIK DLA BIEGACZY DŁUGODYSTANSOWYCH - 10 PORAD JAK POPRAWIĆ SWÓJ WYNIK",
+        "answerVariants": [
+          {
+            "when": { "decision": 1, "optionId": "mufina_org_pl" },
+            "answer": "PORADNIK KULINARNY - 10 SPRAWDZONYCH PRZEPISÓW NA DOMOWE MUFFINKI"
+          }
+        ],
         "correct": true,
         "details": "Precyzyjna odpowiedź na publiczne zapytanie Anity z portalu Joinin.",
         "attack": "Przynęta odpowiada na pytanie, które ofiara sama zadała publicznie na portalu Joinin. Kto dostaje dokładnie to, czego szukał, rzadko zastanawia się, skąd plik się wziął.",
@@ -228,7 +234,13 @@
       {
         "num": 4,
         "question": "Wybór adresu e-mail nadawcy",
-        "answer": "ADRES W DOMENIE-SOBOWTÓRZE PETR0LOG.COM (ZERO ZAMIAST „O”), PASUJĄCY DO WYBRANEGO NADAWCY",
+        "answer": "K.KWIATKOWSKI@PETR0LOG.COM",
+        "answerVariants": [
+          {
+            "when": { "decision": 3, "optionId": "prezes_buczek" },
+            "answer": "P.BUCZEK@PETR0LOG.COM"
+          }
+        ],
         "correct": true,
         "details": "Fałszywa domena łudząco podobna do firmowej PetroLog (zero zamiast litery „o”): adres wygląda jak służbowy adres pracownika i usypia czujność ofiary.",
         "attack": "Domena-sobowtór (typosquatting): PETR0LOG.COM, z zerem zamiast litery „o”, na pierwszy rzut oka wygląda jak firmowa, więc mail od „kolegi” nie budzi podejrzeń. Atakujący nie musi włamywać się na serwer pocztowy – wystarczy zarejestrować podobną domenę.",

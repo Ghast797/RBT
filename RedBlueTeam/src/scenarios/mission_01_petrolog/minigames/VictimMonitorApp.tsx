@@ -139,6 +139,7 @@ export const VictimMonitorApp: React.FC<BlockProps<VictimMonitorConfig>> = ({
               className="text-sm text-gray-100 leading-relaxed pt-2 space-y-2"
               signatureClassName="text-gray-400 pt-2 font-mono text-xs"
               mailText={payloadTexts?.mailText}
+              closing={payloadTexts?.closing}
               senderName={senderName}
               link={
                 <div

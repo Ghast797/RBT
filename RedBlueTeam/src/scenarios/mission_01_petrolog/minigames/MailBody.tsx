@@ -3,6 +3,8 @@ import React from 'react';
 export interface MailBodyProps {
   /** Dopisek zależny od pliku z D2 (może być pusty). */
   mailText?: string;
+  /** Zdanie zamykające z konfiguracji przynęty (`payloadTexts[D2].closing`); bez niego brak tego zdania. */
+  closing?: string;
   /** Podpis nadawcy (imię i nazwisko z D3). */
   senderName?: string;
   /** Link do strony-pułapki: każde miejsce rysuje go po swojemu (podgląd, podsumowanie, skrzynka ofiary). */
@@ -19,6 +21,7 @@ export interface MailBodyProps {
  */
 export const MailBody: React.FC<MailBodyProps> = ({
   mailText,
+  closing,
   senderName,
   link,
   className = 'space-y-2',
@@ -29,7 +32,7 @@ export const MailBody: React.FC<MailBodyProps> = ({
     <p>Koniecznie musisz zobaczyć tę stronę:</p>
     {link}
     {mailText ? <p>{mailText}</p> : null}
-    <p>Coś, czego szukałaś!</p>
+    {closing ? <p>{closing}</p> : null}
     <p className={signatureClassName}>
       Pozdrawiam,
       <br />

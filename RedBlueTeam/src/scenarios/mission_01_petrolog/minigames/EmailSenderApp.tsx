@@ -43,6 +43,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
   const payloadOptionId = useDecisionChoice(2)?.optionId;
   const senderOptionId = useDecisionChoice(3)?.optionId;
   const mailText = payloadOptionId ? config?.byPayload?.[payloadOptionId]?.mailText : undefined;
+  const closing = payloadOptionId ? config?.byPayload?.[payloadOptionId]?.closing : undefined;
 
   const targetDomain = domainChoice || config?.defaultDomain || 'dalekbieg.info';
   const targetPayload = payloadChoice || config?.defaultPayload || 'Poradnik dla biegaczy długodystansowych';
@@ -266,6 +267,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               senderEmail={null}
               targetDomain={targetDomain}
               mailText={mailText}
+              closing={closing}
               step="sender"
             />
           </div>
@@ -298,6 +300,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               senderEmail={selectedEmail?.label || null}
               targetDomain={targetDomain}
               mailText={mailText}
+              closing={closing}
               step="email"
             />
           </div>
@@ -334,6 +337,7 @@ export const EmailSenderApp: React.FC<BlockProps<EmailSenderConfig>> = ({
               <MailBody
                 className="text-xs text-gray-200 leading-relaxed font-sans pt-1 space-y-2"
                 mailText={mailText}
+                closing={closing}
                 senderName={selectedSender?.label || 'Jakub Kwiatkowski'}
                 link={
                   <span className="text-sky-400 font-bold underline font-mono block">

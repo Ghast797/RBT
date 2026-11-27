@@ -98,7 +98,7 @@ describe('M1: monitor ofiary i mail podążają za wyborami', () => {
     renderMonitor();
     expect(screen.getByText(/<P\.BUCZEK@PETR0LOG\.COM>/)).toBeTruthy();
     expect(screen.getAllByText(/PREZES BUCZEK/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/zarząd pisze do niej o bieganiu/)).toBeTruthy();
+    expect(screen.getByText(/zarząd pisze do niej o takich sprawach/)).toBeTruthy();
     expect(screen.queryByText(/zaufanego współpracownika/)).toBeNull();
   });
 

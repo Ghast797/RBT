@@ -814,7 +814,7 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
         tags: ['ZARZĄD', 'PREZES', 'DYREKCJA'],
         tier: 'suboptimal',
         feedback:
-          'Wiadomość o tematyce sportowej od zarządu firmy wyda się ofierze wysoce podejrzana.'
+          'Wiadomość o takiej tematyce od zarządu firmy wyda się ofierze wysoce podejrzana.'
       },
       {
         id: 'twoj_synek',
@@ -847,7 +847,8 @@ export const payloadTexts: Record<string, PayloadTexts> = {
     pageDescription:
       'Zdobądź przewagę na trasie maratonu. 10 sprawdzonych technik regeneracji, planów interwałowych i doboru sprzętu biegowego.',
     downloadButton: 'POBIERZ DARMOWY PORADNIK (PDF)',
-    footer: 'Anita zdecydowała się pobrać poradnik biegowy na dysk służbowego komputera.'
+    footer: 'Anita zdecydowała się pobrać poradnik biegowy na dysk służbowego komputera.',
+    closing: 'Coś, czego szukałaś!'
   },
   wallpapers_running: {
     mailText: 'Mają super tapety dla biegaczy na telefon!',
@@ -855,7 +856,8 @@ export const payloadTexts: Record<string, PayloadTexts> = {
     pageDescription:
       'Motywacyjne grafiki dla biegaczy w wysokiej rozdzielczości. Pasują do każdego ekranu telefonu i dodają energii przed każdym treningiem.',
     downloadButton: 'POBIERZ PAKIET TAPET (.ZIP)',
-    footer: 'Anita zdecydowała się pobrać paczkę z tapetami na dysk służbowego komputera.'
+    footer: 'Anita zdecydowała się pobrać paczkę z tapetami na dysk służbowego komputera.',
+    closing: 'Coś dla Ciebie przed treningiem!'
   },
   guide_muffins: {
     mailText: 'Mają super przepisy na pyszne domowe muffinki!',
@@ -864,7 +866,8 @@ export const payloadTexts: Record<string, PayloadTexts> = {
     pageDescription:
       'Sprawdzone receptury na puszyste babeczki i domowe wypieki. Wskazówki krok po kroku od składników po idealną temperaturę pieczenia.',
     downloadButton: 'POBIERZ PRZEPIS (PDF)',
-    footer: 'Anita zdecydowała się pobrać plik z przepisami na dysk służbowego komputera.'
+    footer: 'Anita zdecydowała się pobrać plik z przepisami na dysk służbowego komputera.',
+    closing: 'Pomyślałem o Tobie, jak to zobaczyłem!'
   },
   wallpapers_muffins: {
     mailText: 'Mają super tapety ze słodkimi muffinkami!',
@@ -873,7 +876,8 @@ export const payloadTexts: Record<string, PayloadTexts> = {
     pageDescription:
       'Kolorowe zdjęcia babeczek w wysokiej rozdzielczości, idealne jako tło ekranu telefonu.',
     downloadButton: 'POBIERZ PAKIET TAPET (.ZIP)',
-    footer: 'Anita zdecydowała się pobrać paczkę z tapetami na dysk służbowego komputera.'
+    footer: 'Anita zdecydowała się pobrać paczkę z tapetami na dysk służbowego komputera.',
+    closing: 'Pomyślałem o Tobie, jak to zobaczyłem!'
   }
 };
 
@@ -902,7 +906,7 @@ export const victimMonitorConfig: VictimMonitorConfig = {
     },
     prezes_buczek: {
       reaction:
-        'Anita właśnie otrzymała maila od prezesa i dziwi się, że zarząd pisze do niej o bieganiu. Ciekawość jednak wygrywa.'
+        'Anita właśnie otrzymała maila od prezesa i dziwi się, że zarząd pisze do niej o takich sprawach. Ciekawość jednak wygrywa.'
     }
   },
   networkNodes: [
