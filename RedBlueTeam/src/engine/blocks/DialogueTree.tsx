@@ -49,6 +49,12 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
   useEffect(() => () => timerBag.clear(), [timerBag]);
   const later = timerBag.later;
 
+  // Nowa wiadomość (lub „pisze…”) — przewiń listę na dół, żeby ostatnia kwestia była widoczna.
+  const endRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    endRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'end' });
+  }, [lines.length, isRespondentTyping, criticalFeedback]);
+
   const currentNode: DialogueNode | undefined = config.nodes.find((n) => n.id === currentNodeId);
   const currentOptions = useShuffled(currentNode?.options ?? []);
   // Numer decyzji bieżącego węzła — dla odrzuceń mentora (B2).
@@ -191,6 +197,7 @@ export const DialogueTree: React.FC<BlockProps<DialogueTreeConfig>> = ({
         {isFinished && criticalFeedback && (
           <div className="text-xs text-red-400 italic px-1">{criticalFeedback}</div>
         )}
+        <div ref={endRef} />
       </div>
 
       {currentNode && currentNode.options.length > 0 && !isFinished && (

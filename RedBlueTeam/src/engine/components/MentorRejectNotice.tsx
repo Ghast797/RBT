@@ -31,22 +31,25 @@ export const isRejected = (attempts: RejectedAttempt[], optionId: string): boole
  * Komunikat przy opcjach: ostatnia kwestia BYTE_MASTERA po odrzuceniu wyboru (B2).
  * Ta sama kwestia trafia do historii czatu z mentorem.
  */
-export const MentorRejectNotice: React.FC<{ attempts: RejectedAttempt[] }> = ({ attempts }) => {
+export const MentorRejectNotice: React.FC<{ attempts: RejectedAttempt[]; selectedId?: string | null }> = ({
+  attempts,
+  selectedId
+}) => {
   const last = attempts[attempts.length - 1];
-  if (!last) return null;
+  // Gracz zmienił wybór po odrzuceniu — baner znika (pełna kwestia zostaje w czacie z mentorem).
+  if (!last || selectedId) return null;
   return (
     <div
       role="alert"
       data-mentor-reject="true"
-      className="mb-3 flex items-start gap-2 rounded-lg border border-[#ff3366]/60 bg-[#1f060b] px-3 py-2.5 text-xs text-red-100 leading-relaxed"
+      title={last.mentorLine}
+      className="mb-2 flex items-center gap-2 rounded-lg border border-[#ff3366]/60 bg-[#1f060b] px-3 py-1.5 text-xs text-red-100 min-w-0"
     >
-      <MessageSquareWarning size={16} className="mt-0.5 shrink-0 text-[#ff3366]" />
-      <div>
-        <div className="text-[0.625rem] font-black uppercase tracking-widest text-[#ff3366] mb-0.5">
-          BYTE_MASTER: ODRZUCONE — WYBIERZ PONOWNIE
-        </div>
-        <span className="font-sans">{last.mentorLine}</span>
-      </div>
+      <MessageSquareWarning size={14} className="shrink-0 text-[#ff3366]" />
+      <span className="shrink-0 text-[0.625rem] font-black uppercase tracking-widest text-[#ff3366]">
+        BYTE_MASTER: ODRZUCONE
+      </span>
+      <span className="font-sans truncate min-w-0">{last.mentorLine}</span>
     </div>
   );
 };

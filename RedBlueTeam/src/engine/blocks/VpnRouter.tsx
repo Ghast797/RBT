@@ -397,7 +397,7 @@ export const VpnRouter: React.FC<BlockProps<VpnRouterConfig>> = ({
     allowAiSync && !isConnected ? (
       <ConfirmButton
         accent={accent}
-        label={isSyncingAi ? 'SYNCHRONIZACJA…' : 'ASYSTA AI'}
+        label={isSyncingAi ? 'SYNCHRONIZACJA…' : 'ASYSTENT AI'}
         enabled={!isSyncingAi}
         onClick={handleAiSync}
         icon={<Cpu size={15} className={isSyncingAi ? 'animate-pulse' : ''} />}
