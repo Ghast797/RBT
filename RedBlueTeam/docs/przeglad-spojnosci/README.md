@@ -40,6 +40,14 @@ Odrzucenia przez mentora (karta ✗, baner, kwestia w czacie), pamięć wyborów
    - M3: pytanie D6 ucięte w widoku drona; w raporcie ucięta kwota BTC przy 1024×768.
 7. **Dokumentacja** — niski. `scenario.md` M1 i M2 rozjechały się z kodem (np. M1 „TWÓJ SYNEK = critical”, M2 numeracja „S04, D4” dla wirusa i monitor „bez konsekwencji”).
 
+### Decyzje właściciela do problemów wspólnych (27.11.2026)
+1. „CO ZADZIAŁAŁOBY LEPIEJ”: warianty zależne od wcześniejszego wyboru (silnik). M1 D2 wg domeny, M1 D4 wg nadawcy (dokładny adres prezesa zamiast neutralnego tekstu), M3 D4 wg planu.
+2. Decyzja z odrzuconą próbą: plakietka „IDEALNY PO POPRAWCE”, „(−X PKT)” przy odrzuconej próbie, zdanie pod licznikiem o koszcie odrzuconej próby.
+3. „Atak” / „Obrona” pod słabszym wyborem: dopisek „(wariant idealny)” (bez pytania, oczywiste).
+4. Końcowe kwestie mentora: wszystkie cztery poprawki (M2 trzy warianty z odrzuceniami i progiem, M3 przyczyna zwłoki, M4 niepełny zestaw plików i ostrzeżenie IT przed szyfrowaniem, M1 bez „DOSKONALE!”).
+5. WYNIK i BTC na dolnym pasku tylko w M1; martwy `Taskbar.tsx` do usunięcia.
+6. M4: przebieg negocjacji w raporcie wg faktycznych odpowiedzi (bez pytania, oczywiste).
+
 ## Pojedyncze poprawki tekstów (szybkie)
 - M1: reakcja Anity na maila od prezesa „dziwi się, że zarząd pisze do niej o bieganiu” także przy muffinkach (wysoki); „Coś, czego szukałaś!” przy muffinkach (wysoki); feedback prezesa „o tematyce sportowej” (średni); „.org.pl nie budzi zaufania” (niski); „Przeciągnij” bez „lub kliknij” (niski).
 - M2: KATERING / CATERING w jednym ekranie (niski); monitor nie mówi, czemu penetracja spadła (średni).
