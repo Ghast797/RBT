@@ -303,7 +303,7 @@ export const socialIntelConfig: SocialIntelConfig = {
       content: 'W końcu remont po 6 latach! Potrzebowałam tego, a tym bardziej moi chłopcy!',
       tags: ['#Remont', '#Dom'],
       distractorNotice:
-        'BRAK PRZYDATNYCH INFORMACJI (Wpis o remoncie pokoju nie dostarcza konkretnego wektora do spear-phishingu)',
+        'BRAK PRZYDATNYCH INFORMACJI (Wpis o remoncie w domu nie dostarcza konkretnego wektora do spear-phishingu)',
       deductionOptions: [
         {
           id: 'kn4_opt_1',
@@ -315,13 +315,13 @@ export const socialIntelConfig: SocialIntelConfig = {
           id: 'kn4_opt_2',
           text: 'Brak wartości operacyjnej (szum informacyjny / prywatny remont)',
           isCorrect: true,
-          feedback: 'Trafna ocena! Informacja o remoncie pokoju nie dostarcza konkretnego wektora do ataku.'
+          feedback: 'Trafna ocena! Informacja o remoncie w domu nie dostarcza konkretnego wektora do ataku.'
         },
         {
           id: 'kn4_opt_3',
           text: 'Planuje pilną wyprowadzkę do innego województwa',
           isCorrect: false,
-          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis mówi jedynie o odświeżeniu pokoju po 6 latach.'
+          feedback: 'Nietrafna dedukcja. Zwracaj uwagę na detale — wpis mówi jedynie o remoncie w domu po 6 latach.'
         }
       ]
     },
@@ -659,7 +659,7 @@ export const phishingBuilderConfig: PhishingBuilderConfig = {
         tags: ['KUCHNIA', 'WYPIEKI', 'BLOG'],
         tier: 'suboptimal',
         feedback:
-          'Nawiązuje do pieczenia ciast, ale nie łączy się z aktywnymi zapytaniami z sieci zawodowej; domena org.pl nie budzi zaufania jako serwis kulinarny.'
+          'Nawiązuje do pieczenia ciast, ale Anita publicznie szukała porad do biegania, więc przynęta kulinarna nie trafia w jej aktualną potrzebę.'
       },
       {
         id: 'medikarz_iq',

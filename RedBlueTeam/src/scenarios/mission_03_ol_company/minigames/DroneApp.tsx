@@ -396,7 +396,7 @@ export const DroneApp: React.FC<BlockProps<DroneConfig>> = ({ config, onDecision
   return (
     <div className={shell}>
       {header(done ? texts.tasks.done : texts.tasks.aim)}
-      <ChoiceZone accent={accent} label={config.car.question} className="flex-1 min-h-0 flex flex-col">
+      <ChoiceZone accent={accent} label="WYBIERZ MIEJSCE, GDZIE OFIARA NA PEWNO ZNAJDZIE KOPERTĘ" className="flex-1 min-h-0 flex flex-col">
         <div className="flex-1 min-h-0">
           <DroneCamera
             accent={accent}
