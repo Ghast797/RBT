@@ -48,6 +48,8 @@ Odrzucenia przez mentora (karta ✗, baner, kwestia w czacie), pamięć wyborów
 5. WYNIK i BTC na dolnym pasku tylko w M1; martwy `Taskbar.tsx` do usunięcia.
 6. M4: przebieg negocjacji w raporcie wg faktycznych odpowiedzi (bez pytania, oczywiste).
 
+**Stan 27.11.2026: punkty 1–6 zrobione** (silnik `16ff5dc` + warunki zagnieżdżone `cbc7dab`; M1 `34918b1`, M2 `40a128b`/`cbc7dab`, M3 `25df46d`, M4 `92db822`). Przy okazji zrobione też z listy poniżej: M1 reakcja Anity, zakończenie maila wg pliku, feedback prezesa, „LUB KLIKNIJ”; M2 objaśnienia spadku na monitorze, KATERING; M3 „PODBIJE”, „PODWIESIĆ… KOPERTĘ”; M4 „TEMAT MAILA…”, odpowiedź D8 w raporcie. Zostały: angielskie „TERMINATED & COMMITTED” w oknie wyjścia, UI (autoprzewijanie czatu ofiary w M4, nachodzenie elementów po banerze odrzucenia, ucięte teksty przy 1024×768), M1 feedback „.org.pl”, lekcja M1 D2 „idealnie dopasowany do Twojego wpisu” przy stronie z muffinkami, dokumentacja.
+
 ## Pojedyncze poprawki tekstów (szybkie)
 - M1: reakcja Anity na maila od prezesa „dziwi się, że zarząd pisze do niej o bieganiu” także przy muffinkach (wysoki); „Coś, czego szukałaś!” przy muffinkach (wysoki); feedback prezesa „o tematyce sportowej” (średni); „.org.pl nie budzi zaufania” (niski); „Przeciągnij” bez „lub kliknij” (niski).
 - M2: KATERING / CATERING w jednym ekranie (niski); monitor nie mówi, czemu penetracja spadła (średni).
