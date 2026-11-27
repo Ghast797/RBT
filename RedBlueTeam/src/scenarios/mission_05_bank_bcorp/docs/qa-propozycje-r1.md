@@ -19,7 +19,7 @@ Schemat obrony jak w M1–M4: „Sygnały: … Co zrobić: …”. Zmienione pol
 
 **D4 — przedstawienie się**
 - Atak *(zmiana)*: Podszycie się pod prawdziwego, niedawno zatrudnionego pracownika (Michała Mitnika z białego wywiadu) tłumaczy, dlaczego ofiara nie rozpoznaje głosu ani nazwiska rozmówcy.
-- Obrona: Sygnały: dzwoni ktoś, kogo nie znasz, choć przedstawia się nazwiskiem pracownika firmy; coś w nazwisku Ci nie pasuje. Co zrobić: nazwisko w książce adresowej nie potwierdza, kto naprawdę dzwoni, bo oszust podszywa się właśnie pod prawdziwą osobę. Rozłącz się i oddzwoń na numer tej osoby z książki albo napisz do niej przez firmowy komunikator. Gdy coś nie pasuje, nie mów „no dobra”, tylko przerwij i sprawdź.
+- Obrona: Sygnały: dzwoni ktoś, kogo nie znasz, choć przedstawia się nazwiskiem pracownika firmy; coś w nazwisku Ci nie pasuje. Co zrobić: nazwisko w książce adresowej nie potwierdza, kto naprawdę dzwoni, bo oszust podszywa się właśnie pod prawdziwą osobę. Rozłącz się i oddzwoń na numer tej osoby z książki albo napisz do niej przez firmowy komunikator. Gdy coś nie pasuje, nie zgadzaj się dla świętego spokoju, tylko przerwij i sprawdź.
 
 **D5 — dział**
 - Obrona: Sygnały: „IT” dzwoni bez zapowiedzi i prosi o logowanie na nowej stronie. Co zrobić: IT nigdy nie prosi o hasło ani kod, a prace techniczne zapowiada wcześniej oficjalnymi kanałami. Odmów, rozłącz się i zgłoś próbę przez helpdesk. Zgłoś ją także wtedy, gdy nic nie podałeś, bo oszust zadzwoni do kolejnej osoby.
@@ -29,8 +29,8 @@ Schemat obrony jak w M1–M4: „Sygnały: … Co zrobić: …”. Zmienione pol
 - Obrona: Sygnały: rozmówca naciska („pilne”, „do końca dnia”), a Ty właśnie się spieszysz. Co zrobić: pośpiech to jeden z najczęstszych sygnałów oszustwa telefonicznego (vishingu). Powiedz „oddzwonię po spotkaniu przez helpdesk” i sprawdź sprawę na spokojnie.
 
 **D7 — przełożony**
-- Atak *(zmiana)*: Atakujący wie z białego wywiadu, że przełożony jest na urlopie, więc nie da się go zapytać. Dorzuca „możesz zapytać Sandry”: propozycja sprawdzenia brzmi uczciwie, a on liczy, że nikt tego nie zrobi.
-- Obrona: Sygnały: rozmówca powołuje się na kogoś, kogo nie da się teraz zapytać, albo sam proponuje „zapytaj X”. Co zrobić: zrób to. Zadzwoń do tej osoby na numer z książki adresowej, zanim cokolwiek wpiszesz. Nie publikuj w sieci informacji o urlopach i strukturze zespołu.
+- Atak *(zmiana)*: Atakujący wie z białego wywiadu, że przełożony jest na urlopie, więc nie da się go zapytać. Dorzuca „możesz zapytać Sandrę”: propozycja sprawdzenia brzmi uczciwie, a on liczy, że nikt tego nie zrobi.
+- Obrona: Sygnały: rozmówca powołuje się na kogoś, kogo nie da się teraz zapytać, albo sam proponuje „zapytaj X”. Co zrobić: zrób to. Zadzwoń do tej osoby na numer z książki adresowej, a gdy jej nie ma, do jej zastępcy albo na helpdesk, zanim cokolwiek wpiszesz. Nie publikuj w sieci informacji o urlopach i strukturze zespołu.
 
 **D8 — perswazja**
 - Atak *(zmiana)*: Gra na poczuciu obowiązku („zostałeś mi tylko ty”, „to ważne dla bezpieczeństwa firmy”) wywołuje poczucie winy i chęć szybkiego „odhaczenia” sprawy.

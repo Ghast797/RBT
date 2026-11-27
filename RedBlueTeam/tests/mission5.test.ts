@@ -267,8 +267,8 @@ describe('Misja 5 — struktura etapów, decyzje D1–D10 i mostki', () => {
     expect(vishingCallConfig.phase2.capturedPasswordMasked).toBe('••••••••••••••');
     expect(vishingCallConfig.phase2.capturedSmsCode).toBe('48212');
     expect(vishingCallConfig.phase2.reports.map((r) => r.title)).toEqual([
-      'RAPORT FINANSOWY 2021',
-      'RAPORT FINANSOWY 2022'
+      'RAPORT FINANSOWY 2024',
+      'RAPORT FINANSOWY 2025'
     ]);
   });
 
@@ -361,7 +361,7 @@ describe('Misja 5 — przepływ przez silnik i 3 warianty mostka końcowego', ()
       {
         id: 'm5_reply_end_perfect',
         label:
-          'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.',
+          'MAM RAPORTY FINANSOWE BANKU BCORP Z 2024 I 2025 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.',
         bridgeBeat: true
       }
     ]);
@@ -417,7 +417,7 @@ describe('Misja 5 — przepływ przez silnik i 3 warianty mostka końcowego', ()
     expect(fin.score).toBe(95);
     const texts = fin.chatMessages.map((m) => m.text);
     expect(texts).toContain(
-      'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.'
+      'MAM RAPORTY FINANSOWE BANKU BCORP Z 2024 I 2025 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.'
     );
     expect(texts).toContain(
       'WAŻNE, ŻE RAPORTY SĄ U NAS, ALE NIE OBYŁO SIĘ BEZ WPADEK. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW.'

@@ -18,12 +18,12 @@
 - BM: DOSZŁY MNIE SŁUCHY, ŻE WŁAŚNIE STARTUJE OGROMNA INWESTYCJA - BUDOWA RAFINERII W POBLIŻU DOLINY BARYCZY. TO BARDZO WAŻNY EKOLOGICZNIE TEREN
 - BM: MUSIMY ZDOBYĆ INFORMACJE, SKĄD MAJĄ NA TO PIENIĄDZE
 - GRACZ: WIESZ, GDZIE MOGĘ JE ZNALEŹĆ?
-- BM: WSZYSTKIE RAPORTY FINANSOWE ZNAJDUJĄ SIĘ W BANKU BCORP. DOWIEDZIAŁEM SIĘ, ŻE JEDEN Z MENEDŻERÓW WYSYŁAŁ JE OSTATNIO MAILEM, WIĘC MOGĄ BYĆ NA SERWERACH POCZTOWYCH FIRMY
+- BM: WSZYSTKIE RAPORTY FINANSOWE ZNAJDUJĄ SIĘ W BANKU BCORP. DOWIEDZIAŁEM SIĘ, ŻE JEDEN Z DYREKTORÓW WYSYŁAŁ JE OSTATNIO MAILEM, WIĘC MOGĄ BYĆ NA SERWERACH POCZTOWYCH FIRMY
 - GRACZ: OK, PRZYGOTUJĘ FAŁSZYWĄ WITRYNĘ NA PODOBNEJ DOMENIE I UTWORZĘ STRONĘ LOGOWANIA. PROBLEM POLEGA NA TYM, ŻE NIE JESTEM W STANIE PRZEWIDZIEĆ CZY I KIEDY NASZA OFIARA SIĘ ZALOGUJE. POTRZEBUJESZ TYCH DANYCH NA JUŻ?
 - BM: TAK, DOŚĆ MOCNO GONI NAS CZAS. ZADZWOŃ DO NIEGO, PODSZYJ SIĘ POD PRACOWNIKA DZIAŁU IT I SPRÓBUJ GO NAKŁONIĆ DO ZALOGOWANIA SIĘ NA NASZ SERWER
 - GRACZ: JAK TO SOBIE WYOBRAŻASZ?
 - BM: ZA MOMENT UDOSTĘPNIĘ CI INFORMACJE, KTÓRE UDAŁO NAM SIĘ UZYSKAĆ Z BIAŁEGO WYWIADU. ZDZIWISZ SIĘ, JAKIE DANE MOŻNA ZDOBYĆ W SIECI. I TO CAŁKIEM LEGALNIE
-- GRACZ: OK, MA TO SENS. W TAKIM RAZIE POPROSZĘ MENEDŻERA BANKU O ZALOGOWANIE SIĘ DO SYSTEMU ARCHIWIZACJI POCZTY, KTÓRY OBECNIE TESTUJĘ. W TEN SPOSÓB PRZEJMIEMY JEGO LOGIN I HASŁO, I DOSTANIEMY SIĘ DO FIRMOWEJ SKRZYNKI. DALEJ POWINNO JUŻ PÓJŚĆ GŁADKO
+- GRACZ: OK, MA TO SENS. W TAKIM RAZIE POPROSZĘ DYREKTORA BANKU O ZALOGOWANIE SIĘ DO SYSTEMU ARCHIWIZACJI POCZTY, KTÓRY OBECNIE TESTUJĘ. W TEN SPOSÓB PRZEJMIEMY JEGO LOGIN I HASŁO, I DOSTANIEMY SIĘ DO FIRMOWEJ SKRZYNKI. DALEJ POWINNO JUŻ PÓJŚĆ GŁADKO
 - BM: SPRAWDŹMY TO
 - odblokuj: //FILIP_WOJCIK_BIALY_WYWIAD.PDF (zaraz po starcie pulpitu)
 
@@ -66,9 +66,9 @@ Ekrany: wybór domeny (z przypomnieniem oryginalnego adresu z białego wywiadu: 
 Oceniane: D1
 
 Decyzja D1: "WYBIERZ DOMENĘ, KTÓRĄ WYKUPISZ DLA PODSTAWIONEJ STRONY SYSTEMU ARCHIWIZACJI:"
-- ARCHIWUMBCORP.BIZ | ideal | Domena zawiera nazwę firmy, końcówkę `.biz` identyczną z oryginalną pocztą oraz słowo „archiwum” pasujące do pretekstu testów.
-- BCORP.PL | suboptimal | Zawiera nazwę firmy, ale inna końcówka (`.pl` zamiast `.biz`) i brak słowa „archiwum” mogą wzbudzić czujność rozmówcy.
-- BACKUP-BANK.COM | suboptimal, odrzucany przez mentora (B2): "W TEJ DOMENIE NIE MA NAWET NAZWY BANKU BCORP. NIKT NIE UWIERZY, ŻE TO FIRMOWA STRONA. WYBIERZ INACZEJ." | Brak nazwy banku i obca końcówka `.com` sprawiają, że adres nie wygląda na wewnętrzny system Banku Bcorp.
+- ARCHIWUMBCORP.BIZ — "Domena w strefie .biz łącząca nazwę banku z określeniem archiwum." | ideal | Domena zawiera nazwę firmy, końcówkę `.biz` identyczną z oryginalną pocztą oraz słowo „archiwum” pasujące do pretekstu testów.
+- BCORP.PL — "Krótka domena z nazwą banku zarejestrowana w polskiej strefie .pl." | suboptimal | Zawiera nazwę firmy, ale inna końcówka (`.pl` zamiast `.biz`) i brak słowa „archiwum” mogą wzbudzić czujność rozmówcy.
+- BACKUP-BANK.COM — "Domena w strefie .com nawiązująca do kopii zapasowej banku." | suboptimal, odrzucany przez mentora (B2): "W TEJ DOMENIE NIE MA NAWET NAZWY BANKU BCORP. NIKT NIE UWIERZY, ŻE TO FIRMOWA STRONA. WYBIERZ INACZEJ." | Brak nazwy banku i obca końcówka `.com` sprawiają, że adres nie wygląda na wewnętrzny system Banku Bcorp.
 
 Skutek odroczony (gdy D1 = BCORP.PL): w Etapie 4 pasek adresu fałszywej strony pokazuje `//MAIL.BCORP.PL/LOGIN` (zamiast `//MAIL.ARCHIWUMBCORP.BIZ/LOGIN`); w Etapie 6 wysłany Filipowi link to `//MAIL.BCORP.PL/LOGIN`, a Filip reaguje: „BCORP.PL? MYŚLAŁEM, ŻE MAMY .BIZ... NO DOBRA, JAK MAM SIĘ ZALOGOWAĆ?”.
 
@@ -97,9 +97,9 @@ Ekrany: opis spoofingu i szablon numeracji (`891 [NR DZIAŁU] [NR PRACOWNIKA]`: 
 Oceniane: D2
 
 Decyzja D2: "WYBIERZ NUMER TELEFONU, POD KTÓRY SIĘ PODSZYJESZ:"
-- 891 002 162 | ideal | Numer zgadza się z firmowym szablonem (`891`) i prefiksem działu IT (`002`), uwiarygadniając połączenie od pracownika IT.
-- 891 003 427 | suboptimal, odrzucany przez mentora (B2): "TEN NUMER NALEŻY DO LOGISTYKI, A MASZ DZWONIĆ JAKO PRACOWNIK IT. SPRAWDŹ SZABLON I WYBIERZ INACZEJ." | Numer należy do działu logistyki (`003`) zamiast IT (`002`), co przeczy przygotowanej legendzie.
-- 867 452 026 | critical | Numer spoza firmowej puli (`867` zamiast `891`) od razu budzi podejrzenia dyrektora — Filip nie ufa połączeniu i zgłasza próbę podszycia się pod IT.
+- 891 002 162 — "Numer z puli 891 i kodem wewnętrznym 002." | ideal | Numer zgadza się z firmowym szablonem (`891`) i prefiksem działu IT (`002`), uwiarygadniając połączenie od pracownika IT.
+- 891 003 427 — "Numer z puli 891 i kodem wewnętrznym 003." | suboptimal, odrzucany przez mentora (B2): "TEN NUMER NALEŻY DO LOGISTYKI, A MASZ DZWONIĆ JAKO PRACOWNIK IT. SPRAWDŹ SZABLON I WYBIERZ INACZEJ." | Numer należy do działu logistyki (`003`) zamiast IT (`002`), co przeczy przygotowanej legendzie.
+- 867 452 026 — "Numer z prefiksem 867 i kodem 452." | critical | Numer spoza firmowej puli (`867` zamiast `891`) od razu budzi podejrzenia dyrektora — Filip nie ufa połączeniu i zgłasza próbę podszycia się pod IT.
 
 Mostek (rozmowa do kolejnego etapu):
 - GRACZ: „NUMER USTAWIONY. MOGĘ DZWONIĆ DO FILIPA.” [SPÓJNIK]
@@ -112,14 +112,14 @@ Klocek: DialogueTree + NOWA MINIGRA (vishing w 2 fazach + przechwytywanie AiTM n
 Cel dydaktyczny: pokazanie przebiegu ataku socjotechnicznego (vishing) z wykorzystaniem OSINT, presji czasu i autorytetu oraz ataku Adversary-in-the-Middle (AiTM) przejmującego login, hasło i kod SMS 2FA w czasie rzeczywistym.
 Ekrany:
 - **Faza 1 (rozmowa D3–D10):** ekran gotowości („MOGĘ JUŻ ZADZWONIĆ DO PRACOWNIKA. MUSZĘ UWAŻAĆ, ABY NIE POWIEDZIEĆ CZEGOŚ PODEJRZANEGO”) → rozmowa z Filipem Wójcikiem na głównym ekranie + notatki z białego wywiadu (`FILIP_WOJCIK_BIALY_WYWIAD.PDF`) stale widoczne na prawym monitorze. Brak licznika `ZAUFANIE PRACOWNIKA` — poziom zaufania widać w odpowiedziach Filipa.
-- **Faza 2 (po „DAJ MI CHWILĘ”):** dwie strony logowania obok siebie na głównym ekranie (fałszywa po lewej: `//MAIL.ARCHIWUMBCORP.BIZ/LOGIN` lub `//MAIL.BCORP.PL/LOGIN`, oryginalna po prawej: `//MAIL.BCORP.BIZ/LOGIN`), rozmowa przeniesiona na prawy monitor. Gracz przenosi przechwycone dane (tym samym gestem co w Etapie 4: przeciągnięcie lub klik–klik): najpierw login `FWOJCIK67` i hasło `••••••••••••••`, potem kod SMS `48212`, klika `ZALOGUJ` → `WEJDŹ DO SYSTEMU` → pobranie `RAPORT FINANSOWY 2021` i `RAPORT FINANSOWY 2022` → `POBRAŁEŚ RAPORTY FINANSOWE BANKU BCORP`.
+- **Faza 2 (po „DAJ MI CHWILĘ”):** dwie strony logowania obok siebie na głównym ekranie (fałszywa po lewej: `//MAIL.ARCHIWUMBCORP.BIZ/LOGIN` lub `//MAIL.BCORP.PL/LOGIN`, oryginalna po prawej: `//MAIL.BCORP.BIZ/LOGIN`), rozmowa przeniesiona na prawy monitor. Gracz przenosi przechwycone dane (tym samym gestem co w Etapie 4: przeciągnięcie lub klik–klik): najpierw login `FWOJCIK67` i hasło `••••••••••••••`, potem kod SMS `48212`, klika `ZALOGUJ` → `WEJDŹ DO SYSTEMU` → pobranie `RAPORT FINANSOWY 2024` i `RAPORT FINANSOWY 2025` → `POBRAŁEŚ RAPORTY FINANSOWE BANKU BCORP`.
 Oceniane: D3–D10 | Flavor (nieoceniane): przechwytywanie i przenoszenie danych logowania oraz kodu 2FA w fazie 2
 
 ### Przebieg fazy 1 (D3–D10)
 
-- FILIP: „DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?”
+- FILIP: „DZIEŃ DOBRY, FILIP WÓJCIK, BANK BCORP. W CZYM MOGĘ POMÓC?”
 
-Decyzja D3: "DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?"
+Decyzja D3: "DZIEŃ DOBRY, FILIP WÓJCIK, BANK BCORP. W CZYM MOGĘ POMÓC?"
 - DZIEŃ DOBRY PANIE FILIPIE. | ideal | Uprzejme, formalne powitanie z użyciem właściwego imienia buduje profesjonalne pierwsze wrażenie.
 - DZIEŃ DOBRY PANIE DAWIDZIE. | suboptimal | Pomylenie imienia rozmówcy z imieniem jego przełożonego od razu zdradza brak przygotowania i obniża wiarygodność.
 - CZEŚĆ FILIP! | suboptimal | Poufałe „cześć” od nieznajomego, który jeszcze się nie przedstawił, brzmi nienaturalnie i budzi czujność dyrektora.
@@ -161,7 +161,7 @@ Reakcja Filipa po D6:
 - FILIP (gdy D6 = TO PILNE. MAM PROBLEM Z TRUDNYM KLIENTEM...): „KLIENTEM? MYŚLAŁEM, ŻE CHODZI O TESTY POCZTY... ZRESZTĄ MÓJ PRZEŁOŻONY NIE WSPOMINAŁ NIC O ŻADNYM NOWYM SYSTEMIE ANI TESTACH...”
 
 Decyzja D7: "MÓJ PRZEŁOŻONY NIE WSPOMINAŁ NIC O ŻADNYM NOWYM SYSTEMIE ANI TESTACH..."
-- Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRY, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE | ideal | Połączenie faktu o urlopie Dawida z powołaniem się na autorytet Sandry (szefowej IT) skutecznie rozbraja wątpliwości ofiary.
+- Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRĘ, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE | ideal | Połączenie faktu o urlopie Dawida z powołaniem się na autorytet Sandry (szefowej IT) skutecznie rozbraja wątpliwości ofiary.
 - PAN DAWID WSPOMNIAŁ, ŻE TAK PROSTEJ CZYNNOŚCI NIE MUSI ZATWIERDZAĆ | suboptimal | Powołanie się na przełożonego przebywającego na urlopie utrudnia weryfikację, ale słabiej uwiarygadnia prośbę niż wskazanie obecnej w firmie szefowej IT (Sandry).
 - TWÓJ PRZEŁOŻONY MA PRZECIEŻ WOLNE, DLATEGO NIC NIE WIESZ | suboptimal | Informacja o urlopie przełożonego jest trafna, ale lekceważący ton i brak powołania się na osobę decyzyjną (Sandrę) obniżają zaufanie rozmówcy.
 - DAREK WSPOMNIAŁ, ŻE TAK PROSTEJ CZYNNOŚCI NIE MUSI ZATWIERDZAĆ | suboptimal | Błędne imię przełożonego i powołanie się na rozmowę z nim w czasie urlopu mocno podważają wiarygodność.
@@ -221,16 +221,16 @@ Reakcja Filipa po D10 (przejście do fazy 2):
    - FILIP: „CZY TO WSZYSTKO?”
    - GRACZ: „TAK, DZIĘKI WIELKIE! URATOWAŁEŚ MI SKÓRĘ, MIŁEGO DNIA!”
    - FILIP: „DOBRA, NA RAZIE” *(status: `ROZŁĄCZONO`)*
-6. Na ekranie poczty pobierają się `RAPORT FINANSOWY 2021` i `RAPORT FINANSOWY 2022`, pojawia się potwierdzenie `POBRAŁEŚ RAPORTY FINANSOWE BANKU BCORP`.
+6. Na ekranie poczty pobierają się `RAPORT FINANSOWY 2024` i `RAPORT FINANSOWY 2025`, pojawia się potwierdzenie `POBRAŁEŚ RAPORTY FINANSOWE BANKU BCORP`.
 
 ### Mostek końcowy (rozmowa z BYTE_MASTER po zakończeniu Etapu 6)
 
 Wariant 1 (wszystko idealnie, 100%, bez odrzuceń):
-- GRACZ: „MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.”
+- GRACZ: „MAM RAPORTY FINANSOWE BANKU BCORP Z 2024 I 2025 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.”
 - BM: „CZYSTA ROBOTA. ZERO WPADEK, ZERO WĄTPLIWOŚCI. Z TAKIMI RAPORTAMI W KOŃCU ZOBACZYMY, KTO FINANSUJE TĘ RAFINERIĘ. BĘDĄ Z CIEBIE LUDZIE.”
 
 Wariant 2 (słabiej, ale wynik ≥ 70%):
-- GRACZ: „MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.”
+- GRACZ: „MAM RAPORTY FINANSOWE BANKU BCORP Z 2024 I 2025 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.”
 - BM: „WAŻNE, ŻE RAPORTY SĄ U NAS, ALE NIE OBYŁO SIĘ BEZ WPADEK. NASTĘPNYM RAZEM PILNUJ SZCZEGÓŁÓW.”
 
 Wariant 3 (wynik < 70%):
@@ -259,7 +259,7 @@ D3:
 
 D4:
 - Atak: Podszycie się pod prawdziwego, niedawno zatrudnionego pracownika (Michała Mitnika z białego wywiadu) tłumaczy, dlaczego ofiara nie rozpoznaje głosu ani nazwiska rozmówcy.
-- Obrona: Sygnały: dzwoni ktoś, kogo nie znasz, choć przedstawia się nazwiskiem pracownika firmy; coś w nazwisku Ci nie pasuje. Co zrobić: nazwisko w książce adresowej nie potwierdza, kto naprawdę dzwoni, bo oszust podszywa się właśnie pod prawdziwą osobę. Rozłącz się i oddzwoń na numer tej osoby z książki albo napisz do niej przez firmowy komunikator. Gdy coś nie pasuje, nie mów „no dobra”, tylko przerwij i sprawdź.
+- Obrona: Sygnały: dzwoni ktoś, kogo nie znasz, choć przedstawia się nazwiskiem pracownika firmy; coś w nazwisku Ci nie pasuje. Co zrobić: nazwisko w książce adresowej nie potwierdza, kto naprawdę dzwoni, bo oszust podszywa się właśnie pod prawdziwą osobę. Rozłącz się i oddzwoń na numer tej osoby z książki albo napisz do niej przez firmowy komunikator. Gdy coś nie pasuje, nie zgadzaj się dla świętego spokoju, tylko przerwij i sprawdź.
 
 D5:
 - Atak: Powołanie się na dział IT spójny z numerem telefonu i pretekstem „testów systemu” nadaje prośbie pozory rutynowej procedury technicznej.
@@ -270,8 +270,8 @@ D6:
 - Obrona: Sygnały: rozmówca naciska („pilne”, „do końca dnia”), a Ty właśnie się spieszysz. Co zrobić: pośpiech to jeden z najczęstszych sygnałów oszustwa telefonicznego (vishingu). Powiedz „oddzwonię po spotkaniu przez helpdesk” i sprawdź sprawę na spokojnie.
 
 D7:
-- Atak: Atakujący wie z białego wywiadu, że przełożony jest na urlopie, więc nie da się go zapytać. Dorzuca „możesz zapytać Sandry”: propozycja sprawdzenia brzmi uczciwie, a on liczy, że nikt tego nie zrobi.
-- Obrona: Sygnały: rozmówca powołuje się na kogoś, kogo nie da się teraz zapytać, albo sam proponuje „zapytaj X”. Co zrobić: zrób to. Zadzwoń do tej osoby na numer z książki adresowej, zanim cokolwiek wpiszesz. Nie publikuj w sieci informacji o urlopach i strukturze zespołu.
+- Atak: Atakujący wie z białego wywiadu, że przełożony jest na urlopie, więc nie da się go zapytać. Dorzuca „możesz zapytać Sandrę”: propozycja sprawdzenia brzmi uczciwie, a on liczy, że nikt tego nie zrobi.
+- Obrona: Sygnały: rozmówca powołuje się na kogoś, kogo nie da się teraz zapytać, albo sam proponuje „zapytaj X”. Co zrobić: zrób to. Zadzwoń do tej osoby na numer z książki adresowej, a gdy jej nie ma, do jej zastępcy albo na helpdesk, zanim cokolwiek wpiszesz. Nie publikuj w sieci informacji o urlopach i strukturze zespołu.
 
 D8:
 - Atak: Gra na poczuciu obowiązku („zostałeś mi tylko ty”, „to ważne dla bezpieczeństwa firmy”) wywołuje poczucie winy i chęć szybkiego „odhaczenia” sprawy.
@@ -303,4 +303,6 @@ D10:
 - `[ZMIANA WZGLĘDEM VR]` **Kolejność opcji**: w scenariuszu opcja idealna jest pierwsza; w grze opcje są tasowane (`ChoiceCards`, `VishingApp`), więc kolejność z VR nie ma znaczenia.
 - `[ZMIANA WZGLĘDEM VR]` **Faza 2 etapu 6**: w VR po pierwszym `ZALOGUJ` jest komunikat „OTRZYMANO DANE I UŻYTO ICH DO ZALOGOWANIA SIĘ W ORYGINALNYM SYSTEMIE MAILOWYM” i `WEJDŹ DO SYSTEMU`, a pole kodu SMS jest na fałszywej stronie. W grze oryginalny panel żąda kodu (`PODAJ KOD SMS:`), kod jest przenoszony z fałszywej strony tak jak login i hasło, a `WEJDŹ DO SYSTEMU` pojawia się po drugim `ZALOGUJ`. Raporty pobiera gracz przyciskami `POBIERZ`, które aktywują się po zakończeniu rozmowy (`ROZŁĄCZONO`).
 - `[ZMIANA WZGLĘDEM VR]` **Mostki etapów 1–5**: VR milczy na tych granicach; dodane krótkie kwestie gracza oznaczone `[SPÓJNIK]` (QA R1-04, decyzja właściciela 27.11.2026).
+- `[ZMIANA WZGLĘDEM VR]` **Drobne teksty (QA R1-20, R1-21, R1-23, decyzja właściciela 27.11.2026)**: raporty `RAPORT FINANSOWY 2024` i `2025` (w VR 2021 i 2022 — nie pasowały do daty 19.05.2026); `MOŻESZ ZAPYTAĆ SANDRĘ` (w VR „SANDRY”); Filip przedstawia się „BANK BCORP” (w VR „BCORP BANK”; stopka stron logowania zostaje `BCORP BANK © 2024`); intro „JEDEN Z DYREKTORÓW”, „POPROSZĘ DYREKTORA BANKU” (w VR „MENEDŻER”); kafelek `//ROZMOWA` w kolorze `#ef4444` (w kodzie wcześniej ten sam kolor co czat).
+- `[ZMIANA WZGLĘDEM VR]` **Opisy kart D1 i D2**: teksty pod etykietami kart (`— "…"`) dodane w implementacji; właściciel zostawił je bez zmian (QA R1-16).
 - `[ZMIANA WZGLĘDEM VR]` **Mostek końcowy**: dodane 3 warianty końcowej rozmowy z BYTE_MASTEREM (100% bez odrzuceń / ≥ 70% / < 70%), zgodnie ze standardem misji 2+.

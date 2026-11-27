@@ -66,7 +66,7 @@ export const domainPrepConfig: ChoiceCardsConfig = {
   title: '//PRZYGOTOWANIE_DOMENY',
   subtitle: 'REJESTRACJA PODSTAWIONEJ DOMENY',
   question: 'WYBIERZ DOMENĘ, KTÓRĄ WYKUPISZ DLA PODSTAWIONEJ STRONY SYSTEMU ARCHIWIZACJI:',
-  task: 'WYBIERZ DOMENĘ DLA PODSTAWIONEJ STRONY SYSTEMU ARCHIWIZACJI.',
+  task: 'PODSTAWIONA STRONA ARCHIWIZACJI POTRZEBUJE WŁASNEJ DOMENY.',
   info: {
     title: 'ORYGINALNY ADRES Z BIAŁEGO WYWIADU',
     text: 'HTTPS://MAIL.BCORP.BIZ'
@@ -198,13 +198,13 @@ export const vishingCallConfig: VishingCallConfig = {
   osintNotesTitle: 'FILIP_WOJCIK_BIALY_WYWIAD.PDF',
   osintNotes: OSINT_POINTS,
   calleeName: 'FILIP WÓJCIK',
-  openingLine: 'DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?',
+  openingLine: 'DZIEŃ DOBRY, FILIP WÓJCIK, BANK BCORP. W CZYM MOGĘ POMÓC?',
   turns: [
     {
       id: 'turn_d3',
       decisionNum: 3,
-      question: 'DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?',
-      prompt: 'DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?',
+      question: 'DZIEŃ DOBRY, FILIP WÓJCIK, BANK BCORP. W CZYM MOGĘ POMÓC?',
+      prompt: 'DZIEŃ DOBRY, FILIP WÓJCIK, BANK BCORP. W CZYM MOGĘ POMÓC?',
       options: [
         {
           id: 'd3_ideal',
@@ -381,7 +381,7 @@ export const vishingCallConfig: VishingCallConfig = {
       options: [
         {
           id: 'd7_ideal',
-          label: 'Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRY, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE',
+          label: 'Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRĘ, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE',
           tier: 'ideal',
           feedback:
             'Połączenie faktu o urlopie Dawida z powołaniem się na autorytet Sandry (szefowej IT) skutecznie rozbraja wątpliwości ofiary.'
@@ -556,8 +556,8 @@ export const vishingCallConfig: VishingCallConfig = {
       { speaker: 'callee', text: 'DOBRA, NA RAZIE' }
     ],
     reports: [
-      { id: 'report_2021', title: 'RAPORT FINANSOWY 2021', year: '2021' },
-      { id: 'report_2022', title: 'RAPORT FINANSOWY 2022', year: '2022' }
+      { id: 'report_2024', title: 'RAPORT FINANSOWY 2024', year: '2024' },
+      { id: 'report_2025', title: 'RAPORT FINANSOWY 2025', year: '2025' }
     ],
     completionMessage: 'POBRAŁEŚ RAPORTY FINANSOWE BANKU BCORP'
   }
@@ -685,7 +685,7 @@ export const mission5Stages: StageDefinition[] = [
           from: 'player',
           id: 'm5_reply_end_perfect',
           label:
-            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.',
+            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2024 I 2025 ROKU. FILIP NAWET NIE ZORIENTOWAŁ SIĘ, ŻE JEGO HASŁO I KOD SMS TRAFIŁY DO NAS.',
           when: END_BRIDGE_PERFECT
         },
         {
@@ -698,7 +698,7 @@ export const mission5Stages: StageDefinition[] = [
           from: 'player',
           id: 'm5_reply_end_passing',
           label:
-            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2021 I 2022 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.',
+            'MAM RAPORTY FINANSOWE BANKU BCORP Z 2024 I 2025 ROKU, CHOĆ PO DRODZE BYŁO NERWOWO.',
           when: END_BRIDGE_PASSING_WITH_FLAWS
         },
         {

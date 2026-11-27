@@ -239,7 +239,7 @@ Adresy e-mail pracowników M3: brak w kodzie. Kontakt firmy: `sales@olcompany.cl
 | Numery telefonów (D2) | `891 002 162` (ideał, IT), `891 003 427` (odrzucony B2, logistyka), `867 452 026` (critical, spoza puli) | `M5/stages:151,159,170` |
 | VPN | początkowe `90.55.202.120` -> cel `82.45.195.130` | `M5/stages:50-52` |
 | Przechwycone dane logowania i 2FA | login `FWOJCIK67`, hasło maskowane `••••••••••••••`, kod SMS 2FA `48212` | `M5/stages:526-528` |
-| Pliki wykradzione ze skrzynki | `RAPORT FINANSOWY 2021`, `RAPORT FINANSOWY 2022` | `M5/stages:555-556` |
+| Pliki wykradzione ze skrzynki | `RAPORT FINANSOWY 2024`, `RAPORT FINANSOWY 2025` | `M5/stages:555-556` |
 
 Wzorzec sobowtórów: M1 zamiana litery „o” na zero (`petr0log.com`), M2 zamiana „b” na „d” (`cardonflow.com`), M3 błędna nazwa „B&O”, M4 domena nie jest sobowtórem (`priv.com` to darmowa domena kandydata), M5 combosquatting (`archiwumbcorp.biz` — dopisane słowo „archiwum” z zachowaniem `.biz`).
 

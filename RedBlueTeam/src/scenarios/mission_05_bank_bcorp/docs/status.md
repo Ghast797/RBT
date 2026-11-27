@@ -7,7 +7,7 @@ Plik stanu procesu (skill `rbt-proces-misji`). Każdy krok aktualizuje go na ko�
 - [x] 1. Scenariusz z VR → `docs/scenariusz_misji_05_bank_bcorp.md` (źródło: https://youtu.be/Iyb44SJuRqQ, narzędzie: Gemini)
 - [x] 2. Dopracowanie → `scenario.md` zatwierdzony przez właściciela (data: 27.11.2026)
 - [x] 3. Implementacja → kod, testy, paczka SCORM (commit: `7dba80d`)
-- [ ] 4. QA → `docs/qa.md` bez otwartych W i S (rund: …)
+- [x] 4. QA → `docs/qa.md` bez otwartych W i S (rund: 2, zamknięte 27.11.2026)
 - [ ] 5. Książka i quiz → `docs/moodle-ksiazki/misja_5/`, `quizy.gift`
 - [ ] 6. Wdrożenie w Moodle i test w firmie (data: …)
 
@@ -58,3 +58,11 @@ Plik stanu procesu (skill `rbt-proces-misji`). Każdy krok aktualizuje go na ko�
 - `node scripts/package-scorm.js --all`: exit `0` (zbudowano M1–M5; `scorm-mission-5-bank-bcorp.zip` 148.1 KB odizolowany).
 - Audyt kryminalistyczny: `CLEAN`. Recenzja niezależna: `APPROVE`.
 - Przeglądarka (`?mission=5&dev=1` w Chromium, `1366×768` i `1920×1080`): ścieżka idealna do raportu (`100%`, `3.14 BTC`, `10/10`), wszystkie `7` opcji `critical`, wszystkie `4` opcje B2, wszystkie `14` wariantów `suboptimal` i skutek odroczony `D1=BCORP.PL`, `3` warianty mostka końcowego, pamięć stanu po `X` w Etapie 4 i 6, brak przewijania i brak błędów w konsoli/sieci; nie testowano responsywności mobilnej `<768px` ani wgranych docelowych grafik PNG (sprawdzone zastępniki dev).
+
+## Weryfikacja Kroku 4
+
+- QA w 2 rundach (`docs/qa.md`): R1 — 5 niezależnych recenzentów (spójność, złe wybory, zgodność ze scenariuszem, standard i UI, treść dydaktyczna); wymiar złych wyborów przerwany przez zabezpieczenia modelu i powtórzony na Haiku. R2 — niezależna recenzja zmian.
+- Zmiany: pytania D1/D2/D9/D10 na ekranie, kolejność końca etapu 6 (pobieranie po rozmowie), loadery z paskiem, baner odrzucenia bez ucinania (silnik), 10 lekcji „Sygnały / Co zrobić”, 5 spójników między etapami, poprawione feedbacki i zdania mostka końcowego, drobne teksty (lata raportów 2024/2025, SANDRĘ, BANK BCORP, DYREKTOR), kafelek //ROZMOWA w kolorze `#ef4444`, watcher Vite odporny na pakowanie SCORM.
+- `vitest` 622/622, `tsc` 0, `package-scorm --all` 0 (5 paczek, przy działającym dev). Przeglądarka 1366×768: cała rozmowa ze słabszym D8, faza 2, raport, spójnik, M4 (regresja banera).
+- Przed wgraniem do Moodle: dostarczyć `bcorp_logo.*` i `filip_wojcik.*` (tabela „Do dostarczenia”), przebudować paczkę.
+- Następny krok: `rbt-moodle-ksiazka-quiz`.

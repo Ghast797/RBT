@@ -40,7 +40,7 @@
       {
         "id": "node_4",
         "sender": "BYTE_MASTER",
-        "text": "WSZYSTKIE RAPORTY FINANSOWE ZNAJDUJĄ SIĘ W BANKU BCORP. DOWIEDZIAŁEM SIĘ, ŻE JEDEN Z MENEDŻERÓW WYSYŁAŁ JE OSTATNIO MAILEM, WIĘC MOGĄ BYĆ NA SERWERACH POCZTOWYCH FIRMY",
+        "text": "WSZYSTKIE RAPORTY FINANSOWE ZNAJDUJĄ SIĘ W BANKU BCORP. DOWIEDZIAŁEM SIĘ, ŻE JEDEN Z DYREKTORÓW WYSYŁAŁ JE OSTATNIO MAILEM, WIĘC MOGĄ BYĆ NA SERWERACH POCZTOWYCH FIRMY",
         "playerResponse": "OK, PRZYGOTUJĘ FAŁSZYWĄ WITRYNĘ NA PODOBNEJ DOMENIE I UTWORZĘ STRONĘ LOGOWANIA. PROBLEM POLEGA NA TYM, ŻE NIE JESTEM W STANIE PRZEWIDZIEĆ CZY I KIEDY NASZA OFIARA SIĘ ZALOGUJE. POTRZEBUJESZ TYCH DANYCH NA JUŻ?"
       },
       {
@@ -53,7 +53,7 @@
         "id": "node_6",
         "sender": "BYTE_MASTER",
         "text": "ZA MOMENT UDOSTĘPNIĘ CI INFORMACJE, KTÓRE UDAŁO NAM SIĘ UZYSKAĆ Z BIAŁEGO WYWIADU. ZDZIWISZ SIĘ, JAKIE DANE MOŻNA ZDOBYĆ W SIECI. I TO CAŁKIEM LEGALNIE",
-        "playerResponse": "OK, MA TO SENS. W TAKIM RAZIE POPROSZĘ MENEDŻERA BANKU O ZALOGOWANIE SIĘ DO SYSTEMU ARCHIWIZACJI POCZTY, KTÓRY OBECNIE TESTUJĘ. W TEN SPOSÓB PRZEJMIEMY JEGO LOGIN I HASŁO, I DOSTANIEMY SIĘ DO FIRMOWEJ SKRZYNKI. DALEJ POWINNO JUŻ PÓJŚĆ GŁADKO"
+        "playerResponse": "OK, MA TO SENS. W TAKIM RAZIE POPROSZĘ DYREKTORA BANKU O ZALOGOWANIE SIĘ DO SYSTEMU ARCHIWIZACJI POCZTY, KTÓRY OBECNIE TESTUJĘ. W TEN SPOSÓB PRZEJMIEMY JEGO LOGIN I HASŁO, I DOSTANIEMY SIĘ DO FIRMOWEJ SKRZYNKI. DALEJ POWINNO JUŻ PÓJŚĆ GŁADKO"
       },
       {
         "id": "node_7",
@@ -149,7 +149,7 @@
     {
       "id": "vishing_call",
       "label": "//ROZMOWA",
-      "color": "#00ff66",
+      "color": "#ef4444",
       "icon": "Phone",
       "componentId": "bc_vishing_call",
       "unlockedOnly": true,
@@ -197,7 +197,7 @@
       },
       {
         "num": 3,
-        "question": "DZIEŃ DOBRY, FILIP WÓJCIK, BCORP BANK. W CZYM MOGĘ POMÓC?",
+        "question": "DZIEŃ DOBRY, FILIP WÓJCIK, BANK BCORP. W CZYM MOGĘ POMÓC?",
         "answer": "DZIEŃ DOBRY PANIE FILIPIE.",
         "correct": true,
         "details": "Uprzejme, formalne powitanie z użyciem właściwego imienia buduje profesjonalne pierwsze wrażenie.",
@@ -211,7 +211,7 @@
         "correct": true,
         "details": "Poprawne imię i nazwisko nowego pracownika IT zgadzają się z białym wywiadem i wytrzymują ewentualną weryfikację.",
         "attack": "Podszycie się pod prawdziwego, niedawno zatrudnionego pracownika (Michała Mitnika z białego wywiadu) tłumaczy, dlaczego ofiara nie rozpoznaje głosu ani nazwiska rozmówcy.",
-        "defense": "Sygnały: dzwoni ktoś, kogo nie znasz, choć przedstawia się nazwiskiem pracownika firmy; coś w nazwisku Ci nie pasuje. Co zrobić: nazwisko w książce adresowej nie potwierdza, kto naprawdę dzwoni, bo oszust podszywa się właśnie pod prawdziwą osobę. Rozłącz się i oddzwoń na numer tej osoby z książki albo napisz do niej przez firmowy komunikator. Gdy coś nie pasuje, nie mów „no dobra”, tylko przerwij i sprawdź."
+        "defense": "Sygnały: dzwoni ktoś, kogo nie znasz, choć przedstawia się nazwiskiem pracownika firmy; coś w nazwisku Ci nie pasuje. Co zrobić: nazwisko w książce adresowej nie potwierdza, kto naprawdę dzwoni, bo oszust podszywa się właśnie pod prawdziwą osobę. Rozłącz się i oddzwoń na numer tej osoby z książki albo napisz do niej przez firmowy komunikator. Gdy coś nie pasuje, nie zgadzaj się dla świętego spokoju, tylko przerwij i sprawdź."
       },
       {
         "num": 5,
@@ -234,11 +234,11 @@
       {
         "num": 7,
         "question": "MÓJ PRZEŁOŻONY NIE WSPOMINAŁ NIC O ŻADNYM NOWYM SYSTEMIE ANI TESTACH...",
-        "answer": "Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRY, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE",
+        "answer": "Z TEGO CO WIEM, TO DAWID JEST NA URLOPIE. MOŻESZ ZAPYTAĆ SANDRĘ, KTÓRA DAŁA MI TAK KRÓTKI DEADLINE",
         "correct": true,
         "details": "Połączenie faktu o urlopie Dawida z powołaniem się na autorytet Sandry (szefowej IT) skutecznie rozbraja wątpliwości ofiary.",
-        "attack": "Atakujący wie z białego wywiadu, że przełożony jest na urlopie, więc nie da się go zapytać. Dorzuca „możesz zapytać Sandry”: propozycja sprawdzenia brzmi uczciwie, a on liczy, że nikt tego nie zrobi.",
-        "defense": "Sygnały: rozmówca powołuje się na kogoś, kogo nie da się teraz zapytać, albo sam proponuje „zapytaj X”. Co zrobić: zrób to. Zadzwoń do tej osoby na numer z książki adresowej, zanim cokolwiek wpiszesz. Nie publikuj w sieci informacji o urlopach i strukturze zespołu."
+        "attack": "Atakujący wie z białego wywiadu, że przełożony jest na urlopie, więc nie da się go zapytać. Dorzuca „możesz zapytać Sandrę”: propozycja sprawdzenia brzmi uczciwie, a on liczy, że nikt tego nie zrobi.",
+        "defense": "Sygnały: rozmówca powołuje się na kogoś, kogo nie da się teraz zapytać, albo sam proponuje „zapytaj X”. Co zrobić: zrób to. Zadzwoń do tej osoby na numer z książki adresowej, a gdy jej nie ma, do jej zastępcy albo na helpdesk, zanim cokolwiek wpiszesz. Nie publikuj w sieci informacji o urlopach i strukturze zespołu."
       },
       {
         "num": 8,
